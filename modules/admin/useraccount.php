@@ -229,7 +229,7 @@ if ($rolesResult) {
           <div class="panel-header">
           <h2>User Accounts</h2>
           <div class="panel-actions">
-            <button id="addUserBtn" class="btn btn-primary">+ Add Account</button>
+            <button id="addUserBtn" class="btn btn-primary" onclick="if(window.openAddAccountModal) window.openAddAccountModal()">+ Add Account</button>
           </div>
         </div>
 
@@ -291,6 +291,7 @@ if ($rolesResult) {
           </header>
           <div class="modal-body">
             <form id="createUserForm">
+              <input type="hidden" id="accountId" name="account_id" value="">
               <div class="form-row">
                 <label for="username">Username <span class="required">*</span></label>
                 <input id="username" name="username" type="text" placeholder="Enter username" required />
@@ -354,9 +355,71 @@ if ($rolesResult) {
     </div>
   </main>
   <script src="../../js/sidebar-active.js"></script>
-  <script src="../../js/useraccount.js"></script>
+  <script src="../../js/useraccount.js?v=<?php echo time(); ?>"></script>
   <script>
-    lucide.createIcons();
+    // Initialize icons safely
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+
+    // Robust Fallback: Verify if openAddAccountModal exists, if not, define it
+    if (typeof window.openAddAccountModal !== 'function') {
+      window.openAddAccountModal = function() {
+        console.log("Fallback modal opener triggered");
+        const modal = document.getElementById("addUserModal");
+        const form = document.getElementById("createUserForm");
+        
+        if (modal) {
+          modal.style.display = "flex";
+          modal.classList.add("show");
+          modal.setAttribute("aria-hidden", "false");
+          
+          if (form) {
+            form.reset();
+            document.getElementById("accountId").value = "";
+          }
+          
+          // Reset header and button text for 'Add' mode
+          const  header = document.querySelector(".modal-header h3");
+          const btn = document.querySelector("#createUserForm button[type='submit']");
+          if(header) header.textContent = "Add New Account";
+          if(btn) btn.textContent = "Create Account";
+        } else {
+          alert("Error: Modal element not found!");
+        }
+      };
+    }
+
+    // Attach explicit click listener to button as backup
+    document.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById("addUserBtn");
+      if (btn) {
+        btn.onclick = function(e) {
+          e.preventDefault();
+          if (window.openAddAccountModal) {
+            window.openAddAccountModal();
+          } else {
+            console.error("openAddAccountModal is still not defined");
+          }
+        };
+      }
+    });
+
+    // Handle close buttons for fallback
+    document.addEventListener('click', function(e) {
+      if (e.target && (e.target.id === 'closeModalBtn' || e.target.id === 'cancelCreate' || e.target.classList.contains('close-modal'))) {
+        const modal = document.getElementById("addUserModal");
+        if (modal) {
+          modal.style.display = "none";
+          modal.classList.remove("show");
+        }
+      }
+      // Click outside
+      if (e.target && e.target.id === 'addUserModal') {
+        e.target.style.display = "none";
+        e.target.classList.remove("show");
+      }
+    });
   </script>
   
 </body>

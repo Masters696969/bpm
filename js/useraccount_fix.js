@@ -1,10 +1,10 @@
 /**
- * User Account Management - v1.0
+ * User Account Management - Fix Version
  * Handles modal, theme toggle, sidebar, and account actions (Edit/Delete)
- * Last Updated: February 8, 2026
+ * Uses URLSearchParams to avoid server-side multipart/form-data issues
  */
 
-// Fallback for SweetAlert2 when blocked by browser tracking prevention
+// Fallback for SweetAlert2
 if (typeof window.Swal === 'undefined') {
     window.Swal = {
         fire: (opts) => {
@@ -16,7 +16,7 @@ if (typeof window.Swal === 'undefined') {
     };
 }
 
-// Fallback for Lucide icons when blocked by browser tracking prevention
+// Fallback for Lucide icons
 if (typeof window.lucide === 'undefined') {
     window.lucide = { createIcons: () => { } };
 }
@@ -92,12 +92,13 @@ function initUserAccount() {
         }
         if (shouldReset) {
             createUserForm.reset();
-            document.getElementById("accountId").value = ""; // Ensure ID is cleared on reset
+            const accIdInput = document.getElementById("accountId");
+            if (accIdInput) accIdInput.value = "";
         }
-        modal.style.display = "flex"; // Keep inline style for reliability
+        modal.style.display = "flex";
         modal.classList.add("show");
         modal.setAttribute("aria-hidden", "false");
-        console.log("Modal opened");
+        console.log("Modal opened (Fix)");
     };
 
     // Helper to close modal
@@ -107,13 +108,9 @@ function initUserAccount() {
         modal.classList.remove("show");
         modal.setAttribute("aria-hidden", "true");
         createUserForm.reset();
-        document.getElementById("accountId").value = "";
+        const accIdInput = document.getElementById("accountId");
+        if (accIdInput) accIdInput.value = "";
     };
-
-    // Add button click
-    if (addUserBtn) {
-        addUserBtn.addEventListener("click", openModal);
-    }
 
     // Global fallback for inline onclick
     window.openAddAccountModal = openModal;
@@ -130,9 +127,12 @@ function initUserAccount() {
     }
 
     // =====================
-    // 5. FORM SUBMISSION
+    // 5. FORM SUBMISSION (FIXED)
     // =====================
     if (createUserForm) {
+        // Remove existing listeners by cloning (if any)
+        // Note: We don't need to clone if we replace the file, but just in case of double-loading
+
         createUserForm.addEventListener("submit", async (e) => {
             e.preventDefault();
 
@@ -145,9 +145,9 @@ function initUserAccount() {
 
             const accountId = document.getElementById("accountId").value;
             const isEdit = !!accountId;
-            console.log("Form Submit: AccountID:", accountId, "isEdit:", isEdit);
+            console.log("Form Submit (Fix): AccountID:", accountId, "isEdit:", isEdit);
 
-            // Validate passwords match (only if password is provided or it's a new account)
+            // Validate passwords
             if ((!isEdit || password) && password !== confirmPassword) {
                 await Swal.fire({
                     icon: "error",
@@ -158,7 +158,7 @@ function initUserAccount() {
                 return;
             }
 
-            // Validate roles selected
+            // Validate roles
             const roles = Array.from(rolesSelect.selectedOptions).map(option => option.value);
             if (roles.length === 0) {
                 await Swal.fire({
@@ -171,7 +171,7 @@ function initUserAccount() {
             }
 
             // Show loading
-            await Swal.fire({
+            Swal.fire({
                 title: isEdit ? "Updating Account..." : "Creating Account...",
                 text: "Please wait",
                 allowOutsideClick: false,
@@ -180,12 +180,11 @@ function initUserAccount() {
             });
 
             try {
-                // Use URLSearchParams to avoid multipart boundaries issues
+                // Use URLSearchParams instead of FormData
                 const params = new URLSearchParams();
 
                 const actionType = isEdit ? "update_account" : "add_account";
                 params.append("action", actionType);
-                console.log("Submitting action:", actionType, "AccountID:", accountId);
 
                 if (isEdit) {
                     params.append("account_id", accountId);
@@ -193,7 +192,7 @@ function initUserAccount() {
 
                 params.append("username", username);
                 params.append("email", email);
-                if (password) { // Only send password if provided
+                if (password) {
                     params.append("password", password);
                     params.append("confirm_password", confirmPassword);
                 }
@@ -212,22 +211,32 @@ function initUserAccount() {
                     body: params
                 });
 
-                const result = await response.json();
+                console.log("Response Status:", response.status, response.statusText);
+                const responseText = await response.text();
+                console.log("Response Text:", responseText);
+
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (e) {
+                    console.error("JSON Parse Error:", e);
+                    throw new Error("Server returned invalid JSON: " + responseText.substring(0, 100));
+                }
 
                 if (result.success) {
+                    closeModal(); // Close modal immediately on success
                     await Swal.fire({
                         icon: "success",
                         title: isEdit ? "Account Updated" : "Account Created",
                         text: isEdit ? "Account has been updated successfully" : "New account has been created successfully",
                         confirmButtonColor: "#2ca078"
                     });
-                    closeModal();
                     location.reload();
                 } else {
                     await Swal.fire({
                         icon: "error",
                         title: "Error",
-                        text: result.message || "Failed to create account",
+                        text: result.message || "Failed to create/update account",
                         confirmButtonColor: "#2ca078"
                     });
                 }
@@ -236,9 +245,16 @@ function initUserAccount() {
                 await Swal.fire({
                     icon: "error",
                     title: "Error",
-                    text: "Something went wrong. Please try again.",
+                    text: "Something went wrong: " + error.message,
                     confirmButtonColor: "#2ca078"
                 });
+            } finally {
+                // Always close loading spinner
+                // invalid Swal.close() might be too aggressive if we just showed an error, 
+                // but Swal.fire replacing the loading one is fine.
+                // If success/error Swal was fired, we don't need to do anything.
+                // But if an error occurred in the try block before Swal, we need to make sure loading is gone.
+                // Actually Swal.fire automatically closes the previous one.
             }
         });
     }
@@ -281,17 +297,13 @@ function initUserAccount() {
                 document.getElementById("email").value = data.Email;
                 document.getElementById("accountStatus").value = data.AccountStatus;
 
-                // Handle roles
                 const rolesSelect = document.getElementById("roles");
                 Array.from(rolesSelect.options).forEach(option => {
                     option.selected = data.Roles.includes(parseInt(option.value));
                 });
 
-                // Update UI for Edit mode
                 document.querySelector(".modal-header h3").textContent = "Edit Account";
                 document.querySelector("#createUserForm button[type='submit']").textContent = "Update Account";
-
-                // Password fields are optional during edit
                 document.getElementById("password").required = false;
                 document.getElementById("confirmPassword").required = false;
 
@@ -325,9 +337,8 @@ function initUserAccount() {
         openModal(true);
     };
 
-    // Override the click handler for add button
+    // Add button override
     if (addUserBtn) {
-        // Clone node to strip all existing event listeners (including the one from line 115)
         const newBtn = addUserBtn.cloneNode(true);
         addUserBtn.parentNode.replaceChild(newBtn, addUserBtn);
         newBtn.addEventListener("click", openAddModal);
@@ -348,13 +359,17 @@ function initUserAccount() {
         if (!confirmed.isConfirmed) return;
 
         try {
-            const formData = new FormData();
-            formData.append("action", "delete_account");
-            formData.append("account_id", id);
+            // Delete also needs to use URLSearchParams if server is strict
+            const params = new URLSearchParams();
+            params.append("action", "delete_account");
+            params.append("account_id", id);
 
             const response = await fetch("account_action.php", {
                 method: "POST",
-                body: formData
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: params
             });
 
             const result = await response.json();
@@ -368,7 +383,7 @@ function initUserAccount() {
                 });
                 location.reload();
             } else {
-                await Swal.fire({
+                Swal.fire({
                     icon: "error",
                     title: "Error",
                     text: result.message || "Failed to delete account",
@@ -377,7 +392,7 @@ function initUserAccount() {
             }
         } catch (error) {
             console.error("Delete error:", error);
-            await Swal.fire({
+            Swal.fire({
                 icon: "error",
                 title: "Error",
                 text: "Something went wrong. Please try again.",
@@ -386,7 +401,7 @@ function initUserAccount() {
         }
     }
 
-    // Table delegated click handler
+    // Table delegated events
     const usersTable = document.getElementById("usersTable");
     if (usersTable) {
         usersTable.addEventListener("click", (e) => {
@@ -407,11 +422,9 @@ function initUserAccount() {
         });
     }
 
-    // Initialize icons
     lucide.createIcons();
 }
 
-// Initialize on DOM ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initUserAccount);
 } else {
