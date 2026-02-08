@@ -1,0 +1,20 @@
+
+.submenu-item.active {
+  background: rgba(44, 160, 120, 0.12);
+  color: var(--brand-green);
+  font-weight: 600;
+}
+
+.submenu-item.active svg {
+  color: var(--brand-green);
+}
+
+.nav-item-group.active .submenu,
+.nav-item.has-submenu.active + .submenu {
+  max-height: 500px !important;
+}
+
+.nav-item-group.active .submenu-icon,
+.nav-item.has-submenu.active .submenu-icon {
+  transform: rotate(180deg);
+}
