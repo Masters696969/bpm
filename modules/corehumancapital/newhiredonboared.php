@@ -1,10 +1,4 @@
-<?php
-session_start();
-if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'HR_MANAGER') {
-  header("Location: /microfinance/login.php");
-  exit;
-}
-?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

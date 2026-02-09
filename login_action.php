@@ -130,7 +130,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     unset($_SESSION['pending_login']);
                     
                     // Redirect based on role
-                    $redirectUrl = (strtolower($primaryRole) === 'administrator') ? 'modules/admin/useraccount.php' : 'dashboard.php';
+                    $roleKey = strtolower($primaryRole);
+                    if ($roleKey === 'administrator') {
+                        $redirectUrl = 'modules/admin/dashboard.php'; // Changed to dashboard for better UX
+                    } elseif ($roleKey === 'hr data specialist' || $roleKey === 'hr manager') {
+                        $redirectUrl = 'modules/corehumancapital/dashboard.php';
+                    } else {
+                        $redirectUrl = 'dashboard.php';
+                    }
                     
                     echo json_encode([
                         'success' => true, 

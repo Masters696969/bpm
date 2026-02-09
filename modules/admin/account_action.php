@@ -9,10 +9,6 @@ if (!isset($_SESSION['user_id']) || strtolower($_SESSION['user_role']) !== 'admi
 
 require_once '../../config/config.php';
 
-// Debug logging to file
-// $logFile = '../../logs/debug_account_action.txt';
-// ... (Removing all debug lines) ...
-
 // Allow GET for fetching data, POST for updates
 $action = $_REQUEST['action'] ?? '';
 

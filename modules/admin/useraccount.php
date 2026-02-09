@@ -9,9 +9,11 @@ if (!isset($_SESSION['user_id']) || strtolower($_SESSION['user_role']) !== 'admi
 
 require_once '../../config/config.php';
 
-// Fetch all users from database
-$usersSql = "SELECT ua.AccountID, ua.Username, ua.Email, ua.PasswordHash, ua.AccountStatus, ua.OTP_Code, ua.OTP_Expiry, ua.IsVerified
+// Fetch all users with their creation date (based on earliest role assignment)
+$usersSql = "SELECT ua.AccountID, ua.Username, ua.Email, ua.AccountStatus, ua.IsVerified, MIN(uar.AssignedAt) as CreatedAt
              FROM useraccounts ua
+             LEFT JOIN useraccountroles uar ON ua.AccountID = uar.AccountID
+             GROUP BY ua.AccountID
              ORDER BY ua.AccountID ASC";
 $usersResult = $conn->query($usersSql);
 $users = [];
@@ -261,7 +263,7 @@ if ($rolesResult) {
                       <?php echo $user['IsVerified'] ? 'Verified' : 'Unverified'; ?>
                     </span>
                   </td>
-                  <td><?php echo date('M d, Y', strtotime($user['PasswordHash'] ?? 'now')); ?></td>
+                  <td><?php echo date('M d, Y', strtotime($user['CreatedAt'] ?? 'now')); ?></td>
                   <td>
                     <div class="action-buttons">
                       <button class="btn btn-sm btn-edit" data-account-id="<?php echo $user['AccountID']; ?>" data-username="<?php echo htmlspecialchars($user['Username']); ?>">

@@ -1,10 +1,11 @@
 <?php
 session_start();
-if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'HR_MANAGER') {
-  header("Location: /microfinance/login.php");
-  exit;
+if (!isset($_SESSION['username'])) {
+    header("Location: ../../login.php");
+    exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +13,7 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'HR_MANAGER')
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   <link rel="stylesheet" href="../../css/chcdashboard.css?v=1.2">
+  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.0">
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
@@ -38,23 +40,99 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'HR_MANAGER')
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-        <a href="#" class="nav-item active">
-          <i data-lucide="layout-dashboard"></i>
-          <span>Dashboard</span>
+        <a href="dashboard.php" class="nav-item active">
+          <i data-lucide="chart-no-axes-combined"></i>
+          <span>HR ANALYTICS</span>
         </a>
 
-        <a href="newhiredonboared.php" class="nav-item">
-          <i data-lucide="user-plus"></i>
-          <span>New Hired Onboard Management</span>
+        <div class="nav-item-group active">
+          <button class="nav-item has-submenu" data-module="hr">
+            <div class="nav-item-content">
+              <i data-lucide="book-user"></i>
+              <span>Core Human Capital</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-hr">
+            <a href="" class="submenu-item active">
+              <i data-lucide="user-plus"></i>
+              <span>New Hired Onboard Request</span>
+            </a>
+            <a href="employeemaster.php" class="submenu-item">
+              <i data-lucide="file-user"></i>
+              <span>Employee Master Files</span>
+            </a>
+            <a href="" class="submenu-item">
+              <i data-lucide="user-cog"></i>
+              <span>Security Settings</span>
+            </a>
+            <a href="auditlogs.php" class="submenu-item">
+              <i data-lucide="book-user"></i>
+              <span>Audit Logs</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item-group">
+          <button class="nav-item has-submenu" data-module="finance">
+            <div class="nav-item-content">
+              <i data-lucide="banknote"></i>
+              <span>Finance</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-finance">
+            <a href="#" class="submenu-item">
+              <i data-lucide="receipt"></i>
+              <span>Accounting</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-text"></i>
+              <span>Invoicing</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="pie-chart"></i>
+              <span>Budget Planning</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item-group">
+          <button class="nav-item has-submenu" data-module="loans">
+            <div class="nav-item-content">
+              <i data-lucide="hand-coins"></i>
+              <span>Loan Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-loans">
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-plus"></i>
+              <span>Applications</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="check-circle"></i>
+              <span>Approvals</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="calendar-clock"></i>
+              <span>Disbursements</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="coins"></i>
+              <span>Collections</span>
+            </a>
+          </div>
+        </div>
+
+        <a href="#" class="nav-item">
+          <i data-lucide="users-round"></i>
+          <span>Clients</span>
         </a>
 
-        <a href="employeemaster.php" class="nav-item">
-          <i data-lucide="file-user"></i>
-          <span>Employee Master File</span>
-        </a>
-         <a href="rolemanagement.php" class="nav-item">
-          <i data-lucide="user-cog"></i>
-          <span>Role & Position Management</span>
+        <a href="#" class="nav-item">
+          <i data-lucide="file-bar-chart"></i>
+          <span>Reports</span>
         </a>
       </div>
 
@@ -70,8 +148,7 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'HR_MANAGER')
           <i data-lucide="shield"></i>
           <span>Security</span>
         </a>
-       
-       <a href="../../logout.php" class="nav-item" onclick="return confirm ('Are you sure you want to log out?')">
+        <a href="../../login.php" class="nav-item">
             <i data-lucide="log-out"></i>
             <span>Logout</span>
         </a>
@@ -81,11 +158,11 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'HR_MANAGER')
     <div class="sidebar-footer">
       <div class="user-profile">
         <div class="user-avatar">
-          <img src="../img/profile.png" alt="User">
+          <img src="../../img/profile.png" alt="User">
         </div>
         <div class="user-info">
-          <span class="user-name">John Doe</span>
-          <span class="user-role">Administrator</span>
+          <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
+          <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'Employee'); ?></span>
         </div>
         <button class="user-menu-btn">
           <i data-lucide="more-vertical"></i>
@@ -103,7 +180,7 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'HR_MANAGER')
         </button>
         <div class="header-title">
           <h1>Dashboard Overview</h1>
-          <p>Welcome back, John! Here's what's happening today.</p>
+          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
         </div>
       </div>
       <div class="header-right">
@@ -415,6 +492,7 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'HR_MANAGER')
       </div>
     </div>
   </main>
+  <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/chcdashboard.js"></script>
   <script>
     lucide.createIcons();
