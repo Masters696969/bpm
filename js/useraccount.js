@@ -171,7 +171,7 @@ function initUserAccount() {
             }
 
             // Show loading
-            await Swal.fire({
+            Swal.fire({
                 title: isEdit ? "Updating Account..." : "Creating Account...",
                 text: "Please wait",
                 allowOutsideClick: false,
@@ -215,13 +215,13 @@ function initUserAccount() {
                 const result = await response.json();
 
                 if (result.success) {
+                    closeModal(); // Close modal first
                     await Swal.fire({
                         icon: "success",
                         title: isEdit ? "Account Updated" : "Account Created",
                         text: isEdit ? "Account has been updated successfully" : "New account has been created successfully",
                         confirmButtonColor: "#2ca078"
                     });
-                    closeModal();
                     location.reload();
                 } else {
                     await Swal.fire({
