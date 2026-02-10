@@ -1,17 +1,18 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../../login.php');
-    exit;
+if (!isset($_SESSION['username'])) {
+    header("Location: ../../login.php");
+    exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/employeemaster.css?v=1.1">
+  <link rel="stylesheet" href="../../css/informationrq.css?v=1.2">
   <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.0">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -45,7 +46,7 @@ if (!isset($_SESSION['user_id'])) {
           <span>HR ANALYTICS</span>
         </a>
 
-        <div class="nav-item-group active">
+        <div class="nav-item-group">
           <button class="nav-item has-submenu" data-module="hr">
             <div class="nav-item-content">
               <i data-lucide="book-user"></i>
@@ -77,7 +78,7 @@ if (!isset($_SESSION['user_id'])) {
           </div>
         </div>
 
-         <div class="nav-item-group">
+          <div class="nav-item-group">
           <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
@@ -146,7 +147,7 @@ if (!isset($_SESSION['user_id'])) {
               <i data-lucide="file-clock"></i>
               <span>Time Attendance</span>
             </a>
-            <a href="#" class="submenu-item">
+            <a href="hr1informationmanagement.php" class="submenu-item">
               <i data-lucide="user-pen"></i>
               <span>Information Management</span>
             </a>
@@ -209,8 +210,8 @@ if (!isset($_SESSION['user_id'])) {
           <i data-lucide="menu"></i>
         </button>
         <div class="header-title">
-          <h1>Employee Master File</h1>
-          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Manage employee records.</p>
+          <h1>Dashboard Overview</h1>
+          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
         </div>
       </div>
       <div class="header-right">
@@ -228,49 +229,67 @@ if (!isset($_SESSION['user_id'])) {
       </div>
     </header>
 
-      <div class="content-card">
-        <div class="card-header">
-          <h3>Employee List</h3>
+    <div class="content-wrapper">
+        <div class="content-card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">Pending Information Updates</h3>
+                    <p class="card-subtitle">Review and approve employee information changes.</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="data-table">
+                    <table id="requestsTable" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="text-align: left; border-bottom: 1px solid var(--border-color);">
+                                <th style="padding: 12px;">Employee</th>
+                                <th style="padding: 12px;">Department</th>
+                                <th style="padding: 12px;">Request Type</th>
+                                <th style="padding: 12px;">Date Requested</th>
+                                <th style="padding: 12px;">Status</th>
+                                <th style="padding: 12px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                            <!-- Rows will be populated by JS -->
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 20px;">Loading requests...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="users-table" id="employeeTable">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Position</th>
-                  <th>Department</th>
-                  <th>Status</th>
-                  <th>Salary Grade</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Data will be populated by JS -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    </div>
 
-      <!-- Employee Details Modal -->
-      <div id="employeeModal" class="modal">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h3 id="modalTitle">Employee Profile</h3>
-              <button class="close-modal" onclick="closeModal()">&times;</button>
+    <!-- View/Approve Modal -->
+    <div class="modal-overlay hidden" id="requestActionModal">
+      <div class="modal-content modal-content-styled">
+        <div class="modal-header-styled">
+            <div>
+                <h3 class="modal-title-custom">Review Request</h3>
+                <p class="modal-subtitle-custom">Compare old and new values.</p>
             </div>
-            <div class="modal-body" id="modalBody">
-              <!-- Content injected by JS -->
-            </div>
-          </div>
+          <button id="btnCloseActionModal" class="close-modal-btn">
+            <i data-lucide="x" class="icon-sm"></i> Close
+          </button>
+        </div>
+        <div class="modal-body-scroll" id="requestDetailsBody">
+            <!-- Dynamic Content -->
+        </div>
+        <div class="modal-footer-styled">
+            <button type="button" class="btn-create-master" id="btnReject" style="background-color: #ef4444; margin-right: auto;">
+                <i data-lucide="x-circle" class="icon-sm"></i> Reject
+            </button>
+            <button type="button" class="btn-create-master" id="btnApprove" style="background-color: #10b981;">
+                <i data-lucide="check-circle" class="icon-sm"></i> Approve
+            </button>
         </div>
       </div>
+    </div>
   </main>
   <script src="../../js/sidebar-active.js"></script>
-  <script src="../../js/chcdashboard.js"></script>
-  <script src="../../js/employeemaster.js"></script>
+  <script src="../../js/informationrq.js"></script>
   <script>
     lucide.createIcons();
   </script>

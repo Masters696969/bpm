@@ -62,6 +62,10 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
             </a>
+             <a href="informationrq.php" class="submenu-item">
+              <i data-lucide="user-round-pen"></i>
+              <span>Information Request</span>
+            </a>
             <a href="" class="submenu-item">
               <i data-lucide="user-cog"></i>
               <span>Security Settings</span>
@@ -73,39 +77,15 @@ if (!isset($_SESSION['username'])) {
           </div>
         </div>
 
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="finance">
+          <div class="nav-item-group">
+          <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
-              <i data-lucide="banknote"></i>
-              <span>Finance</span>
+              <i data-lucide="circle-pile"></i>
+              <span>Compensation Planning</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-finance">
-            <a href="#" class="submenu-item">
-              <i data-lucide="receipt"></i>
-              <span>Accounting</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="file-text"></i>
-              <span>Invoicing</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="pie-chart"></i>
-              <span>Budget Planning</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="loans">
-            <div class="nav-item-content">
-              <i data-lucide="hand-coins"></i>
-              <span>Loan Management</span>
-            </div>
-            <i data-lucide="chevron-down" class="submenu-icon"></i>
-          </button>
-          <div class="submenu" id="submenu-loans">
+          <div class="submenu" id="submenu-planning">
             <a href="#" class="submenu-item">
               <i data-lucide="file-plus"></i>
               <span>Applications</span>
@@ -125,15 +105,65 @@ if (!isset($_SESSION['username'])) {
           </div>
         </div>
 
-        <a href="#" class="nav-item">
-          <i data-lucide="users-round"></i>
-          <span>Clients</span>
-        </a>
-
-        <a href="#" class="nav-item">
-          <i data-lucide="file-bar-chart"></i>
-          <span>Reports</span>
-        </a>
+           <div class="nav-item-group">
+          <button class="nav-item has-submenu" data-module="payroll">
+            <div class="nav-item-content">
+              <i data-lucide="banknote-arrow-down"></i>
+              <span>Payroll</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-payroll">
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-plus"></i>
+              <span>Applications</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="check-circle"></i>
+              <span>Approvals</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="calendar-clock"></i>
+              <span>Disbursements</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="coins"></i>
+              <span>Collections</span>
+            </a>
+          </div>
+        </div>
+         <span class="nav-section-title">HR 1</span>
+        <div class="nav-item-group">
+          <button class="nav-item has-submenu" data-module="ess">
+            <div class="nav-item-content">
+              <i data-lucide="user-round"></i>
+              <span>Employee Self Service</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-ess">
+             <a href="#" class="submenu-item">
+              <i data-lucide="file-clock"></i>
+              <span>Time Attendance</span>
+            </a>
+            <a href="hr1informationmanagement.php" class="submenu-item">
+              <i data-lucide="user-pen"></i>
+              <span>Information Management</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="tickets-plane"></i>
+              <span>Leave Management</span>
+            </a>
+             <a href="#" class="submenu-item">
+              <i data-lucide="receipt-text"></i>
+              <span>Claim Management</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="ticket-check"></i>
+              <span>View Payslip</span>
+            </a>
+          </div>
+        </div>
       </div>
 
       <div class="nav-section">
