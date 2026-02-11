@@ -47,6 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'email' => $user['Email']
                 ];
                 
+                // Store portal preference
+                if (isset($_POST['login_portal'])) {
+                    $_SESSION['login_portal'] = $_POST['login_portal'];
+                }
+                
                 // Send OTP email
                 $emailSent = sendOtpEmail($user['Email'], $otp, $user['Username']);
                 
@@ -129,15 +134,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Clear pending login
                     unset($_SESSION['pending_login']);
                     
-                    // Redirect based on role
+                    // Redirect based on role and portal preference
                     $roleKey = strtolower($primaryRole);
-                    if ($roleKey === 'administrator') {
-                        $redirectUrl = 'modules/admin/dashboard.php'; // Changed to dashboard for better UX
-                    } elseif ($roleKey === 'hr data specialist' || $roleKey === 'hr manager') {
-                        $redirectUrl = 'modules/corehumancapital/dashboard.php';
+                    $portalInfo = $_SESSION['login_portal'] ?? 'workforce';
+                    
+                    if ($portalInfo === 'ess') {
+                        $redirectUrl = 'modules/ess/dashboard.php';
                     } else {
-                        $redirectUrl = 'dashboard.php';
+                        if ($roleKey === 'administrator') {
+                            $redirectUrl = 'modules/admin/dashboard.php';
+                        } elseif ($roleKey === 'hr data specialist' || $roleKey === 'hr manager') {
+                            $redirectUrl = 'modules/corehumancapital/dashboard.php';
+                        } else {
+                            $redirectUrl = 'dashboard.php';
+                        }
                     }
+                    
+                    // Cleanup portal session
+                    unset($_SESSION['login_portal']);
                     
                     echo json_encode([
                         'success' => true, 

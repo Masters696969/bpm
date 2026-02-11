@@ -30,6 +30,7 @@
 
             <!-- Login Form -->
             <div class="form-wrapper active" id="loginForm">
+                <input type="hidden" id="loginPortal" name="login_portal" value="workforce">
                 <div class="form-header">
                     <h1 class="form-title">Welcome back</h1>
                     <p class="form-subtitle">Sign in to continue to your account</p>
@@ -75,6 +76,10 @@
                         <span>Sign in</span>
                         <i data-lucide="arrow-right" class="btn-icon"></i>
                     </button>
+                    
+                    <div class="form-footer">
+                        <a href="#" id="portalSwitchLink" class="link">Switch to Employee Portal</a>
+                    </div>
                 </form>
             </div>
         </div>
@@ -109,6 +114,6 @@
         </div>
     </div>
 
-    <script src="js/login.js"></script>
+    <script src="js/login.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

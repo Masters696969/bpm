@@ -100,4 +100,3 @@ function sendOtpEmail($toEmail, $otp, $userName = '') {
         return false;
     }
 }
-?>
