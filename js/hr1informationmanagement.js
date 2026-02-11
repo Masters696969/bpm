@@ -13,14 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const requestEditForm = document.getElementById('requestEditForm');
 
     if (btnRequestEdit && requestEditModal) {
-<<<<<<< HEAD
-        btnRequestEdit.addEventListener('click', () => {
-            // Populate modal with current values if available
-            // Note: In a real app we might want to pre-fill with existing read-only values
-            // For now we just open it clean or with placeholders
-            requestEditModal.classList.remove('hidden');
-        });
-=======
         console.log("Attaching click listener to Request Edit button");
         btnRequestEdit.addEventListener('click', () => {
             console.log("Request Edit button clicked");
@@ -28,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     } else {
         console.error("Request Edit button or modal not found:", { btnRequestEdit, requestEditModal });
->>>>>>> f6bd958 (ess)
     }
 
     if (btnCloseRequestModal && requestEditModal) {

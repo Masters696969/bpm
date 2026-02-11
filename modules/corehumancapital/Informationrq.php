@@ -147,7 +147,7 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="file-clock"></i>
               <span>Time Attendance</span>
             </a>
-            <a href="hr1informationmanagement.php" class="submenu-item">
+            <a href="../ess/information_management.php" class="submenu-item">
               <i data-lucide="user-pen"></i>
               <span>Information Management</span>
             </a>
