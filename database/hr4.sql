@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2026 at 02:46 PM
+-- Generation Time: Feb 20, 2026 at 11:25 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -65,11 +65,36 @@ INSERT INTO `department` (`DepartmentID`, `DepartmentName`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `emergency_contacts`
+--
+
+CREATE TABLE `emergency_contacts` (
+  `ContactID` int(11) NOT NULL,
+  `EmployeeID` int(11) NOT NULL,
+  `ContactName` varchar(200) NOT NULL,
+  `Relationship` varchar(50) DEFAULT NULL,
+  `PhoneNumber` varchar(20) NOT NULL,
+  `IsPrimary` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `emergency_contacts`
+--
+
+INSERT INTO `emergency_contacts` (`ContactID`, `EmployeeID`, `ContactName`, `Relationship`, `PhoneNumber`, `IsPrimary`) VALUES
+(1, 1, 'Andrie Suruiz', 'Father', '09223344556', 1),
+(2, 2, 'Hero Baldon', 'Father', '09334455667', 1),
+(3, 3, 'Daniela Magtangob', 'Wife', '09445566778', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `employee`
 --
 
 CREATE TABLE `employee` (
   `EmployeeID` int(11) NOT NULL,
+  `EmployeeCode` varchar(20) DEFAULT NULL,
   `FirstName` varchar(100) NOT NULL,
   `MiddleName` varchar(100) DEFAULT NULL,
   `LastName` varchar(100) NOT NULL,
@@ -84,9 +109,10 @@ CREATE TABLE `employee` (
 -- Dumping data for table `employee`
 --
 
-INSERT INTO `employee` (`EmployeeID`, `FirstName`, `MiddleName`, `LastName`, `DateOfBirth`, `Gender`, `PersonalEmail`, `PhoneNumber`, `PermanentAddress`) VALUES
-(1, 'Joshua', 'Rivero', 'Suruiz', '2004-04-06', 'Male', 'suruizandrie@gmail.com', '09111223344', 'Quezon City'),
-(2, 'Red Gin', 'H', 'Baldon', '2005-04-06', 'Male', 'red@gmail.comm', '09111223344', 'Quezon City');
+INSERT INTO `employee` (`EmployeeID`, `EmployeeCode`, `FirstName`, `MiddleName`, `LastName`, `DateOfBirth`, `Gender`, `PersonalEmail`, `PhoneNumber`, `PermanentAddress`) VALUES
+(1, 'ADM20261001', 'Joshua', 'Rivero', 'Suruiz', '2004-04-06', 'Male', 'suruizandrie@gmail.com', '09111223344', 'Quezon City'),
+(2, 'ADM20261002', 'Red Gin', 'H', 'Baldon', '2005-04-06', 'Male', 'red@gmail.comm', '09111223344', 'Quezon City'),
+(3, 'HRDS20261003', 'Noriel', 'M', 'Dimailig', '2004-05-06', 'Male', 'riverojosh19@gmail.com', '09555223344', 'Quezon City');
 
 -- --------------------------------------------------------
 
@@ -112,7 +138,8 @@ CREATE TABLE `employmentinformation` (
 
 INSERT INTO `employmentinformation` (`EmploymentID`, `EmployeeID`, `DepartmentID`, `PositionID`, `HiringDate`, `WorkEmail`, `EmploymentStatus`, `DigitalResume`, `IDPicture`) VALUES
 (1, 1, 1, 1, '2026-02-08', 'suruiz.joshuabcp@gmail.com', 'Regular', NULL, NULL),
-(2, 2, 2, 1, '2026-02-09', 'suruizandrie@gmail.com', 'Regular', NULL, NULL);
+(2, 2, 2, 1, '2026-02-09', 'suruizandrie@gmail.com', 'Regular', NULL, NULL),
+(3, 3, 2, 2, '2026-02-09', 'riverojosh19@gmail.com', 'Regular', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -123,6 +150,7 @@ INSERT INTO `employmentinformation` (`EmploymentID`, `EmployeeID`, `DepartmentID
 CREATE TABLE `positions` (
   `PositionID` int(11) NOT NULL,
   `PositionName` varchar(100) NOT NULL,
+  `PositionCode` varchar(10) DEFAULT NULL,
   `DepartmentID` int(11) DEFAULT NULL,
   `SalaryGradeID` int(11) DEFAULT NULL,
   `AuthorizedHeadcount` int(11) DEFAULT 1
@@ -132,8 +160,9 @@ CREATE TABLE `positions` (
 -- Dumping data for table `positions`
 --
 
-INSERT INTO `positions` (`PositionID`, `PositionName`, `DepartmentID`, `SalaryGradeID`, `AuthorizedHeadcount`) VALUES
-(1, 'Administrator', 1, 6, 1);
+INSERT INTO `positions` (`PositionID`, `PositionName`, `PositionCode`, `DepartmentID`, `SalaryGradeID`, `AuthorizedHeadcount`) VALUES
+(1, 'Administrator', 'ADM', 1, 6, 1),
+(2, 'HR Data Specialist', 'HRDS', 2, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -154,7 +183,8 @@ CREATE TABLE `roles` (
 INSERT INTO `roles` (`RoleID`, `RoleName`, `Description`) VALUES
 (1, 'Administrator', 'System Administrator with full access'),
 (2, 'HR Manager', 'Oversees the implementation, data integrity, and daily operation of Human Resources Information Systems'),
-(3, 'HR Data Specialist', 'maintains, cleanses, and analyzes employee information');
+(3, 'HR Data Specialist', 'maintains, cleanses, and analyzes employee information'),
+(4, 'HR STAFF', 'provide essential operational support by managing the employee lifecycle, including recruiting, onboarding, payroll administration, and record-keeping');
 
 -- --------------------------------------------------------
 
@@ -205,7 +235,8 @@ CREATE TABLE `taxbenefits` (
 
 INSERT INTO `taxbenefits` (`BenefitID`, `EmployeeID`, `TINNumber`, `SSSNumber`, `PhilHealthNumber`, `PagIBIGNumber`, `TaxStatus`, `VerificationStatus`) VALUES
 (1, 1, '123-456-789-000', '34-1234567-8', '12-050123456-7', '1212-3434-5656', 'S', 'Verified'),
-(2, 2, '321-654-987-000', '54-1234567-8', '14-050123456-7', '1414-3434-5656', 'S', 'Verified');
+(2, 2, '321-654-987-000', '54-1234567-8', '14-050123456-7', '1414-3434-5656', 'S', 'Verified'),
+(3, 3, '321-456-789-000', '65-1234567-8', '21-050123456-7', '1312-3434-5656', 'S', 'Verified');
 
 -- --------------------------------------------------------
 
@@ -227,7 +258,8 @@ CREATE TABLE `useraccountroles` (
 INSERT INTO `useraccountroles` (`UserRoleID`, `AccountID`, `RoleID`, `AssignedAt`) VALUES
 (2, 1, 1, '2026-02-08 16:34:53'),
 (7, 2, 1, '2026-02-09 01:58:28'),
-(8, 3, 3, '2026-02-09 07:19:29');
+(8, 3, 3, '2026-02-09 07:19:29'),
+(9, 4, 4, '2026-02-20 09:26:26');
 
 -- --------------------------------------------------------
 
@@ -254,7 +286,8 @@ CREATE TABLE `useraccounts` (
 INSERT INTO `useraccounts` (`AccountID`, `EmployeeID`, `Username`, `Email`, `PasswordHash`, `OTP_Code`, `OTP_Expiry`, `IsVerified`, `AccountStatus`) VALUES
 (1, 1, 'Joshua Suruiz', 'suruiz.joshuabcp@gmail.com', '$2y$10$MW7j07pxzC/nS6nNW2gt2efiw8hHy0OifrVMDTgnJ5PJVw/1i4uGa', NULL, NULL, 1, 'Active'),
 (2, 2, 'Red Gin Baldon', 'suruizandrie@gmail.com', '$2y$10$Xqmv8TP/YYiax3DseufwDOmKYC4CRdqmf4hd2ASgMcwttHL2HT4.K', NULL, NULL, 1, 'Active'),
-(3, NULL, 'Noriel Dimailig', 'riverojosh19@gmail.com', '$2y$10$h7FqYl3dpl5lxi9M.1MROe7mKykN0xiBfZ5qtbLrnwczzqMQV.6dK', NULL, NULL, 1, 'Active');
+(3, 3, 'Noriel Dimailig', 'riverojosh19@gmail.com', '$2y$10$h7FqYl3dpl5lxi9M.1MROe7mKykN0xiBfZ5qtbLrnwczzqMQV.6dK', NULL, NULL, 1, 'Active'),
+(4, NULL, 'Earl Laurence Alarcon', 'earl@gmail.com', '$2y$10$pNvPeIuYaJbrX1p6J.DC1uBfmkl.9LPpmpgEgLtvlH8n7Y.98Evqy', '367076', '2026-02-20 12:15:50', 1, 'Active');
 
 --
 -- Indexes for dumped tables
@@ -272,6 +305,13 @@ ALTER TABLE `bankdetails`
 --
 ALTER TABLE `department`
   ADD PRIMARY KEY (`DepartmentID`);
+
+--
+-- Indexes for table `emergency_contacts`
+--
+ALTER TABLE `emergency_contacts`
+  ADD PRIMARY KEY (`ContactID`),
+  ADD KEY `EmployeeID` (`EmployeeID`);
 
 --
 -- Indexes for table `employee`
@@ -351,28 +391,34 @@ ALTER TABLE `department`
   MODIFY `DepartmentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `emergency_contacts`
+--
+ALTER TABLE `emergency_contacts`
+  MODIFY `ContactID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `EmployeeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `EmployeeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `employmentinformation`
 --
 ALTER TABLE `employmentinformation`
-  MODIFY `EmploymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `EmploymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `positions`
 --
 ALTER TABLE `positions`
-  MODIFY `PositionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `PositionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `RoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `RoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `salary_grades`
@@ -384,19 +430,19 @@ ALTER TABLE `salary_grades`
 -- AUTO_INCREMENT for table `taxbenefits`
 --
 ALTER TABLE `taxbenefits`
-  MODIFY `BenefitID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `BenefitID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `useraccountroles`
 --
 ALTER TABLE `useraccountroles`
-  MODIFY `UserRoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `UserRoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `useraccounts`
 --
 ALTER TABLE `useraccounts`
-  MODIFY `AccountID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `AccountID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -407,6 +453,12 @@ ALTER TABLE `useraccounts`
 --
 ALTER TABLE `bankdetails`
   ADD CONSTRAINT `bankdetails_ibfk_1` FOREIGN KEY (`EmployeeID`) REFERENCES `employee` (`EmployeeID`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `emergency_contacts`
+--
+ALTER TABLE `emergency_contacts`
+  ADD CONSTRAINT `emergency_contacts_ibfk_1` FOREIGN KEY (`EmployeeID`) REFERENCES `employee` (`EmployeeID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `employmentinformation`

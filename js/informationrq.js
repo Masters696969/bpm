@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchPendingRequests() {
     const tableBody = document.getElementById('requestsTableBody');
     try {
-        const response = await fetch('employee_action.php?action=fetch_pending_requests');
+        const response = await fetch('be_Informationrq.php?action=fetch_pending_requests');
         const result = await response.json();
 
         if (result.success) {
@@ -111,7 +111,7 @@ async function processRequest(requestId, action) {
     if (!result.isConfirmed) return;
 
     try {
-        const response = await fetch('employee_action.php?action=' + action, {
+        const response = await fetch('be_Informationrq.php?action=' + action, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ request_id: requestId })

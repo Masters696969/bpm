@@ -101,8 +101,6 @@ async function fetchMyDetails() {
             renderMyInfo(result.data);
         } else {
             console.warn('Fetch success=false:', result);
-            // Don't show alert for "No employee record" immediately if we want to handle it gracefully, 
-            // but for now let's show it so user knows why it's blank.
             Swal.fire({
                 title: 'Profile Not Found',
                 text: result.message || 'Please contact HR to link your employee record.',
@@ -146,6 +144,25 @@ function renderMyInfo(data) {
         }
     }
 
+    // Display Employee Code
+    const empCodeEl = document.getElementById('employeeCodeDisplay'); // Assuming an element exists or we append it
+    if (statusEl) {
+        // Create a subtitle for Employee Code if not exists
+        let codeContainer = document.querySelector('.employee-code-container');
+        if (!codeContainer) {
+            const headerText = document.querySelector('.header-text');
+            if (headerText) {
+                codeContainer = document.createElement('p');
+                codeContainer.className = 'employee-code-container';
+                codeContainer.style.fontSize = '0.9em';
+                codeContainer.style.color = 'var(--text-secondary)';
+                codeContainer.style.marginTop = '4px';
+                headerText.appendChild(codeContainer);
+            }
+        }
+        if (codeContainer) codeContainer.innerHTML = `<i data-lucide="hash"></i> ${data.EmployeeCode || 'N/A'}`;
+    }
+
     // Populate Form Fields
     setFieldValue('FirstName', data.FirstName);
     setFieldValue('LastName', data.LastName);
@@ -157,7 +174,15 @@ function renderMyInfo(data) {
     setFieldValue('PersonalEmail', data.PersonalEmail);
 
     // Populate Read-Only Fields
-    setFieldValue('EmployeeID', data.EmployeeID);
+    setFieldValue('PersonalEmail', data.PersonalEmail);
+
+    // Emergency Contact
+    setFieldValue('ContactName', data.ContactName);
+    setFieldValue('Relationship', data.Relationship);
+    setFieldValue('EmergencyPhone', data.EmergencyPhone);
+
+    // Populate Read-Only Fields
+    setFieldValue('EmployeeCode', data.EmployeeCode || data.EmployeeID);
     setFieldValue('HiringDate', data.HiringDate);
     setFieldValue('WorkEmail', data.WorkEmail);
     setFieldValue('GradeLevel', data.GradeLevel);

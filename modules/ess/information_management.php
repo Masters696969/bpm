@@ -177,11 +177,11 @@ if (!isset($_SESSION['username'])) {
                             </div>
                             <div class="info-item">
                                 <label>Date of Birth</label>
-                                <input type="date" name="DateOfBirth" id="DateOfBirth" class="form-control">
+                                <input type="date" name="DateOfBirth" id="DateOfBirth" class="form-control" readonly>
                             </div>
                             <div class="info-item">
                                 <label>Gender</label>
-                                <select name="Gender" id="Gender" class="form-control">
+                                <select name="Gender" id="Gender" class="form-control" readonly>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                 </select>
@@ -211,6 +211,28 @@ if (!isset($_SESSION['username'])) {
                         </div>
                     </div>
 
+                    <!-- Emergency Contact (Editable) -->
+                    <div class="resume-section">
+                        <div class="section-header">
+                            <h3><i data-lucide="phone-call"></i> Emergency Contact</h3>
+                            <span class="badge-edit">Editable</span>
+                        </div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Contact Name</label>
+                                <input type="text" name="ContactName" id="ContactName" class="form-control">
+                            </div>
+                            <div class="info-item">
+                                <label>Relationship</label>
+                                <input type="text" name="Relationship" id="Relationship" class="form-control">
+                            </div>
+                            <div class="info-item">
+                                <label>Phone Number</label>
+                                <input type="text" name="EmergencyPhone" id="EmergencyPhone" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Employment Details (Read-Only) -->
                     <div class="resume-section read-only">
                          <div class="section-header">
@@ -219,8 +241,8 @@ if (!isset($_SESSION['username'])) {
                         </div>
                         <div class="info-grid">
                             <div class="info-item">
-                                <label>Employee ID</label>
-                                <input type="text" id="EmployeeID" class="form-control" readonly>
+                                <label>Employee Code</label>
+                                <input type="text" id="EmployeeCode" class="form-control" readonly>
                             </div>
                             <div class="info-item">
                                 <label>Date Hired</label>
@@ -369,7 +391,7 @@ if (!isset($_SESSION['username'])) {
 </main>
   <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/chcdashboard.js"></script>
-  <script src="../../js/hr1informationmanagement.js?v=1.2"></script>
+  <script src="../../js/hr1informationmanagement.js?v=<?php echo time(); ?>"></script>
   <script>
     lucide.createIcons();
   </script>

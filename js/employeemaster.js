@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchEmployees() {
     try {
-        const response = await fetch('employee_action.php?action=fetch_employees');
+        const response = await fetch('be_employeemaster.php?action=fetch_employees');
         const result = await response.json();
 
         if (result.success) {
@@ -35,6 +35,7 @@ function renderTable(employees) {
                     <div class="user-avatar-sm">${emp.FirstName.charAt(0)}${emp.LastName.charAt(0)}</div>
                     <div>
                         <div class="font-bold">${emp.FirstName} ${emp.LastName}</div>
+                        <div class="text-sm text-muted">${emp.EmployeeCode || emp.EmployeeID}</div>
                     </div>
                 </div>
             </td>
@@ -56,7 +57,7 @@ function renderTable(employees) {
 
 async function viewProfile(id) {
     try {
-        const response = await fetch(`employee_action.php?action=get_employee_details&id=${id}`);
+        const response = await fetch(`be_employeemaster.php?action=get_employee_details&id=${id}`);
         const result = await response.json();
 
         if (result.success) {
@@ -138,8 +139,8 @@ function renderResumeModal(data) {
                     <h3><i data-lucide="briefcase"></i> Employment Details</h3>
                     <div class="info-grid">
                         <div class="info-item">
-                            <label>Employee ID</label>
-                            <span>${data.EmployeeID}</span>
+                            <label>Employee Code</label>
+                            <span>${data.EmployeeCode || data.EmployeeID}</span>
                         </div>
                          <div class="info-item">
                             <label>Employment Status</label>
@@ -180,6 +181,27 @@ function renderResumeModal(data) {
                             <label>Account Type</label>
                             <span>${data.AccountType || '-'}</span>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Contact -->
+                <div class="resume-section">
+                    <h3><i data-lucide="phone-call"></i> Emergency Contact</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Contact Name</label>
+                            <span>${data.ContactName || '-'}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Relationship</label>
+                            <span>${data.Relationship || '-'}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Phone Number</label>
+                            <span>${data.EmergencyPhone || '-'}</span>
+                        </div>
+                    </div>
+                </div>
                     </div>
                 </div>
 
@@ -232,7 +254,7 @@ let currentEmployeeData = null;
 async function editEmployee(id) {
     try {
         // Reuse get_employee_details to fetch fresh data
-        const response = await fetch(`employee_action.php?action=get_employee_details&id=${id}`);
+        const response = await fetch(`be_employeemaster.php?action=get_employee_details&id=${id}`);
         const result = await response.json();
 
         if (result.success) {
@@ -374,7 +396,7 @@ async function submitEditForm(event) {
     formData.append('action', 'update_employee');
 
     try {
-        const response = await fetch('employee_action.php', {
+        const response = await fetch('be_employeemaster.php', {
             method: 'POST',
             body: formData
         });

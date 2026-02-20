@@ -145,6 +145,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $redirectUrl = 'modules/admin/dashboard.php';
                         } elseif ($roleKey === 'hr data specialist' || $roleKey === 'hr manager') {
                             $redirectUrl = 'modules/corehumancapital/dashboard.php';
+                        } elseif ($roleKey === 'hr staff') {
+                            $redirectUrl = 'modules/hr1staff/dashboard.php';
                         } else {
                             $redirectUrl = 'dashboard.php';
                         }

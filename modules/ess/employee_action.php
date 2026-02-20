@@ -21,6 +21,7 @@ try {
         // Fetch employees with their position, department, and salary grade
         $sql = "SELECT 
                     e.EmployeeID, 
+                    e.EmployeeCode,
                     e.FirstName, 
                     e.LastName, 
                     ei.EmploymentStatus, 
@@ -56,12 +57,14 @@ try {
         // Fetch all details
         $sql = "SELECT 
                     e.*,
+                    e.EmployeeCode,
                     ei.*,
                     d.DepartmentName,
                     p.PositionName,
                     sg.GradeLevel, sg.MinSalary, sg.MaxSalary,
                     bd.BankName, bd.AccountNumber as BankAccountNumber, bd.AccountType,
-                    tb.TINNumber, tb.SSSNumber, tb.PhilHealthNumber, tb.PagIBIGNumber, tb.TaxStatus
+                    tb.TINNumber, tb.SSSNumber, tb.PhilHealthNumber, tb.PagIBIGNumber, tb.TaxStatus,
+                    ec.ContactName, ec.Relationship, ec.PhoneNumber as EmergencyPhone
                 FROM employee e
                 LEFT JOIN employmentinformation ei ON e.EmployeeID = ei.EmployeeID
                 LEFT JOIN department d ON ei.DepartmentID = d.DepartmentID
@@ -69,6 +72,7 @@ try {
                 LEFT JOIN salary_grades sg ON p.SalaryGradeID = sg.SalaryGradeID
                 LEFT JOIN bankdetails bd ON e.EmployeeID = bd.EmployeeID
                 LEFT JOIN taxbenefits tb ON e.EmployeeID = tb.EmployeeID
+                LEFT JOIN emergency_contacts ec ON e.EmployeeID = ec.EmployeeID AND ec.IsPrimary = 1
                 WHERE e.EmployeeID = ?";
         
         $stmt = $conn->prepare($sql);
@@ -157,12 +161,14 @@ try {
 
         $sql = "SELECT 
                     e.*,
+                    e.EmployeeCode,
                     ei.*,
                     d.DepartmentName,
                     p.PositionName,
                     sg.GradeLevel, sg.MinSalary, sg.MaxSalary,
                     bd.BankName, bd.AccountNumber as BankAccountNumber, bd.AccountType,
-                    tb.TINNumber, tb.SSSNumber, tb.PhilHealthNumber, tb.PagIBIGNumber, tb.TaxStatus
+                    tb.TINNumber, tb.SSSNumber, tb.PhilHealthNumber, tb.PagIBIGNumber, tb.TaxStatus,
+                    ec.ContactName, ec.Relationship, ec.PhoneNumber as EmergencyPhone
                 FROM employee e
                 LEFT JOIN employmentinformation ei ON e.EmployeeID = ei.EmployeeID
                 LEFT JOIN department d ON ei.DepartmentID = d.DepartmentID
@@ -170,6 +176,7 @@ try {
                 LEFT JOIN salary_grades sg ON p.SalaryGradeID = sg.SalaryGradeID
                 LEFT JOIN bankdetails bd ON e.EmployeeID = bd.EmployeeID
                 LEFT JOIN taxbenefits tb ON e.EmployeeID = tb.EmployeeID
+                LEFT JOIN emergency_contacts ec ON e.EmployeeID = ec.EmployeeID AND ec.IsPrimary = 1
                 WHERE e.EmployeeID = ?";
         
         $stmt = $conn->prepare($sql);
