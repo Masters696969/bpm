@@ -25,7 +25,6 @@ try {
                 JOIN employee e ON r.EmployeeID = e.EmployeeID
                 LEFT JOIN employmentinformation ei ON e.EmployeeID = ei.EmployeeID
                 LEFT JOIN department d ON ei.DepartmentID = d.DepartmentID
-                WHERE r.Status = 'Pending'
                 ORDER BY r.RequestDate DESC";
         
         $result = $conn->query($sql);
@@ -39,6 +38,18 @@ try {
         
         echo json_encode(['success' => true, 'data' => $requests]);
         exit;
+
+    } elseif ($action === 'fetch_stats') {
+        $stats = ['Pending' => 0, 'Approved' => 0, 'Rejected' => 0];
+        $result = $conn->query("SELECT Status, COUNT(*) as cnt FROM employee_update_requests GROUP BY Status");
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                if (isset($stats[$row['Status']])) $stats[$row['Status']] = (int)$row['cnt'];
+            }
+        }
+        echo json_encode(['success' => true, 'data' => $stats]);
+        exit;
+
     } elseif ($action === 'approve_request') {
         $input = json_decode(file_get_contents('php://input'), true);
         $requestId = $input['request_id'] ?? null;
@@ -66,91 +77,48 @@ try {
             $employeeId = $request['EmployeeID'];
             $changes = json_decode($request['RequestData'], true);
 
-            $updates = [
-                'bankdetails' => [],
-                'taxbenefits' => []
-            ];
+            $bankFields = [];
+            $taxFields  = [];
 
-            // Map flat JSON keys to table columns
-            // Simple mapping logic based on key names
             foreach ($changes as $key => $value) {
-                if (in_array($key, ['BankName', 'AccountNumber', 'AccountType'])) {
-                    // Map AccountNumber to DB column if different, assume AccountNumber -> AccountNumber
-                    // Check if DB column is AccountNumber or BankAccountNumber. In get details it was AccountNumber as BankAccountNumber
-                    $dbKey = ($key === 'BankAccountNumber' || $key === 'AccountNumber') ? 'AccountNumber' : $key;
-                    $updates['bankdetails'][$dbKey] = $value;
+                if (in_array($key, ['BankName', 'BankAccountNumber', 'AccountType'])) {
+                    $dbKey = ($key === 'BankAccountNumber') ? 'AccountNumber' : $key;
+                    $bankFields[$dbKey] = $value;
                 } elseif (in_array($key, ['TINNumber', 'SSSNumber', 'PhilHealthNumber', 'PagIBIGNumber', 'TaxStatus'])) {
-                    $updates['taxbenefits'][$key] = $value;
-                } else {
-                    // Employee or Employment Info?
-                    // This part depends on which table user can edit. 
-                    // Previous edits were mostly personal info
-                    // Assuming basic Employee table updates for now if names match
-                    // or we ignore if we don't know the table.
-                    // For now, let's assume valid column names for employee/employment tables are passed or handle specific known ones.
-                    
-                    // Actually, let's check what 'request_update' sends.
-                    // It sends fields like 'FirstName', 'LastName', 'Address', etc.
-                    // We need to know which table they belong to.
-                    // For simplicity, let's try to update 'employee' table for common fields
-                    $empFields = ['FirstName', 'LastName', 'MiddleName', 'DateOfBirth', 'Gender', 'PhoneNumber', 'PersonalEmail', 'PermanentAddress', 'CivilStatus'];
-                    
-                    if (in_array($key, $empFields)) {
-                       $stmtUpdate = $conn->prepare("UPDATE employee SET $key = ? WHERE EmployeeID = ?");
-                       $stmtUpdate->bind_param("si", $value, $employeeId);
-                       $stmtUpdate->execute();
-                    }
+                    $taxFields[$key] = $value;
+                } elseif (in_array($key, ['FirstName', 'LastName', 'MiddleName', 'DateOfBirth', 'Gender', 'PhoneNumber', 'PersonalEmail', 'PermanentAddress', 'CivilStatus'])) {
+                    $stmtUpdate = $conn->prepare("UPDATE employee SET $key = ? WHERE EmployeeID = ?");
+                    $stmtUpdate->bind_param("si", $value, $employeeId);
+                    $stmtUpdate->execute();
                 }
             }
             
-            // Apply grouped updates
-            if (!empty($updates['bankdetails'])) {
-                $setParts = [];
-                $params = [];
-                $types = "";
-                foreach ($updates['bankdetails'] as $col => $val) {
-                    $setParts[] = "$col = ?";
-                    $params[] = $val;
-                    $types .= "s";
-                }
-                if (!empty($setParts)) {
-                     // Check if record exists
-                    $check = $conn->query("SELECT 1 FROM bankdetails WHERE EmployeeID = $employeeId");
-                    if ($check->num_rows > 0) {
-                        $sql = "UPDATE bankdetails SET " . implode(', ', $setParts) . " WHERE EmployeeID = ?";
-                        $params[] = $employeeId;
-                        $types .= "i";
-                        $stmt = $conn->prepare($sql);
-                        $stmt->bind_param($types, ...$params);
-                        $stmt->execute();
-                    } else {
-                         // Insert - requires all mandatory fields or we update what we have? 
-                         // Usually updates happen on existing. If new, we might need INSERT.
-                         // For now, let's stick to update as per logic.
-                    }
-                }
+            // Upsert bankdetails
+            if (!empty($bankFields)) {
+                $cols         = array_keys($bankFields);
+                $vals         = array_values($bankFields);
+                $types        = str_repeat('s', count($vals));
+                $setCols      = implode(', ', array_map(fn($c) => "`$c` = ?", $cols));
+                $insertCols   = '`EmployeeID`, `' . implode('`, `', $cols) . '`';
+                $placeholders = '?, ' . implode(', ', array_fill(0, count($cols), '?'));
+                $sql  = "INSERT INTO bankdetails ($insertCols) VALUES ($placeholders) ON DUPLICATE KEY UPDATE $setCols";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('i' . $types . $types, ...array_merge([$employeeId], $vals, $vals));
+                $stmt->execute();
             }
 
-             if (!empty($updates['taxbenefits'])) {
-                $setParts = [];
-                $params = [];
-                $types = "";
-                foreach ($updates['taxbenefits'] as $col => $val) {
-                    $setParts[] = "$col = ?";
-                    $params[] = $val;
-                    $types .= "s";
-                }
-                if (!empty($setParts)) {
-                    $check = $conn->query("SELECT 1 FROM taxbenefits WHERE EmployeeID = $employeeId");
-                    if ($check->num_rows > 0) {
-                         $sql = "UPDATE taxbenefits SET " . implode(', ', $setParts) . " WHERE EmployeeID = ?";
-                         $params[] = $employeeId;
-                         $types .= "i";
-                         $stmt = $conn->prepare($sql);
-                         $stmt->bind_param($types, ...$params);
-                         $stmt->execute();
-                    }
-                }
+            // Upsert taxbenefits
+            if (!empty($taxFields)) {
+                $cols         = array_keys($taxFields);
+                $vals         = array_values($taxFields);
+                $types        = str_repeat('s', count($vals));
+                $setCols      = implode(', ', array_map(fn($c) => "`$c` = ?", $cols));
+                $insertCols   = '`EmployeeID`, `' . implode('`, `', $cols) . '`';
+                $placeholders = '?, ' . implode(', ', array_fill(0, count($cols), '?'));
+                $sql  = "INSERT INTO taxbenefits ($insertCols) VALUES ($placeholders) ON DUPLICATE KEY UPDATE $setCols";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('i' . $types . $types, ...array_merge([$employeeId], $vals, $vals));
+                $stmt->execute();
             }
 
             // Update Request Status

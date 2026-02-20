@@ -236,9 +236,11 @@ try {
     elseif ($action === 'request_update') {
         $input = json_decode(file_get_contents('php://input'), true);
         
-        // Basic validation
-        if (!isset($input['BankName']) && !isset($input['TINNumber'])) { 
-             echo json_encode(['success' => false, 'message' => 'Invalid data']);
+        // Filter out empty values
+        $filteredInput = array_filter($input ?? [], function($v) { return $v !== '' && $v !== null; });
+        
+        if (empty($filteredInput)) { 
+             echo json_encode(['success' => false, 'message' => 'Please fill in at least one field to request a change.']);
              exit;
         }
 
@@ -255,9 +257,13 @@ try {
         }
         
         $employeeId = $empRow['EmployeeID'];
-        $requestData = json_encode($input);
+        $requestData = json_encode($filteredInput);
         
         $stmt = $conn->prepare("INSERT INTO employee_update_requests (EmployeeID, RequestType, RequestData, Status, RequestDate) VALUES (?, 'Update Information', ?, 'Pending', NOW())");
+        if (!$stmt) {
+            echo json_encode(['success' => false, 'message' => 'Database error: ' . $conn->error]);
+            exit;
+        }
         $stmt->bind_param("is", $employeeId, $requestData);
         
         if ($stmt->execute()) {
@@ -312,38 +318,42 @@ try {
 
             // 2. Apply Changes to respective tables
             // Mapping fields to tables/columns
-            $updates = [
-                'bankdetails' => [],
-                'taxbenefits' => []
-            ];
+            if (isset($changes['BankName']))          $bankFields['BankName']      = $changes['BankName'];
+            if (isset($changes['BankAccountNumber'])) $bankFields['AccountNumber'] = $changes['BankAccountNumber'];
+            if (isset($changes['AccountType']))       $bankFields['AccountType']   = $changes['AccountType'];
 
-            if (isset($changes['BankName'])) $updates['bankdetails']['BankName'] = $changes['BankName'];
-            if (isset($changes['BankAccountNumber'])) $updates['bankdetails']['AccountNumber'] = $changes['BankAccountNumber'];
-            
-            if (isset($changes['TINNumber'])) $updates['taxbenefits']['TINNumber'] = $changes['TINNumber'];
-            if (isset($changes['SSSNumber'])) $updates['taxbenefits']['SSSNumber'] = $changes['SSSNumber'];
-            if (isset($changes['PhilHealthNumber'])) $updates['taxbenefits']['PhilHealthNumber'] = $changes['PhilHealthNumber'];
-            if (isset($changes['PagIBIGNumber'])) $updates['taxbenefits']['PagIBIGNumber'] = $changes['PagIBIGNumber'];
+            $taxFields  = [];
+            if (isset($changes['TINNumber']))         $taxFields['TINNumber']        = $changes['TINNumber'];
+            if (isset($changes['SSSNumber']))         $taxFields['SSSNumber']        = $changes['SSSNumber'];
+            if (isset($changes['PhilHealthNumber']))  $taxFields['PhilHealthNumber'] = $changes['PhilHealthNumber'];
+            if (isset($changes['PagIBIGNumber']))     $taxFields['PagIBIGNumber']    = $changes['PagIBIGNumber'];
 
-            // Execute Updates
-            foreach ($updates as $table => $fields) {
-                if (!empty($fields)) {
-                    $setClause = [];
-                    $types = "";
-                    $values = [];
-                    foreach ($fields as $col => $val) {
-                        $setClause[] = "$col = ?";
-                        $types .= "s";
-                        $values[] = $val;
-                    }
-                    $sql = "UPDATE $table SET " . implode(", ", $setClause) . " WHERE EmployeeID = ?";
-                    $types .= "i";
-                    $values[] = $employeeId;
-                    
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bind_param($types, ...$values);
-                    $stmt->execute();
-                }
+            // 3a. Upsert bankdetails
+            if (!empty($bankFields)) {
+                $cols  = array_keys($bankFields);
+                $vals  = array_values($bankFields);
+                $types = str_repeat('s', count($vals));
+                $setCols      = implode(', ', array_map(fn($c) => "`$c` = ?", $cols));
+                $insertCols   = '`EmployeeID`, `' . implode('`, `', $cols) . '`';
+                $placeholders = '?, ' . implode(', ', array_fill(0, count($cols), '?'));
+                $sql  = "INSERT INTO bankdetails ($insertCols) VALUES ($placeholders) ON DUPLICATE KEY UPDATE $setCols";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('i' . $types . $types, ...array_merge([$employeeId], $vals, $vals));
+                $stmt->execute();
+            }
+
+            // 3b. Upsert taxbenefits
+            if (!empty($taxFields)) {
+                $cols  = array_keys($taxFields);
+                $vals  = array_values($taxFields);
+                $types = str_repeat('s', count($vals));
+                $setCols      = implode(', ', array_map(fn($c) => "`$c` = ?", $cols));
+                $insertCols   = '`EmployeeID`, `' . implode('`, `', $cols) . '`';
+                $placeholders = '?, ' . implode(', ', array_fill(0, count($cols), '?'));
+                $sql  = "INSERT INTO taxbenefits ($insertCols) VALUES ($placeholders) ON DUPLICATE KEY UPDATE $setCols";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('i' . $types . $types, ...array_merge([$employeeId], $vals, $vals));
+                $stmt->execute();
             }
 
             // 3. Update Request Status

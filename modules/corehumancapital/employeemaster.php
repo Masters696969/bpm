@@ -196,29 +196,74 @@ if (!isset($_SESSION['user_id'])) {
       </div>
     </header>
 
-      <div class="content-card">
-        <div class="card-header">
-          <h3>Employee List</h3>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="users-table" id="employeeTable">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Position</th>
-                  <th>Department</th>
-                  <th>Status</th>
-                  <th>Salary Grade</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Data will be populated by JS -->
-              </tbody>
-            </table>
+      <!-- Stats Strip -->
+      <div class="em-content-wrapper">
+
+        <div class="stats-strip">
+          <div class="stat-card">
+            <div class="stat-icon em-total">
+              <i data-lucide="users"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="statTotal">—</span>
+              <span class="stat-label">Total Employees</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon em-regular">
+              <i data-lucide="user-check"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="statRegular">—</span>
+              <span class="stat-label">Regular</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon em-probationary">
+              <i data-lucide="hourglass"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="statProbationary">—</span>
+              <span class="stat-label">Probationary</span>
+            </div>
           </div>
         </div>
+
+        <!-- Employee Table -->
+        <div class="content-card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <h3 class="card-title">Employee Master Files</h3>
+              <p class="card-subtitle">View and manage all employee records.</p>
+            </div>
+            <div class="card-header-right">
+              <label class="table-search">
+                <i data-lucide="search"></i>
+                <input type="text" id="empTableSearch" placeholder="Search employees…">
+              </label>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div class="table-responsive">
+              <table class="users-table" id="employeeTable">
+                <thead>
+                  <tr>
+                    <th>Employee</th>
+                    <th>Position</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Salary Grade</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Data will be populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- Employee Details Modal -->
@@ -235,12 +280,20 @@ if (!isset($_SESSION['user_id'])) {
           </div>
         </div>
       </div>
- </main>
+
+  </main>
   <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/chcdashboard.js"></script>
   <script src="../../js/employeemaster.js"></script>
   <script>
     lucide.createIcons();
+    // Wire up inline search
+    document.getElementById('empTableSearch')?.addEventListener('input', function() {
+      const q = this.value.toLowerCase();
+      document.querySelectorAll('#employeeTable tbody tr').forEach(r => {
+        r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
   </script>
   
 </body>

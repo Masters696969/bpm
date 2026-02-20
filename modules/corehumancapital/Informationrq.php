@@ -198,30 +198,72 @@ if (!isset($_SESSION['username'])) {
     </header>
 
     <div class="content-wrapper">
+
+        <!-- Stats Strip -->
+        <div class="stats-strip">
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i data-lucide="clock"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="statPending">—</span>
+                    <span class="stat-label">Pending Requests</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon approved">
+                    <i data-lucide="check-circle-2"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="statApproved">—</span>
+                    <span class="stat-label">Approved</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon rejected">
+                    <i data-lucide="x-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="statRejected">—</span>
+                    <span class="stat-label">Rejected</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requests Table -->
         <div class="content-card">
             <div class="card-header">
-                <div>
-                    <h3 class="card-title">Pending Information Updates</h3>
+                <div class="card-header-left">
+                    <h3 class="card-title">Information Update Requests</h3>
                     <p class="card-subtitle">Review and approve employee information changes.</p>
+                </div>
+                <div class="card-header-right">
+                    <label class="table-search">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="tableSearch" placeholder="Search employee…">
+                    </label>
                 </div>
             </div>
             <div class="card-body">
                 <div class="data-table">
-                    <table id="requestsTable" style="width: 100%; border-collapse: collapse;">
+                    <table id="requestsTable">
                         <thead>
-                            <tr style="text-align: left; border-bottom: 1px solid var(--border-color);">
-                                <th style="padding: 12px;">Employee</th>
-                                <th style="padding: 12px;">Department</th>
-                                <th style="padding: 12px;">Request Type</th>
-                                <th style="padding: 12px;">Date Requested</th>
-                                <th style="padding: 12px;">Status</th>
-                                <th style="padding: 12px;">Actions</th>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Request Type</th>
+                                <th>Date Submitted</th>
+                                <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="requestsTableBody">
-                            <!-- Rows will be populated by JS -->
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 20px;">Loading requests...</td>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <i data-lucide="loader-2"></i>
+                                        <p>Loading requests…</p>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

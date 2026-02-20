@@ -10,6 +10,13 @@ async function fetchEmployees() {
 
         if (result.success) {
             renderTable(result.data);
+            // Update stat cards
+            const emps = result.data;
+            const el = id => document.getElementById(id);
+            if (el('statTotal')) el('statTotal').textContent = emps.length;
+            if (el('statRegular')) el('statRegular').textContent = emps.filter(e => e.EmploymentStatus === 'Regular').length;
+            if (el('statProbationary')) el('statProbationary').textContent = emps.filter(e => e.EmploymentStatus === 'Probationary').length;
+
         } else {
             console.error('Failed to fetch employees:', result.message);
         }
@@ -28,25 +35,26 @@ function renderTable(employees) {
     }
 
     employees.forEach(emp => {
+        const initials = emp.FirstName.charAt(0) + emp.LastName.charAt(0);
         const tr = document.createElement('tr');
+        tr.className = 'emp-row';
         tr.innerHTML = `
             <td>
-                <div class="user-info">
-                    <div class="user-avatar-sm">${emp.FirstName.charAt(0)}${emp.LastName.charAt(0)}</div>
+                <div class="emp-cell">
+                    <div class="emp-avatar">${initials.toUpperCase()}</div>
                     <div>
-                        <div class="font-bold">${emp.FirstName} ${emp.LastName}</div>
-                        <div class="text-sm text-muted">${emp.EmployeeCode || emp.EmployeeID}</div>
+                        <div class="emp-name">${emp.FirstName} ${emp.LastName}</div>
+                        <div class="emp-dept">${emp.EmployeeCode || emp.EmployeeID}</div>
                     </div>
                 </div>
             </td>
-            <td>${emp.PositionName || '-'}</td>
-            <td>${emp.DepartmentName || '-'}</td>
+            <td style="font-size:13px;color:var(--text-secondary)">${emp.PositionName || '—'}</td>
+            <td style="font-size:13px;color:var(--text-secondary)">${emp.DepartmentName || '—'}</td>
             <td><span class="badge badge-${getStatusClass(emp.EmploymentStatus)}">${emp.EmploymentStatus || 'Unknown'}</span></td>
-            <td>${emp.GradeLevel || '-'}</td>
+            <td style="font-size:13px;color:var(--text-secondary)">${emp.GradeLevel || '—'}</td>
             <td>
-                <button class="btn btn-sm btn-file" onclick="viewProfile(${emp.EmployeeID})">
-                    <i data-lucide="file-user"></i>
-                    Employee File
+                <button class="btn-review" onclick="viewProfile(${emp.EmployeeID})">
+                    <i data-lucide="file-user"></i> View File
                 </button>
             </td>
         `;
@@ -63,6 +71,9 @@ async function viewProfile(id) {
         if (result.success) {
             renderResumeModal(result.data);
             const modal = document.getElementById('employeeModal');
+            // Restore full-width for the view modal
+            const dlg = modal.querySelector('.modal-dialog');
+            if (dlg) dlg.classList.remove('ep-edit-dialog');
             modal.style.display = 'flex';
             modal.classList.add('show');
         } else {
@@ -81,154 +92,115 @@ function renderResumeModal(data) {
     // Clear header title content if we want a cleaner look, or keep it
     modalTitle.textContent = ""; // Clearing it because we'll have a close button and header inside
 
+    const initials = data.FirstName.charAt(0) + data.LastName.charAt(0);
+    const statusClass = getStatusClass(data.EmploymentStatus);
+    const statusColors = { active: '#059669', unverified: '#d97706', inactive: '#dc2626' };
+    const statusColor = statusColors[statusClass] || '#6b7280';
+
+    modalBody.style.padding = '0';
+
     modalBody.innerHTML = `
-        <div class="resume-container">
-        <div class="resume-container">
-            <div class="resume-header">
-                <div class="header-content">
-                    <div class="profile-photo-wrapper" onclick="document.getElementById('profileUpload').click()">
-                        <div class="profile-photo">
-                            ${data.IDPicture ? `<img src="${data.IDPicture}" alt="Profile">` : `<div class="avatar-placeholder">${data.FirstName.charAt(0)}${data.LastName.charAt(0)}</div>`}
-                        </div>
-                        <div class="profile-edit-overlay">
-                            <i data-lucide="camera"></i>
-                        </div>
-                        <input type="file" id="profileUpload" style="display: none;" accept="image/*" onchange="alert('Upload functionality to be implemented')">
-                    </div>
-                    <div class="header-text">
-                        <h2>${data.FirstName} ${data.MiddleName ? data.MiddleName + ' ' : ''}${data.LastName}</h2>
-                        <p class="position">${data.PositionName || 'No Position'}</p>
-                        <p class="department"><i data-lucide="building-2"></i> ${data.DepartmentName || 'No Department'}</p>
+    <div class="ep-container">
+
+        <!-- Hero Banner -->
+        <div class="ep-hero">
+            <button class="ep-close" onclick="closeModal()" title="Close">&times;</button>
+            <div class="ep-hero-content">
+                <div class="ep-avatar-wrap">
+                    <div class="ep-avatar">${initials.toUpperCase()}</div>
+                    <button class="ep-avatar-edit" onclick="document.getElementById('profileUpload').click()" title="Change photo">
+                        <i data-lucide="camera"></i>
+                    </button>
+                    <input type="file" id="profileUpload" style="display:none" accept="image/*">
+                </div>
+                <div class="ep-hero-info">
+                    <h2 class="ep-name">${data.FirstName} ${data.MiddleName ? data.MiddleName + ' ' : ''}${data.LastName}</h2>
+                    <p class="ep-position">${data.PositionName || 'No Position'}</p>
+                    <div class="ep-meta">
+                        <span class="ep-meta-chip"><i data-lucide="building-2"></i>${data.DepartmentName || 'No Department'}</span>
+                        <span class="ep-meta-chip"><i data-lucide="hash"></i>${data.EmployeeCode || data.EmployeeID}</span>
+                        <span class="ep-status-badge" style="background:${statusColor}20;color:${statusColor};border:1px solid ${statusColor}40">
+                          <span class="ep-status-dot" style="background:${statusColor}"></span>${data.EmploymentStatus || '—'}
+                        </span>
                     </div>
                 </div>
-                <button class="btn btn-sm btn-edit" onclick="editEmployee(${data.EmployeeID})">
+                <button class="ep-edit-btn" onclick="editEmployee(${data.EmployeeID})">
                     <i data-lucide="pencil"></i> Edit Profile
                 </button>
             </div>
+        </div>
 
-            <div class="resume-grid">
-                <!-- Personal Information -->
-                <div class="resume-section">
-                    <h3><i data-lucide="user"></i> Personal Information</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>Date of Birth</label>
-                            <span>${data.DateOfBirth || '-'}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Gender</label>
-                            <span>${data.Gender || '-'}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Phone</label>
-                            <span>${data.PhoneNumber || '-'}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Personal Email</label>
-                            <span>${data.PersonalEmail || '-'}</span>
-                        </div>
-                        <div class="info-item full-width">
-                            <label>Permanent Address</label>
-                            <span>${data.PermanentAddress || '-'}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Employment Details -->
-                <div class="resume-section">
-                    <h3><i data-lucide="briefcase"></i> Employment Details</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>Employee Code</label>
-                            <span>${data.EmployeeCode || data.EmployeeID}</span>
-                        </div>
-                         <div class="info-item">
-                            <label>Employment Status</label>
-                            <span class="badge badge-${getStatusClass(data.EmploymentStatus)}">${data.EmploymentStatus || '-'}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Date Hired</label>
-                            <span>${data.HiringDate || '-'}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Work Email</label>
-                            <span>${data.WorkEmail || '-'}</span>
-                        </div>
-                         <div class="info-item full-width">
-                            <label>Digital Resume</label>
-                            <span>${data.DigitalResume ? `<a href="${data.DigitalResume}" target="_blank" class="file-link"><i data-lucide="file-text"></i> View Resume</a>` : '<span class="text-muted">No resume uploaded</span>'}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Compensation & Benefits -->
-                <div class="resume-section">
-                    <h3><i data-lucide="wallet"></i> Compensation & Benefits</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>Salary Grade</label>
-                            <span>${data.GradeLevel || '-'} (${data.MinSalary ? formatCurrency(data.MinSalary) : ''} - ${data.MaxSalary ? formatCurrency(data.MaxSalary) : ''})</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Bank Name</label>
-                            <span>${data.BankName || '-'}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Account Number</label>
-                            <span>${data.BankAccountNumber || '-'}</span>
-                        </div>
-                         <div class="info-item">
-                            <label>Account Type</label>
-                            <span>${data.AccountType || '-'}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Emergency Contact -->
-                <div class="resume-section">
-                    <h3><i data-lucide="phone-call"></i> Emergency Contact</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>Contact Name</label>
-                            <span>${data.ContactName || '-'}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Relationship</label>
-                            <span>${data.Relationship || '-'}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Phone Number</label>
-                            <span>${data.EmergencyPhone || '-'}</span>
-                        </div>
-                    </div>
-                </div>
-                    </div>
-                </div>
-
-                <!-- Government & Tax -->
-                <div class="resume-section">
-                    <h3><i data-lucide="landmark"></i> Government Numbers</h3>
-                    <div class="info-grid">
-                         <div class="info-item">
-                            <label>TIN</label>
-                            <span>${data.TINNumber || '-'}</span>
-                        </div>
-                         <div class="info-item">
-                            <label>SSS</label>
-                            <span>${data.SSSNumber || '-'}</span>
-                        </div>
-                         <div class="info-item">
-                            <label>PhilHealth</label>
-                            <span>${data.PhilHealthNumber || '-'}</span>
-                        </div>
-                         <div class="info-item">
-                            <label>Pag-IBIG</label>
-                            <span>${data.PagIBIGNumber || '-'}</span>
-                        </div>
-                    </div>
-                </div>
+        <!-- Quick Stats Bar -->
+        <div class="ep-stats-bar">
+            <div class="ep-stat">
+                <i data-lucide="calendar"></i>
+                <div><span class="ep-stat-val">${data.HiringDate ? new Date(data.HiringDate).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}</span><span class="ep-stat-lbl">Date Hired</span></div>
+            </div>
+            <div class="ep-stat-divider"></div>
+            <div class="ep-stat">
+                <i data-lucide="layers"></i>
+                <div><span class="ep-stat-val">${data.GradeLevel || '—'}</span><span class="ep-stat-lbl">Salary Grade</span></div>
+            </div>
+            <div class="ep-stat-divider"></div>
+            <div class="ep-stat">
+                <i data-lucide="mail"></i>
+                <div><span class="ep-stat-val" style="font-size:12px">${data.WorkEmail || '—'}</span><span class="ep-stat-lbl">Work Email</span></div>
+            </div>
+            <div class="ep-stat-divider"></div>
+            <div class="ep-stat">
+                <i data-lucide="phone"></i>
+                <div><span class="ep-stat-val">${data.PhoneNumber || '—'}</span><span class="ep-stat-lbl">Phone</span></div>
             </div>
         </div>
+
+        <!-- Section Grid -->
+        <div class="ep-body">
+
+            <!-- Personal Information -->
+            <div class="ep-section">
+                <div class="ep-section-hdr ep-hdr-blue"><i data-lucide="user"></i> Personal Information</div>
+                <div class="ep-fields">
+                    <div class="ep-field"><label>Date of Birth</label><span>${data.DateOfBirth || '—'}</span></div>
+                    <div class="ep-field"><label>Gender</label><span>${data.Gender || '—'}</span></div>
+                    <div class="ep-field"><label>Personal Email</label><span>${data.PersonalEmail || '—'}</span></div>
+                    <div class="ep-field full"><label>Permanent Address</label><span>${data.PermanentAddress || '—'}</span></div>
+                </div>
+            </div>
+
+            <!-- Government Numbers -->
+            <div class="ep-section">
+                <div class="ep-section-hdr ep-hdr-purple"><i data-lucide="landmark"></i> Government Numbers</div>
+                <div class="ep-fields">
+                    <div class="ep-field"><label>TIN</label><span>${data.TINNumber || '—'}</span></div>
+                    <div class="ep-field"><label>SSS</label><span>${data.SSSNumber || '—'}</span></div>
+                    <div class="ep-field"><label>PhilHealth</label><span>${data.PhilHealthNumber || '—'}</span></div>
+                    <div class="ep-field"><label>Pag-IBIG</label><span>${data.PagIBIGNumber || '—'}</span></div>
+                </div>
+            </div>
+
+            <!-- Bank & Compensation -->
+            <div class="ep-section">
+                <div class="ep-section-hdr ep-hdr-green"><i data-lucide="landmark"></i> Bank & Compensation</div>
+                <div class="ep-fields">
+                    <div class="ep-field"><label>Bank Name</label><span>${data.BankName || '—'}</span></div>
+                    <div class="ep-field"><label>Account Number</label><span>${data.BankAccountNumber || '—'}</span></div>
+                    <div class="ep-field"><label>Account Type</label><span>${data.AccountType || '—'}</span></div>
+                    <div class="ep-field"><label>Salary Range</label><span>${data.MinSalary ? formatCurrency(data.MinSalary) + ' – ' + formatCurrency(data.MaxSalary) : '—'}</span></div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="ep-section">
+                <div class="ep-section-hdr ep-hdr-red"><i data-lucide="heart-pulse"></i> Emergency Contact</div>
+                <div class="ep-fields">
+                    <div class="ep-field"><label>Contact Name</label><span>${data.ContactName || '—'}</span></div>
+                    <div class="ep-field"><label>Relationship</label><span>${data.Relationship || '—'}</span></div>
+                    <div class="ep-field full"><label>Phone</label><span>${data.EmergencyPhone || '—'}</span></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
     `;
     lucide.createIcons();
 }
@@ -253,6 +225,10 @@ let currentEmployeeData = null;
 
 async function editEmployee(id) {
     try {
+        // Switch modal to compact edit width
+        const dlg = document.querySelector('#employeeModal .modal-dialog');
+        if (dlg) dlg.classList.add('ep-edit-dialog');
+
         // Reuse get_employee_details to fetch fresh data
         const response = await fetch(`be_employeemaster.php?action=get_employee_details&id=${id}`);
         const result = await response.json();
@@ -271,121 +247,131 @@ async function editEmployee(id) {
 
 function renderEditForm(data) {
     const modalBody = document.getElementById('modalBody');
+    const initials = data.FirstName.charAt(0) + data.LastName.charAt(0);
+    const statusClass = getStatusClass(data.EmploymentStatus);
+    const statusColors = { active: '#059669', unverified: '#d97706', inactive: '#dc2626' };
+    const statusColor = statusColors[statusClass] || '#6b7280';
+
+    modalBody.style.padding = '0';
 
     modalBody.innerHTML = `
-        <div class="resume-container">
-            <div class="resume-header" style="padding: 20px; justify-content: flex-start; gap: 20px;">
-                <button class="btn btn-sm btn-file" onclick="viewProfile(${data.EmployeeID})">
-                    <i data-lucide="arrow-left"></i> Back
-                </button>
-                <h2 style="margin: 0; font-size: 20px;">Edit Profile: ${data.FirstName} ${data.LastName}</h2>
-            </div>
+    <div class="ep-container ep-edit">
 
-            <form id="editEmployeeForm" onsubmit="submitEditForm(event)">
-                <input type="hidden" name="EmployeeID" value="${data.EmployeeID}">
-                <input type="hidden" name="EmploymentID" value="${data.EmploymentID}">
-                
-                <div class="resume-grid">
-                    <!-- Personal Info Edit -->
-                    <div class="resume-section">
-                        <h3><i data-lucide="user"></i> Personal Information</h3>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label>First Name</label>
-                                <input type="text" name="FirstName" class="form-control" value="${data.FirstName}" required>
-                            </div>
-                            <div class="info-item">
-                                <label>Last Name</label>
-                                <input type="text" name="LastName" class="form-control" value="${data.LastName}" required>
-                            </div>
-                             <div class="info-item">
-                                <label>Middle Name</label>
-                                <input type="text" name="MiddleName" class="form-control" value="${data.MiddleName || ''}">
-                            </div>
-                            <div class="info-item">
-                                <label>Date of Birth</label>
-                                <input type="date" name="DateOfBirth" class="form-control" value="${data.DateOfBirth || ''}">
-                            </div>
-                            <div class="info-item">
-                                <label>Gender</label>
-                                <select name="Gender" class="form-control">
-                                    <option value="Male" ${data.Gender === 'Male' ? 'selected' : ''}>Male</option>
-                                    <option value="Female" ${data.Gender === 'Female' ? 'selected' : ''}>Female</option>
-                                </select>
-                            </div>
-                            <div class="info-item">
-                                <label>Phone</label>
-                                <input type="text" name="PhoneNumber" class="form-control" value="${data.PhoneNumber || ''}">
-                            </div>
-                             <div class="info-item full-width">
-                                <label>Personal Email</label>
-                                <input type="email" name="PersonalEmail" class="form-control" value="${data.PersonalEmail || ''}">
-                            </div>
-                            <div class="info-item full-width">
-                                <label>Permanent Address</label>
-                                <input type="text" name="PermanentAddress" class="form-control" value="${data.PermanentAddress || ''}">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Employment Details Edit -->
-                    <div class="resume-section">
-                        <h3><i data-lucide="briefcase"></i> Employment Details</h3>
-                        <div class="info-grid">
-                             <div class="info-item">
-                                <label>Date Hired</label>
-                                <input type="date" name="HiringDate" class="form-control" value="${data.HiringDate || ''}">
-                            </div>
-                            <div class="info-item">
-                                <label>Work Email</label>
-                                <input type="email" name="WorkEmail" class="form-control" value="${data.WorkEmail || ''}">
-                            </div>
-                             <div class="info-item">
-                                <label>Employment Status</label>
-                                <select name="EmploymentStatus" class="form-control">
-                                    <option value="Regular" ${data.EmploymentStatus === 'Regular' ? 'selected' : ''}>Regular</option>
-                                    <option value="Probationary" ${data.EmploymentStatus === 'Probationary' ? 'selected' : ''}>Probationary</option>
-                                    <option value="Resigned" ${data.EmploymentStatus === 'Resigned' ? 'selected' : ''}>Resigned</option>
-                                    <option value="Terminated" ${data.EmploymentStatus === 'Terminated' ? 'selected' : ''}>Terminated</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                
-                    <!-- Government Numbers Edit -->
-                    <div class="resume-section">
-                        <h3><i data-lucide="landmark"></i> Government Numbers</h3>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label>TIN</label>
-                                <input type="text" name="TINNumber" class="form-control" value="${data.TINNumber || ''}">
-                            </div>
-                            <div class="info-item">
-                                <label>SSS</label>
-                                <input type="text" name="SSSNumber" class="form-control" value="${data.SSSNumber || ''}">
-                            </div>
-                            <div class="info-item">
-                                <label>PhilHealth</label>
-                                <input type="text" name="PhilHealthNumber" class="form-control" value="${data.PhilHealthNumber || ''}">
-                            </div>
-                            <div class="info-item">
-                                <label>Pag-IBIG</label>
-                                <input type="text" name="PagIBIGNumber" class="form-control" value="${data.PagIBIGNumber || ''}">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="resume-section" style="justify-content: center; align-items: center;">
-                         <button type="submit" class="btn btn-edit" style="width: 100%; justify-content: center; background: var(--brand-green); color: white;">
-                            <i data-lucide="save"></i> Save Changes
-                        </button>
+        <!-- Hero Banner — edit variant -->
+        <div class="ep-hero">
+            <button class="ep-close" onclick="closeModal()" title="Close">&times;</button>
+            <div class="ep-hero-content">
+                <div class="ep-avatar-wrap">
+                    <div class="ep-avatar">${initials.toUpperCase()}</div>
+                </div>
+                <div class="ep-hero-info">
+                    <h2 class="ep-name">Edit Profile</h2>
+                    <p class="ep-position">${data.FirstName} ${data.LastName}</p>
+                    <div class="ep-meta">
+                        <span class="ep-meta-chip"><i data-lucide="building-2"></i>${data.DepartmentName || 'No Department'}</span>
+                        <span class="ep-meta-chip"><i data-lucide="hash"></i>${data.EmployeeCode || data.EmployeeID}</span>
+                        <span class="ep-status-badge" style="background:${statusColor}20;color:${statusColor};border:1px solid ${statusColor}40">
+                          <span class="ep-status-dot" style="background:${statusColor}"></span>${data.EmploymentStatus || '—'}
+                        </span>
                     </div>
                 </div>
+                <button class="ep-edit-btn" onclick="viewProfile(${data.EmployeeID})">
+                    <i data-lucide="arrow-left"></i> Back to Profile
+                </button>
+            </div>
+        </div>
+
+        <!-- Edit Form Body -->
+        <div class="ep-body">
+            <form id="editEmployeeForm" onsubmit="submitEditForm(event)" style="display:contents">
+                <input type="hidden" name="EmployeeID"   value="${data.EmployeeID}">
+                <input type="hidden" name="EmploymentID" value="${data.EmploymentID || ''}">
+
+                <!-- Personal Information -->
+                <div class="ep-section">
+                    <div class="ep-section-hdr ep-hdr-blue"><i data-lucide="user"></i> Personal Information</div>
+                    <div class="ep-fields">
+                        <div class="ep-field"><label>First Name</label><input type="text"  name="FirstName"        class="ep-input" value="${data.FirstName || ''}" required></div>
+                        <div class="ep-field"><label>Last Name</label> <input type="text"  name="LastName"         class="ep-input" value="${data.LastName || ''}" required></div>
+                        <div class="ep-field"><label>Middle Name</label><input type="text" name="MiddleName"       class="ep-input" value="${data.MiddleName || ''}"></div>
+                        <div class="ep-field"><label>Date of Birth</label><input type="date" name="DateOfBirth"   class="ep-input" value="${data.DateOfBirth || ''}"></div>
+                        <div class="ep-field"><label>Gender</label>
+                            <select name="Gender" class="ep-input">
+                                <option value="Male"   ${data.Gender === 'Male' ? 'selected' : ''}>Male</option>
+                                <option value="Female" ${data.Gender === 'Female' ? 'selected' : ''}>Female</option>
+                            </select>
+                        </div>
+                        <div class="ep-field"><label>Personal Email</label><input type="email" name="PersonalEmail" class="ep-input" value="${data.PersonalEmail || ''}"></div>
+                        <div class="ep-field full"><label>Permanent Address</label><input type="text" name="PermanentAddress" class="ep-input" value="${data.PermanentAddress || ''}"></div>
+                    </div>
+                </div>
+
+                <!-- Government Numbers -->
+                <div class="ep-section">
+                    <div class="ep-section-hdr ep-hdr-purple"><i data-lucide="landmark"></i> Government Numbers</div>
+                    <div class="ep-fields">
+                        <div class="ep-field"><label>TIN</label>      <input type="text" name="TINNumber"       class="ep-input" value="${data.TINNumber || ''}"></div>
+                        <div class="ep-field"><label>SSS</label>      <input type="text" name="SSSNumber"       class="ep-input" value="${data.SSSNumber || ''}"></div>
+                        <div class="ep-field"><label>PhilHealth</label><input type="text" name="PhilHealthNumber" class="ep-input" value="${data.PhilHealthNumber || ''}"></div>
+                        <div class="ep-field"><label>Pag-IBIG</label> <input type="text" name="PagIBIGNumber"   class="ep-input" value="${data.PagIBIGNumber || ''}"></div>
+                    </div>
+                </div>
+
+                <!-- Bank & Compensation -->
+                <div class="ep-section">
+                    <div class="ep-section-hdr ep-hdr-green"><i data-lucide="credit-card"></i> Bank & Compensation</div>
+                    <div class="ep-fields">
+                        <div class="ep-field"><label>Bank Name</label>      <input type="text" name="BankName"      class="ep-input" value="${data.BankName || ''}"></div>
+                        <div class="ep-field"><label>Account Number</label> <input type="text" name="BankAccountNumber" class="ep-input" value="${data.BankAccountNumber || ''}"></div>
+                        <div class="ep-field"><label>Account Type</label>
+                            <select name="AccountType" class="ep-input">
+                                <option value="">— Select —</option>
+                                <option value="Savings"  ${data.AccountType === 'Savings' ? 'selected' : ''}>Savings</option>
+                                <option value="Checking" ${data.AccountType === 'Checking' ? 'selected' : ''}>Checking</option>
+                                <option value="Payroll"  ${data.AccountType === 'Payroll' ? 'selected' : ''}>Payroll</option>
+                            </select>
+                        </div>
+                        <div class="ep-field">
+                            <label>Employment Status</label>
+                            <select name="EmploymentStatus" class="ep-input">
+                                <option value="Regular"      ${data.EmploymentStatus === 'Regular' ? 'selected' : ''}>Regular</option>
+                                <option value="Probationary" ${data.EmploymentStatus === 'Probationary' ? 'selected' : ''}>Probationary</option>
+                                <option value="Resigned"     ${data.EmploymentStatus === 'Resigned' ? 'selected' : ''}>Resigned</option>
+                                <option value="Terminated"   ${data.EmploymentStatus === 'Terminated' ? 'selected' : ''}>Terminated</option>
+                            </select>
+                        </div>
+                        <div class="ep-field"><label>Date Hired</label>  <input type="date"  name="HiringDate" class="ep-input" value="${data.HiringDate || ''}"></div>
+                        <div class="ep-field"><label>Work Email</label>  <input type="email" name="WorkEmail"  class="ep-input" value="${data.WorkEmail || ''}"></div>
+                        <div class="ep-field"><label>Phone</label>       <input type="text"  name="PhoneNumber" class="ep-input" value="${data.PhoneNumber || ''}"></div>
+                    </div>
+                </div>
+
+                <!-- Emergency Contact -->
+                <div class="ep-section">
+                    <div class="ep-section-hdr ep-hdr-red"><i data-lucide="heart-pulse"></i> Emergency Contact</div>
+                    <div class="ep-fields">
+                        <div class="ep-field"><label>Contact Name</label>  <input type="text" name="ContactName"    class="ep-input" value="${data.ContactName || ''}"></div>
+                        <div class="ep-field"><label>Relationship</label>  <input type="text" name="Relationship"   class="ep-input" value="${data.Relationship || ''}"></div>
+                        <div class="ep-field full"><label>Phone</label>    <input type="text" name="EmergencyPhone" class="ep-input" value="${data.EmergencyPhone || ''}"></div>
+                    </div>
+                </div>
+
             </form>
         </div>
+
+        <!-- Sticky Save Bar -->
+        <div class="ep-save-bar">
+            <span class="ep-save-hint"><i data-lucide="info"></i> All changes are saved immediately to the employee record.</span>
+            <button type="submit" form="editEmployeeForm" class="ep-save-btn">
+                <i data-lucide="save"></i> Save Changes
+            </button>
+        </div>
+
+    </div>
     `;
     lucide.createIcons();
 }
+
 
 async function submitEditForm(event) {
     event.preventDefault();

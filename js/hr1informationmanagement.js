@@ -120,47 +120,23 @@ async function fetchMyDetails() {
 }
 
 function renderMyInfo(data) {
-    // Populate Header
+    // Populate Hero Banner
     const nameEl = document.getElementById('employeeName');
     const posEl = document.getElementById('employeePosition');
     const deptEl = document.getElementById('employeeDepartment');
-    const statusEl = document.getElementById('employeeStatus');
-    const photoContainer = document.getElementById('profilePhotoContainer');
+    const codeEl = document.getElementById('employeeCode');
+    const avatarEl = document.getElementById('avatarPlaceholder');
 
-    if (nameEl) nameEl.textContent = `${data.FirstName} ${data.MiddleName ? data.MiddleName + ' ' : ''}${data.LastName}`;
+    const fullName = `${data.FirstName || ''} ${data.MiddleName ? data.MiddleName + ' ' : ''}${data.LastName || ''}`.trim();
+    if (nameEl) nameEl.textContent = fullName || 'Unknown Employee';
     if (posEl) posEl.textContent = data.PositionName || 'No Position';
-    if (deptEl) deptEl.innerHTML = `<i data-lucide="building-2"></i> ${data.DepartmentName || 'No Department'}`;
+    if (deptEl) deptEl.textContent = data.DepartmentName || 'No Department';
+    if (codeEl) codeEl.textContent = data.EmployeeCode || data.EmployeeID || 'N/A';
 
-    if (statusEl) {
-        statusEl.textContent = data.EmploymentStatus || 'Active';
-        statusEl.className = `badge badge-${getStatusClass(data.EmploymentStatus)}`;
-    }
-
-    if (photoContainer) {
-        if (data.IDPicture) {
-            photoContainer.innerHTML = `<img src="${data.IDPicture}" alt="Profile">`;
-        } else {
-            photoContainer.innerHTML = `<div class="avatar-placeholder">${data.FirstName.charAt(0)}${data.LastName.charAt(0)}</div>`;
-        }
-    }
-
-    // Display Employee Code
-    const empCodeEl = document.getElementById('employeeCodeDisplay'); // Assuming an element exists or we append it
-    if (statusEl) {
-        // Create a subtitle for Employee Code if not exists
-        let codeContainer = document.querySelector('.employee-code-container');
-        if (!codeContainer) {
-            const headerText = document.querySelector('.header-text');
-            if (headerText) {
-                codeContainer = document.createElement('p');
-                codeContainer.className = 'employee-code-container';
-                codeContainer.style.fontSize = '0.9em';
-                codeContainer.style.color = 'var(--text-secondary)';
-                codeContainer.style.marginTop = '4px';
-                headerText.appendChild(codeContainer);
-            }
-        }
-        if (codeContainer) codeContainer.innerHTML = `<i data-lucide="hash"></i> ${data.EmployeeCode || 'N/A'}`;
+    // Avatar initials
+    if (avatarEl) {
+        const initials = `${(data.FirstName || 'U').charAt(0)}${(data.LastName || 'U').charAt(0)}`.toUpperCase();
+        avatarEl.textContent = initials;
     }
 
     // Populate Form Fields

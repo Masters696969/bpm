@@ -11,8 +11,8 @@ if (!isset($_SESSION['username'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/informationmanagement.css?v=1.1">
+  <title>Information Management</title>
+  <link rel="stylesheet" href="../../css/informationmanagement.css?v=2.0">
   <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.0">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -40,48 +40,45 @@ if (!isset($_SESSION['username'])) {
     <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
-        
         <a href="dashboard.php" class="nav-item">
           <i data-lucide="chart-no-axes-combined"></i>
           <span>Dashboard</span>
         </a>
-
         <a href="#" class="nav-item">
-              <i data-lucide="file-clock"></i>
-              <span>Time Attendance</span>
-            </a>
-            <a href="information_management.php" class="nav-item active">
-              <i data-lucide="user-pen"></i>
-              <span>Information Management</span>
-            </a>
-            <a href="#" class="nav-item">
-              <i data-lucide="tickets-plane"></i>
-              <span>Leave Management</span>
-            </a>
-             <a href="#" class="nav-item">
-              <i data-lucide="receipt-text"></i>
-              <span>Claim Management</span>
-            </a>
-            <a href="#" class="nav-item">
-              <i data-lucide="ticket-check"></i>
-              <span>View Payslip</span>
-            </a>
+          <i data-lucide="file-clock"></i>
+          <span>Time Attendance</span>
+        </a>
+        <a href="information_management.php" class="nav-item active">
+          <i data-lucide="user-pen"></i>
+          <span>Information Management</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i data-lucide="tickets-plane"></i>
+          <span>Leave Management</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i data-lucide="receipt-text"></i>
+          <span>Claim Management</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i data-lucide="ticket-check"></i>
+          <span>View Payslip</span>
+        </a>
+      </div>
 
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
-        
         <a href="#" class="nav-item">
           <i data-lucide="settings"></i>
           <span>Configuration</span>
         </a>
-
         <a href="#" class="nav-item">
           <i data-lucide="shield"></i>
           <span>Security</span>
         </a>
         <a href="../../login.php" class="nav-item">
-            <i data-lucide="log-out"></i>
-            <span>Logout</span>
+          <i data-lucide="log-out"></i>
+          <span>Logout</span>
         </a>
       </div>
     </nav>
@@ -111,7 +108,7 @@ if (!isset($_SESSION['username'])) {
         </button>
         <div class="header-title">
           <h1>Information Management</h1>
-          <p>View and manage your personal information.</p>
+          <p>View and manage your personal profile details.</p>
         </div>
       </div>
       <div class="header-right">
@@ -130,271 +127,364 @@ if (!isset($_SESSION['username'])) {
     </header>
 
     <div class="content-wrapper">
-        <div class="resume-container">
-            <div class="resume-header">
-                <div class="header-content">
-                    <div class="profile-photo-wrapper">
-                        <div class="profile-photo" id="profilePhotoContainer">
-                             <div class="avatar-placeholder" id="avatarPlaceholder"></div>
-                        </div>
-                    </div>
-                    <div class="header-text">
-                        <h2 id="employeeName">Loading...</h2>
-                        <p class="position" id="employeePosition">Loading...</p>
-                        <p class="department" id="employeeDepartment"><i data-lucide="building-2"></i> Loading...</p>
-                    </div>
-                </div>
-                <div class="header-status" style="display: flex; gap: 10px; align-items: center;">
-                    <button type="submit" form="myInfoForm" class="btn btn-save" style="margin-right: 10px;">
-                        <i data-lucide="save"></i> Save Changes
-                    </button>
-                    <button type="button" class="btn btn-save" id="btnRequestEdit">
-                        <i data-lucide="pencil"></i> Request Edit
-                    </button>
-                </div>
+
+      <!-- Hero Profile Banner -->
+      <div class="im-hero">
+        <div class="im-hero-inner">
+          <div class="im-hero-left">
+            <div class="im-avatar" id="avatarPlaceholder"></div>
+            <div class="im-hero-info">
+              <h2 class="im-hero-name" id="employeeName">Loading…</h2>
+              <p class="im-hero-position" id="employeePosition">Loading…</p>
+              <div class="im-hero-chips">
+                <span class="im-chip">
+                  <i data-lucide="building-2"></i>
+                  <span id="employeeDepartment">Department</span>
+                </span>
+                <span class="im-chip">
+                  <i data-lucide="hash"></i>
+                  <span id="employeeCode">Code</span>
+                </span>
+              </div>
             </div>
-
-            <form id="myInfoForm">
-                <div class="resume-grid">
-                    <!-- Personal Information (Editable) -->
-                    <div class="resume-section">
-                        <div class="section-header">
-                            <h3><i data-lucide="user"></i> Personal Information</h3>
-                            <span class="badge-edit">Editable</span>
-                        </div>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label>First Name</label>
-                                <input type="text" name="FirstName" id="FirstName" class="form-control" required>
-                            </div>
-                            <div class="info-item">
-                                <label>Last Name</label>
-                                <input type="text" name="LastName" id="LastName" class="form-control" required>
-                            </div>
-                            <div class="info-item">
-                                <label>Middle Name</label>
-                                <input type="text" name="MiddleName" id="MiddleName" class="form-control">
-                            </div>
-                            <div class="info-item">
-                                <label>Date of Birth</label>
-                                <input type="date" name="DateOfBirth" id="DateOfBirth" class="form-control" readonly>
-                            </div>
-                            <div class="info-item">
-                                <label>Gender</label>
-                                <select name="Gender" id="Gender" class="form-control" readonly>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                </select>
-                            </div>
-                            <div class="info-item full-width">
-                                <label>Permanent Address</label>
-                                <input type="text" name="PermanentAddress" id="PermanentAddress" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Contact Information (Editable) -->
-                    <div class="resume-section">
-                        <div class="section-header">
-                            <h3><i data-lucide="phone"></i> Contact Information</h3>
-                            <span class="badge-edit">Editable</span>
-                        </div>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label>Phone Number</label>
-                                <input type="text" name="PhoneNumber" id="PhoneNumber" class="form-control">
-                            </div>
-                            <div class="info-item full-width">
-                                <label>Personal Email</label>
-                                <input type="email" name="PersonalEmail" id="PersonalEmail" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Emergency Contact (Editable) -->
-                    <div class="resume-section">
-                        <div class="section-header">
-                            <h3><i data-lucide="phone-call"></i> Emergency Contact</h3>
-                            <span class="badge-edit">Editable</span>
-                        </div>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label>Contact Name</label>
-                                <input type="text" name="ContactName" id="ContactName" class="form-control">
-                            </div>
-                            <div class="info-item">
-                                <label>Relationship</label>
-                                <input type="text" name="Relationship" id="Relationship" class="form-control">
-                            </div>
-                            <div class="info-item">
-                                <label>Phone Number</label>
-                                <input type="text" name="EmergencyPhone" id="EmergencyPhone" class="form-control">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Employment Details (Read-Only) -->
-                    <div class="resume-section read-only">
-                         <div class="section-header">
-                            <h3><i data-lucide="briefcase"></i> Employment Details</h3>
-                            <span class="badge-readonly"><i data-lucide="lock"></i> Read Only</span>
-                        </div>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label>Employee Code</label>
-                                <input type="text" id="EmployeeCode" class="form-control" readonly>
-                            </div>
-                            <div class="info-item">
-                                <label>Date Hired</label>
-                                <input type="text" id="HiringDate" class="form-control" readonly>
-                            </div>
-                            <div class="info-item">
-                                <label>Work Email</label>
-                                <input type="text" id="WorkEmail" class="form-control" readonly>
-                            </div>
-                            <div class="info-item">
-                                <label>Digital Resume</label>
-                                <div class="readonly-value" id="DigitalResumeContainer">
-                                    No resume uploaded
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Compensation (Read-Only) -->
-                    <div class="resume-section read-only">
-                        <div class="section-header">
-                            <h3><i data-lucide="wallet"></i> Compensation</h3>
-                             <span class="badge-readonly"><i data-lucide="lock"></i> Read Only</span>
-                        </div>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label>Salary Grade</label>
-                                <input type="text" id="GradeLevel" class="form-control" readonly>
-                            </div>
-                            <div class="info-item">
-                                <label>Salary Range</label>
-                                <input type="text" id="SalaryRange" class="form-control" readonly>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bank Details (Read-Only) -->
-                    <div class="resume-section read-only">
-                        <div class="section-header">
-                            <h3><i data-lucide="landmark"></i> Bank Details</h3>
-                             <span class="badge-readonly"><i data-lucide="lock"></i> Read Only</span>
-                        </div>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label>Bank Name</label>
-                                <input type="text" id="BankName" class="form-control" readonly>
-                            </div>
-                            <div class="info-item">
-                                <label>Account Number</label>
-                                <input type="text" id="BankAccountNumber" class="form-control" readonly>
-                            </div>
-                             <div class="info-item">
-                                <label>Account Type</label>
-                                <input type="text" id="AccountType" class="form-control" readonly>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Government Numbers (Read-Only) -->
-                    <div class="resume-section read-only">
-                         <div class="section-header">
-                            <h3><i data-lucide="file-check"></i> Government Numbers</h3>
-                             <span class="badge-readonly"><i data-lucide="lock"></i> Read Only</span>
-                        </div>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label>TIN</label>
-                                <input type="text" id="TINNumber" class="form-control" readonly>
-                            </div>
-                            <div class="info-item">
-                                <label>SSS</label>
-                                <input type="text" id="SSSNumber" class="form-control" readonly>
-                            </div>
-                            <div class="info-item">
-                                <label>PhilHealth</label>
-                                <input type="text" id="PhilHealthNumber" class="form-control" readonly>
-                            </div>
-                            <div class="info-item">
-                                <label>Pag-IBIG</label>
-                                <input type="text" id="PagIBIGNumber" class="form-control" readonly>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </form>
-        </div>
-    </div>
-    <!-- Request Edit Modal -->
-    <div class="modal-overlay hidden" id="requestEditModal">
-      <div class="modal-content modal-content-styled">
-        <div class="modal-header-styled">
-            <div>
-                <h3 class="modal-title-custom">Request Information Update</h3>
-                <p class="modal-subtitle-custom">Changes will be reviewed by HR before applying.</p>
-            </div>
-          <button id="btnCloseRequestModal" class="close-modal-btn">
-            <i data-lucide="x" class="icon-sm"></i> Close
-          </button>
-        </div>
-        <div class="modal-body-scroll">
-            <form id="requestEditForm">
-                <!-- Compensation -->
-                <h4 class="section-title text-blue">Compensation</h4>
-                <div class="info-group">
-                     <div class="info-row">
-                        <label>Bank Name</label>
-                        <input type="text" name="BankName" class="form-control" placeholder="Enter Bank Name">
-                    </div>
-                    <div class="info-row">
-                        <label>Account Number</label>
-                        <input type="text" name="BankAccountNumber" class="form-control" placeholder="Enter Account Number">
-                    </div>
-                </div>
-
-                <!-- Government Numbers -->
-                <h4 class="section-title text-green">Government Numbers</h4>
-                 <div class="info-group">
-                    <div class="info-row">
-                        <label>TIN</label>
-                        <input type="text" name="TINNumber" class="form-control">
-                    </div>
-                    <div class="info-row">
-                        <label>SSS</label>
-                        <input type="text" name="SSSNumber" class="form-control">
-                    </div>
-                     <div class="info-row">
-                        <label>PhilHealth</label>
-                        <input type="text" name="PhilHealthNumber" class="form-control">
-                    </div>
-                     <div class="info-row">
-                        <label>Pag-IBIG</label>
-                        <input type="text" name="PagIBIGNumber" class="form-control">
-                    </div>
-                </div>
-                
-                 <div class="modal-footer-styled">
-                    <button type="submit" class="btn-create-master">
-                        <i data-lucide="send" class="icon-sm"></i> Send Request
-                    </button>
-                </div>
-            </form>
+          </div>
+          <div class="im-hero-actions">
+            <button type="submit" form="myInfoForm" class="im-btn-save">
+              <i data-lucide="save"></i> Save Changes
+            </button>
+            <button type="button" class="im-btn-request" id="btnRequestEdit">
+              <i data-lucide="pencil"></i> Request Edit
+            </button>
+          </div>
         </div>
       </div>
+
+      <!-- Info Sections Grid -->
+      <form id="myInfoForm">
+        <div class="im-grid">
+
+          <!-- Personal Information -->
+          <div class="im-card">
+            <div class="im-card-hdr im-hdr-blue">
+              <div class="im-card-hdr-left">
+                <i data-lucide="user"></i> Personal Information
+              </div>
+              <span class="im-badge-editable"><i data-lucide="pencil-line"></i> Editable</span>
+            </div>
+            <div class="im-fields">
+              <div class="im-field">
+                <label>First Name</label>
+                <input type="text" name="FirstName" id="FirstName" class="im-input" required>
+              </div>
+              <div class="im-field">
+                <label>Last Name</label>
+                <input type="text" name="LastName" id="LastName" class="im-input" required>
+              </div>
+              <div class="im-field">
+                <label>Middle Name</label>
+                <input type="text" name="MiddleName" id="MiddleName" class="im-input">
+              </div>
+              <div class="im-field">
+                <label>Date of Birth</label>
+                <input type="date" name="DateOfBirth" id="DateOfBirth" class="im-input" readonly>
+              </div>
+              <div class="im-field">
+                <label>Gender</label>
+                <select name="Gender" id="Gender" class="im-input">
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+              <div class="im-field full" style="grid-column:1/-1">
+                <label>Permanent Address</label>
+                <input type="text" name="PermanentAddress" id="PermanentAddress" class="im-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Information -->
+          <div class="im-card">
+            <div class="im-card-hdr im-hdr-green">
+              <div class="im-card-hdr-left">
+                <i data-lucide="phone"></i> Contact Information
+              </div>
+              <span class="im-badge-editable"><i data-lucide="pencil-line"></i> Editable</span>
+            </div>
+            <div class="im-fields">
+              <div class="im-field">
+                <label>Phone Number</label>
+                <input type="text" name="PhoneNumber" id="PhoneNumber" class="im-input">
+              </div>
+              <div class="im-field">
+                <label>Personal Email</label>
+                <input type="email" name="PersonalEmail" id="PersonalEmail" class="im-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- Emergency Contact -->
+          <div class="im-card">
+            <div class="im-card-hdr im-hdr-red">
+              <div class="im-card-hdr-left">
+                <i data-lucide="phone-call"></i> Emergency Contact
+              </div>
+              <span class="im-badge-editable"><i data-lucide="pencil-line"></i> Editable</span>
+            </div>
+            <div class="im-fields">
+              <div class="im-field">
+                <label>Contact Name</label>
+                <input type="text" name="ContactName" id="ContactName" class="im-input">
+              </div>
+              <div class="im-field">
+                <label>Relationship</label>
+                <input type="text" name="Relationship" id="Relationship" class="im-input">
+              </div>
+              <div class="im-field" style="border-bottom:0">
+                <label>Phone Number</label>
+                <input type="text" name="EmergencyPhone" id="EmergencyPhone" class="im-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- Employment Details -->
+          <div class="im-card">
+            <div class="im-card-hdr im-hdr-amber">
+              <div class="im-card-hdr-left">
+                <i data-lucide="briefcase"></i> Employment Details
+              </div>
+              <span class="im-badge-readonly"><i data-lucide="lock"></i> Read Only</span>
+            </div>
+            <div class="im-fields">
+              <div class="im-field">
+                <label>Employee Code</label>
+                <input type="text" id="EmployeeCode" class="im-input" readonly>
+              </div>
+              <div class="im-field">
+                <label>Date Hired</label>
+                <input type="text" id="HiringDate" class="im-input" readonly>
+              </div>
+              <div class="im-field">
+                <label>Work Email</label>
+                <input type="text" id="WorkEmail" class="im-input" readonly>
+              </div>
+              <div class="im-field">
+                <label>Digital Resume</label>
+                <div class="im-readonly-val" id="DigitalResumeContainer">No resume uploaded</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Compensation -->
+          <div class="im-card">
+            <div class="im-card-hdr im-hdr-purple">
+              <div class="im-card-hdr-left">
+                <i data-lucide="wallet"></i> Compensation
+              </div>
+              <span class="im-badge-readonly"><i data-lucide="lock"></i> Read Only</span>
+            </div>
+            <div class="im-fields">
+              <div class="im-field">
+                <label>Salary Grade</label>
+                <input type="text" id="GradeLevel" class="im-input" readonly>
+              </div>
+              <div class="im-field">
+                <label>Salary Range</label>
+                <input type="text" id="SalaryRange" class="im-input" readonly>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bank Details -->
+          <div class="im-card">
+            <div class="im-card-hdr im-hdr-slate">
+              <div class="im-card-hdr-left">
+                <i data-lucide="landmark"></i> Bank Details
+              </div>
+              <span class="im-badge-readonly"><i data-lucide="lock"></i> Read Only</span>
+            </div>
+            <div class="im-fields">
+              <div class="im-field">
+                <label>Bank Name</label>
+                <input type="text" id="BankName" class="im-input" readonly>
+              </div>
+              <div class="im-field">
+                <label>Account Number</label>
+                <input type="text" id="BankAccountNumber" class="im-input" readonly>
+              </div>
+              <div class="im-field" style="border-bottom:0">
+                <label>Account Type</label>
+                <input type="text" id="AccountType" class="im-input" readonly>
+              </div>
+            </div>
+          </div>
+
+          <!-- Government Numbers -->
+          <div class="im-card" style="grid-column:1/-1">
+            <div class="im-card-hdr im-hdr-purple">
+              <div class="im-card-hdr-left">
+                <i data-lucide="file-check"></i> Government Numbers
+              </div>
+              <span class="im-badge-readonly"><i data-lucide="lock"></i> Read Only</span>
+            </div>
+            <div class="im-fields" style="grid-template-columns:repeat(4,1fr)">
+              <div class="im-field" style="border-bottom:0">
+                <label>TIN</label>
+                <input type="text" id="TINNumber" class="im-input" readonly>
+              </div>
+              <div class="im-field" style="border-bottom:0">
+                <label>SSS</label>
+                <input type="text" id="SSSNumber" class="im-input" readonly>
+              </div>
+              <div class="im-field" style="border-bottom:0">
+                <label>PhilHealth</label>
+                <input type="text" id="PhilHealthNumber" class="im-input" readonly>
+              </div>
+              <div class="im-field" style="border-bottom:0">
+                <label>Pag-IBIG</label>
+                <input type="text" id="PagIBIGNumber" class="im-input" readonly>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </form>
+
+    </div><!-- /content-wrapper -->
+
+    <!-- ══════════════════════════════
+         REQUEST EDIT MODAL
+         ══════════════════════════════ -->
+    <div class="modal-overlay hidden" id="requestEditModal">
+      <div class="rem-dialog">
+
+        <!-- Hero header -->
+        <div class="rem-hero">
+          <div class="rem-hero-inner">
+            <div class="rem-icon-wrap">
+              <i data-lucide="file-pen-line"></i>
+            </div>
+            <div class="rem-hero-text">
+              <h3 class="rem-title">Request Information Update</h3>
+              <p class="rem-subtitle">Fill in only the fields you want to change.</p>
+            </div>
+            <button class="rem-close" id="btnCloseRequestModal" title="Close">&times;</button>
+          </div>
+        </div>
+
+        <!-- Notice -->
+        <div class="rem-notice">
+          <i data-lucide="info"></i>
+          Changes will be reviewed and approved by HR before being applied to your record.
+        </div>
+
+        <!-- Body -->
+        <div class="rem-body">
+          <form id="requestEditForm">
+
+            <!-- Bank & Compensation -->
+            <div class="rem-section">
+              <div class="rem-section-hdr rem-shdr-blue">
+                <i data-lucide="landmark"></i> Bank & Compensation
+              </div>
+              <div class="rem-fields">
+                <div class="rem-row">
+                  <div class="rem-field">
+                    <label>Bank Name</label>
+                    <input type="text" name="BankName" class="rem-input" placeholder="e.g. BDO">
+                  </div>
+                  <div class="rem-field">
+                    <label>Account Number</label>
+                    <input type="text" name="BankAccountNumber" class="rem-input" placeholder="Enter account number">
+                  </div>
+                </div>
+                <div class="rem-row">
+                  <div class="rem-field" style="border-bottom:0">
+                    <label>Account Type</label>
+                    <select name="AccountType" class="rem-input">
+                      <option value="">— Select —</option>
+                      <option value="Savings">Savings</option>
+                      <option value="Checking">Checking</option>
+                      <option value="Payroll">Payroll</option>
+                    </select>
+                  </div>
+                  <div class="rem-field" style="border-bottom:0"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Government Numbers -->
+            <div class="rem-section">
+              <div class="rem-section-hdr rem-shdr-purple">
+                <i data-lucide="file-check"></i> Government Numbers
+              </div>
+              <div class="rem-fields">
+                <div class="rem-row">
+                  <div class="rem-field">
+                    <label>TIN</label>
+                    <input type="text" name="TINNumber" class="rem-input" placeholder="000-000-000-000">
+                  </div>
+                  <div class="rem-field">
+                    <label>SSS</label>
+                    <input type="text" name="SSSNumber" class="rem-input" placeholder="00-0000000-0">
+                  </div>
+                </div>
+                <div class="rem-row">
+                  <div class="rem-field" style="border-bottom:0">
+                    <label>PhilHealth</label>
+                    <input type="text" name="PhilHealthNumber" class="rem-input" placeholder="00-000000000-0">
+                  </div>
+                  <div class="rem-field" style="border-bottom:0">
+                    <label>Pag-IBIG</label>
+                    <input type="text" name="PagIBIGNumber" class="rem-input" placeholder="0000-0000-0000">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="rem-footer">
+          <div class="rem-footer-hint">
+            <i data-lucide="clock"></i>
+            Requests are usually processed within 1–2 business days.
+          </div>
+          <button type="submit" form="requestEditForm" class="rem-btn-send">
+            <i data-lucide="send"></i> Send Request
+          </button>
+        </div>
+
+      </div>
     </div>
-</main>
+
+  </main>
+
   <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/chcdashboard.js"></script>
   <script src="../../js/hr1informationmanagement.js?v=<?php echo time(); ?>"></script>
   <script>
     lucide.createIcons();
+
+    // Modal open/close
+    document.getElementById('btnRequestEdit').addEventListener('click', function () {
+      const m = document.getElementById('requestEditModal');
+      m.classList.remove('hidden');
+      m.classList.add('show');
+      lucide.createIcons();
+    });
+    document.getElementById('btnCloseRequestModal').addEventListener('click', function () {
+      const m = document.getElementById('requestEditModal');
+      m.classList.add('hidden');
+      m.classList.remove('show');
+    });
+    document.getElementById('requestEditModal').addEventListener('click', function (e) {
+      if (e.target === this) {
+        this.classList.add('hidden');
+        this.classList.remove('show');
+      }
+    });
   </script>
-  
+
 </body>
 </html>

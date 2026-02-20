@@ -54,41 +54,100 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchPendingRequests() {
     const tableBody = document.getElementById('requestsTableBody');
     try {
+        // Load stats separately
+        fetch('be_Informationrq.php?action=fetch_stats')
+            .then(r => r.json())
+            .then(s => {
+                if (s.success) {
+                    const el = id => document.getElementById(id);
+                    if (el('statPending')) el('statPending').textContent = s.data.Pending;
+                    if (el('statApproved')) el('statApproved').textContent = s.data.Approved;
+                    if (el('statRejected')) el('statRejected').textContent = s.data.Rejected;
+                }
+            });
+
         const response = await fetch('be_Informationrq.php?action=fetch_pending_requests');
         const result = await response.json();
 
         if (result.success) {
             const requests = result.data;
+
             if (requests.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No pending requests.</td></tr>';
+                tableBody.innerHTML = `<tr><td colspan="5">
+                    <div class="empty-state">
+                        <i data-lucide="inbox"></i>
+                        <p>No requests found</p>
+                        <span>No information update requests yet.</span>
+                    </div></td></tr>`;
+                lucide.createIcons();
                 return;
             }
 
-            tableBody.innerHTML = requests.map(req => `
-                <tr style="border-bottom: 1px solid var(--border-color);">
-                    <td style="padding: 12px;">
-                        <div style="font-weight: 500;">${req.FirstName} ${req.LastName}</div>
+            tableBody.innerHTML = requests.map(req => {
+                const initials = (req.FirstName[0] + req.LastName[0]).toUpperCase();
+                const date = new Date(req.RequestDate).toLocaleDateString('en-PH', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
+                const badgeClass = req.Status === 'Pending' ? 'badge-warning'
+                    : req.Status === 'Approved' ? 'badge-success' : 'badge-danger';
+
+                // Show Review button only for Pending
+                const actionBtn = req.Status === 'Pending'
+                    ? `<button class="btn-review" onclick="viewRequest(${req.RequestID}, '${encodeURIComponent(req.RequestData)}')">
+                            <i data-lucide="eye"></i> Review
+                       </button>`
+                    : `<span style="font-size:13px;color:var(--text-tertiary);">—</span>`;
+
+                return `
+                <tr class="req-row">
+                    <td>
+                        <div class="emp-cell">
+                            <div class="emp-avatar">${initials}</div>
+                            <div>
+                                <div class="emp-name">${req.FirstName} ${req.LastName}</div>
+                                <div class="emp-dept">${req.DepartmentName || '—'}</div>
+                            </div>
+                        </div>
                     </td>
-                    <td style="padding: 12px;">${req.DepartmentName || '-'}</td>
-                    <td style="padding: 12px;">${req.RequestType}</td>
-                    <td style="padding: 12px;">${new Date(req.RequestDate).toLocaleDateString()}</td>
-                    <td style="padding: 12px;">
-                        <span class="badge badge-warning">Pending</span>
+                    <td>
+                        <span class="type-pill">
+                            <i data-lucide="file-pen-line"></i>
+                            ${req.RequestType}
+                        </span>
                     </td>
-                    <td style="padding: 12px;">
-                        <button class="btn-create-master" style="padding: 6px 12px; font-size: 12px;" 
-                            onclick="viewRequest(${req.RequestID}, '${encodeURIComponent(req.RequestData)}')">
-                            Review
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+                    <td style="color: var(--text-secondary); font-size:13px;">${date}</td>
+                    <td><span class="badge ${badgeClass}">${req.Status}</span></td>
+                    <td>${actionBtn}</td>
+                </tr>`;
+            }).join('');
+
+            lucide.createIcons();
+
+            // Inline search
+            const searchInput = document.getElementById('tableSearch');
+            if (searchInput) {
+                searchInput.removeEventListener('input', searchInput._handler);
+                searchInput._handler = () => {
+                    const q = searchInput.value.toLowerCase();
+                    document.querySelectorAll('.req-row').forEach(row => {
+                        row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+                    });
+                };
+                searchInput.addEventListener('input', searchInput._handler);
+            }
+
         } else {
-            tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: red;">Error: ${result.message}</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-secondary);padding:32px;">Error: ${result.message}</td></tr>`;
         }
     } catch (error) {
         console.error('Error fetching requests:', error);
-        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Failed to load requests.</td></tr>';
+        tableBody.innerHTML = `<tr><td colspan="5">
+            <div class="empty-state">
+                <i data-lucide="wifi-off"></i>
+                <p>Failed to load requests</p>
+                <span>Check your connection and try refreshing.</span>
+            </div></td></tr>`;
+        lucide.createIcons();
     }
 }
 
