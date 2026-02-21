@@ -1,4 +1,4 @@
-
+﻿
 
 <!DOCTYPE html>
 <html lang="en">
@@ -142,10 +142,7 @@
           <i data-lucide="shield"></i>
           <span>Security</span>
         </a>
-        <a href="../../login.php" class="nav-item">
-            <i data-lucide="log-out"></i>
-            <span>Logout</span>
-        </a>
+        
       </div>
     </nav>
 
@@ -158,9 +155,23 @@
           <span class="user-name">John Doe</span>
           <span class="user-role">Administrator</span>
         </div>
-        <button class="user-menu-btn">
+        <button class="user-menu-btn" id="userMenuBtn">
           <i data-lucide="more-vertical"></i>
         </button>
+        <div class="user-menu-dropdown" id="userMenuDropdown">
+          <div class="umd-header">
+            <div class="umd-avatar" id="umdAvatar"></div>
+            <div class="umd-info">
+              <span class="umd-signed">Signed in as</span>
+              <span class="umd-name" id="umdName"></span>
+              <span class="umd-role" id="umdRole"></span>
+            </div>
+          </div>
+          <div class="umd-divider"></div>
+          <a href="profile.php" class="umd-item"><i data-lucide="user-round"></i><span>Profile</span></a>
+          <div class="umd-divider"></div>
+          <a href="../../login.php" class="umd-item umd-item-danger umd-sign-out"><i data-lucide="log-out"></i><span>Sign Out</span></a>
+        </div>
       </div>
     </div>
   </aside>
@@ -492,5 +503,8 @@
     lucide.createIcons();
   </script>
   
+  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+

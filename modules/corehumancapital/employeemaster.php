@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../../login.php');
@@ -65,6 +65,10 @@ if (!isset($_SESSION['user_id'])) {
              <a href="informationrq.php" class="submenu-item <?php echo ($page === 'informationrq') ? 'active' : ''; ?>">
               <i data-lucide="user-round-pen"></i>
               <span>Information Request</span>
+            </a>
+            <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
+              <i data-lucide="file-text"></i>
+              <span>Bank Form Management</span>
             </a>
             <a href="" class="submenu-item">
               <i data-lucide="user-cog"></i>
@@ -146,10 +150,7 @@ if (!isset($_SESSION['user_id'])) {
           <i data-lucide="shield"></i>
           <span>Security</span>
         </a>
-        <a href="../../login.php" class="nav-item">
-            <i data-lucide="log-out"></i>
-            <span>Logout</span>
-        </a>
+        
       </div>
     </nav>
 
@@ -162,9 +163,23 @@ if (!isset($_SESSION['user_id'])) {
           <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
           <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'Employee'); ?></span>
         </div>
-        <button class="user-menu-btn">
+        <button class="user-menu-btn" id="userMenuBtn">
           <i data-lucide="more-vertical"></i>
         </button>
+        <div class="user-menu-dropdown" id="userMenuDropdown">
+          <div class="umd-header">
+            <div class="umd-avatar" id="umdAvatar"></div>
+            <div class="umd-info">
+              <span class="umd-signed">Signed in as</span>
+              <span class="umd-name" id="umdName"></span>
+              <span class="umd-role" id="umdRole"></span>
+            </div>
+          </div>
+          <div class="umd-divider"></div>
+          <a href="profile.php" class="umd-item"><i data-lucide="user-round"></i><span>Profile</span></a>
+          <div class="umd-divider"></div>
+          <a href="../../login.php" class="umd-item umd-item-danger umd-sign-out"><i data-lucide="log-out"></i><span>Sign Out</span></a>
+        </div>
       </div>
     </div>
   </aside>
@@ -296,5 +311,7 @@ if (!isset($_SESSION['user_id'])) {
     });
   </script>
   
+  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+

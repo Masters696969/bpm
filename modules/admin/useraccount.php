@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 // Check if user is logged in and is admin
@@ -10,9 +10,11 @@ if (!isset($_SESSION['user_id']) || strtolower($_SESSION['user_role']) !== 'admi
 require_once '../../config/config.php';
 
 // Fetch all users with their creation date (based on earliest role assignment)
-$usersSql = "SELECT ua.AccountID, ua.Username, ua.Email, ua.AccountStatus, ua.IsVerified, MIN(uar.AssignedAt) as CreatedAt
+$usersSql = "SELECT ua.AccountID, ua.Username, ua.Email, ua.AccountStatus, ua.IsVerified,
+             MIN(uar.AssignedAt) as CreatedAt, e.EmployeeCode
              FROM useraccounts ua
              LEFT JOIN useraccountroles uar ON ua.AccountID = uar.AccountID
+             LEFT JOIN employee e ON ua.EmployeeID = e.EmployeeID
              GROUP BY ua.AccountID
              ORDER BY ua.AccountID ASC";
 $usersResult = $conn->query($usersSql);
@@ -192,9 +194,23 @@ if ($rolesResult) {
           <span class="user-name"><?php echo htmlspecialchars($_SESSION['username']); ?></span>
           <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role']); ?></span>
         </div>
-        <button class="user-menu-btn">
+        <button class="user-menu-btn" id="userMenuBtn">
           <i data-lucide="more-vertical"></i>
         </button>
+        <div class="user-menu-dropdown" id="userMenuDropdown">
+          <div class="umd-header">
+            <div class="umd-avatar" id="umdAvatar"></div>
+            <div class="umd-info">
+              <span class="umd-signed">Signed in as</span>
+              <span class="umd-name" id="umdName"></span>
+              <span class="umd-role" id="umdRole"></span>
+            </div>
+          </div>
+          <div class="umd-divider"></div>
+          <a href="profile.php" class="umd-item"><i data-lucide="user-round"></i><span>Profile</span></a>
+          <div class="umd-divider"></div>
+          <a href="../../login.php" class="umd-item umd-item-danger umd-sign-out"><i data-lucide="log-out"></i><span>Sign Out</span></a>
+        </div>
       </div>
     </div>
   </aside>
@@ -227,11 +243,63 @@ if ($rolesResult) {
     </header>
 
     <div class="content-wrapper">
+
+      <!-- Stats Bar -->
+      <?php
+        $totalUsers    = count($users);
+        $activeUsers   = count(array_filter($users, fn($u) => $u['AccountStatus'] === 'Active'));
+        $inactiveUsers = $totalUsers - $activeUsers;
+        $unverified    = count(array_filter($users, fn($u) => !$u['IsVerified']));
+      ?>
+      <div class="ua-stats">
+        <div class="ua-stat-card">
+          <div class="ua-stat-icon blue"><i data-lucide="users"></i></div>
+          <div class="ua-stat-info">
+            <span class="ua-stat-value"><?php echo $totalUsers; ?></span>
+            <span class="ua-stat-label">Total Accounts</span>
+          </div>
+        </div>
+        <div class="ua-stat-card">
+          <div class="ua-stat-icon green"><i data-lucide="user-check"></i></div>
+          <div class="ua-stat-info">
+            <span class="ua-stat-value"><?php echo $activeUsers; ?></span>
+            <span class="ua-stat-label">Active</span>
+          </div>
+        </div>
+        <div class="ua-stat-card">
+          <div class="ua-stat-icon amber"><i data-lucide="user-minus"></i></div>
+          <div class="ua-stat-info">
+            <span class="ua-stat-value"><?php echo $inactiveUsers; ?></span>
+            <span class="ua-stat-label">Inactive</span>
+          </div>
+        </div>
+        <div class="ua-stat-card">
+          <div class="ua-stat-icon red"><i data-lucide="shield-off"></i></div>
+          <div class="ua-stat-info">
+            <span class="ua-stat-value"><?php echo $unverified; ?></span>
+            <span class="ua-stat-label">Unverified</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Card -->
       <section class="users-panel">
-          <div class="panel-header">
-          <h2>User Accounts</h2>
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-header-icon"><i data-lucide="user-cog"></i></div>
+            <div class="panel-header-titles">
+              <h2>User Accounts</h2>
+              <div class="panel-header-sub"><?php echo $totalUsers; ?> accounts registered</div>
+            </div>
+          </div>
           <div class="panel-actions">
-            <button id="addUserBtn" class="btn btn-primary" onclick="if(window.openAddAccountModal) window.openAddAccountModal()">+ Add Account</button>
+            <div class="panel-search">
+              <i data-lucide="search"></i>
+              <input type="search" id="tableSearch" placeholder="Search accounts…">
+            </div>
+            <button id="addUserBtn" class="btn btn-primary">
+              <i data-lucide="user-plus"></i> Add Account
+            </button>
           </div>
         </div>
 
@@ -240,7 +308,7 @@ if ($rolesResult) {
             <table id="usersTable" class="users-table">
               <thead>
                 <tr>
-                  <th>Username</th>
+                  <th>User</th>
                   <th>Email</th>
                   <th>Status</th>
                   <th>Verified</th>
@@ -249,9 +317,21 @@ if ($rolesResult) {
                 </tr>
               </thead>
               <tbody>
-                <?php foreach ($users as $user): ?>
+                <?php foreach ($users as $user):
+                  $initials = strtoupper(substr($user['Username'], 0, 1)) . (strlen($user['Username']) > 1 ? strtoupper(substr($user['Username'], 1, 1)) : '');
+                ?>
                 <tr>
-                  <td><?php echo htmlspecialchars($user['Username']); ?></td>
+                  <td>
+                    <div class="ua-user-cell">
+                      <div class="ua-user-avatar"><?php echo htmlspecialchars($initials); ?></div>
+                      <div>
+                        <div class="ua-user-name"><?php echo htmlspecialchars($user['Username']); ?></div>
+                        <?php if (!empty($user['EmployeeCode'])): ?>
+                        <div class="ua-user-id"><?php echo htmlspecialchars($user['EmployeeCode']); ?></div>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+                  </td>
                   <td><?php echo htmlspecialchars($user['Email']); ?></td>
                   <td>
                     <span class="badge badge-<?php echo strtolower($user['AccountStatus']); ?>">
@@ -267,12 +347,10 @@ if ($rolesResult) {
                   <td>
                     <div class="action-buttons">
                       <button class="btn btn-sm btn-edit" data-account-id="<?php echo $user['AccountID']; ?>" data-username="<?php echo htmlspecialchars($user['Username']); ?>">
-                        <i data-lucide="edit-2"></i>
-                        Edit
+                        <i data-lucide="edit-2"></i> Edit
                       </button>
                       <button class="btn btn-sm btn-delete" data-account-id="<?php echo $user['AccountID']; ?>" data-username="<?php echo htmlspecialchars($user['Username']); ?>">
-                        <i data-lucide="trash-2"></i>
-                        Delete
+                        <i data-lucide="trash-2"></i> Delete
                       </button>
                     </div>
                   </td>
@@ -287,13 +365,23 @@ if ($rolesResult) {
       <!-- Add Account Modal -->
       <div id="addUserModal" class="modal" aria-hidden="true">
         <div class="modal-dialog">
-          <header class="modal-header">
-            <h3>Add New Account</h3>
-            <button class="close-modal" id="closeModalBtn">&times;</button>
-          </header>
+
+          <!-- Gradient hero header -->
+          <div class="modal-hero">
+            <div class="modal-hero-inner">
+              <div class="modal-hero-icon"><i data-lucide="user-plus"></i></div>
+              <div class="modal-hero-text">
+                <h3 id="modalTitle">Add New Account</h3>
+                <p>Fill in the details below to create a user account.</p>
+              </div>
+              <button class="close-modal" id="closeModalBtn" title="Close">&times;</button>
+            </div>
+          </div>
+
           <div class="modal-body">
             <form id="createUserForm">
               <input type="hidden" id="accountId" name="account_id" value="">
+
               <div class="form-row">
                 <label for="username">Username <span class="required">*</span></label>
                 <input id="username" name="username" type="text" placeholder="Enter username" required />
@@ -343,13 +431,17 @@ if ($rolesResult) {
                   <option value="Inactive">Inactive</option>
                 </select>
               </div>
-
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Create Account</button>
-                <button type="button" id="cancelCreate" class="btn">Cancel</button>
-              </div>
             </form>
           </div>
+
+          <!-- Sticky footer -->
+          <div class="form-actions">
+            <button type="button" id="cancelCreate" class="btn-modal-cancel">Cancel</button>
+            <button type="submit" form="createUserForm" class="btn-modal-submit">
+              <i data-lucide="save"></i> <span id="submitBtnLabel">Create Account</span>
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -382,10 +474,10 @@ if ($rolesResult) {
           }
           
           // Reset header and button text for 'Add' mode
-          const  header = document.querySelector(".modal-header h3");
-          const btn = document.querySelector("#createUserForm button[type='submit']");
-          if(header) header.textContent = "Add New Account";
-          if(btn) btn.textContent = "Create Account";
+          const title = document.getElementById("modalTitle");
+          const lbl   = document.getElementById("submitBtnLabel");
+          if (title) title.textContent = "Add New Account";
+          if (lbl)   lbl.textContent   = "Create Account";
         } else {
           alert("Error: Modal element not found!");
         }
@@ -407,6 +499,19 @@ if ($rolesResult) {
       }
     });
 
+    // Table search filtering
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('tableSearch');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const q = this.value.toLowerCase();
+          document.querySelectorAll('#usersTable tbody tr').forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+          });
+        });
+      }
+    });
+
     // Handle close buttons for fallback
     document.addEventListener('click', function(e) {
       if (e.target && (e.target.id === 'closeModalBtn' || e.target.id === 'cancelCreate' || e.target.classList.contains('close-modal'))) {
@@ -424,5 +529,8 @@ if ($rolesResult) {
     });
   </script>
   
+  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+

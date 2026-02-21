@@ -288,8 +288,10 @@ function initUserAccount() {
                 });
 
                 // Update UI for Edit mode
-                document.querySelector(".modal-header h3").textContent = "Edit Account";
-                document.querySelector("#createUserForm button[type='submit']").textContent = "Update Account";
+                const modalTitle = document.getElementById('modalTitle');
+                const submitLabel = document.getElementById('submitBtnLabel');
+                if (modalTitle) modalTitle.textContent = 'Edit Account';
+                if (submitLabel) submitLabel.textContent = 'Update Account';
 
                 // Password fields are optional during edit
                 document.getElementById("password").required = false;
@@ -318,8 +320,10 @@ function initUserAccount() {
     // Update openModal to reset to Add mode
     const openAddModal = () => {
         document.getElementById("accountId").value = "";
-        document.querySelector(".modal-header h3").textContent = "Add New Account";
-        document.querySelector("#createUserForm button[type='submit']").textContent = "Create Account";
+        const modalTitle = document.getElementById('modalTitle');
+        const submitLabel = document.getElementById('submitBtnLabel');
+        if (modalTitle) modalTitle.textContent = 'Add New Account';
+        if (submitLabel) submitLabel.textContent = 'Create Account';
         document.getElementById("password").required = true;
         document.getElementById("confirmPassword").required = true;
         openModal(true);

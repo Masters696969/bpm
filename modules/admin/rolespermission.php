@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 // Check if user is logged in and is admin
@@ -144,9 +144,23 @@ if ($rolesResult) {
           <span class="user-name"><?php echo htmlspecialchars($_SESSION['username']); ?></span>
           <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role']); ?></span>
         </div>
-        <button class="user-menu-btn">
+        <button class="user-menu-btn" id="userMenuBtn">
           <i data-lucide="more-vertical"></i>
         </button>
+        <div class="user-menu-dropdown" id="userMenuDropdown">
+          <div class="umd-header">
+            <div class="umd-avatar" id="umdAvatar"></div>
+            <div class="umd-info">
+              <span class="umd-signed">Signed in as</span>
+              <span class="umd-name" id="umdName"></span>
+              <span class="umd-role" id="umdRole"></span>
+            </div>
+          </div>
+          <div class="umd-divider"></div>
+          <a href="profile.php" class="umd-item"><i data-lucide="user-round"></i><span>Profile</span></a>
+          <div class="umd-divider"></div>
+          <a href="../../login.php" class="umd-item umd-item-danger umd-sign-out"><i data-lucide="log-out"></i><span>Sign Out</span></a>
+        </div>
       </div>
     </div>
   </aside>
@@ -179,11 +193,51 @@ if ($rolesResult) {
     </header>
 
     <div class="content-wrapper">
-      <section class="users-panel">
-          <div class="panel-header">
-          <h2>Defined Roles</h2>
-          <div class="panel-actions">
-            <button id="addRoleBtn" class="btn btn-primary">+ Add Role</button>
+
+      <!-- Stats Bar -->
+      <?php $totalRoles = count($roles); ?>
+      <div class="rp-stats">
+        <div class="rp-stat-card">
+          <div class="rp-stat-icon indigo"><i data-lucide="shield"></i></div>
+          <div class="rp-stat-info">
+            <span class="rp-stat-value"><?php echo $totalRoles; ?></span>
+            <span class="rp-stat-label">Total Roles</span>
+          </div>
+        </div>
+        <div class="rp-stat-card">
+          <div class="rp-stat-icon violet"><i data-lucide="shield-check"></i></div>
+          <div class="rp-stat-info">
+            <span class="rp-stat-value"><?php echo $totalRoles; ?></span>
+            <span class="rp-stat-label">Active Roles</span>
+          </div>
+        </div>
+        <div class="rp-stat-card">
+          <div class="rp-stat-icon green"><i data-lucide="key-round"></i></div>
+          <div class="rp-stat-info">
+            <span class="rp-stat-value">—</span>
+            <span class="rp-stat-label">Permissions</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Roles Table Card -->
+      <section class="rp-panel">
+        <div class="rp-panel-header">
+          <div class="rp-panel-left">
+            <div class="rp-panel-icon"><i data-lucide="contact-round"></i></div>
+            <div class="rp-panel-titles">
+              <h2>Defined Roles</h2>
+              <div class="rp-panel-sub"><?php echo $totalRoles; ?> role<?php echo $totalRoles !== 1 ? 's' : ''; ?> configured</div>
+            </div>
+          </div>
+          <div class="rp-panel-actions">
+            <div class="rp-panel-search">
+              <i data-lucide="search"></i>
+              <input type="search" id="roleSearch" placeholder="Search roles…">
+            </div>
+            <button id="addRoleBtn" class="btn btn-primary">
+              <i data-lucide="plus"></i> Add Role
+            </button>
           </div>
         </div>
 
@@ -192,37 +246,44 @@ if ($rolesResult) {
             <table id="rolesTable" class="users-table">
               <thead>
                 <tr>
-                  <th>Role Name</th>
+                  <th>Role</th>
                   <th>Description</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 <?php if (empty($roles)): ?>
-                <tr><td colspan="3" style="text-align:center;">No roles found.</td></tr>
+                <tr><td colspan="3" style="text-align:center;padding:32px;color:var(--text-tertiary);">No roles found.</td></tr>
                 <?php else: ?>
-                    <?php foreach ($roles as $role): ?>
-                    <tr>
-                    <td><?php echo htmlspecialchars($role['RoleName']); ?></td>
-                    <td><?php echo htmlspecialchars($role['Description'] ?? 'No description'); ?></td>
+                  <?php foreach ($roles as $role):
+                    $initials = strtoupper(substr($role['RoleName'], 0, 2));
+                  ?>
+                  <tr>
                     <td>
-                        <div class="action-buttons">
+                      <div class="rp-role-cell">
+                        <div class="rp-role-avatar"><?php echo htmlspecialchars($initials); ?></div>
+                        <div>
+                          <div class="rp-role-name"><?php echo htmlspecialchars($role['RoleName']); ?></div>
+                          <div class="rp-role-id">#<?php echo $role['RoleID']; ?></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span class="rp-desc"><?php echo htmlspecialchars($role['Description'] ?? 'No description'); ?></span></td>
+                    <td>
+                      <div class="action-buttons">
                         <button class="btn btn-sm btn-edit" data-role-id="<?php echo $role['RoleID']; ?>" onclick="editRole(<?php echo $role['RoleID']; ?>, '<?php echo htmlspecialchars($role['RoleName']); ?>')">
-                            <i data-lucide="edit-2"></i>
-                            Edit
+                          <i data-lucide="edit-2"></i> Edit
                         </button>
                         <button class="btn btn-sm btn-delete" data-role-id="<?php echo $role['RoleID']; ?>" onclick="archiveRole(<?php echo $role['RoleID']; ?>)">
-                            <i data-lucide="archive"></i>
-                            Archive
+                          <i data-lucide="archive"></i> Archive
                         </button>
                         <button class="btn-permission">
-                            <i data-lucide="shield-check"></i>
-                            Permission
+                          <i data-lucide="shield-check"></i> Permission
                         </button>
-                        </div>
+                      </div>
                     </td>
-                    </tr>
-                    <?php endforeach; ?>
+                  </tr>
+                  <?php endforeach; ?>
                 <?php endif; ?>
               </tbody>
             </table>
@@ -230,33 +291,46 @@ if ($rolesResult) {
         </div>
       </section>
 
-      <!-- Add/Edit Role Modal -->
+      <!-- Add / Edit Role Modal -->
       <div id="roleModal" class="modal" aria-hidden="true">
         <div class="modal-dialog">
-          <header class="modal-header">
-            <h3 id="modalTitle">Add New Role</h3>
-            <button class="close-modal" id="closeModalBtn">&times;</button>
-          </header>
+
+          <!-- Gradient hero -->
+          <div class="rp-modal-hero">
+            <div class="rp-modal-hero-inner">
+              <div class="rp-modal-hero-icon"><i data-lucide="shield-plus"></i></div>
+              <div class="rp-modal-hero-text">
+                <h3 id="modalTitle">Add New Role</h3>
+                <p>Define a role and its description below.</p>
+              </div>
+              <button class="rp-close-modal" id="closeModalBtn" title="Close">&times;</button>
+            </div>
+          </div>
+
           <div class="modal-body">
             <form id="roleForm">
               <input type="hidden" id="roleId" name="role_id" value="">
-              
+
               <div class="form-row">
                 <label for="roleName">Role Name <span class="required">*</span></label>
-                <input id="roleName" name="role_name" type="text" placeholder="Enter role name" required />
+                <input id="roleName" name="role_name" type="text" placeholder="e.g. HR Manager" required />
               </div>
 
-               <div class="form-row">
+              <div class="form-row">
                 <label for="roleDescription">Description</label>
-                <textarea id="roleDescription" name="description" rows="3" placeholder="Enter description"></textarea>
-              </div>
-
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary" id="modalSubmitBtn">Save Role</button>
-                <button type="button" id="cancelRole" class="btn">Cancel</button>
+                <textarea id="roleDescription" name="description" rows="3" placeholder="Describe what this role can do…"></textarea>
               </div>
             </form>
           </div>
+
+          <!-- Sticky footer -->
+          <div class="form-actions">
+            <button type="button" id="cancelRole" class="btn-modal-cancel">Cancel</button>
+            <button type="submit" form="roleForm" class="btn-rp-submit" id="modalSubmitBtn">
+              <i data-lucide="save"></i> Save Role
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -266,10 +340,21 @@ if ($rolesResult) {
   <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/rolespermission.js?v=<?php echo time(); ?>"></script>
   <script>
-    // Initialize icons safely
-    if (window.lucide) {
-      window.lucide.createIcons();
-    }
+    if (window.lucide) window.lucide.createIcons();
+
+    // Inline search filter
+    document.addEventListener('DOMContentLoaded', function() {
+      const s = document.getElementById('roleSearch');
+      if (s) s.addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        document.querySelectorAll('#rolesTable tbody tr').forEach(r => {
+          r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+      });
+    });
   </script>
+  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+

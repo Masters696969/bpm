@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 if (empty($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 'hr staff') {
   header("Location: /microfinance/login.php");
@@ -83,9 +83,23 @@ if (empty($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 
           <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
           <span class="user-role"><?php echo htmlspecialchars(ucwords($_SESSION['user_role'] ?? '')); ?></span>
         </div>
-        <button class="user-menu-btn">
+        <button class="user-menu-btn" id="userMenuBtn">
           <i data-lucide="more-vertical"></i>
         </button>
+        <div class="user-menu-dropdown" id="userMenuDropdown">
+          <div class="umd-header">
+            <div class="umd-avatar" id="umdAvatar"></div>
+            <div class="umd-info">
+              <span class="umd-signed">Signed in as</span>
+              <span class="umd-name" id="umdName"></span>
+              <span class="umd-role" id="umdRole"></span>
+            </div>
+          </div>
+          <div class="umd-divider"></div>
+          <a href="profile.php" class="umd-item"><i data-lucide="user-round"></i><span>Profile</span></a>
+          <div class="umd-divider"></div>
+          <a href="../../login.php" class="umd-item umd-item-danger umd-sign-out"><i data-lucide="log-out"></i><span>Sign Out</span></a>
+        </div>
       </div>
     </div>
   </aside>
@@ -126,5 +140,8 @@ if (empty($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 
     lucide.createIcons();
   </script>
   
+  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+

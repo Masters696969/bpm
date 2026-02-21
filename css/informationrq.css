@@ -1079,7 +1079,7 @@ tbody td {
 .emp-avatar {
   width: 38px;
   height: 38px;
-  border-radius: 10px;
+  border-radius: 50%;
   background: linear-gradient(135deg, #2ca078, #4fb97a);
   display: flex;
   align-items: center;
