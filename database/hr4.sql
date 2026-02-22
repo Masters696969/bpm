@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 20, 2026 at 11:25 AM
+-- Generation Time: Feb 22, 2026 at 05:03 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -41,7 +41,55 @@ CREATE TABLE `bankdetails` (
 
 INSERT INTO `bankdetails` (`BankDetailID`, `EmployeeID`, `BankName`, `AccountNumber`, `AccountType`) VALUES
 (1, 1, 'BDO', '001234567890', 'Savings'),
-(2, 2, 'BDO', '112233445566', 'Savings');
+(2, 2, 'BDO', '230-31005-2026', 'Payroll'),
+(3, 3, 'BDO', '222-444-332-222', 'Payroll');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bank_applications`
+--
+
+CREATE TABLE `bank_applications` (
+  `AppID` int(11) NOT NULL,
+  `EmployeeID` int(11) NOT NULL,
+  `FormID` int(11) DEFAULT NULL,
+  `UploadedPDF` varchar(500) NOT NULL,
+  `Status` enum('Pending','Sent to Bank','Confirmed') NOT NULL DEFAULT 'Pending',
+  `Notes` text DEFAULT NULL,
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `UpdatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `bank_applications`
+--
+
+INSERT INTO `bank_applications` (`AppID`, `EmployeeID`, `FormID`, `UploadedPDF`, `Status`, `Notes`, `CreatedAt`, `UpdatedAt`) VALUES
+(1, 3, 1, 'uploads/bank_submissions/emp3_1771691387.pdf', 'Confirmed', NULL, '2026-02-21 16:29:47', '2026-02-21 16:31:02'),
+(2, 2, 1, 'uploads/bank_submissions/emp2_1771694089.pdf', 'Confirmed', NULL, '2026-02-21 17:14:49', '2026-02-21 17:33:11');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bank_forms_master`
+--
+
+CREATE TABLE `bank_forms_master` (
+  `FormID` int(11) NOT NULL,
+  `FormName` varchar(255) NOT NULL,
+  `FilePath` varchar(500) NOT NULL,
+  `IsActive` tinyint(1) NOT NULL DEFAULT 1,
+  `UploadedBy` varchar(100) DEFAULT NULL,
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `bank_forms_master`
+--
+
+INSERT INTO `bank_forms_master` (`FormID`, `FormName`, `FilePath`, `IsActive`, `UploadedBy`, `CreatedAt`) VALUES
+(1, 'BDO', 'uploads/bank_forms/BDO_1771691221.pdf', 1, 'Red Gin Baldon', '2026-02-21 16:27:01');
 
 -- --------------------------------------------------------
 
@@ -111,8 +159,34 @@ CREATE TABLE `employee` (
 
 INSERT INTO `employee` (`EmployeeID`, `EmployeeCode`, `FirstName`, `MiddleName`, `LastName`, `DateOfBirth`, `Gender`, `PersonalEmail`, `PhoneNumber`, `PermanentAddress`) VALUES
 (1, 'ADM20261001', 'Joshua', 'Rivero', 'Suruiz', '2004-04-06', 'Male', 'suruizandrie@gmail.com', '09111223344', 'Quezon City'),
-(2, 'ADM20261002', 'Red Gin', 'H', 'Baldon', '2005-04-06', 'Male', 'red@gmail.comm', '09111223344', 'Quezon City'),
+(2, 'ADM20261002', 'Red Gin', 'B', 'Baldon', '2005-04-06', 'Male', 'red@gmail.comm', '09111223344', 'Quezon City'),
 (3, 'HRDS20261003', 'Noriel', 'M', 'Dimailig', '2004-05-06', 'Male', 'riverojosh19@gmail.com', '09555223344', 'Quezon City');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employee_update_requests`
+--
+
+CREATE TABLE `employee_update_requests` (
+  `RequestID` int(11) NOT NULL,
+  `EmployeeID` int(11) NOT NULL,
+  `RequestType` varchar(100) NOT NULL DEFAULT 'Update Information',
+  `RequestData` text NOT NULL,
+  `Status` enum('Pending','Approved','Rejected') NOT NULL DEFAULT 'Pending',
+  `RequestDate` datetime NOT NULL DEFAULT current_timestamp(),
+  `ReviewedBy` int(11) DEFAULT NULL,
+  `ReviewDate` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `employee_update_requests`
+--
+
+INSERT INTO `employee_update_requests` (`RequestID`, `EmployeeID`, `RequestType`, `RequestData`, `Status`, `RequestDate`, `ReviewedBy`, `ReviewDate`) VALUES
+(1, 3, 'Update Information', '{\"BankName\":\"BDO\",\"BankAccountNumber\":\"222-444-332-222\"}', 'Approved', '2026-02-20 23:03:38', 3, '2026-02-20 23:13:16'),
+(2, 3, 'Update Information', '{\"BankName\":\"BDO\",\"BankAccountNumber\":\"222-444-332-222\"}', 'Approved', '2026-02-21 01:08:30', 3, '2026-02-21 01:09:23'),
+(3, 3, 'Update Information', '{\"BankName\":\"BDO\",\"BankAccountNumber\":\"222-444-332-222\",\"AccountType\":\"Payroll\"}', 'Approved', '2026-02-21 01:19:33', 3, '2026-02-21 01:22:16');
 
 -- --------------------------------------------------------
 
@@ -184,7 +258,7 @@ INSERT INTO `roles` (`RoleID`, `RoleName`, `Description`) VALUES
 (1, 'Administrator', 'System Administrator with full access'),
 (2, 'HR Manager', 'Oversees the implementation, data integrity, and daily operation of Human Resources Information Systems'),
 (3, 'HR Data Specialist', 'maintains, cleanses, and analyzes employee information'),
-(4, 'HR STAFF', 'provide essential operational support by managing the employee lifecycle, including recruiting, onboarding, payroll administration, and record-keeping');
+(4, 'HR Staff', 'provide essential operational support by managing the employee lifecycle, including recruiting, onboarding, payroll administration, and record-keeping');
 
 -- --------------------------------------------------------
 
@@ -259,7 +333,8 @@ INSERT INTO `useraccountroles` (`UserRoleID`, `AccountID`, `RoleID`, `AssignedAt
 (2, 1, 1, '2026-02-08 16:34:53'),
 (7, 2, 1, '2026-02-09 01:58:28'),
 (8, 3, 3, '2026-02-09 07:19:29'),
-(9, 4, 4, '2026-02-20 09:26:26');
+(9, 4, 4, '2026-02-20 09:26:26'),
+(13, 6, 2, '2026-02-21 14:00:20');
 
 -- --------------------------------------------------------
 
@@ -287,7 +362,8 @@ INSERT INTO `useraccounts` (`AccountID`, `EmployeeID`, `Username`, `Email`, `Pas
 (1, 1, 'Joshua Suruiz', 'suruiz.joshuabcp@gmail.com', '$2y$10$MW7j07pxzC/nS6nNW2gt2efiw8hHy0OifrVMDTgnJ5PJVw/1i4uGa', NULL, NULL, 1, 'Active'),
 (2, 2, 'Red Gin Baldon', 'suruizandrie@gmail.com', '$2y$10$Xqmv8TP/YYiax3DseufwDOmKYC4CRdqmf4hd2ASgMcwttHL2HT4.K', NULL, NULL, 1, 'Active'),
 (3, 3, 'Noriel Dimailig', 'riverojosh19@gmail.com', '$2y$10$h7FqYl3dpl5lxi9M.1MROe7mKykN0xiBfZ5qtbLrnwczzqMQV.6dK', NULL, NULL, 1, 'Active'),
-(4, NULL, 'Earl Laurence Alarcon', 'earl@gmail.com', '$2y$10$pNvPeIuYaJbrX1p6J.DC1uBfmkl.9LPpmpgEgLtvlH8n7Y.98Evqy', '367076', '2026-02-20 12:15:50', 1, 'Active');
+(4, NULL, 'Earl Laurence Alarcon', 'earl@gmail.com', '$2y$10$pNvPeIuYaJbrX1p6J.DC1uBfmkl.9LPpmpgEgLtvlH8n7Y.98Evqy', NULL, NULL, 1, 'Active'),
+(6, NULL, 'Glory Job', 'glory@gmail.com', '$2y$10$YobyvYhmp2hYgDAfhc0jvOImU.ue3DEh5mL9.KGzMKQiZ08ouN9ma', NULL, NULL, 1, 'Active');
 
 --
 -- Indexes for dumped tables
@@ -299,6 +375,19 @@ INSERT INTO `useraccounts` (`AccountID`, `EmployeeID`, `Username`, `Email`, `Pas
 ALTER TABLE `bankdetails`
   ADD PRIMARY KEY (`BankDetailID`),
   ADD KEY `EmployeeID` (`EmployeeID`);
+
+--
+-- Indexes for table `bank_applications`
+--
+ALTER TABLE `bank_applications`
+  ADD PRIMARY KEY (`AppID`),
+  ADD KEY `fk_ba_form` (`FormID`);
+
+--
+-- Indexes for table `bank_forms_master`
+--
+ALTER TABLE `bank_forms_master`
+  ADD PRIMARY KEY (`FormID`);
 
 --
 -- Indexes for table `department`
@@ -319,6 +408,13 @@ ALTER TABLE `emergency_contacts`
 ALTER TABLE `employee`
   ADD PRIMARY KEY (`EmployeeID`),
   ADD UNIQUE KEY `PersonalEmail` (`PersonalEmail`);
+
+--
+-- Indexes for table `employee_update_requests`
+--
+ALTER TABLE `employee_update_requests`
+  ADD PRIMARY KEY (`RequestID`),
+  ADD KEY `EmployeeID` (`EmployeeID`);
 
 --
 -- Indexes for table `employmentinformation`
@@ -382,7 +478,19 @@ ALTER TABLE `useraccounts`
 -- AUTO_INCREMENT for table `bankdetails`
 --
 ALTER TABLE `bankdetails`
-  MODIFY `BankDetailID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `BankDetailID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `bank_applications`
+--
+ALTER TABLE `bank_applications`
+  MODIFY `AppID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `bank_forms_master`
+--
+ALTER TABLE `bank_forms_master`
+  MODIFY `FormID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `department`
@@ -401,6 +509,12 @@ ALTER TABLE `emergency_contacts`
 --
 ALTER TABLE `employee`
   MODIFY `EmployeeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `employee_update_requests`
+--
+ALTER TABLE `employee_update_requests`
+  MODIFY `RequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `employmentinformation`
@@ -436,13 +550,13 @@ ALTER TABLE `taxbenefits`
 -- AUTO_INCREMENT for table `useraccountroles`
 --
 ALTER TABLE `useraccountroles`
-  MODIFY `UserRoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `UserRoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `useraccounts`
 --
 ALTER TABLE `useraccounts`
-  MODIFY `AccountID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `AccountID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
@@ -455,10 +569,22 @@ ALTER TABLE `bankdetails`
   ADD CONSTRAINT `bankdetails_ibfk_1` FOREIGN KEY (`EmployeeID`) REFERENCES `employee` (`EmployeeID`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `bank_applications`
+--
+ALTER TABLE `bank_applications`
+  ADD CONSTRAINT `fk_ba_form` FOREIGN KEY (`FormID`) REFERENCES `bank_forms_master` (`FormID`) ON DELETE SET NULL;
+
+--
 -- Constraints for table `emergency_contacts`
 --
 ALTER TABLE `emergency_contacts`
   ADD CONSTRAINT `emergency_contacts_ibfk_1` FOREIGN KEY (`EmployeeID`) REFERENCES `employee` (`EmployeeID`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `employee_update_requests`
+--
+ALTER TABLE `employee_update_requests`
+  ADD CONSTRAINT `employee_update_requests_ibfk_1` FOREIGN KEY (`EmployeeID`) REFERENCES `employee` (`EmployeeID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `employmentinformation`
