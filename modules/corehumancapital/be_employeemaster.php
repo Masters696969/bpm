@@ -59,6 +59,7 @@ try {
                     e.*,
                     e.EmployeeCode,
                     ei.*,
+                    ei.BaseSalary as BaseSalary,
                     d.DepartmentName,
                     p.PositionName,
                     sg.GradeLevel, sg.MinSalary, sg.MaxSalary,
@@ -102,11 +103,21 @@ try {
         $hiringDate = $_POST['HiringDate'] ?? null;
         $workEmail = $_POST['WorkEmail'] ?? '';
         $empStatus = $_POST['EmploymentStatus'] ?? '';
+        $baseSalary = $_POST['BaseSalary'] ?? 0;
         
         $tin = $_POST['TINNumber'] ?? '';
         $sss = $_POST['SSSNumber'] ?? '';
         $philhealth = $_POST['PhilHealthNumber'] ?? '';
         $pagibig = $_POST['PagIBIGNumber'] ?? '';
+        $taxStatus = $_POST['TaxStatus'] ?? 'S'; // Default to Single
+
+        $bankName = 'BDO'; // Forced to BDO
+        $accountNumber = $_POST['BankAccountNumber'] ?? '';
+        $accountType = 'Payroll'; // Forced to Payroll
+
+        $contactName = $_POST['ContactName'] ?? '';
+        $relationship = $_POST['Relationship'] ?? '';
+        $emergencyPhone = $_POST['EmergencyPhone'] ?? '';
 
         $conn->begin_transaction();
 
@@ -118,18 +129,58 @@ try {
             $stmtEmp->execute();
 
             // Update Employment Information
-            $sqlInfo = "UPDATE employmentinformation SET HiringDate=?, WorkEmail=?, EmploymentStatus=? WHERE EmployeeID=?";
+            $sqlInfo = "UPDATE employmentinformation SET HiringDate=?, WorkEmail=?, EmploymentStatus=?, BaseSalary=? WHERE EmployeeID=?";
             $stmtInfo = $conn->prepare($sqlInfo);
-            $stmtInfo->bind_param("sssi", $hiringDate, $workEmail, $empStatus, $employeeId);
+            $stmtInfo->bind_param("sssdi", $hiringDate, $workEmail, $empStatus, $baseSalary, $employeeId);
             $stmtInfo->execute();
 
-            // Update Tax Benefits (Check if exists first, or use INSERT ON DUPLICATE if supported/configured, assuming simple UPDATE for now or checking)
-            // Simplified: Try UPDATE, if 0 affected and rows didn't exist, might need INSERT. 
-            // For now assuming rows exist or strict update.
-            $sqlTax = "UPDATE taxbenefits SET TINNumber=?, SSSNumber=?, PhilHealthNumber=?, PagIBIGNumber=? WHERE EmployeeID=?";
-            $stmtTax = $conn->prepare($sqlTax);
-            $stmtTax->bind_param("ssssi", $tin, $sss, $philhealth, $pagibig, $employeeId);
+            // Update Tax Benefits
+            $sqlCheckTax = "SELECT BenefitID FROM taxbenefits WHERE EmployeeID = ?";
+            $stmtCheckTax = $conn->prepare($sqlCheckTax);
+            $stmtCheckTax->bind_param("i", $employeeId);
+            $stmtCheckTax->execute();
+            if ($stmtCheckTax->get_result()->num_rows > 0) {
+                $sqlTax = "UPDATE taxbenefits SET TINNumber=?, SSSNumber=?, PhilHealthNumber=?, PagIBIGNumber=?, TaxStatus=? WHERE EmployeeID=?";
+                $stmtTax = $conn->prepare($sqlTax);
+                $stmtTax->bind_param("sssssi", $tin, $sss, $philhealth, $pagibig, $taxStatus, $employeeId);
+            } else {
+                $sqlTax = "INSERT INTO taxbenefits (TINNumber, SSSNumber, PhilHealthNumber, PagIBIGNumber, TaxStatus, EmployeeID) VALUES (?, ?, ?, ?, ?, ?)";
+                $stmtTax = $conn->prepare($sqlTax);
+                $stmtTax->bind_param("sssssi", $tin, $sss, $philhealth, $pagibig, $taxStatus, $employeeId);
+            }
             $stmtTax->execute();
+
+            // Update Bank Details
+            $sqlCheckBank = "SELECT BankDetailID FROM bankdetails WHERE EmployeeID = ?";
+            $stmtCheckBank = $conn->prepare($sqlCheckBank);
+            $stmtCheckBank->bind_param("i", $employeeId);
+            $stmtCheckBank->execute();
+            if ($stmtCheckBank->get_result()->num_rows > 0) {
+                $sqlBank = "UPDATE bankdetails SET BankName=?, AccountNumber=?, AccountType=? WHERE EmployeeID=?";
+                $stmtBank = $conn->prepare($sqlBank);
+                $stmtBank->bind_param("sssi", $bankName, $accountNumber, $accountType, $employeeId);
+            } else {
+                $sqlBank = "INSERT INTO bankdetails (BankName, AccountNumber, AccountType, EmployeeID) VALUES (?, ?, ?, ?)";
+                $stmtBank = $conn->prepare($sqlBank);
+                $stmtBank->bind_param("sssi", $bankName, $accountNumber, $accountType, $employeeId);
+            }
+            $stmtBank->execute();
+
+            // Update Emergency Contact
+            $sqlCheckEC = "SELECT ContactID FROM emergency_contacts WHERE EmployeeID = ? AND IsPrimary = 1";
+            $stmtCheckEC = $conn->prepare($sqlCheckEC);
+            $stmtCheckEC->bind_param("i", $employeeId);
+            $stmtCheckEC->execute();
+            if ($stmtCheckEC->get_result()->num_rows > 0) {
+                $sqlEC = "UPDATE emergency_contacts SET ContactName=?, Relationship=?, PhoneNumber=? WHERE EmployeeID=? AND IsPrimary = 1";
+                $stmtEC = $conn->prepare($sqlEC);
+                $stmtEC->bind_param("sssi", $contactName, $relationship, $emergencyPhone, $employeeId);
+            } else {
+                $sqlEC = "INSERT INTO emergency_contacts (ContactName, Relationship, PhoneNumber, EmployeeID, IsPrimary) VALUES (?, ?, ?, ?, 1)";
+                $stmtEC = $conn->prepare($sqlEC);
+                $stmtEC->bind_param("sssi", $contactName, $relationship, $emergencyPhone, $employeeId);
+            }
+            $stmtEC->execute();
 
             $conn->commit();
             echo json_encode(['success' => true, 'message' => 'Employee updated successfully']);

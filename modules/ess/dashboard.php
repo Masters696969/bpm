@@ -12,6 +12,7 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   <link rel="stylesheet" href="../../css/essdashboard.css?v=1.2">
+  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
@@ -90,8 +91,8 @@ if (!isset($_SESSION['username'])) {
           <img src="../../img/profile.png" alt="User">
         </div>
         <div class="user-info">
-          <span class="user-name">John Doe</span>
-          <span class="user-role">Administrator</span>
+          <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
+          <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'Employee'); ?></span>
         </div>
         <button class="user-menu-btn" id="userMenuBtn">
           <i data-lucide="more-vertical"></i>
@@ -123,7 +124,7 @@ if (!isset($_SESSION['username'])) {
         </button>
         <div class="header-title">
           <h1>Dashboard Overview</h1>
-          <p>Welcome back, John! Here's what's happening today.</p>
+          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
         </div>
       </div>
       <div class="header-right">

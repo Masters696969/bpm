@@ -12,7 +12,7 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bank Form Management</title>
   <link rel="stylesheet" href="../../css/bankform.css?v=1.3">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.0">
+  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>

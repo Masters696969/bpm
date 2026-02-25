@@ -13,7 +13,7 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Information Management</title>
   <link rel="stylesheet" href="../../css/informationmanagement.css?v=2.0">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.0">
+  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -366,9 +366,7 @@ if (!isset($_SESSION['username'])) {
 
     </div><!-- /content-wrapper -->
 
-    <!-- ══════════════════════════════
-         REQUEST EDIT MODAL
-         ══════════════════════════════ -->
+   
     <div class="modal-overlay hidden" id="requestEditModal">
       <div class="rem-dialog">
 

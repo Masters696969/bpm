@@ -180,12 +180,13 @@ function renderResumeModal(data) {
 
             <!-- Bank & Compensation -->
             <div class="ep-section">
-                <div class="ep-section-hdr ep-hdr-green"><i data-lucide="landmark"></i> Bank & Compensation</div>
+                <div class="ep-section-hdr ep-hdr-green"><i data-lucide="credit-card"></i> Bank & Compensation</div>
                 <div class="ep-fields">
-                    <div class="ep-field"><label>Bank Name</label><span>${data.BankName || '—'}</span></div>
+                    <div class="ep-field"><label>Bank Name</label><span style="color:var(--brand-green);font-weight:600">BDO</span></div>
                     <div class="ep-field"><label>Account Number</label><span>${data.BankAccountNumber || '—'}</span></div>
-                    <div class="ep-field"><label>Account Type</label><span>${data.AccountType || '—'}</span></div>
-                    <div class="ep-field"><label>Salary Range</label><span>${data.MinSalary ? formatCurrency(data.MinSalary) + ' – ' + formatCurrency(data.MaxSalary) : '—'}</span></div>
+                    <div class="ep-field"><label>Account Type</label><span style="color:var(--brand-green);font-weight:600">Payroll</span></div>
+                    <div class="ep-field"><label>Base Salary</label><span>${(data.BaseSalary !== null && data.BaseSalary !== undefined) ? formatCurrency(data.BaseSalary) : '—'}</span></div>
+                    <div class="ep-field full"><label>Salary Range</label><span>${data.MinSalary ? formatCurrency(data.MinSalary) + ' – ' + formatCurrency(data.MaxSalary) : '—'}</span></div>
                 </div>
             </div>
 
@@ -317,20 +318,10 @@ function renderEditForm(data) {
                     </div>
                 </div>
 
-                <!-- Bank & Compensation -->
+                <!-- Employment Information -->
                 <div class="ep-section">
-                    <div class="ep-section-hdr ep-hdr-green"><i data-lucide="credit-card"></i> Bank & Compensation</div>
+                    <div class="ep-section-hdr ep-hdr-indigo"><i data-lucide="briefcase"></i> Employment Information</div>
                     <div class="ep-fields">
-                        <div class="ep-field"><label>Bank Name</label>      <input type="text" name="BankName"      class="ep-input" value="${data.BankName || ''}"></div>
-                        <div class="ep-field"><label>Account Number</label> <input type="text" name="BankAccountNumber" class="ep-input" value="${data.BankAccountNumber || ''}"></div>
-                        <div class="ep-field"><label>Account Type</label>
-                            <select name="AccountType" class="ep-input">
-                                <option value="">— Select —</option>
-                                <option value="Savings"  ${data.AccountType === 'Savings' ? 'selected' : ''}>Savings</option>
-                                <option value="Checking" ${data.AccountType === 'Checking' ? 'selected' : ''}>Checking</option>
-                                <option value="Payroll"  ${data.AccountType === 'Payroll' ? 'selected' : ''}>Payroll</option>
-                            </select>
-                        </div>
                         <div class="ep-field">
                             <label>Employment Status</label>
                             <select name="EmploymentStatus" class="ep-input">
@@ -342,7 +333,20 @@ function renderEditForm(data) {
                         </div>
                         <div class="ep-field"><label>Date Hired</label>  <input type="date"  name="HiringDate" class="ep-input" value="${data.HiringDate || ''}"></div>
                         <div class="ep-field"><label>Work Email</label>  <input type="email" name="WorkEmail"  class="ep-input" value="${data.WorkEmail || ''}"></div>
-                        <div class="ep-field"><label>Phone</label>       <input type="text"  name="PhoneNumber" class="ep-input" value="${data.PhoneNumber || ''}"></div>
+                        <div class="ep-field"><label>Phone (Work)</label><input type="text"  name="PhoneNumber" class="ep-input" value="${data.PhoneNumber || ''}"></div>
+                    </div>
+                </div>
+
+                <!-- Bank & Compensation -->
+                <div class="ep-section">
+                    <div class="ep-section-hdr ep-hdr-green"><i data-lucide="credit-card"></i> Bank & Compensation</div>
+                    <div class="ep-fields">
+                        <div class="ep-field"><label>Bank Name</label>      <input type="text" name="BankName"      class="ep-input" value="BDO" readonly style="background:var(--background-alt);font-weight:600;color:var(--brand-green)"></div>
+                        <div class="ep-field"><label>Account Number</label> <input type="text" name="BankAccountNumber" class="ep-input" value="${data.BankAccountNumber || ''}"></div>
+                        <div class="ep-field"><label>Account Type</label>
+                            <input type="text" name="AccountType" class="ep-input" value="Payroll" readonly style="background:var(--background-alt);font-weight:600;color:var(--brand-green)">
+                        </div>
+                        <div class="ep-field"><label>Base Salary</label>    <input type="number" name="BaseSalary" class="ep-input" value="${data.BaseSalary || 0}"></div>
                     </div>
                 </div>
 

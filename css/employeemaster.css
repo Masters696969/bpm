@@ -2263,6 +2263,11 @@ body {
     color: #dc2626;
 }
 
+.ep-hdr-indigo {
+    background: rgba(79, 70, 229, .07);
+    color: #4f46e5;
+}
+
 .ep-fields {
     display: grid;
     grid-template-columns: 1fr 1fr;

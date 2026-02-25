@@ -1,12 +1,20 @@
-﻿<!DOCTYPE html>
+﻿<?php
+session_start();
+if (!isset($_SESSION['username'])) {
+    header("Location: ../../login.php");
+    exit();
+}
+?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Audit Logs</title>
   <link rel="stylesheet" href="../../css/auditlogs.css?v=1.2">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.0">
+  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
 <body>
@@ -147,11 +155,11 @@
     <div class="sidebar-footer">
       <div class="user-profile">
         <div class="user-avatar">
-          <img src="../img/profile.png" alt="User">
+          <img src="../../img/profile.png" alt="User">
         </div>
         <div class="user-info">
-          <span class="user-name">John Doe</span>
-          <span class="user-role">Administrator</span>
+          <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'Admin'); ?></span>
+          <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'Administrator'); ?></span>
         </div>
         <button class="user-menu-btn" id="userMenuBtn">
           <i data-lucide="more-vertical"></i>
@@ -183,7 +191,7 @@
         </button>
         <div class="header-title">
           <h1>Dashboard Overview</h1>
-          <p>Welcome back, John! Here's what's happening today.</p>
+          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
         </div>
       </div>
       <div class="header-right">

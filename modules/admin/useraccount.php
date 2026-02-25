@@ -42,8 +42,9 @@ if ($rolesResult) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Account Management - Microfinance</title>
   <link rel="stylesheet" href="../../css/useraccount.css?v=1.4">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.0">
+  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
 <body>
@@ -176,11 +177,6 @@ if ($rolesResult) {
         <a href="#" class="nav-item">
           <i data-lucide="shield"></i>
           <span>Security</span>
-        </a>
-
-        <a href="../../logout.php" class="nav-item" onclick="return confirm ('Are you sure you want to log out?')">
-            <i data-lucide="log-out"></i>
-            <span>Logout</span>
         </a>
       </div>
     </nav>
@@ -445,7 +441,6 @@ if ($rolesResult) {
         </div>
       </div>
 
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </div>
   </main>
   <script src="../../js/sidebar-active.js"></script>

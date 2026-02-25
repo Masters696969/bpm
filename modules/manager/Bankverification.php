@@ -31,8 +31,9 @@ if ($subsRes) while ($r = $subsRes->fetch_assoc()) $submissions[] = $r;
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bank Verification</title>
   <link rel="stylesheet" href="../../css/bankverification.css?v=1.3">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.0">
+  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
 <body>
@@ -124,14 +125,16 @@ if ($subsRes) while ($r = $subsRes->fetch_assoc()) $submissions[] = $r;
           <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'Manager'); ?></span>
           <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'HR Manager'); ?></span>
         </div>
-        <button class="user-menu-btn" id="userMenuBtn"><i data-lucide="more-vertical"></i></button>
+        <button class="user-menu-btn" id="userMenuBtn">
+          <i data-lucide="more-vertical"></i>
+        </button>
         <div class="user-menu-dropdown" id="userMenuDropdown">
           <div class="umd-header">
-            <div class="umd-avatar"><?php echo strtoupper(substr($_SESSION['username'] ?? 'M', 0, 1)); ?></div>
+            <div class="umd-avatar" id="umdAvatar"></div>
             <div class="umd-info">
               <span class="umd-signed">Signed in as</span>
-              <span class="umd-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'Manager'); ?></span>
-              <span class="umd-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'HR Manager'); ?></span>
+              <span class="umd-name" id="umdName"></span>
+              <span class="umd-role" id="umdRole"></span>
             </div>
           </div>
           <div class="umd-divider"></div>
