@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (empty($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 'hr staff') {
   header("Location: /microfinance/login.php");
@@ -139,9 +139,8 @@ if (empty($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 
   <script>
     lucide.createIcons();
   </script>
-  
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
 
 

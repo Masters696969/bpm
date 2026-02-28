@@ -1,4 +1,4 @@
-ï»¿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -13,7 +13,6 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   <link rel="stylesheet" href="../../css/informationrq.css?v=1.2">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -221,7 +220,7 @@ if (!isset($_SESSION['username'])) {
                     <i data-lucide="clock"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-value" id="statPending">â€”</span>
+                    <span class="stat-value" id="statPending">—</span>
                     <span class="stat-label">Pending Requests</span>
                 </div>
             </div>
@@ -230,7 +229,7 @@ if (!isset($_SESSION['username'])) {
                     <i data-lucide="check-circle-2"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-value" id="statApproved">â€”</span>
+                    <span class="stat-value" id="statApproved">—</span>
                     <span class="stat-label">Approved</span>
                 </div>
             </div>
@@ -239,7 +238,7 @@ if (!isset($_SESSION['username'])) {
                     <i data-lucide="x-circle"></i>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-value" id="statRejected">â€”</span>
+                    <span class="stat-value" id="statRejected">—</span>
                     <span class="stat-label">Rejected</span>
                 </div>
             </div>
@@ -255,7 +254,7 @@ if (!isset($_SESSION['username'])) {
                 <div class="card-header-right">
                     <label class="table-search">
                         <i data-lucide="search"></i>
-                        <input type="text" id="tableSearch" placeholder="Search employeeâ€¦">
+                        <input type="text" id="tableSearch" placeholder="Search employee…">
                     </label>
                 </div>
             </div>
@@ -276,7 +275,7 @@ if (!isset($_SESSION['username'])) {
                                 <td colspan="5">
                                     <div class="empty-state">
                                         <i data-lucide="loader-2"></i>
-                                        <p>Loading requestsâ€¦</p>
+                                        <p>Loading requests…</p>
                                     </div>
                                 </td>
                             </tr>
@@ -313,13 +312,12 @@ if (!isset($_SESSION['username'])) {
       </div>
     </div>
  </main>
-  <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/informationrq.js"></script>
   <script>
     lucide.createIcons();
   </script>
-  
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+
 

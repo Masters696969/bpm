@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -12,7 +12,6 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   <link rel="stylesheet" href="../../css/compensationdashboard.css?v=1.2">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -216,14 +215,13 @@ if (!isset($_SESSION['username'])) {
   
     </div>
   </main>
-  <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/compensationdashboard.js"></script>
   <script>
     lucide.createIcons();
   </script>
-  
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+
 
 

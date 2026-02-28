@@ -31,7 +31,6 @@ if ($subsRes) while ($r = $subsRes->fetch_assoc()) $submissions[] = $r;
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bank Verification</title>
   <link rel="stylesheet" href="../../css/bankverification.css?v=1.3">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -344,10 +343,7 @@ if ($subsRes) while ($r = $subsRes->fetch_assoc()) $submissions[] = $r;
 
     </div><!-- /.content-wrapper -->
   </main>
-
-  <script src="../../js/sidebar-active.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="../../js/user-menu.js"></script>
   <script src="../../js/bankverification.js?v=<?php echo time(); ?>"></script>
   <script>
     lucide.createIcons();
@@ -367,3 +363,5 @@ if ($subsRes) while ($r = $subsRes->fetch_assoc()) $submissions[] = $r;
   </script>
 </body>
 </html>
+
+

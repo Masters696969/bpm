@@ -1,4 +1,4 @@
-ï»¿<?php
+<?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../../login.php');
@@ -12,7 +12,6 @@ if (!isset($_SESSION['user_id'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   <link rel="stylesheet" href="../../css/employeemaster.css?v=1.1">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -220,7 +219,7 @@ if (!isset($_SESSION['user_id'])) {
               <i data-lucide="users"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-value" id="statTotal">â€”</span>
+              <span class="stat-value" id="statTotal">—</span>
               <span class="stat-label">Total Employees</span>
             </div>
           </div>
@@ -229,7 +228,7 @@ if (!isset($_SESSION['user_id'])) {
               <i data-lucide="user-check"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-value" id="statRegular">â€”</span>
+              <span class="stat-value" id="statRegular">—</span>
               <span class="stat-label">Regular</span>
             </div>
           </div>
@@ -238,7 +237,7 @@ if (!isset($_SESSION['user_id'])) {
               <i data-lucide="hourglass"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-value" id="statProbationary">â€”</span>
+              <span class="stat-value" id="statProbationary">—</span>
               <span class="stat-label">Probationary</span>
             </div>
           </div>
@@ -254,7 +253,7 @@ if (!isset($_SESSION['user_id'])) {
             <div class="card-header-right">
               <label class="table-search">
                 <i data-lucide="search"></i>
-                <input type="text" id="empTableSearch" placeholder="Search employeesâ€¦">
+                <input type="text" id="empTableSearch" placeholder="Search employees…">
               </label>
             </div>
           </div>
@@ -297,7 +296,6 @@ if (!isset($_SESSION['user_id'])) {
       </div>
 
   </main>
-  <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/chcdashboard.js"></script>
   <script src="../../js/employeemaster.js"></script>
   <script>
@@ -310,8 +308,8 @@ if (!isset($_SESSION['user_id'])) {
       });
     });
   </script>
-  
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+
 

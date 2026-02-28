@@ -1,4 +1,4 @@
-ï»¿
+
 <?php
 session_start();
 if (!isset($_SESSION['username'])) {
@@ -13,7 +13,6 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Information Management</title>
   <link rel="stylesheet" href="../../css/informationmanagement.css?v=2.0">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -149,8 +148,8 @@ if (!isset($_SESSION['username'])) {
           <div class="im-hero-left">
             <div class="im-avatar" id="avatarPlaceholder"></div>
             <div class="im-hero-info">
-              <h2 class="im-hero-name" id="employeeName">Loadingâ€¦</h2>
-              <p class="im-hero-position" id="employeePosition">Loadingâ€¦</p>
+              <h2 class="im-hero-name" id="employeeName">Loading…</h2>
+              <p class="im-hero-position" id="employeePosition">Loading…</p>
               <div class="im-hero-chips">
                 <span class="im-chip">
                   <i data-lucide="building-2"></i>
@@ -414,7 +413,7 @@ if (!isset($_SESSION['username'])) {
                   <div class="rem-field" style="border-bottom:0">
                     <label>Account Type</label>
                     <select name="AccountType" class="rem-input">
-                      <option value="">â€” Select â€”</option>
+                      <option value="">— Select —</option>
                       <option value="Savings">Savings</option>
                       <option value="Checking">Checking</option>
                       <option value="Payroll">Payroll</option>
@@ -461,7 +460,7 @@ if (!isset($_SESSION['username'])) {
         <div class="rem-footer">
           <div class="rem-footer-hint">
             <i data-lucide="clock"></i>
-            Requests are usually processed within 1â€“2 business days.
+            Requests are usually processed within 1–2 business days.
           </div>
           <button type="submit" form="requestEditForm" class="rem-btn-send">
             <i data-lucide="send"></i> Send Request
@@ -472,8 +471,6 @@ if (!isset($_SESSION['username'])) {
     </div>
 
   </main>
-
-  <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/chcdashboard.js"></script>
   <script src="../../js/hr1informationmanagement.js?v=<?php echo time(); ?>"></script>
   <script>
@@ -498,9 +495,9 @@ if (!isset($_SESSION['username'])) {
       }
     });
   </script>
-
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+
 
 

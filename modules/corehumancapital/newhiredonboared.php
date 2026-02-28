@@ -1,4 +1,4 @@
-﻿
+
 <?php
 session_start();
 if (!isset($_SESSION['username'])) {
@@ -377,9 +377,8 @@ if (!isset($_SESSION['username'])) {
   <script>
     lucide.createIcons();
   </script>
-  
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
 
 

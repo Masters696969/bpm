@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -13,7 +13,6 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   <link rel="stylesheet" href="../../css/chcdashboard.css?v=1.2">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
@@ -510,16 +509,14 @@ if (!isset($_SESSION['username'])) {
 // Actually footer.php includes sidebar-active.js and chcdashboard.js for everything in this module.
 ?>
   </main>
-  
-  <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/chcdashboard.js"></script>
   <?php if (isset($extraScripts)) echo $extraScripts; ?>
   <script>
     lucide.createIcons();
   </script>
-  
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+
 
 

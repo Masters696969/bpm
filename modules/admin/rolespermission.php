@@ -1,4 +1,4 @@
-ï»¿<?php
+<?php
 session_start();
 
 // Check if user is logged in and is admin
@@ -29,7 +29,6 @@ if ($rolesResult) {
   <link rel="stylesheet" href="../../css/useraccount.css?v=1.4"> 
   <!-- Specific styles for this page -->
   <link rel="stylesheet" href="../../css/rolespermission.css?v=1.0">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -212,7 +211,7 @@ if ($rolesResult) {
         <div class="rp-stat-card">
           <div class="rp-stat-icon green"><i data-lucide="key-round"></i></div>
           <div class="rp-stat-info">
-            <span class="rp-stat-value">â€”</span>
+            <span class="rp-stat-value">—</span>
             <span class="rp-stat-label">Permissions</span>
           </div>
         </div>
@@ -231,7 +230,7 @@ if ($rolesResult) {
           <div class="rp-panel-actions">
             <div class="rp-panel-search">
               <i data-lucide="search"></i>
-              <input type="search" id="roleSearch" placeholder="Search rolesâ€¦">
+              <input type="search" id="roleSearch" placeholder="Search roles…">
             </div>
             <button id="addRoleBtn" class="btn btn-primary">
               <i data-lucide="plus"></i> Add Role
@@ -316,7 +315,7 @@ if ($rolesResult) {
 
               <div class="form-row">
                 <label for="roleDescription">Description</label>
-                <textarea id="roleDescription" name="description" rows="3" placeholder="Describe what this role can doâ€¦"></textarea>
+                <textarea id="roleDescription" name="description" rows="3" placeholder="Describe what this role can do…"></textarea>
               </div>
             </form>
           </div>
@@ -334,7 +333,6 @@ if ($rolesResult) {
 
     </div>
   </main>
-  <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/rolespermission.js?v=<?php echo time(); ?>"></script>
   <script>
     if (window.lucide) window.lucide.createIcons();
@@ -350,8 +348,9 @@ if ($rolesResult) {
       });
     });
   </script>
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+
 
 

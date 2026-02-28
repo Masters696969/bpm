@@ -1,8 +1,8 @@
-﻿<?php
+<?php
 session_start();
-if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'PAYROLL_PROCESSOR') {
-  header("Location: /microfinance/login.php");
-  exit;
+if (!isset($_SESSION['username'])) {
+    header("Location: ../../login.php");
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -11,9 +11,10 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'PAYROLL_PROC
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  <link rel="stylesheet" href="../css/dashboard.css?v=1.2">
+  <link rel="stylesheet" href="../../css/payrolldashboard.css?v=1.2">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="icon" type="image/png" href="img/logo.png">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
 <body>
 
@@ -22,7 +23,7 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'PAYROLL_PROC
     <div class="sidebar-header">
       <div class="logo-container">
         <div class="logo-wrapper">
-          <img src="../img/logo.png" alt="Logo" class="logo">
+          <img src="../../img/logo.png" alt="Logo" class="logo">
         </div>
         <div class="logo-text">
           <h2 class="app-name">Microfinance</h2>
@@ -38,72 +39,83 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'PAYROLL_PROC
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-        <a href="#" class="nav-item active">
+        <a href="dashboard.php" class="nav-item active">
           <i data-lucide="layout-dashboard"></i>
           <span>Dashboard</span>
         </a>
-
-        <div class="nav-item-group">
+        <div class="nav-item-group <?php echo ($module === 'hr') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="hr">
             <div class="nav-item-content">
-              <i data-lucide="users"></i>
-              <span>Human Resources</span>
+              <i data-lucide="book-user"></i>
+              <span>Core Human Capital</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-hr">
-            <a href="payroll.html" class="submenu-item">
-              <i data-lucide="wallet"></i>
-              <span>Payroll</span>
+            <a href="" class="submenu-item">
+              <i data-lucide="user-plus"></i>
+              <span>New Hired Onboard Request</span>
             </a>
-            <a href="compensation.html" class="submenu-item">
-              <i data-lucide="trending-up"></i>
-              <span>Compensation Planning</span>
+            <a href="employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
+              <i data-lucide="file-user"></i>
+              <span>Employee Master Files</span>
             </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="user-circle"></i>
-              <span>Core Human Capital</span>
+             <a href="informationrq.php" class="submenu-item <?php echo ($page === 'informationrq') ? 'active' : ''; ?>">
+              <i data-lucide="user-round-pen"></i>
+              <span>Information Request</span>
             </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="bar-chart-3"></i>
-              <span>HR Analytics</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="finance">
-            <div class="nav-item-content">
-              <i data-lucide="banknote"></i>
-              <span>Finance</span>
-            </div>
-            <i data-lucide="chevron-down" class="submenu-icon"></i>
-          </button>
-          <div class="submenu" id="submenu-finance">
-            <a href="#" class="submenu-item">
-              <i data-lucide="receipt"></i>
-              <span>Accounting</span>
-            </a>
-            <a href="#" class="submenu-item">
+            <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
               <i data-lucide="file-text"></i>
-              <span>Invoicing</span>
+              <span>Bank Form Management</span>
             </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="pie-chart"></i>
-              <span>Budget Planning</span>
+            <a href="" class="submenu-item">
+              <i data-lucide="user-cog"></i>
+              <span>Security Settings</span>
+            </a>
+            <a href="auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
+              <i data-lucide="book-user"></i>
+              <span>Audit Logs</span>
             </a>
           </div>
         </div>
 
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="loans">
+        <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
-              <i data-lucide="hand-coins"></i>
-              <span>Loan Management</span>
+              <i data-lucide="circle-pile"></i>
+              <span>Compensation Planning</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-loans">
+          <div class="submenu" id="submenu-planning">
+            <a href="#" class="submenu-item">
+              <i data-lucide="notebook"></i>
+              <span>Current Compensation Structure</span>
+            </a>
+            <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
+              <i data-lucide="notebook-pen"></i>
+              <span>Compensation Structure Management</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="calendar-clock"></i>
+              <span>Disbursements</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="coins"></i>
+              <span>Collections</span>
+            </a>
+          </div>
+        </div>
+
+           <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="payroll">
+            <div class="nav-item-content">
+              <i data-lucide="banknote-arrow-down"></i>
+              <span>Payroll</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-payroll">
             <a href="#" class="submenu-item">
               <i data-lucide="file-plus"></i>
               <span>Applications</span>
@@ -122,18 +134,8 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'PAYROLL_PROC
             </a>
           </div>
         </div>
-
-        <a href="#" class="nav-item">
-          <i data-lucide="users-round"></i>
-          <span>Clients</span>
-        </a>
-
-        <a href="#" class="nav-item">
-          <i data-lucide="file-bar-chart"></i>
-          <span>Reports</span>
-        </a>
       </div>
-
+        
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
         
@@ -146,22 +148,18 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'PAYROLL_PROC
           <i data-lucide="shield"></i>
           <span>Security</span>
         </a>
-        <!-- HARDCODED: Logout just returns to the login UI -->
-      <a href="../../logout.php" class="nav-item" onclick="return confirm ('Are you sure you want to log out?')">
-            <i data-lucide="log-out"></i>
-            <span>Logout</span>
-        </a>
+        
       </div>
     </nav>
 
     <div class="sidebar-footer">
       <div class="user-profile">
         <div class="user-avatar">
-          <img src="../img/profile.png" alt="User">
+          <img src="../../img/profile.png" alt="User">
         </div>
         <div class="user-info">
-          <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
-          <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'Payroll Processor'); ?></span>
+          <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'Admin'); ?></span>
+          <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'Administrator'); ?></span>
         </div>
         <button class="user-menu-btn" id="userMenuBtn">
           <i data-lucide="more-vertical"></i>
@@ -212,306 +210,17 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'PAYROLL_PROC
     </header>
 
     <div class="content-wrapper">
-      <!-- Stats Grid -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
-            <i data-lucide="users"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Total Clients</span>
-            <h3 class="stat-value">2,847</h3>
-            <div class="stat-trend positive">
-              <i data-lucide="trending-up"></i>
-              <span>+12.5% from last month</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow);">
-            <i data-lucide="banknote"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Active Loans</span>
-            <h3 class="stat-value">1,234</h3>
-            <div class="stat-trend positive">
-              <i data-lucide="trending-up"></i>
-              <span>+8.3% from last month</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-            <i data-lucide="alert-circle"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Overdue Payments</span>
-            <h3 class="stat-value">89</h3>
-            <div class="stat-trend negative">
-              <i data-lucide="trending-down"></i>
-              <span>-3.2% from last month</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-            <i data-lucide="wallet"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Total Portfolio</span>
-            <h3 class="stat-value">$4.2M</h3>
-            <div class="stat-trend positive">
-              <i data-lucide="trending-up"></i>
-              <span>+15.7% from last month</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Content Grid -->
-      <div class="content-grid">
-        <!-- Recent Applications -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Recent Loan Applications</h3>
-              <p class="card-subtitle">Latest applications requiring review</p>
-            </div>
-            <button class="btn-text">View All</button>
-          </div>
-          <div class="card-body">
-            <div class="data-table">
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #2ca078;">JD</div>
-                    <div>
-                      <span class="client-name">John Doe</span>
-                      <span class="client-detail">Personal Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$15,000</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status pending">Pending</span>
-                </div>
-              </div>
-
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #ffc107;">SM</div>
-                    <div>
-                      <span class="client-name">Sarah Miller</span>
-                      <span class="client-detail">Business Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$25,000</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status approved">Approved</span>
-                </div>
-              </div>
-
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #3b82f6;">RJ</div>
-                    <div>
-                      <span class="client-name">Robert Johnson</span>
-                      <span class="client-detail">Agricultural Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$8,500</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status review">Under Review</span>
-                </div>
-              </div>
-
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #ef4444;">LW</div>
-                    <div>
-                      <span class="client-name">Lisa Williams</span>
-                      <span class="client-detail">Education Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$12,000</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status pending">Pending</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Quick Actions</h3>
-              <p class="card-subtitle">Common tasks and shortcuts</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="quick-actions">
-              <button class="action-btn">
-                <i data-lucide="user-plus"></i>
-                <span>Add New Client</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="file-plus"></i>
-                <span>New Loan Application</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="receipt"></i>
-                <span>Record Payment</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="file-text"></i>
-                <span>Generate Report</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="calendar"></i>
-                <span>Schedule Meeting</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="send"></i>
-                <span>Send Notification</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Grid -->
-      <div class="bottom-grid">
-        <!-- Upcoming Payments -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Upcoming Payments</h3>
-              <p class="card-subtitle">Payments due in the next 7 days</p>
-            </div>
-            <button class="btn-text">View Calendar</button>
-          </div>
-          <div class="card-body">
-            <div class="payment-list">
-              <div class="payment-item">
-                <div class="payment-date">
-                  <span class="date-day">15</span>
-                  <span class="date-month">Dec</span>
-                </div>
-                <div class="payment-details">
-                  <span class="payment-client">Michael Chen</span>
-                  <span class="payment-type">Monthly Installment</span>
-                </div>
-                <div class="payment-amount">$850</div>
-              </div>
-
-              <div class="payment-item">
-                <div class="payment-date">
-                  <span class="date-day">16</span>
-                  <span class="date-month">Dec</span>
-                </div>
-                <div class="payment-details">
-                  <span class="payment-client">Emma Davis</span>
-                  <span class="payment-type">Loan Payment</span>
-                </div>
-                <div class="payment-amount">$1,200</div>
-              </div>
-
-              <div class="payment-item">
-                <div class="payment-date">
-                  <span class="date-day">18</span>
-                  <span class="date-month">Dec</span>
-                </div>
-                <div class="payment-details">
-                  <span class="payment-client">James Wilson</span>
-                  <span class="payment-type">Interest Payment</span>
-                </div>
-                <div class="payment-amount">$450</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Activity Feed -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Recent Activity</h3>
-              <p class="card-subtitle">Latest system activities</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="activity-list">
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
-                  <i data-lucide="check-circle"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>Loan Approved</strong> for Sarah Miller</p>
-                  <span class="activity-time">2 minutes ago</span>
-                </div>
-              </div>
-
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow);">
-                  <i data-lucide="dollar-sign"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>Payment Received</strong> from John Doe ($850)</p>
-                  <span class="activity-time">15 minutes ago</span>
-                </div>
-              </div>
-
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-                  <i data-lucide="user-plus"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>New Client</strong> registered: Lisa Williams</p>
-                  <span class="activity-time">1 hour ago</span>
-                </div>
-              </div>
-
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-                  <i data-lucide="alert-triangle"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>Payment Overdue</strong> for Michael Chen</p>
-                  <span class="activity-time">3 hours ago</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
+       
     </div>
   </main>
-  <script src="../js/dashboard.js"></script>
+  <script src="../../js/payrolldashboard.js"></script>
   <script>
     lucide.createIcons();
   </script>
-  
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+
 
 

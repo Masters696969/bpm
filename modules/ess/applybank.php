@@ -289,7 +289,6 @@ if ($employeeId) {
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="../../js/user-menu.js"></script>
   <script src="../../js/applybank.js?v=<?php echo time(); ?>"></script>
   <script>
     lucide.createIcons();
@@ -309,3 +308,4 @@ if ($employeeId) {
   </script>
 </body>
 </html>
+

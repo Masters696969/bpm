@@ -38,7 +38,6 @@ $profilePhoto = !empty($employee['ProfilePhoto']) ? '../../' . $employee['Profil
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Profile | Microfinance</title>
   <link rel="stylesheet" href="../../css/profile.css?v=1.3">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -469,15 +468,13 @@ $profilePhoto = !empty($employee['ProfilePhoto']) ? '../../' . $employee['Profil
       </form>
     </div>
   </div>
-
-  <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/profile.js"></script>
   <script>
     lucide.createIcons();
   </script>
-  
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+
 
 

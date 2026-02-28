@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 
 // Check if user is logged in and is admin
@@ -42,7 +42,6 @@ if ($rolesResult) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Account Management - Microfinance</title>
   <link rel="stylesheet" href="../../css/useraccount.css?v=1.4">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -291,7 +290,7 @@ if ($rolesResult) {
           <div class="panel-actions">
             <div class="panel-search">
               <i data-lucide="search"></i>
-              <input type="search" id="tableSearch" placeholder="Search accounts…">
+              <input type="search" id="tableSearch" placeholder="Search accounts�">
             </div>
             <button id="addUserBtn" class="btn btn-primary">
               <i data-lucide="user-plus"></i> Add Account
@@ -443,7 +442,6 @@ if ($rolesResult) {
 
     </div>
   </main>
-  <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/useraccount.js?v=<?php echo time(); ?>"></script>
   <script>
     // Initialize icons safely
@@ -523,9 +521,9 @@ if ($rolesResult) {
       }
     });
   </script>
-  
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+
 
 

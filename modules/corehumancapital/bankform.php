@@ -12,7 +12,6 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bank Form Management</title>
   <link rel="stylesheet" href="../../css/bankform.css?v=1.3">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
@@ -343,10 +342,7 @@ $pendingCnt = $pendingRes ? intval($pendingRes->fetch_assoc()['cnt']) : 0;
 
     </div><!-- /.content-wrapper -->
   </main>
-
-  <script src="../../js/sidebar-active.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="../../js/user-menu.js"></script>
   <script src="../../js/bankform.js?v=<?php echo time(); ?>"></script>
   <script>
     lucide.createIcons();
@@ -373,3 +369,5 @@ $pendingCnt = $pendingRes ? intval($pendingRes->fetch_assoc()['cnt']) : 0;
   </script>
 </body>
 </html>
+
+

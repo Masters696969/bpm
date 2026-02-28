@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -96,7 +96,6 @@ while ($row = $simulation_query->fetch_assoc()) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   <link rel="stylesheet" href="../../css/cycle.css?v=1.2">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -345,7 +344,7 @@ while ($row = $simulation_query->fetch_assoc()) {
                     <div class="form-group">
                       <label>Total Budget Allocation</label>
                       <div class="input-with-symbol">
-                        <span>₱</span>
+                        <span>?</span>
                         <input type="number" id="budgetAllocation" value="5000000">
                       </div>
                     </div>
@@ -418,9 +417,9 @@ while ($row = $simulation_query->fetch_assoc()) {
                     <td><input type="text" value="<?php echo htmlspecialchars($grade['GradeLevel']); ?>" class="table-input-premium grade-level-input"></td>
                     <td><input type="text" value="<?php echo htmlspecialchars($grade['GradeName']); ?>" class="table-input-premium grade-name-input"></td>
                     <td><input type="text" value="<?php echo htmlspecialchars($grade['Description'] ?? $grade['description'] ?? ''); ?>" class="table-input-premium description-input" placeholder="Role details..."></td>
-                    <td><div class="input-with-symbol"><span>₱</span><input type="number" value="<?php echo (int)$grade['MinSalary']; ?>" class="table-input-premium min-salary-input"></div></td>
-                    <td><div class="input-with-symbol"><span>₱</span><input type="number" value="<?php echo (int)$grade['MidSalary']; ?>" class="table-input-premium mid-salary-input" readonly></div></td>
-                    <td><div class="input-with-symbol"><span>₱</span><input type="number" value="<?php echo (int)$grade['MaxSalary']; ?>" class="table-input-premium max-salary-input"></div></td>
+                    <td><div class="input-with-symbol"><span>?</span><input type="number" value="<?php echo (int)$grade['MinSalary']; ?>" class="table-input-premium min-salary-input"></div></td>
+                    <td><div class="input-with-symbol"><span>?</span><input type="number" value="<?php echo (int)$grade['MidSalary']; ?>" class="table-input-premium mid-salary-input" readonly></div></td>
+                    <td><div class="input-with-symbol"><span>?</span><input type="number" value="<?php echo (int)$grade['MaxSalary']; ?>" class="table-input-premium max-salary-input"></div></td>
                     <td class="spread-cell"><?php 
                       $min = (float)$grade['MinSalary'];
                       $max = (float)$grade['MaxSalary'];
@@ -464,14 +463,14 @@ while ($row = $simulation_query->fetch_assoc()) {
                     <div class="form-group-inline">
                       <label>Max MSC (Monthly)</label>
                       <div class="inline-input-symbol">
-                        <span>₱</span>
+                        <span>?</span>
                         <input type="number" value="<?php echo (int)($sss_data['max_msc_monthly'] ?? 30000); ?>" class="stat-input">
                       </div>
                     </div>
                     <div class="form-group-inline">
                       <label>WISP Threshold</label>
                       <div class="inline-input-symbol">
-                        <span>₱</span>
+                        <span>?</span>
                         <input type="number" value="<?php echo (int)($sss_data['wisp_threshold'] ?? 20000); ?>" class="stat-input">
                       </div>
                     </div>
@@ -499,7 +498,7 @@ while ($row = $simulation_query->fetch_assoc()) {
                     <div class="form-group-inline">
                       <label>Salary Ceiling</label>
                       <div class="inline-input-symbol">
-                        <span>₱</span>
+                        <span>?</span>
                         <input type="number" value="<?php echo (int)($ph_data['salary_ceiling'] ?? 100000); ?>" class="stat-input">
                       </div>
                     </div>
@@ -523,14 +522,14 @@ while ($row = $simulation_query->fetch_assoc()) {
                     <div class="form-group-inline">
                       <label>Monthly Cap (EE)</label>
                       <div class="inline-input-symbol">
-                        <span>₱</span>
+                        <span>?</span>
                         <input type="number" value="<?php echo (int)($pi_data['monthly_cap_ee'] ?? 200); ?>" class="stat-input">
                       </div>
                     </div>
                     <div class="form-group-inline">
                       <label>Monthly Cap (ER)</label>
                       <div class="inline-input-symbol">
-                        <span>₱</span>
+                        <span>?</span>
                         <input type="number" value="<?php echo (int)($pi_data['monthly_cap_er'] ?? 200); ?>" class="stat-input">
                       </div>
                     </div>
@@ -550,21 +549,21 @@ while ($row = $simulation_query->fetch_assoc()) {
                     <div class="form-group-inline">
                       <label>Tax Exempt Limit</label>
                       <div class="inline-input-symbol">
-                        <span>₱</span>
+                        <span>?</span>
                         <input type="number" value="<?php echo (int)($bir_data['tax_exempt_limit'] ?? 250000); ?>" class="stat-input">
                       </div>
                     </div>
                     <div class="form-group-inline">
                       <label>De Minimis Cap</label>
                       <div class="inline-input-symbol">
-                        <span>₱</span>
+                        <span>?</span>
                         <input type="number" value="<?php echo (int)($bir_data['de_minimis_cap'] ?? 90000); ?>" class="stat-input">
                       </div>
                     </div>
                     <div class="form-group-inline">
                       <label>13th Month Cap</label>
                       <div class="inline-input-symbol">
-                        <span>₱</span>
+                        <span>?</span>
                         <input type="number" value="<?php echo (int)($bir_data['thirteenth_month_cap'] ?? 90000); ?>" class="stat-input">
                       </div>
                     </div>
@@ -661,7 +660,7 @@ while ($row = $simulation_query->fetch_assoc()) {
                     ?>
                     <td>
                       <div class="input-with-symbol">
-                        <span>₱</span>
+                        <span>?</span>
                         <input type="number" 
                                value="<?php echo (int)$amount; ?>" 
                                class="table-input-premium allowance-val-input"
@@ -696,11 +695,11 @@ while ($row = $simulation_query->fetch_assoc()) {
               <div class="sim-totals-group">
                 <div class="sim-total">
                   <span>Total Monthly Budget Increase:</span>
-                  <h3 id="totalSimulationCost">₱0.00</h3>
+                  <h3 id="totalSimulationCost">?0.00</h3>
                 </div>
                 <div class="sim-total">
                   <span>Total Proposed Monthly Expenditure:</span>
-                  <h3 id="totalExpenditure">₱0.00</h3>
+                  <h3 id="totalExpenditure">?0.00</h3>
                 </div>
               </div>
             </div>
@@ -752,23 +751,23 @@ while ($row = $simulation_query->fetch_assoc()) {
                       </div>
                     </td>
                     <td><span class="rating-badge rating-<?php echo floor($rating); ?>"><?php echo number_format($rating, 1); ?></span></td>
-                    <td class="current-pay">₱<?php echo number_format($current_pay, 0); ?></td>
+                    <td class="current-pay">?<?php echo number_format($current_pay, 0); ?></td>
                     <td><input type="number" class="table-input" value="0.0" step="0.5" max="5.0">%</td>
-                    <td class="proposed-gross">₱<?php echo number_format($current_pay, 0); ?></td>
-                    <td class="total-allowances">₱<?php echo number_format($allowances, 2); ?></td>
-                    <td class="total-gross">₱0.00</td>
-                    <td class="rate-semi">₱0.00</td>
-                    <td class="rate-daily">₱0.00</td>
-                    <td class="rate-hourly">₱0.00</td>
-                    <td class="employer-share">₱0.00</td>
-                    <td class="full-load">₱0.00</td>
-                    <td class="deduction-sss">₱0.00</td>
-                    <td class="deduction-wisp" style="color: #ef4444; font-weight: 600;">₱0.00</td>
-                    <td class="deduction-ph">₱0.00</td>
-                    <td class="deduction-pi">₱0.00</td>
-                    <td class="deduction-tax">₱0.00</td>
-                    <td class="net-pay-cell">₱0.00</td>
-                    <td class="increase-cell">+₱0</td>
+                    <td class="proposed-gross">?<?php echo number_format($current_pay, 0); ?></td>
+                    <td class="total-allowances">?<?php echo number_format($allowances, 2); ?></td>
+                    <td class="total-gross">?0.00</td>
+                    <td class="rate-semi">?0.00</td>
+                    <td class="rate-daily">?0.00</td>
+                    <td class="rate-hourly">?0.00</td>
+                    <td class="employer-share">?0.00</td>
+                    <td class="full-load">?0.00</td>
+                    <td class="deduction-sss">?0.00</td>
+                    <td class="deduction-wisp" style="color: #ef4444; font-weight: 600;">?0.00</td>
+                    <td class="deduction-ph">?0.00</td>
+                    <td class="deduction-pi">?0.00</td>
+                    <td class="deduction-tax">?0.00</td>
+                    <td class="net-pay-cell">?0.00</td>
+                    <td class="increase-cell">+?0</td>
                   </tr>
                   <?php endforeach; ?>
                 </tbody>
@@ -844,14 +843,13 @@ while ($row = $simulation_query->fetch_assoc()) {
         </div>
       </div>
   </main>
-  <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/cycle.js?v=2.2"></script>
   <script>
     lucide.createIcons();
   </script>
-  
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+
 
 

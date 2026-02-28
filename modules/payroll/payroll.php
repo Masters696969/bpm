@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -9,10 +9,10 @@ if (!isset($_SESSION['username'])) {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-widtwh, initial-scale=1.0">
   <title>Dashboard</title>
+  <link rel="stylesheet" href="../../css/dashboard.css">
   <link rel="stylesheet" href="../../css/payroll.css?v=1.2">
-  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -218,7 +218,7 @@ if (!isset($_SESSION['username'])) {
           </div>
           <div class="stat-info">
             <span class="stat-label">Total Payroll</span>
-            <h3 class="stat-value">₱1,248,500</h3>
+            <h3 class="stat-value">?1,248,500</h3>
           </div>
         </div>
 
@@ -295,7 +295,7 @@ if (!isset($_SESSION['username'])) {
                 <td><strong>PR-2026-004</strong></td>
                 <td>Feb 16 - Feb 28, 2026</td>
                 <td>Semi-Monthly</td>
-                <td>₱624,250.00</td>
+                <td>?624,250.00</td>
                 <td><span class="badge-premium badge-success"><i data-lucide="check-check"></i> Disbursed</span></td>
                 <td><button class="btn-premium" style="background: var(--surface-hover); padding: 6px 12px; border: 1px solid var(--border-color);">View Report</button></td>
               </tr>
@@ -303,7 +303,7 @@ if (!isset($_SESSION['username'])) {
                 <td><strong>PR-2026-005</strong></td>
                 <td>Mar 01 - Mar 15, 2026</td>
                 <td>Semi-Monthly</td>
-                <td>₱0.00</td>
+                <td>?0.00</td>
                 <td><span class="badge-premium badge-warning"><i data-lucide="loader"></i> Processing</span></td>
                 <td><button class="btn-premium" style="background: var(--brand-green); color: white; padding: 6px 12px;">Finalize</button></td>
               </tr>
@@ -337,10 +337,10 @@ if (!isset($_SESSION['username'])) {
                     </div>
                   </div>
                 </td>
-                <td>₱80,000.00</td>
-                <td>₱19,400.00</td>
-                <td>₱4,850.00</td>
-                <td><strong>₱94,550.00</strong></td>
+                <td>?80,000.00</td>
+                <td>?19,400.00</td>
+                <td>?4,850.00</td>
+                <td><strong>?94,550.00</strong></td>
                 <td><span class="badge-premium badge-success font-size-xs">Verified</span></td>
                 <td><i data-lucide="file-text" style="color: var(--brand-green); cursor: pointer;"></i></td>
               </tr>
@@ -354,10 +354,10 @@ if (!isset($_SESSION['username'])) {
                     </div>
                   </div>
                 </td>
-                <td>₱45,000.00</td>
-                <td>₱8,000.00</td>
-                <td>₱2,250.00</td>
-                <td><strong>₱50,750.00</strong></td>
+                <td>?45,000.00</td>
+                <td>?8,000.00</td>
+                <td>?2,250.00</td>
+                <td><strong>?50,750.00</strong></td>
                 <td><span class="badge-premium badge-warning font-size-xs">Review</span></td>
                 <td><i data-lucide="file-text" style="color: var(--text-tertiary); cursor: pointer;"></i></td>
               </tr>
@@ -371,25 +371,24 @@ if (!isset($_SESSION['username'])) {
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;">
            <div class="content-card" style="padding: 24px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 20px;">
               <h4 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><i data-lucide="shield-check" style="color: var(--brand-green);"></i> SSS & WISP Limits (2026)</h4>
-              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Current MSC Capping is set to ₱35,000 for regular contributions with additional WISP contributions for earnings above ₱20,000.</p>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Current MSC Capping is set to ?35,000 for regular contributions with additional WISP contributions for earnings above ?20,000.</p>
               <button class="btn-premium" style="background: var(--surface-hover); border: 1px solid var(--border-color); width: 100%;">Configure Contribution Table</button>
            </div>
            <div class="content-card" style="padding: 24px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 20px;">
               <h4 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><i data-lucide="file-key" style="color: #3b82f6;"></i> Tax Bracket Rules</h4>
-              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">TRAIN Law 2026 Monthly Tax Brackets. Current threshold for Bracket 3 is ₱33,333 and Bracket 4 is ₱66,667.</p>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">TRAIN Law 2026 Monthly Tax Brackets. Current threshold for Bracket 3 is ?33,333 and Bracket 4 is ?66,667.</p>
               <button class="btn-premium" style="background: var(--surface-hover); border: 1px solid var(--border-color); width: 100%;">View Tax Schedule</button>
            </div>
         </div>
       </div>
   </main>
-  <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/payroll.js"></script>
   <script>
     lucide.createIcons();
   </script>
-  
-  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
+
+
 
 
