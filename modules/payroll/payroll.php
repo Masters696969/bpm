@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -40,87 +40,71 @@ if (!isset($_SESSION['username'])) {
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-        <a href="dashboard.php" class="nav-item active">
+        <a href="dashboard.php" class="nav-item">
           <i data-lucide="layout-dashboard"></i>
           <span>Dashboard</span>
         </a>
 
         <div class="nav-item-group active">
+          <button class="nav-item has-submenu" data-module="payroll">
+            <div class="nav-item-content">
+              <i data-lucide="banknote"></i>
+              <span>Payroll Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-payroll">
+            <a href="payroll.php" class="submenu-item active">
+              <i data-lucide="play-circle"></i>
+              <span>Payroll Processing</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="history"></i>
+              <span>Payroll History</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-check"></i>
+              <span>Approvals</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item-group">
           <button class="nav-item has-submenu" data-module="hr">
             <div class="nav-item-content">
               <i data-lucide="users"></i>
-              <span>Account Management</span>
+              <span>Core Human Capital</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-hr">
-            <a href="useraccount.php" class="submenu-item active">
-              <i data-lucide="user-plus"></i>
-              <span>User Accounts</span>
+            <a href="../corehumancapital/employeemaster.php" class="submenu-item">
+              <i data-lucide="file-user"></i>
+              <span>Employee Master</span>
             </a>
-            <a href="rolespermission.php" class="submenu-item">
-              <i data-lucide="contact-round"></i>
-              <span>Roles & Permissions</span>
-            </a>
-            <a href="securitysetting.php" class="submenu-item">
-              <i data-lucide="user-cog"></i>
-              <span>Security Settings</span>
-            </a>
-            <a href="auditlogs.php" class="submenu-item">
-              <i data-lucide="book-user"></i>
-              <span>Audit Logs</span>
+            <a href="../corehumancapital/bankform.php" class="submenu-item">
+              <i data-lucide="landmark"></i>
+              <span>Bank Forms</span>
             </a>
           </div>
         </div>
 
         <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="finance">
+          <button class="nav-item has-submenu" data-module="compensation">
             <div class="nav-item-content">
-              <i data-lucide="banknote"></i>
-              <span>Finance</span>
-            </div>
-            <i data-lucide="chevron-down" class="submenu-icon"></i>
-          </button>
-          <div class="submenu" id="submenu-finance">
-            <a href="#" class="submenu-item">
-              <i data-lucide="receipt"></i>
-              <span>Accounting</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="file-text"></i>
-              <span>Invoicing</span>
-            </a>
-            <a href="#" class="submenu-item">
               <i data-lucide="pie-chart"></i>
-              <span>Budget Planning</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="loans">
-            <div class="nav-item-content">
-              <i data-lucide="hand-coins"></i>
-              <span>Loan Management</span>
+              <span>Compensation</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-loans">
-            <a href="#" class="submenu-item">
-              <i data-lucide="file-plus"></i>
-              <span>Applications</span>
+          <div class="submenu" id="submenu-compensation">
+            <a href="../compensation/dashboard.php" class="submenu-item">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Comp Dashboard</span>
             </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="check-circle"></i>
-              <span>Approvals</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="calendar-clock"></i>
-              <span>Disbursements</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="coins"></i>
-              <span>Collections</span>
+            <a href="../compensation/cycle.php" class="submenu-item">
+              <i data-lucide="refresh-cw"></i>
+              <span>Comp Cycles</span>
             </a>
           </div>
         </div>
@@ -190,14 +174,13 @@ if (!isset($_SESSION['username'])) {
           <i data-lucide="menu"></i>
         </button>
         <div class="header-title">
-          <h1>Dashboard Overview</h1>
-          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
+          <h1>Payroll Processing</h1>
+          <p>Initialize and manage semi-monthly payroll cycles.</p>
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" placeholder="Search...">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -218,7 +201,7 @@ if (!isset($_SESSION['username'])) {
           </div>
           <div class="stat-info">
             <span class="stat-label">Total Payroll</span>
-            <h3 class="stat-value">?1,248,500</h3>
+            <h3 class="stat-value">&#8369;1,248,500</h3>
           </div>
         </div>
 
@@ -295,7 +278,7 @@ if (!isset($_SESSION['username'])) {
                 <td><strong>PR-2026-004</strong></td>
                 <td>Feb 16 - Feb 28, 2026</td>
                 <td>Semi-Monthly</td>
-                <td>?624,250.00</td>
+                <td>&#8369;624,250.00</td>
                 <td><span class="badge-premium badge-success"><i data-lucide="check-check"></i> Disbursed</span></td>
                 <td><button class="btn-premium" style="background: var(--surface-hover); padding: 6px 12px; border: 1px solid var(--border-color);">View Report</button></td>
               </tr>
@@ -303,7 +286,7 @@ if (!isset($_SESSION['username'])) {
                 <td><strong>PR-2026-005</strong></td>
                 <td>Mar 01 - Mar 15, 2026</td>
                 <td>Semi-Monthly</td>
-                <td>?0.00</td>
+                <td>&#8369;0.00</td>
                 <td><span class="badge-premium badge-warning"><i data-lucide="loader"></i> Processing</span></td>
                 <td><button class="btn-premium" style="background: var(--brand-green); color: white; padding: 6px 12px;">Finalize</button></td>
               </tr>
@@ -337,10 +320,10 @@ if (!isset($_SESSION['username'])) {
                     </div>
                   </div>
                 </td>
-                <td>?80,000.00</td>
-                <td>?19,400.00</td>
-                <td>?4,850.00</td>
-                <td><strong>?94,550.00</strong></td>
+                <td>&#8369;80,000.00</td>
+                <td>&#8369;19,400.00</td>
+                <td>&#8369;4,850.00</td>
+                <td><strong>&#8369;94,550.00</strong></td>
                 <td><span class="badge-premium badge-success font-size-xs">Verified</span></td>
                 <td><i data-lucide="file-text" style="color: var(--brand-green); cursor: pointer;"></i></td>
               </tr>
@@ -354,10 +337,10 @@ if (!isset($_SESSION['username'])) {
                     </div>
                   </div>
                 </td>
-                <td>?45,000.00</td>
-                <td>?8,000.00</td>
-                <td>?2,250.00</td>
-                <td><strong>?50,750.00</strong></td>
+                <td>&#8369;45,000.00</td>
+                <td>&#8369;8,000.00</td>
+                <td>&#8369;2,250.00</td>
+                <td><strong>&#8369;50,750.00</strong></td>
                 <td><span class="badge-premium badge-warning font-size-xs">Review</span></td>
                 <td><i data-lucide="file-text" style="color: var(--text-tertiary); cursor: pointer;"></i></td>
               </tr>
@@ -367,17 +350,56 @@ if (!isset($_SESSION['username'])) {
       </div>
 
       <div class="tab-panel" id="settings">
-        <!-- Statutory Settings Overview -->
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;">
-           <div class="content-card" style="padding: 24px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 20px;">
-              <h4 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><i data-lucide="shield-check" style="color: var(--brand-green);"></i> SSS & WISP Limits (2026)</h4>
-              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Current MSC Capping is set to ?35,000 for regular contributions with additional WISP contributions for earnings above ?20,000.</p>
-              <button class="btn-premium" style="background: var(--surface-hover); border: 1px solid var(--border-color); width: 100%;">Configure Contribution Table</button>
+        <!-- Statutory Settings Master Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+           <div class="content-card" style="padding: 24px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 20px; transition: var(--transition);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                 <div class="stat-icon-wrapper" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green); width: 48px; height: 48px;">
+                    <i data-lucide="landmark"></i>
+                 </div>
+                 <span class="badge-premium badge-success" style="font-size: 10px;">Updated</span>
+              </div>
+              <h4 style="margin-bottom: 8px;">SSS Contributions</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; min-height: 40px;">Manage MSC capping, ER/EE split rates, and WISP+ voluntary plans.</p>
+              <div style="display: flex; gap: 8px;">
+                 <button class="btn-premium" style="background: var(--surface-hover); border: 1px solid var(--border-color); flex: 1; font-size: 12px;">Rates</button>
+                 <button class="btn-premium" style="background: var(--brand-green); color: white; flex: 1; font-size: 12px;">Table</button>
+              </div>
            </div>
+
            <div class="content-card" style="padding: 24px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 20px;">
-              <h4 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><i data-lucide="file-key" style="color: #3b82f6;"></i> Tax Bracket Rules</h4>
-              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">TRAIN Law 2026 Monthly Tax Brackets. Current threshold for Bracket 3 is ?33,333 and Bracket 4 is ?66,667.</p>
-              <button class="btn-premium" style="background: var(--surface-hover); border: 1px solid var(--border-color); width: 100%;">View Tax Schedule</button>
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                 <div class="stat-icon-wrapper" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; width: 48px; height: 48px;">
+                    <i data-lucide="heart-pulse"></i>
+                 </div>
+                 <span class="badge-premium badge-success" style="font-size: 10px;">Fixed</span>
+              </div>
+              <h4 style="margin-bottom: 8px;">PhilHealth (NHIP)</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; min-height: 40px;">Standard 5% premium rate configuration with &#8369;10k-&#8369;100k salary floor/ceiling.</p>
+              <button class="btn-premium" style="background: var(--surface-hover); border: 1px solid var(--border-color); width: 100%; font-size: 12px;">Configure Premiums</button>
+           </div>
+
+           <div class="content-card" style="padding: 24px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                 <div class="stat-icon-wrapper" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow); width: 48px; height: 48px;">
+                    <i data-lucide="home"></i>
+                 </div>
+              </div>
+              <h4 style="margin-bottom: 8px;">Pag-IBIG (HDMF)</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; min-height: 40px;">2% EE/ER contribution rates with &#8369;100.00 capping for mandatory savings.</p>
+              <button class="btn-premium" style="background: var(--surface-hover); border: 1px solid var(--border-color); width: 100%; font-size: 12px;">Manage Savings</button>
+           </div>
+
+           <div class="content-card" style="padding: 24px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                 <div class="stat-icon-wrapper" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; width: 48px; height: 48px;">
+                    <i data-lucide="file-key"></i>
+                 </div>
+                 <span class="badge-premium badge-warning" style="font-size: 10px;">Review</span>
+              </div>
+              <h4 style="margin-bottom: 8px;">Withholding Tax</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; min-height: 40px;">BIR TRAIN Law 2026 tax table integration for automated net pay calculation.</p>
+              <button class="btn-premium" style="background: var(--surface-hover); border: 1px solid var(--border-color); width: 100%; font-size: 12px;">Tax Schedule</button>
            </div>
         </div>
       </div>
@@ -388,6 +410,9 @@ if (!isset($_SESSION['username'])) {
   </script>
 </body>
 </html>
+
+
+
 
 
 

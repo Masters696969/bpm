@@ -153,6 +153,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $redirectUrl = 'modules/compensation/dashboard.php';
                         } elseif ($roleKey === 'payroll processor') {
                             $redirectUrl = 'modules/payroll/dashboard.php';
+                        } elseif ($roleKey === 'supervisor') {
+                            $redirectUrl = 'modules/supervisor/dashboard.php';
                         } else {
                             $redirectUrl = 'dashboard.php';
                         }

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 // Check if user is logged in and is admin
@@ -223,9 +223,8 @@ if ($rolesResult) {
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" placeholder="Search...">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -290,7 +289,7 @@ if ($rolesResult) {
           <div class="panel-actions">
             <div class="panel-search">
               <i data-lucide="search"></i>
-              <input type="search" id="tableSearch" placeholder="Search accounts�">
+              <input type="search" id="tableSearch" placeholder="Search accounts…">
             </div>
             <button id="addUserBtn" class="btn btn-primary">
               <i data-lucide="user-plus"></i> Add Account
@@ -523,6 +522,9 @@ if ($rolesResult) {
   </script>
 </body>
 </html>
+
+
+
 
 
 

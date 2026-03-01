@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+﻿document.addEventListener("DOMContentLoaded", () => {
     const lucide = window.lucide;
     const body = document.body;
     const themeToggle = document.getElementById("themeToggle");
@@ -68,7 +68,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const startCycleBtn = document.getElementById("startCycleBtn");
     if (startCycleBtn) {
         startCycleBtn.addEventListener("click", () => {
-            const cycleName = document.querySelector('input[value="FY2025 Annual Merit Review"]').value;
+            const cycleNameInput = document.querySelector('input[value*="FY2025"]');
+            const cycleName = cycleNameInput ? cycleNameInput.value : "FY2025";
             if (!cycleName) {
                 if (window.Swal) Swal.fire('Error', 'Please enter a cycle name.', 'error');
                 else alert('Please enter a cycle name.');
@@ -81,6 +82,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // 5. Simulation & Proposal Logic
     const tableInputs = document.querySelectorAll(".table-input");
     const submitProposalBtn = document.getElementById("submitProposalBtn");
+
+    const parseCurrency = (el) => {
+        if (!el) return 0;
+        const val = parseFloat(el.innerText.replace(/[^0-9.-]/g, ""));
+        return isNaN(val) ? 0 : val;
+    };
 
     function calculateDeductions() {
         // Build map from Allowance Tab
@@ -95,15 +102,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.querySelectorAll(".simulation-table tbody tr").forEach(row => {
             const gradeID = row.getAttribute("data-grade-id");
-            const currentPayVal = parseFloat(row.querySelector(".current-pay")?.innerText.replace(/[₱,]/g, "") || 0);
-            const proposedBasic = parseFloat(row.querySelector(".proposed-gross")?.innerText.replace(/[₱,]/g, "") || currentPayVal);
-            const totalAllowances = parseFloat(row.querySelector(".total-allowances")?.innerText.replace(/[₱,]/g, "") || 0);
+            const currentPayVal = parseCurrency(row.querySelector(".current-pay"));
+            const proposedBasic = parseCurrency(row.querySelector(".proposed-gross")) || currentPayVal;
+            const totalAllowances = parseCurrency(row.querySelector(".total-allowances"));
             const taxableAllowances = gradeTaxableMap[gradeID] || 0;
 
             const totalGross = proposedBasic + totalAllowances;
 
             // 1. SSS Calculation (2026 Logic)
-            // Regular SSS: 5% EE | Cap at ₱35,000 MSC (Max ₱1,750)
             const sssMSCCap = 35000;
             const sssRateEE = 0.05;
             const sssRateER = 0.10;
@@ -112,24 +118,22 @@ document.addEventListener("DOMContentLoaded", () => {
             let sssEE = regularBase * sssRateEE;
             let sssER = regularBase * sssRateER;
 
-            // 2. SSS WISP Calculation (User Rule: ₱900 for high earners like 80k)
-            // Total EE Share capped at ₱1,750 regular + ₱900 WISP = ₱2,650 for max MSC
+            // 2. SSS WISP Calculation
             let wispEE = 0;
             if (proposedBasic >= sssMSCCap) {
                 wispEE = 900;
             } else if (proposedBasic > 20000) {
-                // Pro-rated WISP if needed, but user confirmed 900 for 80k
                 wispEE = Math.max(0, proposedBasic - 20000) * 0.02;
             }
-            let wispER = wispEE; // Assuming equal split
+            let wispER = wispEE;
 
-            // 3. PhilHealth Calculation (2.5% EE | Cap ₱2,500)
+            // 3. PhilHealth Calculation
             const phRateTotal = 0.05;
             const phCapEE = 2500;
             const phEE = Math.min((proposedBasic * phRateTotal) / 2, phCapEE);
             const phER = phEE;
 
-            // 4. Pag-IBIG Calculation (Max ₱200)
+            // 4. Pag-IBIG Calculation
             const piRateEE = 0.02;
             const piCap = 200;
             const piEE = Math.min(proposedBasic * piRateEE, piCap);
@@ -140,8 +144,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const fullLoad = totalGross + employerShare;
 
             // 5. Withholding Tax (TRAIN Law 2026 Monthly)
-            // Taxable Income = (Basic + Taxable Allowances) - (Total EE Contribs)
-            // Note: This subtracts Non-Taxable Allowances (like Rice and Laundry) from the tax base.
             let taxable = (proposedBasic + taxableAllowances) - totalEERead;
             let tax = 0;
 
@@ -150,8 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (taxable > 166667) {
                 tax = 33541.67 + (taxable - 166667) * 0.30;
             } else if (taxable > 66667) {
-                // Correct Bracket 4: 8,541.67 + 25% of excess over 66,667
-                // User provided 8,541.80 as base
                 tax = 8541.80 + (taxable - 66667) * 0.25;
             } else if (taxable > 33333) {
                 tax = 1875 + (taxable - 33333) * 0.20;
@@ -162,26 +162,26 @@ document.addEventListener("DOMContentLoaded", () => {
             const netPay = totalGross - totalEERead - tax;
 
             // 6. Pay Rates based on BASIC Salary (User Rule)
-            const daily = proposedBasic / 22;
-            const hourly = daily / 8;
-            const semi = totalGross / 2; // Semi-monthly usually half of total gross take-home basis
+            const daily = (proposedBasic > 0) ? proposedBasic / 22 : 0;
+            const hourly = (daily > 0) ? daily / 8 : 0;
+            const semi = totalGross / 2;
 
             // Update row UI
             const totalGrossCell = row.querySelector(".total-gross");
-            if (totalGrossCell) totalGrossCell.innerText = `₱${totalGross.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-            if (row.querySelector(".employer-share")) row.querySelector(".employer-share").innerText = `₱${employerShare.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-            if (row.querySelector(".full-load")) row.querySelector(".full-load").innerText = `₱${fullLoad.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            if (totalGrossCell) totalGrossCell.innerText = `\u20B1${totalGross.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            if (row.querySelector(".employer-share")) row.querySelector(".employer-share").innerText = `\u20B1${employerShare.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            if (row.querySelector(".full-load")) row.querySelector(".full-load").innerText = `\u20B1${fullLoad.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
 
-            if (row.querySelector(".rate-semi")) row.querySelector(".rate-semi").innerText = `₱${semi.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-            if (row.querySelector(".rate-daily")) row.querySelector(".rate-daily").innerText = `₱${daily.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-            if (row.querySelector(".rate-hourly")) row.querySelector(".rate-hourly").innerText = `₱${hourly.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            if (row.querySelector(".rate-semi")) row.querySelector(".rate-semi").innerText = `\u20B1${semi.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            if (row.querySelector(".rate-daily")) row.querySelector(".rate-daily").innerText = `\u20B1${daily.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            if (row.querySelector(".rate-hourly")) row.querySelector(".rate-hourly").innerText = `\u20B1${hourly.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
 
-            if (row.querySelector(".deduction-sss")) row.querySelector(".deduction-sss").innerText = `₱${sssEE.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-            if (row.querySelector(".deduction-wisp")) row.querySelector(".deduction-wisp").innerText = `₱${wispEE.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-            if (row.querySelector(".deduction-ph")) row.querySelector(".deduction-ph").innerText = `₱${phEE.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-            if (row.querySelector(".deduction-pi")) row.querySelector(".deduction-pi").innerText = `₱${piEE.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-            if (row.querySelector(".deduction-tax")) row.querySelector(".deduction-tax").innerText = `₱${tax.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-            if (row.querySelector(".net-pay-cell")) row.querySelector(".net-pay-cell").innerText = `₱${netPay.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            if (row.querySelector(".deduction-sss")) row.querySelector(".deduction-sss").innerText = `\u20B1${sssEE.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            if (row.querySelector(".deduction-wisp")) row.querySelector(".deduction-wisp").innerText = `\u20B1${wispEE.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            if (row.querySelector(".deduction-ph")) row.querySelector(".deduction-ph").innerText = `\u20B1${phEE.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            if (row.querySelector(".deduction-pi")) row.querySelector(".deduction-pi").innerText = `\u20B1${piEE.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            if (row.querySelector(".deduction-tax")) row.querySelector(".deduction-tax").innerText = `\u20B1${tax.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            if (row.querySelector(".net-pay-cell")) row.querySelector(".net-pay-cell").innerText = `\u20B1${netPay.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
         });
 
         updateTotalSimulationCost();
@@ -193,8 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const row = e.target.closest("tr");
                 if (!row) return;
 
-                const currentPayText = row.querySelector(".current-pay")?.innerText.replace(/[₱,]/g, "") || "0";
-                const currentPay = parseFloat(currentPayText);
+                const currentPay = parseCurrency(row.querySelector(".current-pay"));
 
                 // Enforce 5% Cap
                 let percentage = parseFloat(e.target.value) || 0;
@@ -208,15 +207,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Update UI
                 const proposedGrossCell = row.querySelector(".proposed-gross");
-                const allowanceCell = row.querySelector(".total-allowances");
-                const totalGrossCell = row.querySelector(".total-gross");
                 const increaseCell = row.querySelector(".increase-cell");
-                const semiCell = row.querySelector(".rate-semi");
-                const dailyCell = row.querySelector(".rate-daily");
-                const hourlyCell = row.querySelector(".rate-hourly");
 
-                if (proposedGrossCell) proposedGrossCell.innerText = `₱${newGross.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
-                if (increaseCell) increaseCell.innerText = `+₱${netIncrease.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
+                if (proposedGrossCell) proposedGrossCell.innerText = `\u20B1${newGross.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
+                if (increaseCell) increaseCell.innerText = `+\u20B1${netIncrease.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
 
                 calculateDeductions();
             });
@@ -248,119 +242,135 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         });
-
-        // Archive Row logic
-        const archiveBtn = row.querySelector(".archive-grade-btn");
-        if (archiveBtn) {
-            archiveBtn.addEventListener("click", () => {
-                if (window.Swal) {
-                    Swal.fire({
-                        title: 'Archive this grade?',
-                        text: "This grade will be hidden from current planning.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        confirmButtonText: 'Yes, Archive'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            row.style.opacity = '0.5';
-                            row.style.pointerEvents = 'none';
-                            row.classList.add('archived-row');
-                            setTimeout(() => row.remove(), 500);
-                        }
-                    });
-                } else if (confirm("Archive this grade?")) {
-                    row.remove();
-                }
-            });
-        }
     }
 
     // Initialize existing rows
-    document.querySelectorAll(".comp-table.editable-table tbody tr").forEach(row => initScaleCalculations(row));
+    document.querySelectorAll("#salaryGradeTable tbody tr").forEach(row => initScaleCalculations(row));
 
-    // Add Grade Button
-    // Modal Elements for Add Grade
-    const gradeModal = document.getElementById("gradeModal");
-    const addGradeBtn = document.getElementById("addGradeBtn");
-    const closeGradeModalBtn = document.getElementById("closeGradeModalBtn");
-    const cancelGradeBtn = document.getElementById("cancelGrade");
-    const gradeForm = document.getElementById("gradeForm");
+    // Propose Change Modal Logic
+    const btnProposeChange = document.getElementById("btnProposeChange");
+    const proposeChangeModal = document.getElementById("proposeChangeModal");
+    const closeProposeModalBtn = document.getElementById("closeProposeModalBtn");
+    const cancelProposeBtn = document.getElementById("cancelProposeBtn");
+    const submitProposalScaleBtn = document.getElementById("submitProposalScaleBtn");
 
-    if (addGradeBtn && gradeModal) {
-        addGradeBtn.addEventListener("click", () => {
-            gradeModal.classList.add("active");
-            gradeModal.setAttribute("aria-hidden", "false");
+    if (btnProposeChange && proposeChangeModal) {
+        btnProposeChange.addEventListener("click", () => {
+            proposeChangeModal.style.display = "flex";
+            if (window.lucide) window.lucide.createIcons();
         });
     }
 
-    const closeModal = () => {
-        if (gradeModal) {
-            gradeModal.classList.remove("active");
-            gradeModal.setAttribute("aria-hidden", "true");
-            gradeForm?.reset();
-        }
+    const closeProposeModal = () => {
+        if (proposeChangeModal) proposeChangeModal.style.display = "none";
     };
 
-    [closeGradeModalBtn, cancelGradeBtn].forEach(btn => {
-        btn?.addEventListener("click", closeModal);
-    });
+    if (closeProposeModalBtn) closeProposeModalBtn.addEventListener("click", closeProposeModal);
+    if (cancelProposeBtn) cancelProposeBtn.addEventListener("click", closeProposeModal);
 
-    // Modal Midpoint Dynamic Calculation
-    const modalMin = document.getElementById("modal_min_salary");
-    const modalMax = document.getElementById("modal_max_salary");
-    const modalMid = document.getElementById("modal_mid_salary");
+    if (submitProposalScaleBtn) {
+        submitProposalScaleBtn.addEventListener("click", async () => {
+            const reason = document.getElementById("proposalReason").value.trim();
+            if (!reason) {
+                Swal.fire('Error', 'Please provide a reason for the proposal.', 'error');
+                return;
+            }
 
-    if (modalMin && modalMax && modalMid) {
-        [modalMin, modalMax].forEach(input => {
-            input.addEventListener("input", () => {
-                const min = parseFloat(modalMin.value) || 0;
-                const max = parseFloat(modalMax.value) || 0;
-                modalMid.value = Math.round((min + max) / 2);
+            const proposals = [];
+            document.querySelectorAll("#proposeScaleTable tbody tr").forEach(row => {
+                const gradeId = row.getAttribute("data-id");
+                const minInput = row.querySelector(".prop-min-input");
+                const maxInput = row.querySelector(".prop-max-input");
+
+                const propMin = parseFloat(minInput.value) || 0;
+                const propMax = parseFloat(maxInput.value) || 0;
+                const origMin = parseFloat(minInput.getAttribute("data-original")) || 0;
+                const origMax = parseFloat(maxInput.getAttribute("data-original")) || 0;
+
+                if (propMin !== origMin || propMax !== origMax) {
+                    proposals.push({ SalaryGradeID: gradeId, ProposedMin: propMin, ProposedMax: propMax });
+                }
             });
+
+            if (proposals.length === 0) {
+                Swal.fire('No Changes', 'Please modify at least one salary grade before submitting a proposal.', 'warning');
+                return;
+            }
+
+            submitProposalScaleBtn.innerText = "Submitting...";
+            submitProposalScaleBtn.disabled = true;
+
+            try {
+                const response = await fetch('be_cycle_proposal.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason: reason, proposals: proposals })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire('Success', 'Salary scale proposal submitted to Supervisor for endorsement.', 'success');
+                    closeProposeModal();
+                    document.getElementById("proposalReason").value = '';
+                } else {
+                    throw new Error(data.message || 'Error saving proposal');
+                }
+            } catch (error) {
+                Swal.fire('Error', error.message, 'error');
+            } finally {
+                submitProposalScaleBtn.innerText = "Submit Proposal";
+                submitProposalScaleBtn.disabled = false;
+            }
         });
     }
 
-    if (gradeForm) {
-        gradeForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const formData = new FormData(gradeForm);
-            const tbody = document.querySelector("#salaryGradeTable tbody");
-            if (!tbody) return;
+    // Save Scales Logic
+    const saveScalesBtnCycle = document.getElementById("saveScalesBtnCycle");
+    if (saveScalesBtnCycle) {
+        saveScalesBtnCycle.addEventListener("click", async () => {
+            const result = await Swal.fire({
+                title: 'Save Changes?',
+                text: "Are you want to save this? This can affect the current salary scale.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#2ca078',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, Save Changes',
+                reverseButtons: true
+            });
 
-            const min = parseFloat(formData.get("min_salary")) || 0;
-            const max = parseFloat(formData.get("max_salary")) || 0;
-            const mid = Math.round((min + max) / 2);
-            const spread = min > 0 ? (((max - min) / min) * 100).toFixed(1) : "0.0";
-
-            const newRow = document.createElement("tr");
-            newRow.innerHTML = `
-                <td><input type="text" value="${formData.get("grade_level")}" class="table-input-premium grade-level-input"></td>
-                <td><input type="text" value="${formData.get("grade_name")}" class="table-input-premium grade-name-input"></td>
-                <td><input type="text" value="${formData.get("description")}" class="table-input-premium description-input" placeholder="Role details..."></td>
-                <td><div class="input-with-symbol"><span>₱</span><input type="number" value="${min}" class="table-input-premium min-salary-input"></div></td>
-                <td><div class="input-with-symbol"><span>₱</span><input type="number" value="${mid}" class="table-input-premium mid-salary-input" readonly></div></td>
-                <td><div class="input-with-symbol"><span>₱</span><input type="number" value="${max}" class="table-input-premium max-salary-input"></div></td>
-                <td class="spread-cell">${spread}%</td>
-                <td>
-                  <button class="btn-icon archive-grade-btn" title="Archive Grade">
-                    <i data-lucide="archive"></i>
-                  </button>
-                </td>
-            `;
-            tbody.appendChild(newRow);
-            if (window.lucide) window.lucide.createIcons();
-            initScaleCalculations(newRow);
-            closeModal();
-
-            if (window.Swal) {
-                Swal.fire({
-                    title: 'Grade Added!',
-                    text: 'The new salary grade has been staged temporarily.',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false
+            if (result.isConfirmed) {
+                const grades = [];
+                document.querySelectorAll("#salaryGradeTable tbody tr").forEach(row => {
+                    grades.push({
+                        id: row.getAttribute("data-id"),
+                        min: row.querySelector(".min-salary-input").value,
+                        max: row.querySelector(".max-salary-input").value
+                    });
                 });
+
+                try {
+                    const response = await fetch('save_salary_grade.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ grades: grades })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Saved!',
+                            text: 'Salary scales updated successfully.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        throw new Error(data.error || 'Failed to save');
+                    }
+                } catch (error) {
+                    Swal.fire('Error', error.message, 'error');
+                }
             }
         });
     }
@@ -388,7 +398,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then(data => {
                     input.style.opacity = '1';
                     if (data.success) {
-                        // Optional: show a mini toast or just console log
                         console.log('Allowance saved successfully');
                     } else {
                         console.error('Save failed:', data.error);
@@ -406,36 +415,35 @@ document.addEventListener("DOMContentLoaded", () => {
         let totalFullLoad = 0;
 
         document.querySelectorAll(".increase-cell").forEach(cell => {
-            const val = parseFloat(cell.innerText.replace(/[+₱,]/g, "")) || 0;
+            const val = parseFloat(cell.innerText.replace(/[^0-9.-]/g, "")) || 0;
             totalIncrease += val;
         });
 
         document.querySelectorAll(".full-load").forEach(cell => {
-            const val = parseFloat(cell.innerText.replace(/[₱,]/g, "")) || 0;
+            const val = parseFloat(cell.innerText.replace(/[^0-9.-]/g, "")) || 0;
             totalFullLoad += val;
         });
 
         const totalCostDisplay = document.getElementById("totalSimulationCost");
         if (totalCostDisplay) {
-            totalCostDisplay.innerText = `₱${totalIncrease.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            totalCostDisplay.innerText = `\u20B1${totalIncrease.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
         }
 
         const totalExpenditureDisplay = document.getElementById("totalExpenditure");
         if (totalExpenditureDisplay) {
-            totalExpenditureDisplay.innerText = `₱${totalFullLoad.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            totalExpenditureDisplay.innerText = `\u20B1${totalFullLoad.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
         }
     }
 
     if (submitProposalBtn) {
         submitProposalBtn.addEventListener("click", () => {
-            const totalCost = document.getElementById("totalSimulationCost")?.innerText || "₱0.00";
+            const totalCost = document.getElementById("totalSimulationCost")?.innerText || "â‚±0.00";
             const budget = document.getElementById("budgetAllocation")?.value || 0;
 
-            // Premium SweetAlert verification
             if (window.Swal) {
                 Swal.fire({
                     title: 'Submit Compensation Proposal?',
-                    text: `Total estimated increase cost is ${totalCost}. Initial budget: ₱${parseFloat(budget).toLocaleString()}. This will be sent to the HR Manager for initial review before reaching Finance.`,
+                    text: `Total estimated increase cost is ${totalCost}. Initial budget: â‚±${parseFloat(budget).toLocaleString()}. This will be sent to the HR Manager for initial review before reaching Finance.`,
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#2ca078',
@@ -466,29 +474,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Sidebar Active Link Logic (Merged)
 (function () {
-  const path = window.location.pathname;
-  const page = path.split('/').pop() || 'dashboard.php';
-  const current = page.split('?')[0];
+    const path = window.location.pathname;
+    const page = path.split('/').pop() || 'dashboard.php';
+    const current = page.split('?')[0];
 
-  document.querySelectorAll('.sidebar .nav-item, .sidebar .submenu-item').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.sidebar .nav-item-group').forEach(group => group.classList.remove('active'));
+    document.querySelectorAll('.sidebar .nav-item, .sidebar .submenu-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.sidebar .nav-item-group').forEach(group => group.classList.remove('active'));
 
-  const submenuMatch = document.querySelector(`.sidebar a.submenu-item[href$="${current}"]`);
-  if (submenuMatch) {
-    submenuMatch.classList.add('active');
-    const parentGroup = submenuMatch.closest('.nav-item-group');
-    if (parentGroup) {
-      parentGroup.classList.add('active');
-      const submenu = parentGroup.querySelector('.submenu');
-      if (submenu) submenu.style.maxHeight = '500px';
-      const btn = parentGroup.querySelector('.nav-item.has-submenu');
-      if (btn) btn.classList.add('active');
+    const submenuMatch = document.querySelector(`.sidebar a.submenu-item[href$="${current}"]`);
+    if (submenuMatch) {
+        submenuMatch.classList.add('active');
+        const parentGroup = submenuMatch.closest('.nav-item-group');
+        if (parentGroup) {
+            parentGroup.classList.add('active');
+            const submenu = parentGroup.querySelector('.submenu');
+            if (submenu) submenu.style.maxHeight = '500px';
+            const btn = parentGroup.querySelector('.nav-item.has-submenu');
+            if (btn) btn.classList.add('active');
+        }
+        return;
     }
-    return;
-  }
 
-  const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
-  if (navMatch) navMatch.classList.add('active');
+    const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
+    if (navMatch) navMatch.classList.add('active');
 })();
 
 // User Menu Dropdown Logic (Merged)
@@ -555,3 +563,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+
+
+
+// Real-time Clock Functionality
+function initClock() {
+    const clockEl = document.getElementById('realTimeClock');
+    if (!clockEl) return;
+
+    const updateClock = () => {
+        const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const now = new Date();
+        const dayName = days[now.getDay()];
+        const monthName = months[now.getMonth()];
+        const date = now.getDate();
+        const year = now.getFullYear();
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const formattedHours = hours.toString().padStart(2, '0');
+
+        clockEl.textContent = `${dayName}, ${monthName} ${date}, ${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
+    };
+
+    setInterval(updateClock, 1000);
+    updateClock();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initClock);
+} else {
+    initClock();
+}

@@ -1,10 +1,12 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
     exit();
 }
 require_once '../../config/config.php';
+$page = 'Bankverification';
+$module = 'banking';
 
 // Stats
 $pendingCnt = intval($conn->query("SELECT COUNT(*) FROM bank_applications WHERE Status='Pending'")->fetch_row()[0] ?? 0);
@@ -37,7 +39,7 @@ if ($subsRes) while ($r = $subsRes->fetch_assoc()) $submissions[] = $r;
 </head>
 <body>
 
-  <!-- Sidebar — same structure & CSS as bankform.php -->
+  <!-- Sidebar â€” same structure & CSS as bankform.php -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="logo-container">
@@ -58,23 +60,27 @@ if ($subsRes) while ($r = $subsRes->fetch_assoc()) $submissions[] = $r;
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
 
-        <a href="dashboard.php" class="nav-item">
+        <a href="dashboard.php" class="nav-item <?php echo ($page === 'dashboard') ? 'active' : ''; ?>">
           <i data-lucide="chart-no-axes-combined"></i>
           <span>HR Analytics</span>
         </a>
 
-        <div class="nav-item-group active">
-          <button class="nav-item has-submenu active" data-module="banking">
+        <div class="nav-item-group <?php echo ($module === 'banking') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'banking') ? 'active' : ''; ?>" data-module="banking">
             <div class="nav-item-content">
-              <i data-lucide="landmark"></i>
-              <span>Banking</span>
+              <i data-lucide="book-user"></i>
+              <span>Core Human Capital</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu active" id="submenu-banking">
-            <a href="Bankverification.php" class="submenu-item active">
+          <div class="submenu <?php echo ($module === 'banking') ? 'active' : ''; ?>" id="submenu-banking">
+            <a href="Bankverification.php" class="submenu-item <?php echo ($page === 'Bankverification') ? 'active' : ''; ?>">
               <i data-lucide="shield-check"></i>
               <span>Bank Verification</span>
+            </a>
+            <a href="informationapproval.php" class="submenu-item <?php echo ($page === 'informationapproval') ? 'active' : ''; ?>">
+              <i data-lucide="file-check"></i>
+              <span>Information Approval</span>
             </a>
           </div>
         </div>
@@ -156,9 +162,8 @@ if ($subsRes) while ($r = $subsRes->fetch_assoc()) $submissions[] = $r;
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" id="tableSearch" placeholder="Search employee...">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -363,5 +368,8 @@ if ($subsRes) while ($r = $subsRes->fetch_assoc()) $submissions[] = $r;
   </script>
 </body>
 </html>
+
+
+
 
 

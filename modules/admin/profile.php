@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../../login.php");
@@ -220,9 +220,8 @@ $profilePhoto = !empty($employee['ProfilePhoto']) ? '../../' . $employee['Profil
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" placeholder="Search...">
+                <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -474,6 +473,8 @@ $profilePhoto = !empty($employee['ProfilePhoto']) ? '../../' . $employee['Profil
   </script>
 </body>
 </html>
+
+
 
 
 

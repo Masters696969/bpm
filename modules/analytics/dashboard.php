@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'HR_ANALYST') {
   header("Location: /microfinance/login.php");
@@ -197,9 +197,8 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'HR_ANALYST')
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" placeholder="Search...">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -386,7 +385,6 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'HR_ANALYST')
                 <span>Generate Report</span>
               </button>
               <button class="action-btn">
-                <i data-lucide="calendar"></i>
                 <span>Schedule Meeting</span>
               </button>
               <button class="action-btn">
@@ -511,6 +509,9 @@ if (empty($_SESSION['logged_in']) || ($_SESSION['role'] ?? '') !== 'HR_ANALYST')
   </script>
 </body>
 </html>
+
+
+
 
 
 

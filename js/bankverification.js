@@ -1,5 +1,5 @@
-/* ============================================================
-   bankverification.js — Manager Bank Verification JS
+﻿/* ============================================================
+   bankverification.js â€” Manager Bank Verification JS
    Handles: filter tabs, live search, send-to-bank, confirm modal + AJAX
 ============================================================ */
 
@@ -19,28 +19,28 @@ const BV = {
         this.empIdInput = document.getElementById('confirmEmpId');
         this.empBadge = document.getElementById('confirmEmpBadge');
 
-        // ── Modal close
+        // â”€â”€ Modal close
         document.getElementById('closeConfirmModal')?.addEventListener('click', () => this.closeModal());
         document.getElementById('cancelConfirm')?.addEventListener('click', () => this.closeModal());
         this.modal?.addEventListener('click', e => { if (e.target === this.modal) this.closeModal(); });
 
-        // ── "Sent to Bank" buttons
+        // â”€â”€ "Sent to Bank" buttons
         document.querySelectorAll('.bv-btn-send').forEach(btn => {
             btn.addEventListener('click', () => this.sendToBank(btn.dataset.appId, btn.dataset.empName));
         });
 
-        // ── "Mark Confirmed" buttons
+        // â”€â”€ "Mark Confirmed" buttons
         document.querySelectorAll('.bv-btn-confirm').forEach(btn => {
             btn.addEventListener('click', () => this.openConfirmModal(btn.dataset.appId, btn.dataset.empId, btn.dataset.empName));
         });
 
-        // ── Confirm form submit
+        // â”€â”€ Confirm form submit
         this.confirmForm?.addEventListener('submit', e => {
             e.preventDefault();
             this.saveConfirm();
         });
 
-        // ── Filter tabs
+        // â”€â”€ Filter tabs
         document.querySelectorAll('.bv-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.bv-tab').forEach(t => t.classList.remove('active'));
@@ -49,13 +49,13 @@ const BV = {
             });
         });
 
-        // ── Live search
+        // â”€â”€ Live search
         document.getElementById('tableSearch')?.addEventListener('input', e => {
             this.searchTable(e.target.value.toLowerCase().trim());
         });
     },
 
-    // ── Filter by status
+    // â”€â”€ Filter by status
     filterTable(filter) {
         document.querySelectorAll('#submissionsTable tbody tr').forEach(row => {
             const status = row.dataset.status || '';
@@ -63,7 +63,7 @@ const BV = {
         });
     },
 
-    // ── Live search
+    // â”€â”€ Live search
     searchTable(q) {
         document.querySelectorAll('#submissionsTable tbody tr').forEach(row => {
             const haystack = row.dataset.search || '';
@@ -71,7 +71,7 @@ const BV = {
         });
     },
 
-    // ── Mark Sent to Bank
+    // â”€â”€ Mark Sent to Bank
     async sendToBank(appId, empName) {
         const result = await Swal.fire({
             title: 'Mark as Sent to Bank?',
@@ -101,7 +101,7 @@ const BV = {
         }
     },
 
-    // ── Open Confirm Modal
+    // â”€â”€ Open Confirm Modal
     openConfirmModal(appId, empId, empName) {
         if (!this.modal) return;
         this.appIdInput.value = appId;
@@ -121,7 +121,7 @@ const BV = {
         document.body.style.overflow = '';
     },
 
-    // ── Submit confirmation with bank details
+    // â”€â”€ Submit confirmation with bank details
     async saveConfirm() {
         const fd = new FormData(this.confirmForm);
         fd.append('action', 'confirm_bank');
@@ -129,7 +129,7 @@ const BV = {
         const btn = this.confirmForm.querySelector('[type="submit"]');
         const orig = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<i data-lucide="loader"></i> Saving…';
+        btn.innerHTML = '<i data-lucide="loader"></i> Savingâ€¦';
         lucide.createIcons();
 
         try {
@@ -249,3 +249,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+
+
+
+// Real-time Clock Functionality
+function initClock() {
+    const clockEl = document.getElementById('realTimeClock');
+    if (!clockEl) return;
+    
+    const updateClock = () => {
+        const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const now = new Date();
+        const dayName = days[now.getDay()];
+        const monthName = months[now.getMonth()];
+        const date = now.getDate();
+        const year = now.getFullYear();
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; 
+        const formattedHours = hours.toString().padStart(2, '0');
+        
+        clockEl.textContent = `${dayName}, ${monthName} ${date}, ${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
+    };
+    
+    setInterval(updateClock, 1000);
+    updateClock();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initClock);
+} else {
+    initClock();
+}

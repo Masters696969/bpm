@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     fetchPendingRequests();
     lucide.createIcons();
 
@@ -96,7 +96,7 @@ async function fetchPendingRequests() {
                     ? `<button class="btn-review" onclick="viewRequest(${req.RequestID}, '${encodeURIComponent(req.RequestData)}')">
                             <i data-lucide="eye"></i> Review
                        </button>`
-                    : `<span style="font-size:13px;color:var(--text-tertiary);">—</span>`;
+                    : `<span style="font-size:13px;color:var(--text-tertiary);">â€”</span>`;
 
                 return `
                 <tr class="req-row">
@@ -105,7 +105,7 @@ async function fetchPendingRequests() {
                             <div class="emp-avatar">${initials}</div>
                             <div>
                                 <div class="emp-name">${req.FirstName} ${req.LastName}</div>
-                                <div class="emp-dept">${req.DepartmentName || '—'}</div>
+                                <div class="emp-dept">${req.DepartmentName || 'â€”'}</div>
                             </div>
                         </div>
                     </td>
@@ -390,3 +390,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+
+
+
+// Real-time Clock Functionality
+function initClock() {
+    const clockEl = document.getElementById('realTimeClock');
+    if (!clockEl) return;
+    
+    const updateClock = () => {
+        const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const now = new Date();
+        const dayName = days[now.getDay()];
+        const monthName = months[now.getMonth()];
+        const date = now.getDate();
+        const year = now.getFullYear();
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; 
+        const formattedHours = hours.toString().padStart(2, '0');
+        
+        clockEl.textContent = `${dayName}, ${monthName} ${date}, ${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
+    };
+    
+    setInterval(updateClock, 1000);
+    updateClock();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initClock);
+} else {
+    initClock();
+}

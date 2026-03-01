@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -13,6 +13,7 @@ if (!isset($_SESSION['username'])) {
   <title>Dashboard</title>
   <link rel="stylesheet" href="../../css/essdashboard.css?v=1.2">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
 <body>
@@ -127,9 +128,8 @@ if (!isset($_SESSION['username'])) {
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" placeholder="Search...">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -151,6 +151,9 @@ if (!isset($_SESSION['username'])) {
   </script>
 </body>
 </html>
+
+
+
 
 
 

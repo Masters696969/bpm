@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     fetchEmployees();
     lucide.createIcons();
 });
@@ -48,10 +48,10 @@ function renderTable(employees) {
                     </div>
                 </div>
             </td>
-            <td style="font-size:13px;color:var(--text-secondary)">${emp.PositionName || '—'}</td>
-            <td style="font-size:13px;color:var(--text-secondary)">${emp.DepartmentName || '—'}</td>
+            <td style="font-size:13px;color:var(--text-secondary)">${emp.PositionName || 'â€”'}</td>
+            <td style="font-size:13px;color:var(--text-secondary)">${emp.DepartmentName || 'â€”'}</td>
             <td><span class="badge badge-${getStatusClass(emp.EmploymentStatus)}">${emp.EmploymentStatus || 'Unknown'}</span></td>
-            <td style="font-size:13px;color:var(--text-secondary)">${emp.GradeLevel || '—'}</td>
+            <td style="font-size:13px;color:var(--text-secondary)">${emp.GradeLevel || 'â€”'}</td>
             <td>
                 <button class="btn-review" onclick="viewProfile(${emp.EmployeeID})">
                     <i data-lucide="file-user"></i> View File
@@ -120,7 +120,7 @@ function renderResumeModal(data) {
                         <span class="ep-meta-chip"><i data-lucide="building-2"></i>${data.DepartmentName || 'No Department'}</span>
                         <span class="ep-meta-chip"><i data-lucide="hash"></i>${data.EmployeeCode || data.EmployeeID}</span>
                         <span class="ep-status-badge" style="background:${statusColor}20;color:${statusColor};border:1px solid ${statusColor}40">
-                          <span class="ep-status-dot" style="background:${statusColor}"></span>${data.EmploymentStatus || '—'}
+                          <span class="ep-status-dot" style="background:${statusColor}"></span>${data.EmploymentStatus || 'â€”'}
                         </span>
                     </div>
                 </div>
@@ -134,22 +134,22 @@ function renderResumeModal(data) {
         <div class="ep-stats-bar">
             <div class="ep-stat">
                 <i data-lucide="calendar"></i>
-                <div><span class="ep-stat-val">${data.HiringDate ? new Date(data.HiringDate).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}</span><span class="ep-stat-lbl">Date Hired</span></div>
+                <div><span class="ep-stat-val">${data.HiringDate ? new Date(data.HiringDate).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }) : 'â€”'}</span><span class="ep-stat-lbl">Date Hired</span></div>
             </div>
             <div class="ep-stat-divider"></div>
             <div class="ep-stat">
                 <i data-lucide="layers"></i>
-                <div><span class="ep-stat-val">${data.GradeLevel || '—'}</span><span class="ep-stat-lbl">Salary Grade</span></div>
+                <div><span class="ep-stat-val">${data.GradeLevel || 'â€”'}</span><span class="ep-stat-lbl">Salary Grade</span></div>
             </div>
             <div class="ep-stat-divider"></div>
             <div class="ep-stat">
                 <i data-lucide="mail"></i>
-                <div><span class="ep-stat-val" style="font-size:12px">${data.WorkEmail || '—'}</span><span class="ep-stat-lbl">Work Email</span></div>
+                <div><span class="ep-stat-val" style="font-size:12px">${data.WorkEmail || 'â€”'}</span><span class="ep-stat-lbl">Work Email</span></div>
             </div>
             <div class="ep-stat-divider"></div>
             <div class="ep-stat">
                 <i data-lucide="phone"></i>
-                <div><span class="ep-stat-val">${data.PhoneNumber || '—'}</span><span class="ep-stat-lbl">Phone</span></div>
+                <div><span class="ep-stat-val">${data.PhoneNumber || 'â€”'}</span><span class="ep-stat-lbl">Phone</span></div>
             </div>
         </div>
 
@@ -160,10 +160,10 @@ function renderResumeModal(data) {
             <div class="ep-section">
                 <div class="ep-section-hdr ep-hdr-blue"><i data-lucide="user"></i> Personal Information</div>
                 <div class="ep-fields">
-                    <div class="ep-field"><label>Date of Birth</label><span>${data.DateOfBirth || '—'}</span></div>
-                    <div class="ep-field"><label>Gender</label><span>${data.Gender || '—'}</span></div>
-                    <div class="ep-field"><label>Personal Email</label><span>${data.PersonalEmail || '—'}</span></div>
-                    <div class="ep-field full"><label>Permanent Address</label><span>${data.PermanentAddress || '—'}</span></div>
+                    <div class="ep-field"><label>Date of Birth</label><span>${data.DateOfBirth || 'â€”'}</span></div>
+                    <div class="ep-field"><label>Gender</label><span>${data.Gender || 'â€”'}</span></div>
+                    <div class="ep-field"><label>Personal Email</label><span>${data.PersonalEmail || 'â€”'}</span></div>
+                    <div class="ep-field full"><label>Permanent Address</label><span>${data.PermanentAddress || 'â€”'}</span></div>
                 </div>
             </div>
 
@@ -171,10 +171,10 @@ function renderResumeModal(data) {
             <div class="ep-section">
                 <div class="ep-section-hdr ep-hdr-purple"><i data-lucide="landmark"></i> Government Numbers</div>
                 <div class="ep-fields">
-                    <div class="ep-field"><label>TIN</label><span>${data.TINNumber || '—'}</span></div>
-                    <div class="ep-field"><label>SSS</label><span>${data.SSSNumber || '—'}</span></div>
-                    <div class="ep-field"><label>PhilHealth</label><span>${data.PhilHealthNumber || '—'}</span></div>
-                    <div class="ep-field"><label>Pag-IBIG</label><span>${data.PagIBIGNumber || '—'}</span></div>
+                    <div class="ep-field"><label>TIN</label><span>${data.TINNumber || 'â€”'}</span></div>
+                    <div class="ep-field"><label>SSS</label><span>${data.SSSNumber || 'â€”'}</span></div>
+                    <div class="ep-field"><label>PhilHealth</label><span>${data.PhilHealthNumber || 'â€”'}</span></div>
+                    <div class="ep-field"><label>Pag-IBIG</label><span>${data.PagIBIGNumber || 'â€”'}</span></div>
                 </div>
             </div>
 
@@ -183,10 +183,10 @@ function renderResumeModal(data) {
                 <div class="ep-section-hdr ep-hdr-green"><i data-lucide="credit-card"></i> Bank & Compensation</div>
                 <div class="ep-fields">
                     <div class="ep-field"><label>Bank Name</label><span style="color:var(--brand-green);font-weight:600">BDO</span></div>
-                    <div class="ep-field"><label>Account Number</label><span>${data.BankAccountNumber || '—'}</span></div>
+                    <div class="ep-field"><label>Account Number</label><span>${data.BankAccountNumber || 'â€”'}</span></div>
                     <div class="ep-field"><label>Account Type</label><span style="color:var(--brand-green);font-weight:600">Payroll</span></div>
-                    <div class="ep-field"><label>Base Salary</label><span>${(data.BaseSalary !== null && data.BaseSalary !== undefined) ? formatCurrency(data.BaseSalary) : '—'}</span></div>
-                    <div class="ep-field full"><label>Salary Range</label><span>${data.MinSalary ? formatCurrency(data.MinSalary) + ' – ' + formatCurrency(data.MaxSalary) : '—'}</span></div>
+                    <div class="ep-field"><label>Base Salary</label><span>${(data.BaseSalary !== null && data.BaseSalary !== undefined) ? formatCurrency(data.BaseSalary) : 'â€”'}</span></div>
+                    <div class="ep-field full"><label>Salary Range</label><span>${data.MinSalary ? formatCurrency(data.MinSalary) + ' â€“ ' + formatCurrency(data.MaxSalary) : 'â€”'}</span></div>
                 </div>
             </div>
 
@@ -194,9 +194,9 @@ function renderResumeModal(data) {
             <div class="ep-section">
                 <div class="ep-section-hdr ep-hdr-red"><i data-lucide="heart-pulse"></i> Emergency Contact</div>
                 <div class="ep-fields">
-                    <div class="ep-field"><label>Contact Name</label><span>${data.ContactName || '—'}</span></div>
-                    <div class="ep-field"><label>Relationship</label><span>${data.Relationship || '—'}</span></div>
-                    <div class="ep-field full"><label>Phone</label><span>${data.EmergencyPhone || '—'}</span></div>
+                    <div class="ep-field"><label>Contact Name</label><span>${data.ContactName || 'â€”'}</span></div>
+                    <div class="ep-field"><label>Relationship</label><span>${data.Relationship || 'â€”'}</span></div>
+                    <div class="ep-field full"><label>Phone</label><span>${data.EmergencyPhone || 'â€”'}</span></div>
                 </div>
             </div>
 
@@ -258,7 +258,7 @@ function renderEditForm(data) {
     modalBody.innerHTML = `
     <div class="ep-container ep-edit">
 
-        <!-- Hero Banner — edit variant -->
+        <!-- Hero Banner â€” edit variant -->
         <div class="ep-hero">
             <button class="ep-close" onclick="closeModal()" title="Close">&times;</button>
             <div class="ep-hero-content">
@@ -272,7 +272,7 @@ function renderEditForm(data) {
                         <span class="ep-meta-chip"><i data-lucide="building-2"></i>${data.DepartmentName || 'No Department'}</span>
                         <span class="ep-meta-chip"><i data-lucide="hash"></i>${data.EmployeeCode || data.EmployeeID}</span>
                         <span class="ep-status-badge" style="background:${statusColor}20;color:${statusColor};border:1px solid ${statusColor}40">
-                          <span class="ep-status-dot" style="background:${statusColor}"></span>${data.EmploymentStatus || '—'}
+                          <span class="ep-status-dot" style="background:${statusColor}"></span>${data.EmploymentStatus || 'â€”'}
                         </span>
                     </div>
                 </div>
@@ -525,3 +525,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+
+
+
+// Real-time Clock Functionality
+function initClock() {
+    const clockEl = document.getElementById('realTimeClock');
+    if (!clockEl) return;
+    
+    const updateClock = () => {
+        const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const now = new Date();
+        const dayName = days[now.getDay()];
+        const monthName = months[now.getMonth()];
+        const date = now.getDate();
+        const year = now.getFullYear();
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; 
+        const formattedHours = hours.toString().padStart(2, '0');
+        
+        clockEl.textContent = `${dayName}, ${monthName} ${date}, ${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
+    };
+    
+    setInterval(updateClock, 1000);
+    updateClock();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initClock);
+} else {
+    initClock();
+}

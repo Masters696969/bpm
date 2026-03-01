@@ -4,15 +4,18 @@ if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
     exit();
 }
+$page = 'pending';
+$module = 'hr'; 
+$pageHeader = 'Pending Reviews';
+$pageSubtitle = 'Review and endorse employee information updates.';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/informationrq.css?v=1.2">
+  <title>Pending Request</title>
+  <link rel="stylesheet" href="../../css/pending.css?v=1.3">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -40,12 +43,15 @@ if (!isset($_SESSION['username'])) {
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-        <a href="dashboard.php" class="nav-item <?php echo ($page === 'dashboard') ? 'active' : ''; ?>">
-          <i data-lucide="chart-no-axes-combined"></i>
-          <span>HR ANALYTICS</span>
+        <a href="dashboard.php" class="nav-item">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
         </a>
-
-        <div class="nav-item-group <?php echo ($module === 'hr') ? 'active' : ''; ?>">
+         <a href="pending.php" class="nav-item active">
+          <i data-lucide="circle-ellipsis"></i>
+          <span>Pending Reviews</span>
+        </a>
+         <div class="nav-item-group <?php echo ($module === 'hr') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="hr">
             <div class="nav-item-content">
               <i data-lucide="book-user"></i>
@@ -62,10 +68,7 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
             </a>
-             <a href="informationrq.php" class="submenu-item <?php echo ($page === 'informationrq') ? 'active' : ''; ?>">
-              <i data-lucide="user-round-pen"></i>
-              <span>Information Request</span>
-            </a>
+
             <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
               <i data-lucide="file-text"></i>
               <span>Bank Form Management</span>
@@ -81,7 +84,7 @@ if (!isset($_SESSION['username'])) {
           </div>
         </div>
 
-          <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+        <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
@@ -90,13 +93,13 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
-            <a href="#" class="submenu-item">
-              <i data-lucide="file-plus"></i>
-              <span>Applications</span>
+            <a href="salarymgt.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
+              <i data-lucide="banknote"></i>
+              <span>Salary & Scales Management</span>
             </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="check-circle"></i>
-              <span>Approvals</span>
+            <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
+              <i data-lucide="notebook-pen"></i>
+              <span>Compensation Structure Management</span>
             </a>
             <a href="#" class="submenu-item">
               <i data-lucide="calendar-clock"></i>
@@ -142,7 +145,7 @@ if (!isset($_SESSION['username'])) {
         <span class="nav-section-title">SETTINGS</span>
         
         <a href="#" class="nav-item">
-          <i data-lucide="settings"></i>
+          <i data-lucide="circle-ellipsis"></i>
           <span>Configuration</span>
         </a>
 
@@ -160,8 +163,8 @@ if (!isset($_SESSION['username'])) {
           <img src="../../img/profile.png" alt="User">
         </div>
         <div class="user-info">
-          <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
-          <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'Employee'); ?></span>
+          <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'Admin'); ?></span>
+          <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'Administrator'); ?></span>
         </div>
         <button class="user-menu-btn" id="userMenuBtn">
           <i data-lucide="more-vertical"></i>
@@ -192,14 +195,13 @@ if (!isset($_SESSION['username'])) {
           <i data-lucide="menu"></i>
         </button>
         <div class="header-title">
-          <h1><?php echo isset($pageHeader) ? $pageHeader : 'Dashboard'; ?></h1>
-          <p><?php echo isset($pageSubtitle) ? $pageSubtitle : "Welcome back, " . htmlspecialchars($_SESSION['username'] ?? 'User') . "!"; ?></p>
+          <h1>Dashboard Overview</h1>
+          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" placeholder="Search...">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -212,50 +214,11 @@ if (!isset($_SESSION['username'])) {
     </header>
 
     <div class="content-wrapper">
-
-        <!-- Stats Strip -->
-        <div class="stats-strip">
-            <div class="stat-card">
-                <div class="stat-icon pending">
-                    <i data-lucide="clock"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value" id="statPending">—</span>
-                    <span class="stat-label">Pending Requests</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon approved">
-                    <i data-lucide="check-circle-2"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value" id="statApproved">—</span>
-                    <span class="stat-label">Approved</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon rejected">
-                    <i data-lucide="x-circle"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value" id="statRejected">—</span>
-                    <span class="stat-label">Rejected</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Requests Table -->
         <div class="content-card">
             <div class="card-header">
                 <div class="card-header-left">
-                    <h3 class="card-title">Information Update Requests</h3>
-                    <p class="card-subtitle">Review and approve employee information changes.</p>
-                </div>
-                <div class="card-header-right">
-                    <label class="table-search">
-                        <i data-lucide="search"></i>
-                        <input type="text" id="tableSearch" placeholder="Search employee…">
-                    </label>
+                    <h3 class="card-title">Pending Requests</h3>
+                    <p class="card-subtitle">Review and endorse employee information updates and salary scale proposals.</p>
                 </div>
             </div>
             <div class="card-body">
@@ -263,7 +226,7 @@ if (!isset($_SESSION['username'])) {
                     <table id="requestsTable">
                         <thead>
                             <tr>
-                                <th>Employee</th>
+                                <th>Employee / Proposer</th>
                                 <th>Request Type</th>
                                 <th>Date Submitted</th>
                                 <th>Status</th>
@@ -275,7 +238,7 @@ if (!isset($_SESSION['username'])) {
                                 <td colspan="5">
                                     <div class="empty-state">
                                         <i data-lucide="loader-2"></i>
-                                        <p>Loading requests…</p>
+                                        <p>Loading requestsâ€¦</p>
                                     </div>
                                 </td>
                             </tr>
@@ -286,38 +249,123 @@ if (!isset($_SESSION['username'])) {
         </div>
     </div>
 
-    <!-- View/Approve Modal -->
-    <div class="modal-overlay hidden" id="requestActionModal">
-      <div class="modal-content modal-content-styled">
-        <div class="modal-header-styled">
-            <div>
-                <h3 class="modal-title-custom">Review Request</h3>
-                <p class="modal-subtitle-custom">Compare old and new values.</p>
+    <!-- Review Proposal Modal -->
+    <div class="modal-overlay hidden" id="proposalActionModal">
+      <div class="rem-dialog" style="max-width: 800px; width: 90%;">
+        <!-- Header -->
+        <div class="rem-header">
+          <div class="rem-header-left">
+            <div class="rem-icon-box">
+              <i data-lucide="git-pull-request"></i>
             </div>
-          <button id="btnCloseActionModal" class="close-modal-btn">
-            <i data-lucide="x" class="icon-sm"></i> Close
+            <div class="rem-title-group">
+              <h3 class="rem-title">Review Salary Scale Proposal</h3>
+              <p class="rem-subtitle">Review the requested changes before endorsing to the Manager.</p>
+            </div>
+          </div>
+          <button type="button" class="rem-close" id="btnCloseProposalModal">
+            <i data-lucide="x"></i>
           </button>
         </div>
-        <div class="modal-body-scroll" id="requestDetailsBody">
-            <!-- Dynamic Content -->
+
+        <!-- Body -->
+        <div class="rem-body">
+            <div class="rem-section">
+                <div class="rem-section-hdr rem-shdr-blue">
+                    <i data-lucide="file-diff"></i> Proposed Salary Scale Adjustments
+                </div>
+                <!-- Box for Reason -->
+                <div style="background:var(--surface-hover); padding:16px; border-radius:8px; margin-bottom:16px;">
+                    <strong>Reason for Proposal:</strong>
+                    <div id="proposalReasonText" style="margin-top:8px; color:var(--text-secondary); white-space:pre-wrap; font-size:14px;"></div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="comp-table editable-table" id="proposalDetailsTable" style="margin: 0;">
+                    <thead>
+                      <tr>
+                        <th>Job Grade</th>
+                        <th>Level Name</th>
+                        <th>Old Min</th>
+                        <th>Proposed Min</th>
+                        <th>Old Max</th>
+                        <th>Proposed Max</th>
+                      </tr>
+                    </thead>
+                    <tbody id="proposalDetailsBody">
+                        <tr><td colspan="6" style="text-align:center;">Loading details...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+            </div>
         </div>
-        <div class="modal-footer-styled">
-            <button type="button" class="btn-create-master" id="btnReject" style="background-color: #ef4444; margin-right: auto;">
-                <i data-lucide="x-circle" class="icon-sm"></i> Reject
+
+        <!-- Footer -->
+        <div class="rem-footer">
+          <div class="rem-footer-hint">
+            <i data-lucide="info"></i>
+            Endorsed requests are sent to the Manager. Rejected requests are discarded.
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button type="button" class="rem-btn-send" id="btnRejectProposal" style="background-color: var(--brand-red);">
+                <i data-lucide="x-circle"></i> Reject
             </button>
-            <button type="button" class="btn-create-master" id="btnApprove" style="background-color: #10b981;">
-                <i data-lucide="check-circle" class="icon-sm"></i> Approve
+            <button type="button" class="rem-btn-send" id="btnEndorseProposal" style="background-color: var(--brand-green);">
+                <i data-lucide="check-circle"></i> Endorse
             </button>
+          </div>
         </div>
       </div>
     </div>
- </main>
-  <script src="../../js/informationrq.js"></script>
+    <!-- View/Endorse Modal styled like Information Management Request Edit -->
+    <div class="modal-overlay hidden" id="requestActionModal">
+      <div class="rem-dialog">
+        <!-- Header -->
+        <div class="rem-header">
+          <div class="rem-header-left">
+            <div class="rem-icon-box">
+              <i data-lucide="file-check-2"></i>
+            </div>
+            <div class="rem-title-group">
+              <h3 class="rem-title">Review & Endorse Request</h3>
+              <p class="rem-subtitle">Review the requested changes before endorsing.</p>
+            </div>
+          </div>
+          <button type="button" class="rem-close" id="btnCloseActionModal">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="rem-body">
+            <div class="rem-section" id="requestDetailsBody">
+                <!-- Dynamic Content injected by pending.js -->
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="rem-footer">
+          <div class="rem-footer-hint">
+            <i data-lucide="clock"></i>
+            Endorsed requests are sent to the Manager for final approval.
+          </div>
+          <button type="button" class="rem-btn-send" id="btnEndorse" style="background-color: var(--brand-green);">
+            <i data-lucide="check-circle"></i> Endorse Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="../../js/pending.js?v=2.2"></script>
   <script>
     lucide.createIcons();
   </script>
 </body>
 </html>
+
+
+
+
 
 
 

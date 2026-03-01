@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 25, 2026 at 02:30 PM
+-- Generation Time: Mar 01, 2026 at 08:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -42,11 +42,10 @@ CREATE TABLE `allowance_types` (
 
 INSERT INTO `allowance_types` (`AllowanceTypeID`, `AllowanceName`, `IsTaxable`, `Frequency`, `CreatedAt`, `UpdatedAt`) VALUES
 (1, 'Rice Subsidy', 0, 'Monthly', '2026-02-25 09:41:43', '2026-02-25 09:41:43'),
-(2, 'Meal Allowance', 0, 'Monthly', '2026-02-25 09:41:43', '2026-02-25 09:41:43'),
+(2, 'Meal Allowance', 1, 'Monthly', '2026-02-25 09:41:43', '2026-02-25 17:53:50'),
 (3, 'Laundry Allowance', 0, 'Monthly', '2026-02-25 09:41:43', '2026-02-25 09:41:43'),
-(4, 'Travel Allowance', 0, 'Monthly', '2026-02-25 09:41:43', '2026-02-25 09:41:43'),
-(5, 'Clothing Allowance', 0, 'Annual', '2026-02-25 09:41:43', '2026-02-25 09:41:43'),
-(6, 'Communication Allowance', 0, 'Monthly', '2026-02-25 09:41:43', '2026-02-25 09:41:43');
+(4, 'Travel Allowance', 1, 'Monthly', '2026-02-25 09:41:43', '2026-02-25 17:53:50'),
+(6, 'Communication Allowance', 1, 'Monthly', '2026-02-25 09:41:43', '2026-02-25 17:53:50');
 
 -- --------------------------------------------------------
 
@@ -69,7 +68,10 @@ CREATE TABLE `bankdetails` (
 INSERT INTO `bankdetails` (`BankDetailID`, `EmployeeID`, `BankName`, `AccountNumber`, `AccountType`) VALUES
 (1, 1, 'BDO', '001234567890', 'payroll'),
 (2, 2, 'BDO', '230-31005-2026', 'Payroll'),
-(3, 3, 'BDO', '222-444-332-222', 'Payroll');
+(3, 3, 'BDO', '222-444-332-222', 'Payroll'),
+(4, 4, 'BDO', '323235566', 'Payroll'),
+(5, 7, 'BDO', '321-313-321', 'Payroll'),
+(6, 6, 'BDO', '230-31125-2026', 'Payroll');
 
 -- --------------------------------------------------------
 
@@ -147,6 +149,8 @@ INSERT INTO `bir_tax_settings` (`period_id`, `tax_exempt_limit`, `de_minimis_cap
 CREATE TABLE `compensation_period` (
   `period_id` int(11) NOT NULL,
   `period_name` varchar(100) NOT NULL,
+  `start_date` date NOT NULL DEFAULT '2026-01-01',
+  `end_date` date NOT NULL DEFAULT '2026-02-15',
   `effective_date` date NOT NULL,
   `status` enum('Active','Inactive','Draft') DEFAULT 'Draft',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -156,8 +160,8 @@ CREATE TABLE `compensation_period` (
 -- Dumping data for table `compensation_period`
 --
 
-INSERT INTO `compensation_period` (`period_id`, `period_name`, `effective_date`, `status`, `created_at`) VALUES
-(1, 'FY2026', '2026-03-01', 'Active', '2026-02-23 17:21:48');
+INSERT INTO `compensation_period` (`period_id`, `period_name`, `start_date`, `end_date`, `effective_date`, `status`, `created_at`) VALUES
+(1, 'FY2026', '2026-01-01', '2026-02-15', '2026-03-01', 'Active', '2026-02-23 17:21:48');
 
 -- --------------------------------------------------------
 
@@ -200,7 +204,10 @@ CREATE TABLE `emergency_contacts` (
 INSERT INTO `emergency_contacts` (`ContactID`, `EmployeeID`, `ContactName`, `Relationship`, `PhoneNumber`, `IsPrimary`) VALUES
 (1, 1, 'Andrie Suruiz', 'Father', '09223344556', 1),
 (2, 2, 'Hero Baldon', 'Father', '09334455667', 1),
-(3, 3, 'Daniela Magtangob', 'Wife', '09445566778', 1);
+(3, 3, 'Daniela Magtangob', 'Wife', '09445566778', 1),
+(4, 4, 'Jhustine', 'Father', '09312355667', 1),
+(5, 7, 'Miguel', 'Father', '09132131212', 1),
+(6, 6, 'Jean', 'Mother', '09204132131', 1);
 
 -- --------------------------------------------------------
 
@@ -229,10 +236,11 @@ CREATE TABLE `employee` (
 INSERT INTO `employee` (`EmployeeID`, `EmployeeCode`, `FirstName`, `MiddleName`, `LastName`, `DateOfBirth`, `Gender`, `PersonalEmail`, `PhoneNumber`, `PermanentAddress`, `ProfilePhoto`) VALUES
 (1, 'ADM20261001', 'Joshua', 'Rivero', 'Suruiz', '2004-04-06', 'Male', 'suruizandrie@gmail.com', '09111223344', 'Quezon City', NULL),
 (2, 'ADM20261002', 'Red Gin', 'B', 'Baldon', '2005-04-06', 'Male', 'red@gmail.comm', '09111223344', 'Quezon City', 'img/profiles/profile_2_1771761386.jpg'),
-(3, 'HRDS20261003', 'Noriel', 'G', 'Dimailig', '2004-05-06', 'Male', 'riverojosh19@gmail.com', '09555223344', 'Quezon City', NULL),
+(3, 'HRDS20261003', 'Noriel', 'H', 'Dimailig', '2004-05-06', 'Male', 'riverojosh19@gmail.com', '09555223344', 'Quezon City', NULL),
 (4, 'HRS20261004', 'Earl', 'J.', 'Caber', '2004-04-02', 'Male', 'earl@gmail.com', '09321223344', 'Quezon City', NULL),
 (6, 'HRM20261006', 'Glory', 'J', 'Job', '2001-04-04', 'Male', 'glory@gmail.comm', '09531223344', 'Quezon City', NULL),
-(7, 'CA20261007', 'Miguel', 'M', 'Padre', '2005-05-03', 'Male', 'padre@gmail.com', '09535223344', 'Quezon City', NULL);
+(7, 'CA20261007', 'Miguel', 'M', 'Padre', '2005-05-03', 'Male', 'padre@gmail.com', '09535223344', 'Quezon City', NULL),
+(8, 'PAY20261008', 'Daniella', 'M', 'Magtangob', '2004-02-03', 'Female', 'Daniella@gmail.com', '09532223344', 'Quezon City', NULL);
 
 -- --------------------------------------------------------
 
@@ -286,11 +294,12 @@ CREATE TABLE `employmentinformation` (
 
 INSERT INTO `employmentinformation` (`EmploymentID`, `EmployeeID`, `DepartmentID`, `PositionID`, `SalaryGradeID`, `BaseSalary`, `HiringDate`, `WorkEmail`, `EmploymentStatus`, `DigitalResume`, `IDPicture`) VALUES
 (1, 1, 1, 1, 6, 80000.00, '2026-02-08', 'suruiz.joshuabcp@gmail.com', 'Regular', NULL, NULL),
-(2, 2, 2, 1, 6, 80000.00, '2026-02-09', 'suruizandrie@gmail.com', 'Regular', NULL, NULL),
+(2, 2, 1, 1, 6, 80000.00, '2026-02-09', 'suruizandrie@gmail.com', 'Regular', NULL, NULL),
 (3, 3, 2, 2, 2, 21000.00, '2026-02-09', 'riverojosh19@gmail.com', 'Regular', NULL, NULL),
 (4, 4, 2, 4, 1, 15000.00, '2026-02-08', 'earl@gmail.com', 'Regular', NULL, NULL),
 (5, 6, 2, 3, 5, 53000.00, '2026-02-09', 'glory@gmail.com', 'Regular', NULL, NULL),
-(6, 7, 2, 5, 4, 40000.00, '2026-02-09', 'padre@gmail.com', 'Regular', NULL, NULL);
+(6, 7, 2, 5, 4, 40000.00, '2026-02-09', 'padre@gmail.com', 'Regular', NULL, NULL),
+(7, 8, 2, 6, 2, 21000.00, '2026-02-09', 'Daniella@gmail.com', 'Regular', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -309,6 +318,18 @@ CREATE TABLE `final_performance_rating` (
   `UpdatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `final_performance_rating`
+--
+
+INSERT INTO `final_performance_rating` (`EvaluationID`, `EmployeeID`, `period_id`, `FinalRating`, `EvaluationStatus`, `FinalApproverID`, `FinalizedDate`, `UpdatedAt`) VALUES
+(1, 1, 1, 4.00, 'Finalized', 1, '2026-02-25 00:00:00', '2026-02-25 14:23:23'),
+(2, 2, 1, 5.00, 'Finalized', 1, '2026-02-25 00:00:00', '2026-02-25 14:23:23'),
+(3, 3, 1, 3.00, 'Finalized', 1, '2026-02-24 00:00:00', '2026-02-25 14:23:23'),
+(4, 4, 1, 4.00, 'Finalized', 1, '2026-02-24 00:00:00', '2026-02-25 14:23:23'),
+(5, 6, 1, 5.00, 'Finalized', 1, '2026-02-24 00:00:00', '2026-02-25 14:23:23'),
+(6, 7, 1, 5.00, 'Finalized', 1, '2026-02-25 00:00:00', '2026-02-25 14:23:23');
+
 -- --------------------------------------------------------
 
 --
@@ -317,6 +338,7 @@ CREATE TABLE `final_performance_rating` (
 
 CREATE TABLE `grade_allowances` (
   `GradeAllowanceID` int(11) NOT NULL,
+  `period_id` int(11) DEFAULT NULL,
   `SalaryGradeID` int(11) NOT NULL,
   `AllowanceTypeID` int(11) NOT NULL,
   `Amount` decimal(12,2) NOT NULL DEFAULT 0.00,
@@ -328,43 +350,37 @@ CREATE TABLE `grade_allowances` (
 -- Dumping data for table `grade_allowances`
 --
 
-INSERT INTO `grade_allowances` (`GradeAllowanceID`, `SalaryGradeID`, `AllowanceTypeID`, `Amount`, `CreatedAt`, `UpdatedAt`) VALUES
-(1, 1, 1, 2000.00, '2026-02-25 09:41:56', '2026-02-25 09:41:56'),
-(2, 1, 2, 3000.00, '2026-02-25 09:41:56', '2026-02-25 09:41:56'),
-(3, 1, 3, 300.00, '2026-02-25 09:41:56', '2026-02-25 09:41:56'),
-(4, 1, 4, 2000.00, '2026-02-25 09:41:56', '2026-02-25 10:20:49'),
-(5, 1, 5, 5000.00, '2026-02-25 09:41:56', '2026-02-25 10:31:49'),
-(6, 1, 6, 500.00, '2026-02-25 09:41:56', '2026-02-25 10:30:10'),
-(8, 2, 1, 2000.00, '2026-02-25 09:54:42', '2026-02-25 09:54:42'),
-(9, 2, 2, 2000.00, '2026-02-25 09:54:42', '2026-02-25 09:54:42'),
-(10, 2, 3, 300.00, '2026-02-25 09:54:42', '2026-02-25 09:54:42'),
-(11, 2, 4, 5000.00, '2026-02-25 09:54:42', '2026-02-25 09:54:42'),
-(12, 2, 5, 6000.00, '2026-02-25 09:54:42', '2026-02-25 09:54:42'),
-(13, 2, 6, 1000.00, '2026-02-25 09:54:42', '2026-02-25 09:54:42'),
-(14, 3, 1, 2000.00, '2026-02-25 09:55:03', '2026-02-25 09:55:03'),
-(15, 3, 2, 2500.00, '2026-02-25 09:55:03', '2026-02-25 09:55:03'),
-(16, 3, 3, 300.00, '2026-02-25 09:55:03', '2026-02-25 09:55:03'),
-(17, 3, 4, 6000.00, '2026-02-25 09:55:03', '2026-02-25 09:55:03'),
-(18, 3, 5, 6000.00, '2026-02-25 09:55:03', '2026-02-25 09:55:03'),
-(19, 3, 6, 1500.00, '2026-02-25 09:55:03', '2026-02-25 09:55:03'),
-(20, 4, 1, 2000.00, '2026-02-25 09:57:02', '2026-02-25 09:57:02'),
-(21, 4, 2, 3000.00, '2026-02-25 09:57:02', '2026-02-25 09:57:02'),
-(22, 4, 3, 300.00, '2026-02-25 09:57:02', '2026-02-25 09:57:02'),
-(23, 4, 4, 8000.00, '2026-02-25 09:57:02', '2026-02-25 09:57:02'),
-(24, 4, 5, 7000.00, '2026-02-25 09:57:02', '2026-02-25 09:57:02'),
-(25, 4, 6, 2000.00, '2026-02-25 09:57:02', '2026-02-25 09:57:02'),
-(27, 5, 1, 2000.00, '2026-02-25 09:57:44', '2026-02-25 09:57:44'),
-(28, 5, 2, 3000.00, '2026-02-25 09:57:44', '2026-02-25 09:57:44'),
-(29, 5, 3, 300.00, '2026-02-25 09:57:44', '2026-02-25 09:57:44'),
-(30, 5, 4, 10000.00, '2026-02-25 09:57:44', '2026-02-25 09:57:44'),
-(31, 5, 5, 7000.00, '2026-02-25 09:57:44', '2026-02-25 09:57:44'),
-(32, 5, 6, 3000.00, '2026-02-25 09:57:44', '2026-02-25 09:57:44'),
-(34, 6, 1, 2000.00, '2026-02-25 09:57:55', '2026-02-25 09:57:55'),
-(35, 6, 2, 3000.00, '2026-02-25 09:57:55', '2026-02-25 09:57:55'),
-(36, 6, 3, 300.00, '2026-02-25 09:57:55', '2026-02-25 09:57:55'),
-(37, 6, 4, 15000.00, '2026-02-25 09:57:55', '2026-02-25 09:57:55'),
-(38, 6, 5, 7000.00, '2026-02-25 09:57:55', '2026-02-25 09:57:55'),
-(39, 6, 6, 5000.00, '2026-02-25 09:57:55', '2026-02-25 09:57:55');
+INSERT INTO `grade_allowances` (`GradeAllowanceID`, `period_id`, `SalaryGradeID`, `AllowanceTypeID`, `Amount`, `CreatedAt`, `UpdatedAt`) VALUES
+(1, 1, 1, 1, 2500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(2, 1, 1, 2, 1000.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(3, 1, 1, 3, 400.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(4, 1, 1, 4, 1500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(5, 1, 1, 6, 500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(6, 1, 2, 1, 2500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(7, 1, 2, 2, 1500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(8, 1, 2, 3, 400.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(9, 1, 2, 4, 2500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(10, 1, 2, 6, 800.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(11, 1, 3, 1, 2500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(12, 1, 3, 2, 2000.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(13, 1, 3, 3, 400.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(14, 1, 3, 4, 3500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(15, 1, 3, 6, 1200.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(16, 1, 4, 1, 2500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(17, 1, 4, 2, 2500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(18, 1, 4, 3, 400.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(19, 1, 4, 4, 5000.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(20, 1, 4, 6, 1500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(21, 1, 5, 1, 2500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(22, 1, 5, 2, 3000.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(23, 1, 5, 3, 400.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(24, 1, 5, 4, 7000.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(25, 1, 5, 6, 2000.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(26, 1, 6, 1, 2500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(27, 1, 6, 2, 3500.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(28, 1, 6, 3, 400.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(29, 1, 6, 4, 10000.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
+(30, 1, 6, 6, 3000.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15');
 
 -- --------------------------------------------------------
 
@@ -458,9 +474,10 @@ CREATE TABLE `positions` (
 INSERT INTO `positions` (`PositionID`, `PositionName`, `PositionCode`, `DepartmentID`, `SalaryGradeID`, `AuthorizedHeadcount`) VALUES
 (1, 'Administrator', 'ADM', 1, 6, 1),
 (2, 'HR Data Specialist', 'HRDS', 2, 2, 1),
-(3, 'HR Manager', 'HRM', 2, 6, 1),
-(4, 'HR Staff', 'HRS', 2, 5, 1),
-(5, 'Compensation Analyst', 'CA', 2, 4, 1);
+(3, 'HR Manager', 'HRM', 2, 5, 1),
+(4, 'HR Staff', 'HRS', 2, 1, 1),
+(5, 'Compensation Analyst', 'CA', 2, 4, 1),
+(6, 'Payroll Processor', 'PAY', 2, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -483,7 +500,8 @@ INSERT INTO `roles` (`RoleID`, `RoleName`, `Description`) VALUES
 (2, 'HR Manager', 'Oversees the implementation, data integrity, and daily operation of Human Resources Information Systems'),
 (3, 'HR Data Specialist', 'maintains, cleanses, and analyzes employee information'),
 (4, 'HR Staff', 'provide essential operational support by managing the employee lifecycle, including recruiting, onboarding, payroll administration, and record-keeping'),
-(5, 'Compensation Analyst', 'Professional who researches, analyzes, and designs employee pay structures (salaries, bonuses, benefits) to ensure internal fairness and external market competitiveness');
+(5, 'Compensation Analyst', 'Professional who researches, analyzes, and designs employee pay structures (salaries, bonuses, benefits) to ensure internal fairness and external market competitiveness'),
+(6, 'Payroll Processor', 'In charge for payroll calculation');
 
 -- --------------------------------------------------------
 
@@ -499,7 +517,6 @@ CREATE TABLE `salary_grades` (
   `MinSalary` decimal(15,2) NOT NULL,
   `MaxSalary` decimal(15,2) NOT NULL,
   `MidSalary` decimal(15,2) GENERATED ALWAYS AS ((`MinSalary` + `MaxSalary`) / 2) STORED,
-  `RangeSpread` decimal(5,2) GENERATED ALWAYS AS ((`MaxSalary` - `MinSalary`) / `MinSalary` * 100) VIRTUAL,
   `Currency` varchar(10) DEFAULT 'PHP',
   `IsActive` tinyint(1) DEFAULT 1,
   `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -512,7 +529,7 @@ CREATE TABLE `salary_grades` (
 --
 
 INSERT INTO `salary_grades` (`SalaryGradeID`, `period_id`, `GradeLevel`, `GradeName`, `MinSalary`, `MaxSalary`, `Currency`, `IsActive`, `CreatedAt`, `UpdatedAt`, `Description`) VALUES
-(1, 1, 'SG-1', 'Entry Level', 15000.00, 19000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-02-23 17:22:08', 'Entry Support (HR Staff, Finance Assistants)'),
+(1, 1, 'SG-1', 'Entry Level', 15000.00, 19000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-03-01 06:41:59', 'Entry Support (HR Staff, Finance Assistants)'),
 (2, 1, 'SG-2', 'Professional I', 21000.00, 30000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-02-23 17:22:15', 'Professional I (Payroll Processor, HR Data Specialist)'),
 (3, 1, 'SG-3', 'Professional II', 28000.00, 42000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-02-23 17:22:19', 'Professional II (HR Analyst, Finance Officer)'),
 (4, 1, 'SG-4', 'Senior Associate\n', 40000.00, 55000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-02-23 17:22:22', 'Senior Specialist (Compensation Analyst, Senior Finance)'),
@@ -564,7 +581,10 @@ CREATE TABLE `taxbenefits` (
 INSERT INTO `taxbenefits` (`BenefitID`, `EmployeeID`, `TINNumber`, `SSSNumber`, `PhilHealthNumber`, `PagIBIGNumber`, `TaxStatus`, `VerificationStatus`) VALUES
 (1, 1, '123-456-789-000', '34-1234567-8', '12-050123456-7', '1212-3434-5656', 'S', 'Verified'),
 (2, 2, '321-654-987-000', '54-1234567-8', '14-050123456-7', '1414-3434-5656', 'S', 'Verified'),
-(3, 3, '321-456-789-000', '65-1234567-8', '21-050123456-7', '1312-3434-5656', 'S', 'Verified');
+(3, 3, '321-456-789-000', '65-1234567-8', '21-050123456-7', '1312-3434-5656', 'S', 'Verified'),
+(4, 4, '3321-654-987-000', '54-3234567-8', '14-03113456-7', '1431-3434-5656', 'S', 'Pending'),
+(5, 7, '111-654-987-000', '54-333367-8', '14-04343456-7', '1414-1223-5656', 'S', 'Pending'),
+(6, 6, '321-324-987-000', '14-1234567-8', '14-053123456-7', '114-3434-5656', 'S', 'Pending');
 
 -- --------------------------------------------------------
 
@@ -589,7 +609,8 @@ INSERT INTO `useraccountroles` (`UserRoleID`, `AccountID`, `RoleID`, `AssignedAt
 (8, 3, 3, '2026-02-09 07:19:29'),
 (9, 4, 4, '2026-02-20 09:26:26'),
 (13, 6, 2, '2026-02-21 14:00:20'),
-(14, 7, 5, '2026-02-23 11:16:49');
+(14, 7, 5, '2026-02-23 11:16:49'),
+(15, 8, 6, '2026-02-26 00:40:37');
 
 -- --------------------------------------------------------
 
@@ -619,7 +640,8 @@ INSERT INTO `useraccounts` (`AccountID`, `EmployeeID`, `Username`, `Email`, `Pas
 (3, 3, 'Noriel Dimailig', 'riverojosh19@gmail.com', '$2y$10$h7FqYl3dpl5lxi9M.1MROe7mKykN0xiBfZ5qtbLrnwczzqMQV.6dK', NULL, NULL, 1, 'Active'),
 (4, 4, 'Earl Caber', 'earl@gmail.com', '$2y$10$pNvPeIuYaJbrX1p6J.DC1uBfmkl.9LPpmpgEgLtvlH8n7Y.98Evqy', NULL, NULL, 1, 'Active'),
 (6, 6, 'Glory Job', 'glory@gmail.com', '$2y$10$YobyvYhmp2hYgDAfhc0jvOImU.ue3DEh5mL9.KGzMKQiZ08ouN9ma', NULL, NULL, 1, 'Active'),
-(7, 7, 'Miguel Padre', 'padre@gmail.com', '$2y$10$q5NZoXCW8I2ODBnbXyfaLek/7l1djFj.Xg7Co1WUTTmF/bTwYs8De', NULL, NULL, 1, 'Active');
+(7, 7, 'Miguel Padre', 'padre@gmail.com', '$2y$10$q5NZoXCW8I2ODBnbXyfaLek/7l1djFj.Xg7Co1WUTTmF/bTwYs8De', NULL, NULL, 1, 'Active'),
+(8, NULL, 'Daniella Magtangob', 'Daniella@gmail.com', '$2y$10$ovAmS/s9RgztUaU69TpxZ.ambHNw0DGSh6P82g8qmJnPcOcMDlwCa', NULL, NULL, 1, 'Active');
 
 --
 -- Indexes for dumped tables
@@ -802,7 +824,7 @@ ALTER TABLE `allowance_types`
 -- AUTO_INCREMENT for table `bankdetails`
 --
 ALTER TABLE `bankdetails`
-  MODIFY `BankDetailID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `BankDetailID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `bank_applications`
@@ -832,13 +854,13 @@ ALTER TABLE `department`
 -- AUTO_INCREMENT for table `emergency_contacts`
 --
 ALTER TABLE `emergency_contacts`
-  MODIFY `ContactID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `ContactID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `EmployeeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `EmployeeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `employee_update_requests`
@@ -850,19 +872,19 @@ ALTER TABLE `employee_update_requests`
 -- AUTO_INCREMENT for table `employmentinformation`
 --
 ALTER TABLE `employmentinformation`
-  MODIFY `EmploymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `EmploymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `final_performance_rating`
 --
 ALTER TABLE `final_performance_rating`
-  MODIFY `EvaluationID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `EvaluationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `grade_allowances`
 --
 ALTER TABLE `grade_allowances`
-  MODIFY `GradeAllowanceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `GradeAllowanceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `merit_matrix_settings`
@@ -874,13 +896,13 @@ ALTER TABLE `merit_matrix_settings`
 -- AUTO_INCREMENT for table `positions`
 --
 ALTER TABLE `positions`
-  MODIFY `PositionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `PositionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `RoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `RoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `salary_grades`
@@ -892,19 +914,19 @@ ALTER TABLE `salary_grades`
 -- AUTO_INCREMENT for table `taxbenefits`
 --
 ALTER TABLE `taxbenefits`
-  MODIFY `BenefitID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `BenefitID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `useraccountroles`
 --
 ALTER TABLE `useraccountroles`
-  MODIFY `UserRoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `UserRoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `useraccounts`
 --
 ALTER TABLE `useraccounts`
-  MODIFY `AccountID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `AccountID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables

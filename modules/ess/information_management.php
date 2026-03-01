@@ -1,4 +1,4 @@
-
+ï»¿
 <?php
 session_start();
 if (!isset($_SESSION['username'])) {
@@ -13,6 +13,7 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Information Management</title>
   <link rel="stylesheet" href="../../css/informationmanagement.css?v=2.0">
+  <link rel="stylesheet" href="../../css/usermenu.css">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -126,9 +127,8 @@ if (!isset($_SESSION['username'])) {
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" placeholder="Search...">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -148,8 +148,8 @@ if (!isset($_SESSION['username'])) {
           <div class="im-hero-left">
             <div class="im-avatar" id="avatarPlaceholder"></div>
             <div class="im-hero-info">
-              <h2 class="im-hero-name" id="employeeName">Loading…</h2>
-              <p class="im-hero-position" id="employeePosition">Loading…</p>
+              <h2 class="im-hero-name" id="employeeName">Loadingâ€¦</h2>
+              <p class="im-hero-position" id="employeePosition">Loadingâ€¦</p>
               <div class="im-hero-chips">
                 <span class="im-chip">
                   <i data-lucide="building-2"></i>
@@ -319,7 +319,7 @@ if (!isset($_SESSION['username'])) {
             <div class="im-fields">
               <div class="im-field">
                 <label>Bank Name</label>
-                <input type="text" id="BankName" class="im-input" readonly>
+                <input type="text" id="BankName" class="im-input" value="BDO" readonly>
               </div>
               <div class="im-field">
                 <label>Account Number</label>
@@ -402,7 +402,7 @@ if (!isset($_SESSION['username'])) {
                 <div class="rem-row">
                   <div class="rem-field">
                     <label>Bank Name</label>
-                    <input type="text" name="BankName" class="rem-input" placeholder="e.g. BDO">
+                    <input type="text" name="BankName" class="rem-input" value="BDO" readonly>
                   </div>
                   <div class="rem-field">
                     <label>Account Number</label>
@@ -413,7 +413,7 @@ if (!isset($_SESSION['username'])) {
                   <div class="rem-field" style="border-bottom:0">
                     <label>Account Type</label>
                     <select name="AccountType" class="rem-input">
-                      <option value="">— Select —</option>
+                      <option value="">â€” Select â€”</option>
                       <option value="Savings">Savings</option>
                       <option value="Checking">Checking</option>
                       <option value="Payroll">Payroll</option>
@@ -453,6 +453,29 @@ if (!isset($_SESSION['username'])) {
               </div>
             </div>
 
+          <!-- Validation Proof -->
+            <div class="rem-section">
+              <div class="rem-section-hdr rem-shdr-green">
+                <i data-lucide="file-check-2"></i> Validation Proof
+              </div>
+              <div class="rem-fields" style="padding: 16px; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 6px;">
+                 <label style="font-size: 10px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px;">Upload Supporting Document (PDF/Image)</label>
+                 
+                 <div class="im-drop-zone" id="imDropZone">
+                    <input type="file" name="ProofFile" id="ProofFile" accept="image/*,.pdf" required>
+                    <div class="im-drop-content" id="imDropContent">
+                        <i data-lucide="upload-cloud"></i>
+                        <span class="im-drop-main">Drag & drop your proof document here</span>
+                        <span class="im-drop-sub">or click to browse â€” max 15 MB</span>
+                    </div>
+                 </div>
+                 <div class="im-file-preview" id="imFilePreview" style="display:none;"></div>
+                 <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 8px;">
+                    Please upload a proof to validate your request (e.g. Passbook, ID, etc.)
+                 </div>
+              </div>
+            </div>
+
           </form>
         </div>
 
@@ -460,7 +483,7 @@ if (!isset($_SESSION['username'])) {
         <div class="rem-footer">
           <div class="rem-footer-hint">
             <i data-lucide="clock"></i>
-            Requests are usually processed within 1–2 business days.
+            Requests are usually processed within 1â€“2 business days.
           </div>
           <button type="submit" form="requestEditForm" class="rem-btn-send">
             <i data-lucide="send"></i> Send Request
@@ -497,6 +520,9 @@ if (!isset($_SESSION['username'])) {
   </script>
 </body>
 </html>
+
+
+
 
 
 

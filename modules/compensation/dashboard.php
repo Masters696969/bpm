@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -61,10 +61,6 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
             </a>
-             <a href="informationrq.php" class="submenu-item <?php echo ($page === 'informationrq') ? 'active' : ''; ?>">
-              <i data-lucide="user-round-pen"></i>
-              <span>Information Request</span>
-            </a>
             <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
               <i data-lucide="file-text"></i>
               <span>Bank Form Management</span>
@@ -89,9 +85,9 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
-            <a href="#" class="submenu-item">
-              <i data-lucide="notebook"></i>
-              <span>Current Compensation Structure</span>
+            <a href="salarymgt.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
+              <i data-lucide="banknote"></i>
+              <span>Salary & Scales Management</span>
             </a>
             <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
               <i data-lucide="notebook-pen"></i>
@@ -197,9 +193,8 @@ if (!isset($_SESSION['username'])) {
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" placeholder="Search...">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -221,6 +216,9 @@ if (!isset($_SESSION['username'])) {
   </script>
 </body>
 </html>
+
+
+
 
 
 

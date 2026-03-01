@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -59,10 +59,6 @@ if (!isset($_SESSION['username'])) {
             <a href="employeemaster.php" class="submenu-item">
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
-            </a>
-            <a href="informationrq.php" class="submenu-item">
-              <i data-lucide="user-round-pen"></i>
-              <span>Information Request</span>
             </a>
             <a href="bankform.php" class="submenu-item active">
               <i data-lucide="file-text"></i>
@@ -162,9 +158,8 @@ if (!isset($_SESSION['username'])) {
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" placeholder="Search...">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -193,7 +188,7 @@ $pendingCnt = $pendingRes ? intval($pendingRes->fetch_assoc()['cnt']) : 0;
 
     <div class="content-wrapper">
 
-      <!-- ══ Stats ══ -->
+      <!-- â•â• Stats â•â• -->
       <div class="bf-stats">
         <div class="bf-stat-card">
           <div class="bf-stat-icon blue"><i data-lucide="file-text"></i></div>
@@ -218,7 +213,7 @@ $pendingCnt = $pendingRes ? intval($pendingRes->fetch_assoc()['cnt']) : 0;
         </div>
       </div>
 
-      <!-- ══ Master Forms Panel ══ -->
+      <!-- â•â• Master Forms Panel â•â• -->
       <div class="bf-panel">
         <div class="bf-panel-header">
           <div class="bf-panel-left">
@@ -266,7 +261,7 @@ $pendingCnt = $pendingRes ? intval($pendingRes->fetch_assoc()['cnt']) : 0;
                     </div>
                   </div>
                 </td>
-                <td><?php echo htmlspecialchars($m['UploadedBy'] ?? '—'); ?></td>
+                <td><?php echo htmlspecialchars($m['UploadedBy'] ?? 'â€”'); ?></td>
                 <td><?php echo date('M d, Y', strtotime($m['CreatedAt'])); ?></td>
                 <td>
                   <span class="bf-badge <?php echo $m['IsActive'] ? 'bf-badge-active' : 'bf-badge-archived'; ?>">
@@ -298,7 +293,7 @@ $pendingCnt = $pendingRes ? intval($pendingRes->fetch_assoc()['cnt']) : 0;
 
 
 
-      <!-- ══ Upload Modal ══ -->
+      <!-- â•â• Upload Modal â•â• -->
       <div id="uploadModal" class="bf-modal" aria-hidden="true">
         <div class="bf-modal-dialog">
           <div class="bf-modal-hero">
@@ -369,5 +364,8 @@ $pendingCnt = $pendingRes ? intval($pendingRes->fetch_assoc()['cnt']) : 0;
   </script>
 </body>
 </html>
+
+
+
 
 

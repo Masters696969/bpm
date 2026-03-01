@@ -2,29 +2,93 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchMyDetails();
     lucide.createIcons();
     const form = document.getElementById('myInfoForm');
-    if (form) {
+    if (form && typeof submitMyInfo === 'function') {
         form.addEventListener('submit', submitMyInfo);
     }
 
     // Modal Logic
     const btnRequestEdit = document.getElementById('btnRequestEdit');
     const requestEditModal = document.getElementById('requestEditModal');
-    const btnCloseRequestModal = document.getElementById('btnCloseRequestModal');
+    const closeRequestEditModal = document.getElementById('closeRequestEditModal');
     const requestEditForm = document.getElementById('requestEditForm');
 
-    if (btnRequestEdit && requestEditModal) {
-        console.log("Attaching click listener to Request Edit button");
+    // Dropzone Elements
+    const dropZone = document.getElementById('imDropZone');
+    const fileInput = document.getElementById('ProofFile');
+    const dropContent = document.getElementById('imDropContent');
+    const filePreview = document.getElementById('imFilePreview');
+
+    if (btnRequestEdit) {
         btnRequestEdit.addEventListener('click', () => {
-            console.log("Request Edit button clicked");
+            console.log('Request Edit button clicked');
+            resetDropzone();
             requestEditModal.classList.remove('hidden');
         });
-    } else {
-        console.error("Request Edit button or modal not found:", { btnRequestEdit, requestEditModal });
     }
 
-    if (btnCloseRequestModal && requestEditModal) {
-        btnCloseRequestModal.addEventListener('click', () => {
+    if (closeRequestEditModal) {
+        closeRequestEditModal.addEventListener('click', () => {
             requestEditModal.classList.add('hidden');
+        });
+    }
+
+    // Drag & Drop Logic
+    function resetDropzone() {
+        if (fileInput) fileInput.value = '';
+        if (dropContent) dropContent.style.display = 'flex';
+        if (filePreview) {
+            filePreview.style.display = 'none';
+            filePreview.innerHTML = '';
+        }
+    }
+
+    function handleFile(file) {
+        if (!file) return;
+
+        // Size validation
+        if (file.size > 15 * 1024 * 1024) {
+            Swal.fire({ icon: 'error', title: 'Too Large', text: 'Maximum file size is 15 MB.', confirmButtonColor: '#d33' });
+            return;
+        }
+
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        if (fileInput) fileInput.files = dt.files;
+
+        const sizeKB = (file.size / 1024).toFixed(1);
+        const sizeLabel = sizeKB >= 1024 ? (sizeKB / 1024).toFixed(1) + ' MB' : sizeKB + ' KB';
+
+        if (dropContent) dropContent.style.display = 'none';
+        if (filePreview) {
+            filePreview.style.display = 'flex';
+            const escName = file.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            filePreview.innerHTML = `
+                <i data-lucide="file-check" style="color:var(--brand-green)"></i>
+                <span class="im-fp-name">${escName}</span>
+                <span class="im-fp-size">${sizeLabel}</span>
+                <button type="button" class="im-fp-clear">&#x2715;</button>
+            `;
+            lucide.createIcons();
+            const clearBtn = filePreview.querySelector('.im-fp-clear');
+            if (clearBtn) clearBtn.addEventListener('click', resetDropzone);
+        }
+    }
+
+    if (dropZone && fileInput) {
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('im-dz-hover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('im-dz-hover'));
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.classList.remove('im-dz-hover');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files && fileInput.files[0]) {
+                handleFile(fileInput.files[0]);
+            }
         });
     }
 
@@ -39,13 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
         requestEditForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(requestEditForm);
-            const requestData = Object.fromEntries(formData.entries());
 
             try {
                 const response = await fetch('employee_action.php?action=request_update', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestData)
+                    body: formData
                 });
                 const result = await response.json();
 
@@ -261,94 +323,3 @@ function formatCurrency(amount) {
     return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(amount);
 }
 
-// Sidebar Active Link Logic (Merged)
-(function () {
-  const path = window.location.pathname;
-  const page = path.split('/').pop() || 'dashboard.php';
-  const current = page.split('?')[0];
-
-  document.querySelectorAll('.sidebar .nav-item, .sidebar .submenu-item').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.sidebar .nav-item-group').forEach(group => group.classList.remove('active'));
-
-  const submenuMatch = document.querySelector(`.sidebar a.submenu-item[href$="${current}"]`);
-  if (submenuMatch) {
-    submenuMatch.classList.add('active');
-    const parentGroup = submenuMatch.closest('.nav-item-group');
-    if (parentGroup) {
-      parentGroup.classList.add('active');
-      const submenu = parentGroup.querySelector('.submenu');
-      if (submenu) submenu.style.maxHeight = '500px';
-      const btn = parentGroup.querySelector('.nav-item.has-submenu');
-      if (btn) btn.classList.add('active');
-    }
-    return;
-  }
-
-  const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
-  if (navMatch) navMatch.classList.add('active');
-})();
-
-// User Menu Dropdown Logic (Merged)
-document.addEventListener('DOMContentLoaded', () => {
-    const nameEl = document.querySelector('.sidebar-footer .user-name');
-    const roleEl = document.querySelector('.sidebar-footer .user-role');
-    const umdName = document.getElementById('umdName');
-    const umdRole = document.getElementById('umdRole');
-    const umdAvatar = document.getElementById('umdAvatar');
-    if (nameEl && umdName) {
-        const name = nameEl.textContent.trim();
-        umdName.textContent = name;
-        if (umdAvatar) umdAvatar.textContent = name.charAt(0).toUpperCase();
-    }
-    if (roleEl && umdRole) umdRole.textContent = roleEl.textContent.trim();
-
-    const btn = document.getElementById('userMenuBtn');
-    const dd = document.getElementById('userMenuDropdown');
-    if (btn && dd) {
-        btn.addEventListener('click', e => {
-            e.stopPropagation();
-            dd.classList.toggle('umd-open');
-        });
-        document.addEventListener('click', e => {
-            if (!dd.contains(e.target) && e.target !== btn) {
-                dd.classList.remove('umd-open');
-            }
-        });
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') dd.classList.remove('umd-open');
-        });
-    }
-
-    const signOutLinks = document.querySelectorAll('.umd-sign-out');
-    signOutLinks.forEach(link => {
-        link.addEventListener('click', async e => {
-            e.preventDefault();
-            const dest = link.getAttribute('href');
-            const result = await Swal.fire({
-                title: 'Sign Out?',
-                text: 'You are about to sign out of your account.',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: '<i class="swal-icon-logout"></i> Yes, Sign Out',
-                cancelButtonText: 'Stay',
-                reverseButtons: true,
-                customClass: {
-                    popup: 'swal-signout-popup',
-                    title: 'swal-signout-title',
-                }
-            });
-            if (result.isConfirmed) {
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Signed Out',
-                    text: 'You have been signed out successfully.',
-                    timer: 1500,
-                    showConfirmButton: false,
-                });
-                window.location.href = dest;
-            }
-        });
-    });
-});

@@ -1,4 +1,4 @@
-<?php
+ï»¿<?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../../login.php');
@@ -60,10 +60,6 @@ if (!isset($_SESSION['user_id'])) {
             <a href="employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
-            </a>
-             <a href="informationrq.php" class="submenu-item <?php echo ($page === 'informationrq') ? 'active' : ''; ?>">
-              <i data-lucide="user-round-pen"></i>
-              <span>Information Request</span>
             </a>
             <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
               <i data-lucide="file-text"></i>
@@ -196,9 +192,8 @@ if (!isset($_SESSION['user_id'])) {
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" placeholder="Search...">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -219,7 +214,7 @@ if (!isset($_SESSION['user_id'])) {
               <i data-lucide="users"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-value" id="statTotal">—</span>
+              <span class="stat-value" id="statTotal">â€”</span>
               <span class="stat-label">Total Employees</span>
             </div>
           </div>
@@ -228,7 +223,7 @@ if (!isset($_SESSION['user_id'])) {
               <i data-lucide="user-check"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-value" id="statRegular">—</span>
+              <span class="stat-value" id="statRegular">â€”</span>
               <span class="stat-label">Regular</span>
             </div>
           </div>
@@ -237,7 +232,7 @@ if (!isset($_SESSION['user_id'])) {
               <i data-lucide="hourglass"></i>
             </div>
             <div class="stat-info">
-              <span class="stat-value" id="statProbationary">—</span>
+              <span class="stat-value" id="statProbationary">â€”</span>
               <span class="stat-label">Probationary</span>
             </div>
           </div>
@@ -253,7 +248,7 @@ if (!isset($_SESSION['user_id'])) {
             <div class="card-header-right">
               <label class="table-search">
                 <i data-lucide="search"></i>
-                <input type="text" id="empTableSearch" placeholder="Search employees…">
+                <input type="text" id="empTableSearch" placeholder="Search employeesâ€¦">
               </label>
             </div>
           </div>
@@ -310,6 +305,9 @@ if (!isset($_SESSION['user_id'])) {
   </script>
 </body>
 </html>
+
+
+
 
 
 

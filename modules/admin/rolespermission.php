@@ -1,4 +1,4 @@
-<?php
+ï»¿<?php
 session_start();
 
 // Check if user is logged in and is admin
@@ -175,9 +175,8 @@ if ($rolesResult) {
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" placeholder="Search roles...">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -211,7 +210,7 @@ if ($rolesResult) {
         <div class="rp-stat-card">
           <div class="rp-stat-icon green"><i data-lucide="key-round"></i></div>
           <div class="rp-stat-info">
-            <span class="rp-stat-value">—</span>
+            <span class="rp-stat-value">â€”</span>
             <span class="rp-stat-label">Permissions</span>
           </div>
         </div>
@@ -230,7 +229,7 @@ if ($rolesResult) {
           <div class="rp-panel-actions">
             <div class="rp-panel-search">
               <i data-lucide="search"></i>
-              <input type="search" id="roleSearch" placeholder="Search roles…">
+              <input type="search" id="roleSearch" placeholder="Search rolesâ€¦">
             </div>
             <button id="addRoleBtn" class="btn btn-primary">
               <i data-lucide="plus"></i> Add Role
@@ -315,7 +314,7 @@ if ($rolesResult) {
 
               <div class="form-row">
                 <label for="roleDescription">Description</label>
-                <textarea id="roleDescription" name="description" rows="3" placeholder="Describe what this role can do…"></textarea>
+                <textarea id="roleDescription" name="description" rows="3" placeholder="Describe what this role can doâ€¦"></textarea>
               </div>
             </form>
           </div>
@@ -350,6 +349,9 @@ if ($rolesResult) {
   </script>
 </body>
 </html>
+
+
+
 
 
 

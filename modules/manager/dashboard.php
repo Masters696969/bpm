@@ -1,9 +1,11 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
     exit();
 }
+$page = 'dashboard';
+$module = 'dashboard';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -39,88 +41,58 @@ if (!isset($_SESSION['username'])) {
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-         <a href="dashboard.php" class="nav-item">
-          <i data-lucide="layout-dashboard"></i>
-          <span>Dashboard</span>
+        <a href="dashboard.php" class="nav-item <?php echo ($page === 'dashboard') ? 'active' : ''; ?>">
+          <i data-lucide="chart-no-axes-combined"></i>
+          <span>HR Analytics</span>
         </a>
 
-       <div class="nav-item-group <?php echo ($module === 'hr') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="hr">
+        <div class="nav-item-group <?php echo ($module === 'banking') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'banking') ? 'active' : ''; ?>" data-module="banking">
             <div class="nav-item-content">
               <i data-lucide="book-user"></i>
               <span>Core Human Capital</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-hr">
-             <a href="Bankverification.php" class="submenu-item active">
+          <div class="submenu <?php echo ($module === 'banking') ? 'active' : ''; ?>" id="submenu-banking">
+            <a href="Bankverification.php" class="submenu-item <?php echo ($page === 'Bankverification') ? 'active' : ''; ?>">
               <i data-lucide="shield-check"></i>
               <span>Bank Verification</span>
             </a>
+            <a href="informationapproval.php" class="submenu-item <?php echo ($page === 'informationapproval') ? 'active' : ''; ?>">
+              <i data-lucide="file-check"></i>
+              <span>Information Approval</span>
+            </a>
           </div>
-        </div>  
+        </div>
 
         <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="finance">
+          <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
-              <i data-lucide="banknote"></i>
+              <i data-lucide="circle-pile"></i>
               <span>Compensation Planning</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-finance">
-            <a href="#" class="submenu-item">
-              <i data-lucide="receipt"></i>
-              <span>Accounting</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="file-text"></i>
-              <span>Invoicing</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="pie-chart"></i>
-              <span>Budget Planning</span>
-            </a>
+          <div class="submenu" id="submenu-planning">
+            <a href="#" class="submenu-item"><i data-lucide="file-plus"></i><span>Applications</span></a>
+            <a href="#" class="submenu-item"><i data-lucide="check-circle"></i><span>Approvals</span></a>
           </div>
         </div>
 
         <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="loans">
+          <button class="nav-item has-submenu" data-module="payroll">
             <div class="nav-item-content">
-              <i data-lucide="hand-coins"></i>
+              <i data-lucide="banknote-arrow-down"></i>
               <span>Payroll</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-loans">
-            <a href="#" class="submenu-item">
-              <i data-lucide="file-plus"></i>
-              <span>Applications</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="check-circle"></i>
-              <span>Approvals</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="calendar-clock"></i>
-              <span>Disbursements</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="coins"></i>
-              <span>Collections</span>
-            </a>
+          <div class="submenu" id="submenu-payroll">
+            <a href="#" class="submenu-item"><i data-lucide="file-plus"></i><span>Applications</span></a>
+            <a href="#" class="submenu-item"><i data-lucide="check-circle"></i><span>Approvals</span></a>
           </div>
         </div>
-
-        <a href="#" class="nav-item">
-          <i data-lucide="users-round"></i>
-          <span>Clients</span>
-        </a>
-
-        <a href="#" class="nav-item">
-          <i data-lucide="file-bar-chart"></i>
-          <span>Reports</span>
-        </a>
       </div>
 
       <div class="nav-section">
@@ -181,9 +153,8 @@ if (!isset($_SESSION['username'])) {
         </div>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <i data-lucide="search"></i>
-          <input type="search" placeholder="Search...">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -202,5 +173,8 @@ if (!isset($_SESSION['username'])) {
   <script src="../../js/managerdashboard.js"></script>
 </body>
 </html>
+
+
+
 
 

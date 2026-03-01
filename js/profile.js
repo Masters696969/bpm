@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+﻿document.addEventListener("DOMContentLoaded", () => {
     const lucide = window.lucide;
     const body = document.body;
     const themeToggle = document.getElementById("themeToggle");
@@ -269,3 +269,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// Real-time Clock Functionality
+function initClock() {
+    const clockEl = document.getElementById('realTimeClock');
+    if (!clockEl) return;
+    
+    const updateClock = () => {
+        const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const now = new Date();
+        const dayName = days[now.getDay()];
+        const monthName = months[now.getMonth()];
+        const date = now.getDate();
+        const year = now.getFullYear();
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; 
+        const formattedHours = hours.toString().padStart(2, '0');
+        
+        clockEl.textContent = `${dayName}, ${monthName} ${date}, ${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
+    };
+    
+    setInterval(updateClock, 1000);
+    updateClock();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initClock);
+} else {
+    initClock();
+}
