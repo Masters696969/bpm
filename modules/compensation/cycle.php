@@ -9,71 +9,121 @@ require_once '../../config/config.php';
 
 // Fetch Active Compensation Period (Assume ID 1 for now)
 $period_id = 1;
+
 $period_query = $conn->query("SELECT * FROM compensation_period WHERE period_id = $period_id");
-$period_data = $period_query->fetch_assoc();
+$period_data = ($period_query) ? $period_query->fetch_assoc() : [];
+
+// Fetch Merit Matrix (for Simulation)
+$merit_query = $conn->query("
+    SELECT performance_rating AS PerformanceRating, compa_ratio_range AS CompaRatioRange, min_increase_pct AS RecommendedIncrease
+    FROM merit_matrix_settings 
+    WHERE period_id = $period_id 
+    ORDER BY performance_rating DESC, compa_ratio_range ASC
+");
+$merit_matrix = [];
+if ($merit_query) {
+    while ($row = $merit_query->fetch_assoc()) {
+        $rating = number_format($row['PerformanceRating'], 1);
+        $range = $row['CompaRatioRange'];
+        if (!isset($merit_matrix[$rating])) $merit_matrix[$rating] = [];
+        $merit_matrix[$rating][$range] = [
+            'min_increase_pct' => $row['RecommendedIncrease']
+        ];
+    }
+}
 
 // Fetch Salary Grades
-$grades_query = $conn->query("SELECT SalaryGradeID, GradeLevel, GradeName, MinSalary, MaxSalary, MidSalary, Description FROM salary_grades WHERE period_id = $period_id ORDER BY SalaryGradeID ASC");
+$grades_query = $conn->query("
+    SELECT sg.SalaryGradeID, sg.GradeLevel, sg.GradeName, sg.MinSalary, sg.MaxSalary, sg.MidSalary, sg.Description
+    FROM salary_grades sg 
+    WHERE sg.period_id = $period_id 
+    ORDER BY sg.SalaryGradeID ASC
+");
 $salary_grades = [];
-while ($row = $grades_query->fetch_assoc()) {
-    $salary_grades[] = $row;
+if ($grades_query) {
+    while ($row = $grades_query->fetch_assoc()) {
+        $salary_grades[] = $row;
+    }
 }
 
 // Fetch Statutory Settings
 $sss_query = $conn->query("SELECT * FROM sss_settings WHERE period_id = $period_id");
-$sss_data = $sss_query->fetch_assoc();
+$sss_data = ($sss_query) ? $sss_query->fetch_assoc() : [];
 
 $ph_query = $conn->query("SELECT * FROM philhealth_settings WHERE period_id = $period_id");
-$ph_data = $ph_query->fetch_assoc();
+$ph_data = ($ph_query) ? $ph_query->fetch_assoc() : [];
 
 $pi_query = $conn->query("SELECT * FROM pagibig_settings WHERE period_id = $period_id");
-$pi_data = $pi_query->fetch_assoc();
+$pi_data = ($pi_query) ? $pi_query->fetch_assoc() : [];
 
+// Fetch BIR Tax Settings
 $bir_query = $conn->query("SELECT * FROM bir_tax_settings WHERE period_id = $period_id");
-$bir_data = $bir_query->fetch_assoc();
+$bir_data = ($bir_query) ? $bir_query->fetch_assoc() : [];
 
-// Fetch Merit Matrix
-$matrix_query = $conn->query("SELECT * FROM merit_matrix_settings WHERE period_id = $period_id ORDER BY performance_rating DESC, compa_ratio_range ASC");
-$merit_matrix = [];
-if ($matrix_query) {
-    while ($row = $matrix_query->fetch_assoc()) {
-        $rating = (string)$row['performance_rating'];
-        $range = $row['compa_ratio_range'];
-        $merit_matrix[$rating][$range] = $row;
+// Fetch Saved Drafts
+$drafts_query = $conn->query("SELECT DraftID, CycleName, DateStarted, LastSaved, BudgetUsedPct, Status FROM simulation_drafts ORDER BY LastSaved DESC");
+$saved_drafts = [];
+if ($drafts_query) {
+    while ($row = $drafts_query->fetch_assoc()) {
+        $saved_drafts[] = $row;
     }
 }
 
-// Fetch Allowance Types
-$allowance_types_query = $conn->query("SELECT * FROM allowance_types ORDER BY AllowanceTypeID ASC");
-$allowance_types = [];
-$allowance_taxable_map = [];
-while ($row = $allowance_types_query->fetch_assoc()) {
-    $allowance_types[] = $row;
-    $allowance_taxable_map[$row['AllowanceTypeID']] = $row['IsTaxable'];
-}
+// Fetch Live Stats
+$target_employees_query = $conn->query("SELECT COUNT(*) as total FROM employmentinformation WHERE EmploymentStatus = 'Regular'");
+$target_employees = ($target_employees_query) ? $target_employees_query->fetch_assoc()['total'] : 0;
 
-// Fetch Grade Allowances
-$grade_allowances_query = $conn->query("SELECT * FROM grade_allowances");
-$grade_allowance_map = [];
-while ($row = $grade_allowances_query->fetch_assoc()) {
-    $grade_allowance_map[$row['SalaryGradeID']][$row['AllowanceTypeID']] = $row['Amount'];
+$max_increase_query = $conn->query("SELECT MAX(max_increase_pct) as max_target FROM merit_matrix_settings WHERE period_id = $period_id");
+$max_increase = ($max_increase_query && $max_increase_query->num_rows > 0) ? number_format($max_increase_query->fetch_assoc()['max_target'], 1) : "0.0";
+
+$baseline_payroll_query = $conn->query("SELECT SUM(BaseSalary) as base_total FROM employmentinformation WHERE EmploymentStatus = 'Regular'");
+$baseline_payroll = ($baseline_payroll_query) ? $baseline_payroll_query->fetch_assoc()['base_total'] : 0.00;
+
+function getGradeAllowances($conn) {
+    $map = [];
+    $res = $conn->query("SELECT * FROM grade_allowances");
+    if ($res) {
+        while($row = $res->fetch_assoc()) {
+            $map[$row['SalaryGradeID']][$row['AllowanceTypeID']] = $row['Amount'];
+        }
+    }
+    return $map;
 }
+function getAllowanceTaxableMap($conn) {
+    $map = [];
+    $res = $conn->query("SELECT AllowanceTypeID, IsTaxable FROM allowance_types");
+    if ($res) {
+        while($row = $res->fetch_assoc()) {
+            $map[$row['AllowanceTypeID']] = $row['IsTaxable'];
+        }
+    }
+    return $map;
+}
+$grade_allowance_map = getGradeAllowances($conn);
+$allowance_taxable_map = getAllowanceTaxableMap($conn);
 
 // Fetch Simulation Data
 $simulation_query = $conn->query("
     SELECT 
         e.EmployeeID, e.EmployeeCode, e.FirstName, e.LastName,
-        p.PositionName,
-        ei.BaseSalary, ei.SalaryGradeID,
+        p.PositionName, d.DepartmentName,
+        ei.BaseSalary, ei.SalaryGradeID, ei.DepartmentID,
         fpr.FinalRating
     FROM employee e
     JOIN employmentinformation ei ON e.EmployeeID = ei.EmployeeID
     LEFT JOIN positions p ON ei.PositionID = p.PositionID
-    LEFT JOIN final_performance_rating fpr ON e.EmployeeID = fpr.EmployeeID AND fpr.period_id = $period_id
+    LEFT JOIN department d ON ei.DepartmentID = d.DepartmentID
+    LEFT JOIN (
+        SELECT EmployeeID, FinalRating
+        FROM final_performance_rating
+        ORDER BY period_id DESC
+    ) fpr ON e.EmployeeID = fpr.EmployeeID
+    WHERE ei.EmploymentStatus = 'Regular'
     ORDER BY e.EmployeeCode ASC
 ");
 $simulation_data = [];
-while ($row = $simulation_query->fetch_assoc()) {
+if ($simulation_query) {
+    while ($row = $simulation_query->fetch_assoc()) {
     $total_allow = 0;
     $taxable_allow = 0;
     if (isset($grade_allowance_map[$row['SalaryGradeID']])) {
@@ -88,14 +138,23 @@ while ($row = $simulation_query->fetch_assoc()) {
     $row['TaxableAllowances'] = $taxable_allow;
     $simulation_data[] = $row;
 }
+}
+
+// Fetch all departments for filter
+$dept_query = $conn->query("SELECT DepartmentID, DepartmentName FROM department ORDER BY DepartmentName ASC");
+$departments = [];
+while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
+    if ($d) $departments[] = $d;
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/cycle.css?v=1.2">
+  <title>Simulation</title>
+  <link rel="stylesheet" href="../../css/cycle.css?v=3.5">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -123,12 +182,12 @@ while ($row = $simulation_query->fetch_assoc()) {
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-        <a href="dashboard.php" class="nav-item active">
+        <a href="dashboard.php" class="nav-item">
           <i data-lucide="layout-dashboard"></i>
           <span>Dashboard</span>
         </a>
 
-         <div class="nav-item-group <?php echo ($module === 'hr') ? 'active' : ''; ?>">
+        <div class="nav-item-group">
           <button class="nav-item has-submenu" data-module="hr">
             <div class="nav-item-content">
               <i data-lucide="book-user"></i>
@@ -141,11 +200,11 @@ while ($row = $simulation_query->fetch_assoc()) {
               <i data-lucide="user-plus"></i>
               <span>New Hired Onboard Request</span>
             </a>
-            <a href="employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
+            <a href="employeemaster.php" class="submenu-item">
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
             </a>
-            <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
+            <a href="bankform.php" class="submenu-item">
               <i data-lucide="file-text"></i>
               <span>Bank Form Management</span>
             </a>
@@ -153,29 +212,41 @@ while ($row = $simulation_query->fetch_assoc()) {
               <i data-lucide="user-cog"></i>
               <span>Security Settings</span>
             </a>
-            <a href="auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
+            <a href="auditlogs.php" class="submenu-item">
               <i data-lucide="book-user"></i>
               <span>Audit Logs</span>
             </a>
           </div>
         </div>
 
-        <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="planning">
+        <div class="nav-item-group active">
+          <button class="nav-item has-submenu active" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
               <span>Compensation Planning</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-planning">
-            <a href="salarymgt.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
+          <div class="submenu" id="submenu-planning" style="max-height: 500px;">
+            <a href="salary.php" class="submenu-item">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
             </a>
-            <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
-              <i data-lucide="notebook-pen"></i>
-              <span>Compensation Structure Management</span>
+            <a href="statutory.php" class="submenu-item">
+              <i data-lucide="scale"></i>
+              <span>Statutory Contributions</span>
+            </a>
+            <a href="matrix.php" class="submenu-item">
+              <i data-lucide="percent"></i>
+              <span>Merit Matrix Structure</span>
+            </a>
+            <a href="allowance.php" class="submenu-item">
+              <i data-lucide="gift"></i>
+              <span>Allowance Structure</span>
+            </a>
+            <a href="cycle.php" class="submenu-item active">
+              <i data-lucide="calculator"></i>
+              <span>Simulation</span>
             </a>
             <a href="#" class="submenu-item">
               <i data-lucide="calendar-clock"></i>
@@ -188,7 +259,7 @@ while ($row = $simulation_query->fetch_assoc()) {
           </div>
         </div>
 
-           <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
+           <div class="nav-item-group">
           <button class="nav-item has-submenu" data-module="payroll">
             <div class="nav-item-content">
               <i data-lucide="banknote-arrow-down"></i>
@@ -215,8 +286,6 @@ while ($row = $simulation_query->fetch_assoc()) {
             </a>
           </div>
         </div>
-      </div>
-
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
         
@@ -229,14 +298,14 @@ while ($row = $simulation_query->fetch_assoc()) {
           <i data-lucide="shield"></i>
           <span>Security</span>
         </a>
-        
       </div>
     </nav>
 
     <div class="sidebar-footer">
       <div class="user-profile">
-        <div class="user-avatar">
-          <img src="../../img/profile.png" alt="User">
+        <div class="user-avatar" id="sidebarAvatar">
+          <!-- Initials will be inserted by JS -->
+          <?php echo strtoupper(substr($_SESSION['username'] ?? 'A', 0, 1)); ?>
         </div>
         <div class="user-info">
           <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'Admin'); ?></span>
@@ -283,9 +352,21 @@ while ($row = $simulation_query->fetch_assoc()) {
           <i data-lucide="sun" class="sun-icon"></i>
           <i data-lucide="moon" class="moon-icon"></i>
         </button>
-        <button class="icon-btn">
-          <i data-lucide="bell"></i>
-        </button>
+        <div class="header-notifications" style="position: relative;">
+          <button class="icon-btn" id="bellIconBtn">
+            <i data-lucide="bell"></i>
+            <span class="notification-badge" id="notifBadge" style="display: none; position: absolute; top: 0; right: 0; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold;">0</span>
+          </button>
+          <div class="notification-dropdown" id="notifDropdown" style="display: none; position: absolute; top: 100%; right: 0; width: 320px; background: var(--surface-color, white); border: 1px solid var(--border-color, #e5e7eb); border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); z-index: 1000; max-height: 400px; overflow-y: auto;">
+            <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-color, #e5e7eb); font-weight: 600; display: flex; justify-content: space-between; align-items: center; color: var(--text-primary, #111827);">
+              Notifications
+              <button id="markReadBtn" style="background: none; border: none; color: #2ca078; cursor: pointer; font-size: 12px; font-weight: 500;">Mark all as read</button>
+            </div>
+            <div id="notifList" style="padding: 0;">
+              <div style="padding: 16px; text-align: center; color: var(--text-secondary, #6b7280); font-size: 14px;">Loading notifications...</div>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -296,22 +377,6 @@ while ($row = $simulation_query->fetch_assoc()) {
           <button class="tab-btn active" data-tab="strategic">
             <i data-lucide="target"></i>
             <span>Strategic Planning</span>
-          </button>
-          <button class="tab-btn" data-tab="salary">
-            <i data-lucide="banknote"></i>
-            <span>Salary & Scales</span>
-          </button>
-          <button class="tab-btn" data-tab="statutory">
-            <i data-lucide="landmark"></i>
-            <span>Statutory (PH)</span>
-          </button>
-          <button class="tab-btn" data-tab="merit">
-            <i data-lucide="trending-up"></i>
-            <span>Merit Matrix</span>
-          </button>
-          <button class="tab-btn" data-tab="allowances">
-            <i data-lucide="gift"></i>
-            <span>Allowances</span>
           </button>
           <button class="tab-btn" data-tab="simulation">
             <i data-lucide="calculator"></i>
@@ -336,7 +401,7 @@ while ($row = $simulation_query->fetch_assoc()) {
                       <label>Planning Cycle Name</label>
                       <input type="text" value="<?php echo htmlspecialchars($period_data['period_name'] ?? 'FY2025 Annual Merit Review'); ?>" placeholder="Enter cycle name...">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="grid-column: span 2;">
                       <label>Total Budget Allocation</label>
                       <div class="input-with-symbol">
                         <span>&#8369;</span>
@@ -344,356 +409,139 @@ while ($row = $simulation_query->fetch_assoc()) {
                       </div>
                     </div>
                     <div class="form-group">
-                      <label>Implementation Date</label>
-                      <input type="date" value="<?php echo htmlspecialchars($period_data['effective_date'] ?? '2025-01-01'); ?>">
+                      <label>Cycle Start Date</label>
+                      <input type="date" id="cycleStartDate" value="<?php echo htmlspecialchars($period_data['start_date'] ?? date('Y-m-d')); ?>">
+                    </div>
+                    <div class="form-group">
+                      <label>Effective Date</label>
+                      <input type="date" id="effectiveDate" value="<?php echo htmlspecialchars($period_data['effective_date'] ?? '2026-03-01'); ?>">
                     </div>
                   </div>
-                  <div class="form-actions" style="margin-top: 24px;">
-                    <button class="btn btn-primary" id="startCycleBtn">
-                      <span>Start Cycle</span>
+                  <div class="action-buttons" style="margin-top: 24px;">
+                    <button class="btn btn-primary" id="startCycleBtn" style="width: 100%; max-width: 300px; justify-content: center;">
+                      <span>Start Simulation Cycle</span>
                       <i data-lucide="arrow-right"></i>
                     </button>
                   </div>
                 </div>
               </div>
-              <div class="planning-stats">
+              <div class="planning-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                 <div class="mini-stat-card">
-                  <span class="ms-label">Target Employees</span>
-                  <span class="ms-value">1,248</span>
-                </div>
-                <div class="mini-stat-card">
-                  <span class="ms-label">Avg. Increase Target</span>
-                  <span class="ms-value">4.5%</span>
+                  <span class="ms-label">Eligible Headcount</span>
+                  <span class="ms-value"><?php echo number_format($target_employees); ?></span>
                 </div>
                 <div class="mini-stat-card">
-                  <span class="ms-label">PH Tax Jurisdiction</span>
-                  <span class="ms-value">TRAIN Law</span>
+                  <span class="ms-label">Matrix Cap</span>
+                  <span class="ms-value"><?php echo $max_increase; ?>%</span>
+                </div>
+                <div class="mini-stat-card">
+                  <span class="ms-label">Baseline Payroll</span>
+                  <span class="ms-value">&#8369;<?php echo number_format($baseline_payroll, 2); ?></span>
+                </div>
+                <div class="mini-stat-card">
+                  <span class="ms-label">Statutory Version</span>
+                  <span class="ms-value" style="font-size: 14px;">2026 SSS/PH Tables</span>
                 </div>
               </div>
+
             </div>
+
+            <!-- Drafts Section -->
+            <div class="drafts-section" style="margin-top: 32px;">
+              <h3 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">Recent Drafts & In-Progress Cycles</h3>
+              <div class="table-container">
+                <table class="drafts-table w-full text-left" style="border-collapse: collapse;">
+                  <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-tertiary); font-size: 12px; font-weight: 600; text-transform: uppercase;">
+                      <th style="padding: 12px 16px;">Cycle Name</th>
+                      <th style="padding: 12px 16px;">Date Started</th>
+                      <th style="padding: 12px 16px;">Last Saved</th>
+                      <th style="padding: 12px 16px;">Budget Used (%)</th>
+                      <th style="padding: 12px 16px;">Status</th>
+                      <th style="padding: 12px 16px; text-align: right;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php if (empty($saved_drafts)): ?>
+                      <tr>
+                        <td colspan="6" style="padding: 24px; text-align: center; color: var(--text-tertiary);">No recent drafts found.</td>
+                      </tr>
+                    <?php else: ?>
+                      <?php foreach ($saved_drafts as $draft): ?>
+                        <tr style="border-bottom: 1px solid var(--border-color); font-size: 13px;">
+                          <td style="padding: 12px 16px; font-weight: 500; color: var(--text-primary);"><?php echo htmlspecialchars($draft['CycleName']); ?></td>
+                          <td style="padding: 12px 16px; color: var(--text-secondary);"><?php echo date('M j, Y h:i A', strtotime($draft['DateStarted'])); ?></td>
+                          <td style="padding: 12px 16px; color: var(--text-secondary);"><?php echo date('M j, Y h:i A', strtotime($draft['LastSaved'])); ?></td>
+                          <td style="padding: 12px 16px; font-weight: 600; color: <?php echo ($draft['BudgetUsedPct'] > 100) ? '#ef4444' : '#10b981'; ?>;">
+                            <?php echo number_format($draft['BudgetUsedPct'], 1); ?>%
+                          </td>
+                          <td style="padding: 12px 16px;">
+                            <span class="badge <?php echo strtolower($draft['Status'] ?? 'Draft'); ?>" style="font-size: 11px; padding: 4px 8px;">
+                              <?php echo htmlspecialchars($draft['Status'] ?? 'Draft'); ?>
+                            </span>
+                          </td>
+                          <td style="padding: 12px 16px; text-align: right;">
+                            <button class="btn btn-secondary btn-sm btn-continue-draft" data-draft-id="<?php echo $draft['DraftID']; ?>">Continue</button>
+                          </td>
+                        </tr>
+                      <?php endforeach; ?>
+                    <?php endif; ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
           </div>
 
-          <!-- Salary & Scales Tab -->
-          <div class="tab-panel" id="salary">
-            <section class="comp-panel">
-              <div class="comp-panel-header">
-                <div class="comp-panel-left">
-                  <div class="comp-panel-icon"><i data-lucide="layers"></i></div>
-                  <div class="comp-panel-titles">
-                    <h2>Regional Salary Scales (Philippines)</h2>
-                    <div class="comp-panel-sub">Base pay ranges adjusted for National Capital Region (NCR).</div>
-                  </div>
-                </div>
-                <div class="comp-panel-actions">
-                  <!-- Actions removed as per request -->
-                  <button class="btn btn-outline" id="btnProposeChange">
-                    <i data-lucide="git-pull-request"></i>
-                    <span>Propose Change</span>
-                  </button>
-                </div>
-              </div>
-
-              <div class="panel-body" style="margin-top: 32px;">
-                <div class="table-responsive">
-                  <table class="comp-table editable-table" id="salaryGradeTable">
-                <thead>
-                  <tr>
-                    <th>Job Grade</th>
-                    <th>Level Name</th>
-                    <th>Description</th>
-                    <th>Minimum (Monthly)</th>
-                    <th>Midpoint</th>
-                    <th>Maximum (Monthly)</th>
-                    <th>Spread</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach ($salary_grades as $grade): ?>
-                  <tr data-id="<?php echo $grade['SalaryGradeID']; ?>">
-                    <td><span class="table-text-premium"><?php echo htmlspecialchars($grade['GradeLevel']); ?></span></td>
-                    <td><span class="table-text-premium"><?php echo htmlspecialchars($grade['GradeName']); ?></span></td>
-                    <td><span class="table-text-premium text-muted"><?php echo htmlspecialchars($grade['Description'] ?? $grade['description'] ?? ''); ?></span></td>
-                    <td><div class="input-with-symbol"><span>&#8369;</span><input type="number" value="<?php echo (int)$grade['MinSalary']; ?>" class="table-input-premium min-salary-input"></div></td>
-                    <td><div class="input-with-symbol"><span>&#8369;</span><input type="number" value="<?php echo (int)$grade['MidSalary']; ?>" class="table-input-premium mid-salary-input" readonly></div></td>
-                    <td><div class="input-with-symbol"><span>&#8369;</span><input type="number" value="<?php echo (int)$grade['MaxSalary']; ?>" class="table-input-premium max-salary-input"></div></td>
-                    <td class="spread-cell"><?php 
-                      $min = (float)$grade['MinSalary'];
-                      $max = (float)$grade['MaxSalary'];
-                      $spread = ($min > 0) ? (($max - $min) / $min) * 100 : 0;
-                      echo number_format($spread, 1); 
-                    ?>%</td>
-                  </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-      </div>
-
-          <!-- Statutory Tab -->
-          <div class="tab-panel" id="statutory">
-            <div class="comp-grid">
-              <!-- SSS Configuration -->
-              <div class="stat-group-card">
-                <div class="sg-header">
-                  <i data-lucide="shield-check" style="color:#2ca078"></i>
-                  <h4>SSS Contribution</h4>
-                </div>
-                <div class="sg-body">
-                  <p class="sg-desc">Manage Social Security rates and WISP mandatory provident fund thresholds.</p>
-                  <div class="editable-form">
-                    <div class="form-group-inline">
-                      <label>Employee Share (%)</label>
-                      <input type="number" step="0.1" value="<?php echo number_format($sss_data['employee_share_pct'] ?? 5.0, 1); ?>" class="stat-input">
-                    </div>
-                    <div class="form-group-inline">
-                      <label>Employer Share (%)</label>
-                      <input type="number" step="0.1" value="<?php echo number_format($sss_data['employer_share_pct'] ?? 10.0, 1); ?>" class="stat-input">
-                    </div>
-                    <div class="form-group-inline">
-                      <label>Max MSC (Monthly)</label>
-                      <div class="inline-input-symbol">
-                        <span>&#8369;</span>
-                        <input type="number" value="<?php echo (int)($sss_data['max_msc_monthly'] ?? 30000); ?>" class="stat-input">
-                      </div>
-                    </div>
-                    <div class="form-group-inline">
-                      <label>WISP Threshold</label>
-                      <div class="inline-input-symbol">
-                        <span>&#8369;</span>
-                        <input type="number" value="<?php echo (int)($sss_data['wisp_threshold'] ?? 20000); ?>" class="stat-input">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- PhilHealth Configuration -->
-              <div class="stat-group-card">
-                <div class="sg-header">
-                  <i data-lucide="heart" style="color:#ef4444"></i>
-                  <h4>PhilHealth Premium</h4>
-                </div>
-                <div class="sg-body">
-                  <p class="sg-desc">Current premium rate is 5.0% split equally between EE and ER.</p>
-                  <div class="editable-form">
-                    <div class="form-group-inline">
-                      <label>Employee Share (%)</label>
-                      <input type="number" step="0.01" value="<?php echo number_format($ph_data['employee_share_pct'] ?? 2.50, 2); ?>" class="stat-input">
-                    </div>
-                    <div class="form-group-inline">
-                      <label>Employer Share (%)</label>
-                      <input type="number" step="0.01" value="<?php echo number_format($ph_data['employer_share_pct'] ?? 2.50, 2); ?>" class="stat-input">
-                    </div>
-                    <div class="form-group-inline">
-                      <label>Salary Ceiling</label>
-                      <div class="inline-input-symbol">
-                        <span>&#8369;</span>
-                        <input type="number" value="<?php echo (int)($ph_data['salary_ceiling'] ?? 100000); ?>" class="stat-input">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Pag-IBIG Configuration -->
-              <div class="stat-group-card">
-                <div class="sg-header">
-                  <i data-lucide="home" style="color:#ffc107"></i>
-                  <h4>Pag-IBIG (HDMF)</h4>
-                </div>
-                <div class="sg-body">
-                  <p class="sg-desc">Contribution based on percentage or fixed amount caps.</p>
-                  <div class="editable-form">
-                    <div class="form-group-inline">
-                      <label>Employee Rate (%)</label>
-                      <input type="number" step="0.1" value="<?php echo number_format($pi_data['employee_rate_pct'] ?? 2.0, 1); ?>" class="stat-input">
-                    </div>
-                    <div class="form-group-inline">
-                      <label>Monthly Cap (EE)</label>
-                      <div class="inline-input-symbol">
-                        <span>&#8369;</span>
-                        <input type="number" value="<?php echo (int)($pi_data['monthly_cap_ee'] ?? 200); ?>" class="stat-input">
-                      </div>
-                    </div>
-                    <div class="form-group-inline">
-                      <label>Monthly Cap (ER)</label>
-                      <div class="inline-input-symbol">
-                        <span>&#8369;</span>
-                        <input type="number" value="<?php echo (int)($pi_data['monthly_cap_er'] ?? 200); ?>" class="stat-input">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- BIR Tax Configuration -->
-              <div class="stat-group-card">
-                <div class="sg-header">
-                  <i data-lucide="file-text" style="color:#3b82f6"></i>
-                  <h4>BIR Tax (TRAIN)</h4>
-                </div>
-                <div class="sg-body">
-                  <p class="sg-desc">Withholding tax settings and tax-exempt benefit caps.</p>
-                  <div class="editable-form">
-                    <div class="form-group-inline">
-                      <label>Tax Exempt Limit</label>
-                      <div class="inline-input-symbol">
-                        <span>&#8369;</span>
-                        <input type="number" value="<?php echo (int)($bir_data['tax_exempt_limit'] ?? 250000); ?>" class="stat-input">
-                      </div>
-                    </div>
-                    <div class="form-group-inline">
-                      <label>De Minimis Cap</label>
-                      <div class="inline-input-symbol">
-                        <span>&#8369;</span>
-                        <input type="number" value="<?php echo (int)($bir_data['de_minimis_cap'] ?? 90000); ?>" class="stat-input">
-                      </div>
-                    </div>
-                    <div class="form-group-inline">
-                      <label>13th Month Cap</label>
-                      <div class="inline-input-symbol">
-                        <span>&#8369;</span>
-                        <input type="number" value="<?php echo (int)($bir_data['thirteenth_month_cap'] ?? 90000); ?>" class="stat-input">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Merit Matrix Tab -->
-          <div class="tab-panel" id="merit">
-             <div class="section-header">
-              <div class="sh-info">
-                <h3>Annual Merit Increase Matrix</h3>
-                <p>Calculate increases based on performance and position within salary range (Compa-ratio). <strong>Note: Max allowed increase is 5.0%.</strong></p>
-              </div>
-            </div>
-            <div class="matrix-container">
-              <table class="matrix-table">
-                <thead>
-                  <tr>
-                    <th rowspan="2">Performance Rating</th>
-                    <th colspan="3">Position in Range (Compa-Ratio)</th>
-                  </tr>
-                  <tr>
-                    <th>Low ( < 90% )</th>
-                    <th>At Mid ( 90-110% )</th>
-                    <th>High ( > 110% )</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php 
-                  $ratings = ['5.0', '4.0', '3.0'];
-                  $ranges = ['Low', 'Mid', 'High'];
-                  foreach ($ratings as $r): 
-                    $rating_label = ($r == '5.0') ? 'Exceptional' : (($r == '4.0') ? 'Exceeds' : 'Meets');
-                  ?>
-                  <tr>
-                    <td><strong><?php echo $r; ?> (<?php echo $rating_label; ?>)</strong></td>
-                    <?php foreach ($ranges as $range): 
-                      $cell = $merit_matrix[$r][$range] ?? null;
-                      $val = $cell ? number_format($cell['min_increase_pct'], 1) . "% - " . number_format($cell['max_increase_pct'], 1) . "%" : "0.0% - 0.0%";
-                      $impact_class = ($range == 'Low') ? 'impact-high' : (($range == 'Mid') ? 'impact-med' : 'impact-low');
-                      if ($r == '3.0' && $range == 'High') $impact_class = 'impact-none';
-                    ?>
-                    <td class="<?php echo $impact_class; ?>"><input type="text" value="<?php echo $val; ?>" class="matrix-input"></td>
-                    <?php endforeach; ?>
-                  </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Allowances Tab -->
-          <div class="tab-panel" id="allowances">
-            <div class="section-header">
-              <div class="sh-info">
-                <h3>Allowance & Benefit Structures</h3>
-                <p>Define standard non-taxable (De Minimis) and taxable allowances by employee grade.</p>
-              </div>
-              <button class="btn btn-outline">
-                <i data-lucide="plus"></i>
-                <span>Add Allowance Grade</span>
-              </button>
-            </div>
-            <div class="table-container">
-              <table class="comp-table editable-table">
-                <thead>
-                  <tr>
-                    <th>Grade Level</th>
-                    <th>Grade Name</th>
-                    <?php foreach ($allowance_types as $type): ?>
-                    <th>
-                      <div class="allowance-header">
-                        <span><?php echo htmlspecialchars($type['AllowanceName']); ?></span>
-                        <span class="tax-badge <?php echo $type['IsTaxable'] ? 'taxable' : 'non-taxable'; ?>">
-                          <?php echo $type['IsTaxable'] ? 'Taxable' : 'De Minimis'; ?>
-                        </span>
-                        <small><?php echo ($type['Frequency'] == 'Annual') ? 'Annual' : 'Monthly'; ?></small>
-                      </div>
-                    </th>
-                    <?php endforeach; ?>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach ($salary_grades as $grade): ?>
-                  <tr>
-                    <td><strong><?php echo htmlspecialchars($grade['GradeLevel']); ?></strong></td>
-                    <td><?php echo htmlspecialchars($grade['GradeName']); ?></td>
-                    <?php foreach ($allowance_types as $type): ?>
-                    <?php 
-                      $amount = $grade_allowance_map[$grade['SalaryGradeID']][$type['AllowanceTypeID']] ?? 0;
-                    ?>
-                    <td>
-                      <div class="input-with-symbol">
-                        <span>&#8369;</span>
-                        <input type="number" 
-                               value="<?php echo (int)$amount; ?>" 
-                               class="table-input-premium allowance-val-input"
-                               data-grade="<?php echo $grade['SalaryGradeID']; ?>"
-                               data-type="<?php echo $type['AllowanceTypeID']; ?>"
-                               data-is-taxable="<?php echo $type['IsTaxable']; ?>">
-                      </div>
-                    </td>
-                    <?php endforeach; ?>
-                  </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
-            </div>
-          </div>
 
           <!-- Simulation Tab -->
           <div class="tab-panel" id="simulation">
-            <div class="simulation-header">
-              <div class="sim-filters">
-                <select class="form-select">
-                  <option>All Departments</option>
-                  <option>Operations</option>
-                  <option>IT & Systems</option>
-                </select>
-                <button class="btn btn-secondary">Run Auto-Simulation</button>
-                <button class="btn btn-primary" id="submitProposalBtn">
-                  <i data-lucide="send"></i>
-                  <span>Submit Proposal to Manager</span>
-                </button>
-              </div>
-              <div class="sim-totals-group">
-                <div class="sim-total">
-                  <span>Total Monthly Budget Increase:</span>
-                  <h3 id="totalSimulationCost">?0.00</h3>
+            <div class="simulation-dashboard">
+              <div class="sim-dashboard-grid">
+                <div class="sim-dash-box">
+                  <div class="dash-box-label">Staff Count</div>
+                  <div class="dash-box-value" id="simStaffCount">8 Active Employees</div>
                 </div>
-                <div class="sim-total">
-                  <span>Total Proposed Monthly Expenditure:</span>
-                  <h3 id="totalExpenditure">?0.00</h3>
+                <div class="sim-dash-box highlight-premium">
+                  <div class="dash-box-label">Monthly Impact (Basic + ER)</div>
+                  <div class="dash-box-value" id="totalMonthlyImpact">+&#8369;42,140.00</div>
+                </div>
+                <div class="sim-dash-box">
+                  <div class="dash-box-label">Yearly Impact</div>
+                  <div class="dash-box-value" id="totalYearlyImpact">&#8369;505,680.00</div>
+                </div>
+                <div class="sim-dash-box">
+                  <div class="dash-box-label">Health Check (Avg. Compa-Ratio)</div>
+                  <div class="dash-box-value" id="avgCompaRatio">82%</div>
                 </div>
               </div>
             </div>
+
+            <div class="simulation-header" style="margin-top: 24px;">
+              <div class="sim-filters">
+                <select class="form-select" id="deptFilter">
+                  <option value="all">All Departments</option>
+                  <?php foreach($departments as $dept): ?>
+                    <option value="<?php echo htmlspecialchars($dept['DepartmentName']); ?>"><?php echo htmlspecialchars($dept['DepartmentName']); ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="sim-actions" style="display: flex; gap: 8px; align-items: center;">
+                <button class="btn btn-secondary" id="runAutoSim">
+                  <i data-lucide="wand-2"></i>
+                  <span>Run Auto-Simulation</span>
+                </button>
+                <button class="btn btn-secondary" id="saveDraftBtn">
+                  <i data-lucide="save"></i>
+                  <span>Save Draft</span>
+                </button>
+                <button class="btn btn-primary" id="submitProposalBtn">
+                  <span>Submit</span>
+                  <i data-lucide="check-circle"></i>
+                </button>
+              </div>
+            </div>
+            
             <div class="table-container">
                <table class="comp-table simulation-table">
                 <thead>
@@ -701,8 +549,13 @@ while ($row = $simulation_query->fetch_assoc()) {
                     <th>EE ID</th>
                     <th>Name & Position</th>
                     <th>Rating</th>
+                    <th>Status</th>
                     <th>Salary</th>
+                    <th>Grade Midpoint</th>
+                    <th>Compa-Ratio</th>
+                    <th style="min-width:180px;">Promote</th>
                     <th>Prop. %</th>
+                    <th>Prop. Increase (₱)</th>
                     <th>Basic (New)</th>
                     <th>Total Allowances</th>
                     <th>Gross Salary</th>
@@ -727,25 +580,94 @@ while ($row = $simulation_query->fetch_assoc()) {
                     $current_pay = (float)($emp['BaseSalary'] ?? 0);
                     $allowances = (float)($emp['TotalAllowances'] ?? 0);
                     $taxable_allowances = (float)($emp['TaxableAllowances'] ?? 0);
+                    
+                    // Find midpoint and max for this grade
+                    $grade_id = $emp['SalaryGradeID'];
+                    $midpoint = 0;
+                    $max_salary = 0;
+                    foreach($salary_grades as $g) {
+                        if ($g['SalaryGradeID'] == $grade_id) {
+                            $midpoint = (float)$g['MidSalary'];
+                            $max_salary = (float)$g['MaxSalary'];
+                            $current_grade_level = $g['GradeLevel'];
+                            break;
+                        }
+                    }
+
+                    // Pre-compute recommended increase % from merit matrix (server-side)
+                    $recommended_pct = 0;
+                    $compa_ratio = ($midpoint > 0) ? ($current_pay / $midpoint) : 1;
+                    $compa_range = 'Mid';
+                    if ($compa_ratio < 0.90) $compa_range = 'Low';
+                    elseif ($compa_ratio > 1.10) $compa_range = 'High';
+                    $rating_key = number_format((float)$rating, 1);
+                    if (isset($merit_matrix[$rating_key][$compa_range])) {
+                        $recommended_pct = (float)$merit_matrix[$rating_key][$compa_range]['min_increase_pct'];
+                    } elseif (!empty($merit_matrix)) {
+                        // Fallback: use lowest available rating entry
+                        $fallback_key = min(array_keys($merit_matrix));
+                        if (isset($merit_matrix[$fallback_key][$compa_range])) {
+                            $recommended_pct = (float)$merit_matrix[$fallback_key][$compa_range]['min_increase_pct'];
+                        }
+                    }
                   ?>
-                  <tr data-taxable-allowances="<?php echo $taxable_allowances; ?>" data-grade-id="<?php echo $emp['SalaryGradeID']; ?>">
+                  <tr class="sim-row" 
+                      data-ee-id="<?php echo $emp['EmployeeID']; ?>"
+                      data-department="<?php echo htmlspecialchars($emp['DepartmentName'] ?? 'Unassigned'); ?>" 
+                      data-taxable-allowances="<?php echo $taxable_allowances; ?>" 
+                      data-grade-id="<?php echo $emp['SalaryGradeID']; ?>" 
+                      data-base-salary="<?php echo $current_pay; ?>" 
+                      data-rating="<?php echo $rating; ?>"
+                      data-midpoint="<?php echo $midpoint; ?>"
+                      data-max-salary="<?php echo $max_salary; ?>"
+                      data-recommended-pct="<?php echo $recommended_pct; ?>">
                     <td>
                       <div class="user-cell-stacked">
                         <div class="user-avatar-sm"><?php echo $initials; ?></div>
-                        <span class="u-code"><?php echo htmlspecialchars($emp['EmployeeCode'] ?? '---'); ?></span>
+                        <div class="ee-code-group">
+                          <span class="u-code"><?php echo htmlspecialchars($emp['EmployeeCode'] ?? '---'); ?></span>
+                        </div>
                       </div>
                     </td>
                     <td>
                       <div class="user-info">
                         <span class="u-name-premium"><?php echo htmlspecialchars(($emp['FirstName'] ?? '') . ' ' . ($emp['LastName'] ?? '')); ?></span>
-                        <span class="u-pos"><?php echo htmlspecialchars($emp['PositionName'] ?? 'Position Not Set'); ?></span>
+                        <span class="u-pos" style="font-size: 11px;"><?php echo htmlspecialchars($emp['PositionName'] ?? 'Position Not Set'); ?></span>
                       </div>
                     </td>
                     <td><span class="rating-badge rating-<?php echo floor($rating); ?>"><?php echo number_format($rating, 1); ?></span></td>
+                    <td><span class="badge draft" style="font-size: 10px; padding: 2px 6px;">Draft</span></td>
                     <td class="current-pay">&#8369;<?php echo number_format($current_pay, 0); ?></td>
-                    <td><input type="number" class="table-input" value="0.0" step="0.5" max="5.0">%</td>
+                    <td class="grade-midpoint">&#8369;<?php echo number_format($midpoint, 0); ?></td>
+                    <td class="compa-ratio">0%</td>
+                    <td class="promote-cell" style="min-width:180px; padding:8px 10px;">
+                      <div class="promote-current-label" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; background:rgba(44,160,120,0.1); border:1px dashed #2ca078; padding:2px 8px; border-radius:4px; color:#2ca078; font-weight:600; font-size:12px;">
+                        <span>SG-<?php echo $current_grade_level; ?></span>
+                        <i data-lucide="chevron-down" style="width:12px;height:12px;"></i>
+                      </div>
+                      <div class="promote-inline" style="display:none; gap:6px; align-items:center; flex-wrap:nowrap;">
+                        <select class="form-select promote-grade-select" style="font-size:11px; padding:3px 6px; min-width:120px;">
+                          <?php foreach($salary_grades as $g): ?>
+                            <option value="<?php echo $g['SalaryGradeID']; ?>" <?php echo ($g['SalaryGradeID'] == $grade_id) ? 'selected' : ''; ?>>
+                              <?php echo htmlspecialchars($g['GradeLevel'] . ' – ' . $g['GradeName']); ?>
+                            </option>
+                          <?php endforeach; ?>
+                        </select>
+                        <button class="btn btn-primary btn-sm promote-inline-btn" title="Apply Promotion" style="font-size:11px; padding:3px 8px; white-space:nowrap;">
+                           OK
+                        </button>
+                        <button class="btn btn-secondary btn-sm promote-cancel-btn" title="Cancel" style="font-size:11px; padding:3px 8px;">&times;</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="input-tooltip-wrapper">
+                        <input type="number" class="table-input prop-increase-input" value="0.0" step="0.5" max="100.0" min="0">%
+                        <div class="input-tooltip">Grade Ceiling Reached - Promotion Required</div>
+                      </div>
+                    </td>
+                    <td class="prop-increase-amount" contenteditable="true" style="color: #10b981; font-weight: 600;">+&#8369;0.00</td>
                     <td class="proposed-gross">&#8369;<?php echo number_format($current_pay, 0); ?></td>
-                    <td class="total-allowances">&#8369;<?php echo number_format($allowances, 2); ?></td>
+                    <td class="total-allowances" data-value="<?php echo $allowances; ?>">&#8369;<?php echo number_format($allowances, 2); ?></td>
                     <td class="total-gross">&#8369;0.00</td>
                     <td class="rate-semi">&#8369;0.00</td>
                     <td class="rate-daily">&#8369;0.00</td>
@@ -758,7 +680,7 @@ while ($row = $simulation_query->fetch_assoc()) {
                     <td class="deduction-pi">&#8369;0.00</td>
                     <td class="deduction-tax">&#8369;0.00</td>
                     <td class="net-pay-cell">&#8369;0.00</td>
-                    <td class="increase-cell">+&#8369;0</td>
+                    <td class="increase-cell" data-increase="0">+&#8369;0</td>
                   </tr>
                   <?php endforeach; ?>
                 </tbody>
@@ -766,134 +688,31 @@ while ($row = $simulation_query->fetch_assoc()) {
             </div>
           </div>
         </div>
-      <!-- Add Grade Modal -->
-      <div id="gradeModal" class="modal" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="comp-modal-hero">
-            <div class="comp-modal-hero-inner">
-              <div class="comp-modal-hero-icon">
-                <i data-lucide="layers"></i>
-              </div>
-              <div class="comp-modal-hero-text">
-                <h3>Add Salary Grade</h3>
-                <p>Define a new pay level for the current period.</p>
-              </div>
-              <button class="rp-close-modal" id="closeGradeModalBtn" title="Close">&times;</button>
-            </div>
-          </div>
-
-          <div class="modal-context-box">
-             <div class="modal-context-icon">
-               <i data-lucide="layers"></i>
-             </div>
-             <div class="modal-context-text">
-               Configuring for: <strong>2026 Compensation Cycle</strong>
-             </div>
-          </div>
-
-          <div class="modal-body modal-form-premium">
-            <form id="gradeForm">
-              <div class="form-group">
-                <label>Job Grade <span class="required">*</span></label>
-                <input type="text" name="grade_level" class="input-premium no-icon" placeholder="e.g. SG-7" required />
-              </div>
-
-              <div class="form-group">
-                <label>Level Name <span class="required">*</span></label>
-                <input type="text" name="grade_name" class="input-premium no-icon" placeholder="e.g. Senior Associate" required />
-              </div>
-
-              <div class="form-group">
-                <label>Description</label>
-                <textarea name="description" rows="2" class="input-premium no-icon" placeholder="Briefly describe the responsibilities..."></textarea>
-              </div>
-
-              <div class="form-row-triple">
-                <div class="form-group">
-                  <label>Min Salary</label>
-                  <input type="number" name="min_salary" id="modal_min_salary" class="input-premium no-icon" value="0" />
-                </div>
-                <div class="form-group">
-                  <label>Midpoint</label>
-                  <input type="number" id="modal_mid_salary" class="input-premium no-icon" value="0" readonly title="Auto-calculated" />
-                </div>
-                <div class="form-group">
-                  <label>Max Salary</label>
-                  <input type="number" name="max_salary" id="modal_max_salary" class="input-premium no-icon" value="0" />
-                </div>
-              </div>
-            </form>
-          </div>
-
-          <div class="modal-footer-premium">
-            <button type="button" id="cancelGrade" class="btn-cancel-premium">Cancel</button>
-            <button type="submit" form="gradeForm" class="btn-comp-submit">
-               Save Grade
-            </button>
           </div>
         </div>
       </div>
 
-      <!-- Propose Change Modal -->
-      <div id="proposeChangeModal" class="modal" aria-hidden="true" style="display: none;">
-        <div class="modal-dialog" style="max-width: 800px;">
-          <div class="comp-modal-hero">
-            <div class="comp-modal-hero-inner">
-              <div class="comp-modal-hero-icon">
-                <i data-lucide="git-pull-request"></i>
-              </div>
-              <div class="comp-modal-hero-text">
-                <h3>Propose Salary Scale Changes</h3>
-                <p>Submit a proposal to update the minimum and maximum ranges for specific job grades.</p>
-              </div>
-              <button class="rp-close-modal" id="closeProposeModalBtn" title="Close">&times;</button>
-            </div>
-          </div>
-
-          <div class="modal-body modal-form-premium" style="max-height: 50vh; overflow-y: auto;">
-            <div class="table-responsive">
-              <table class="comp-table editable-table" id="proposeScaleTable">
-                <thead>
-                  <tr>
-                    <th>Job Grade</th>
-                    <th>Level Name</th>
-                    <th>Current Min</th>
-                    <th>Proposed Min</th>
-                    <th>Current Max</th>
-                    <th>Proposed Max</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach ($salary_grades as $grade): ?>
-                  <tr data-id="<?php echo $grade['SalaryGradeID']; ?>">
-                    <td><strong><?php echo htmlspecialchars($grade['GradeLevel']); ?></strong></td>
-                    <td><?php echo htmlspecialchars($grade['GradeName']); ?></td>
-                    <td class="text-muted">&#8369;<?php echo number_format($grade['MinSalary'], 2); ?></td>
-                    <td><div class="input-with-symbol"><span>&#8369;</span><input type="number" class="table-input-premium prop-min-input" data-original="<?php echo (int)$grade['MinSalary']; ?>" value="<?php echo (int)$grade['MinSalary']; ?>"></div></td>
-                    <td class="text-muted">&#8369;<?php echo number_format($grade['MaxSalary'], 2); ?></td>
-                    <td><div class="input-with-symbol"><span>&#8369;</span><input type="number" class="table-input-premium prop-max-input" data-original="<?php echo (int)$grade['MaxSalary']; ?>" value="<?php echo (int)$grade['MaxSalary']; ?>"></div></td>
-                  </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="form-group" style="margin-top: 20px;">
-              <label>Reason for Proposal <span class="required">*</span></label>
-              <textarea id="proposalReason" rows="3" class="input-premium no-icon" placeholder="Explain the rationale behind these proposed changes..."></textarea>
-            </div>
-          </div>
-
-          <div class="modal-footer-premium">
-            <button type="button" id="cancelProposeBtn" class="btn-cancel-premium">Cancel</button>
-            <button type="button" id="submitProposalScaleBtn" class="btn-comp-submit">
-               Submit Proposal
-            </button>
-          </div>
-        </div>
-      </div>
   </main>
-  <script src="../../js/cycle.js?v=2.2"></script>
+
+
+  <script>
+    // Expose Compensation Configuration to JS for Simulation
+    window.compConfig = {
+        meritMatrix: <?php echo json_encode($merit_matrix); ?>,
+        salaryGrades: <?php echo json_encode($salary_grades); ?>,
+        sssTable: <?php 
+            $sss_table_q = $conn->query("SELECT min_salary, max_salary, ee_regular, er_regular, ee_wisp, er_wisp FROM sss_table ORDER BY min_salary ASC");
+            $sss_table_data = [];
+            if ($sss_table_q) { while($r = $sss_table_q->fetch_assoc()) $sss_table_data[] = $r; }
+            echo json_encode($sss_table_data);
+        ?>,
+        sss: <?php echo json_encode($sss_data); ?>,
+        philhealth: <?php echo json_encode($ph_data); ?>,
+        pagibig: <?php echo json_encode($pi_data); ?>,
+        tax: <?php echo json_encode($bir_data); ?>
+    };
+  </script>
+  <script src="../../js/cycle.js?v=3.5" defer></script>
   <script>
     lucide.createIcons();
   </script>

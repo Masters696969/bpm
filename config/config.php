@@ -11,13 +11,13 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
-}
+}   
 
 // PHPMailer configuration
 $mail_config = [
     'host' => 'smtp.gmail.com',
     'port' => 587,
-    'smtp_secure' => 'tls', // tls or ssl
+    'smtp_secure' => 'tls',
     'smtp_auth' => true,
     'username' => 'suruiz.joshuabcp@gmail.com',  
     'password' => 'aovb dqcb sqve rbsa',     

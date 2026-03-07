@@ -884,6 +884,17 @@ body {
     font-size: 12px;
     color: var(--text-secondary);
 }
+
+.money-earning {
+    color: var(--brand-green);
+    font-weight: 600;
+}
+
+.money-deduction {
+    color: #ef4444;
+    font-weight: 600;
+}
+
 /* ===================================================
    Sidebar & User Menu Fixes (Merged from sidebar-fix.css)
    =================================================== */

@@ -24,6 +24,7 @@ if ($res_grades) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manager Dashboard</title>
   <link rel="stylesheet" href="../../css/salaryscales.css?v=1.2">
+  <link rel="stylesheet" href="../../css/notifications.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -85,8 +86,26 @@ if ($res_grades) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
-            <a href="#" class="submenu-item"><i data-lucide="file-plus"></i><span>Applications</span></a>
-            <a href="#" class="submenu-item"><i data-lucide="check-circle"></i><span>Approvals</span></a>
+             <a href="salarymgt.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
+              <i data-lucide="banknote"></i>
+              <span>Salary & Scales Management</span>
+            </a>
+             <a href="statutorymgt.php" class="submenu-item <?php echo ($page === 'statutorymgt') ? 'active' : ''; ?>">
+              <i data-lucide="scale"></i>
+              <span>Statutory Contribution Management</span>
+            </a>
+            <a href="meritmatrixmgt.php" class="submenu-item <?php echo ($page === 'meritmatrixmgt') ? 'active' : ''; ?>">
+              <i data-lucide="badge-percent"></i>
+              <span>Merit Matrix Management</span>
+            </a>
+             <a href="allowancemgt.php" class="submenu-item <?php echo ($page === 'allowancemgt') ? 'active' : ''; ?>">
+              <i data-lucide="gift"></i>
+              <span>Allowances Management</span>
+            </a>
+             <a href="compensationrev.php" class="submenu-item <?php echo ($page === 'compensationrev') ? 'active' : ''; ?>">
+              <i data-lucide="boxes"></i>
+              <span>Compensation Review</span>
+            </a>
           </div>
         </div>
 
@@ -170,9 +189,21 @@ if ($res_grades) {
           <i data-lucide="sun" class="sun-icon"></i>
           <i data-lucide="moon" class="moon-icon"></i>
         </button>
-        <button class="icon-btn">
-          <i data-lucide="bell"></i>
-        </button>
+        <div class="header-notifications" style="position: relative;">
+          <button class="icon-btn" id="notifBtn">
+            <i data-lucide="bell"></i>
+            <span class="badge hidden" id="notifBadge">0</span>
+          </button>
+          <div id="notifDropdown" class="notif-dropdown hidden">
+              <div class="notif-header">
+                  <h3>Notifications</h3>
+                  <button id="markReadAll" class="btn-text">Mark all as read</button>
+              </div>
+              <div id="notifList" class="notif-list">
+                  <div class="notif-empty">No new notifications</div>
+              </div>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -185,8 +216,8 @@ if ($res_grades) {
                 </div>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="comp-table editable-table" id="currentScalesTable">
+                <div class="data-table">
+                    <table id="currentScalesTable">
                         <thead>
                             <tr>
                                 <th>Job Grade</th>
@@ -225,16 +256,17 @@ if ($res_grades) {
             </div>
         </div>
 
+        <!-- Endorsed Proposals Table -->
         <div class="content-card" style="margin-top: 24px;">
             <div class="card-header">
                 <div class="card-header-left">
-                    <h3 class="card-title">Endorsed Salary Scale Proposals</h3>
-                    <p class="card-subtitle">Proposals reviewed by Supervisors awaiting Manager approval.</p>
+                    <h3 class="card-title">Salary Scale Proposals - Endorsed</h3>
+                    <p class="card-subtitle">Proposals endorsed by Supervisors awaiting your review before Finance.</p>
                 </div>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="comp-table editable-table" id="endorsedProposalsTable">
+                <div class="data-table">
+                    <table id="endorsedProposalsTable">
                         <thead>
                             <tr>
                                 <th>Proposed By</th>
@@ -247,7 +279,7 @@ if ($res_grades) {
                         </thead>
                         <tbody id="endorsedProposalsBody">
                             <tr>
-                                <td colspan="5">
+                                <td colspan="6">
                                     <div class="empty-state">
                                         <i data-lucide="loader-2"></i>
                                         <p>Loading endorsed proposals…</p>
@@ -272,7 +304,7 @@ if ($res_grades) {
             </div>
             <div class="rem-title-group">
               <h3 class="rem-title">Review Salary Scale Proposal</h3>
-              <p class="rem-subtitle">Final review of endorsed adjustments before making them official.</p>
+              <p class="rem-subtitle">Review endorsed adjustments before forwarding to Finance.</p>
             </div>
           </div>
           <button type="button" class="rem-close" id="btnCloseProposalModal">
@@ -292,8 +324,8 @@ if ($res_grades) {
                     <div id="proposalReasonText" style="margin-top:8px; color:var(--text-secondary); white-space:pre-wrap; font-size:14px;"></div>
                 </div>
 
-                <div class="table-responsive">
-                  <table class="comp-table editable-table" id="proposalDetailsTable" style="margin: 0;">
+                <div class="data-table">
+                  <table id="proposalDetailsTable" style="margin: 0;">
                     <thead>
                       <tr>
                         <th>Job Grade</th>
@@ -315,26 +347,22 @@ if ($res_grades) {
         <!-- Footer -->
         <div class="rem-footer">
           <div class="rem-footer-hint">
-            <i data-lucide="alert-triangle" style="color:var(--brand-yellow);"></i>
-            Approved requests will instantly overwrite and update the organization's official salary scales.
+            <i data-lucide="info" style="color:var(--brand-blue);"></i>
+            Approved requests will be forwarded to the Finance department for final application.
           </div>
           <div style="display:flex; gap:12px;">
-            <button type="button" class="rem-btn-send" id="btnRejectProposal" style="background-color: var(--brand-red);">
-                <i data-lucide="x-circle"></i> Reject
+            <button type="button" class="rem-btn-send rem-btn-secondary" id="btnRejectProposal">
+                <i data-lucide="x-circle" style="color:var(--brand-red);"></i> Reject
             </button>
-            <button type="button" class="rem-btn-send" id="btnEndorseProposal" style="background-color: var(--brand-blue);">
-                <i data-lucide="check-circle"></i> Approve & Apply
+            <button type="button" class="rem-btn-send rem-btn-blue" id="btnEndorseProposal">
+                <i data-lucide="check-circle"></i> Approve & Send to Finance
             </button>
           </div>
         </div>
       </div>
     </div>
   </main>
-  <script src="../../js/salaryscales.js"></script>
+  <script src="../../js/notifications.js?v=1.2"></script>
+  <script src="../../js/salaryscales.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>
-
-
-
-
-

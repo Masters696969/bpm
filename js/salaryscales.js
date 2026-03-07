@@ -299,13 +299,15 @@ if (document.readyState === 'loading') {
     initClock();
 }
 
-// Endorsed Proposals Fetching and Applying Logic
+// ---------------------------------------------------------
+// Endorsed Salary Proposals Fetching and Applying Logic
+// ---------------------------------------------------------
 async function fetchEndorsedProposals() {
     const tableBody = document.getElementById('endorsedProposalsBody');
     if (!tableBody) return;
 
     try {
-        const response = await fetch('be_salary_proposal.php?action=fetch_endorsed');
+        const response = await fetch('../manager/be_salary_proposal.php?action=fetch_endorsed');
         const result = await response.json();
 
         if (result.success) {
@@ -348,8 +350,8 @@ async function fetchEndorsedProposals() {
                     <td style="color: var(--text-secondary); font-size:13px;">${date}</td>
                     <td><span class="badge badge-warning">Endorsed</span></td>
                     <td>
-                        <button class="btn-review" style="background:var(--brand-blue); border-color:var(--brand-blue); color:white; padding: 6px 12px; border-radius: 6px; cursor: pointer;" onclick="viewEndorsedBatch('${req.BatchReference}', '${encodeURIComponent(req.Reason)}')">
-                            <i data-lucide="eye" style="width:16px;height:16px;display:inline-block;vertical-align:middle;"></i> Review & Apply
+                        <button class="btn-review" onclick="viewEndorsedBatch('${req.BatchReference}', '${encodeURIComponent(req.Reason)}')">
+                            <i data-lucide="eye"></i> Review
                         </button>
                     </td>
                 </tr>`;
@@ -378,7 +380,7 @@ window.viewEndorsedBatch = async function (batchRef, reasonStr) {
     document.getElementById('proposalActionModal').classList.remove('hidden');
 
     try {
-        const response = await fetch(`be_salary_proposal.php?action=fetch_proposal_details&batch_reference=${batchRef}`);
+        const response = await fetch(`../manager/be_salary_proposal.php?action=fetch_proposal_details&batch_reference=${batchRef}`);
         const result = await response.json();
 
         if (result.success && result.data.length > 0) {
@@ -417,7 +419,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const proposalModal = document.getElementById('proposalActionModal');
     const btnCloseProposalModal = document.getElementById('btnCloseProposalModal');
     const btnRejectProposal = document.getElementById('btnRejectProposal');
-    const btnEndorseProposal = document.getElementById('btnEndorseProposal'); // The "Apply" button
+    const btnEndorseProposal = document.getElementById('btnEndorseProposal');
 
     if (btnCloseProposalModal) {
         btnCloseProposalModal.addEventListener('click', () => {
@@ -430,34 +432,34 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!currentBatchRef) return;
 
             const result = await Swal.fire({
-                title: 'Apply Salary Scale Changes?',
-                text: "This will officially overwrite the current salary scale.",
-                icon: 'warning',
+                title: 'Approve & Send to Finance?',
+                text: "Are you sure you want to approve this proposal? It will be forwarded to Finance for final application.",
+                icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#2563eb', // blue
                 cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Yes, Apply Now'
+                confirmButtonText: 'Yes, Send to Finance'
             });
 
             if (!result.isConfirmed) return;
 
             try {
-                const response = await fetch('be_salary_proposal.php', {
+                const response = await fetch('../manager/be_salary_proposal.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'apply_batch', batch_reference: currentBatchRef })
+                    body: JSON.stringify({ action: 'manager_approve_batch', batch_reference: currentBatchRef })
                 });
                 const res = await response.json();
 
                 if (res.success) {
-                    await Swal.fire('Applied!', res.message, 'success');
+                    await Swal.fire('Approved!', res.message, 'success');
                     proposalModal.classList.add('hidden');
-                    location.reload(); // Reload to refresh main scale table
+                    fetchEndorsedProposals(); // Reload table
                 } else {
                     Swal.fire('Error!', res.message, 'error');
                 }
             } catch (error) {
-                console.error('Error applying batch:', error);
+                console.error('Error approving batch:', error);
                 Swal.fire('Error!', 'An error occurred.', 'error');
             }
         });
@@ -480,7 +482,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!result.isConfirmed) return;
 
             try {
-                const response = await fetch('be_salary_proposal.php', {
+                const response = await fetch('../manager/be_salary_proposal.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'reject_batch', batch_reference: currentBatchRef })

@@ -416,12 +416,13 @@ body {
   overflow: hidden;
   flex-shrink: 0;
   box-shadow: var(--shadow-sm);
-}
-
-.user-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  background: linear-gradient(135deg, var(--brand-green), #3b82f6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
 }
 
 .user-info {
@@ -790,6 +791,16 @@ body {
 .tab-btn svg {
   width: 18px;
   height: 18px;
+}
+
+.tab-btn.locked-tab {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tab-btn.locked-tab:hover {
+  background: transparent;
+  color: var(--text-secondary);
 }
 
 .tab-panel {
@@ -1901,6 +1912,249 @@ textarea.input-premium {
   min-width: 0
 }
 
+.sim-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.sim-dash-box {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.sim-dash-box:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-green);
+  box-shadow: var(--shadow);
+}
+
+.dash-box-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.dash-box-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.dash-box-value.highlight-green {
+  color: var(--brand-green);
+}
+
+.sim-dash-box.highlight-premium {
+  background: linear-gradient(135deg, var(--brand-green), #248f6a);
+  border: none;
+  box-shadow: 0 8px 24px rgba(44, 160, 120, 0.2);
+}
+
+.sim-dash-box.highlight-premium .dash-box-label {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.sim-dash-box.highlight-premium .dash-box-value {
+  color: #fff;
+}
+
+/* Promotion & Spread UI */
+.ee-code-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-promote-trigger {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-promote-trigger:hover {
+  background: rgba(44, 160, 120, 0.1);
+  color: var(--brand-green);
+  transform: scale(1.05);
+}
+
+.btn-promote-trigger svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
+}
+
+/* Disabled Input Styling */
+input.table-input:disabled {
+  background-color: var(--background);
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+  border-color: var(--border-color);
+  opacity: 0.7;
+}
+
+/* Tooltip for Grade Ceiling */
+.input-tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.input-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: #ef4444;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.input-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #ef4444 transparent transparent transparent;
+}
+
+.input-tooltip.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* Promotion Modal Specifics */
+.promo-ee-info {
+  background: var(--background);
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.promo-ee-info .label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.promo-ee-info .value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.compa-ratio.at-max {
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.text-neutral-gray {
+  color: var(--text-tertiary) !important;
+  font-weight: 500 !important;
+}
+
+/* Drafts Section Styling */
+.drafts-section {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.drafts-table {
+  width: 100%;
+}
+
+.drafts-table th {
+  background: var(--background);
+}
+
+.drafts-table tr:hover {
+  background: rgba(0, 0, 0, 0.01);
+}
+
+.btn-continue-draft {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+/* Status Badges for Drafts */
+.badge.draft {
+  background: rgba(107, 114, 128, 0.1);
+  color: #4b5563;
+  border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+.badge.submitted {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.badge.endorsed {
+  background: rgba(255, 193, 7, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.badge.approved {
+  background: rgba(44, 160, 120, 0.1);
+  color: #2ca078;
+  border: 1px solid rgba(44, 160, 120, 0.2);
+}
+
+.badge.finalized {
+  background: rgba(139, 92, 246, 0.1);
+  color: #7c3aed;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
 .umd-signed {
   font-size: 11px;
   color: var(--text-tertiary);
@@ -1975,7 +2229,62 @@ textarea.input-premium {
   font-weight: 500;
   font-size: 14px;
 }
+
 .header-clock i {
   width: 18px;
   height: 18px;
+}
+
+/* Statutory Proposal Modal Custom Styles */
+.form-grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group-premium-box {
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: var(--transition);
+}
+
+.form-group-premium-box:hover {
+  border-color: var(--brand-green);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-group-premium-box .box-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.form-group-premium-box .box-header i {
+  width: 16px;
+  height: 16px;
+}
+
+.current-val-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: block;
+}
+
+.file-upload-premium {
+  margin-top: 8px;
+}
+
+.btn-file-select:hover {
+  border-color: var(--brand-green) !important;
+  color: var(--brand-green) !important;
+  background: rgba(44, 160, 120, 0.05) !important;
 }

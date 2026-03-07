@@ -11,7 +11,6 @@ if (!isset($_SESSION['username'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-widtwh, initial-scale=1.0">
   <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/dashboard.css">
   <link rel="stylesheet" href="../../css/payroll.css?v=1.2">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -54,6 +53,10 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-payroll">
+            <a href="comperules.php" class="submenu-item">
+              <i data-lucide="boxes"></i>
+              <span>Compensation Rules</span>
+            </a>
             <a href="payroll.php" class="submenu-item active">
               <i data-lucide="play-circle"></i>
               <span>Payroll Processing</span>
@@ -201,7 +204,7 @@ if (!isset($_SESSION['username'])) {
           </div>
           <div class="stat-info">
             <span class="stat-label">Total Payroll</span>
-            <h3 class="stat-value">&#8369;1,248,500</h3>
+            <h3 class="stat-value" id="statTotalPayroll">&#8369;0.00</h3>
           </div>
         </div>
 
@@ -211,7 +214,7 @@ if (!isset($_SESSION['username'])) {
           </div>
           <div class="stat-info">
             <span class="stat-label">Employees</span>
-            <h3 class="stat-value">124 Paid</h3>
+            <h3 class="stat-value" id="statEmployees">0 Paid</h3>
           </div>
         </div>
 
@@ -221,7 +224,7 @@ if (!isset($_SESSION['username'])) {
           </div>
           <div class="stat-info">
             <span class="stat-label">Next Run</span>
-            <h3 class="stat-value">In 4 Days</h3>
+            <h3 class="stat-value" id="statNextRun">--</h3>
           </div>
         </div>
 
@@ -231,7 +234,7 @@ if (!isset($_SESSION['username'])) {
           </div>
           <div class="stat-info">
             <span class="stat-label">Pending</span>
-            <h3 class="stat-value">3 Disputes</h3>
+            <h3 class="stat-value" id="statPending">0 Batches</h3>
           </div>
         </div>
       </div>
@@ -273,24 +276,7 @@ if (!isset($_SESSION['username'])) {
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><strong>PR-2026-004</strong></td>
-                <td>Feb 16 - Feb 28, 2026</td>
-                <td>Semi-Monthly</td>
-                <td>&#8369;624,250.00</td>
-                <td><span class="badge-premium badge-success"><i data-lucide="check-check"></i> Disbursed</span></td>
-                <td><button class="btn-premium" style="background: var(--surface-hover); padding: 6px 12px; border: 1px solid var(--border-color);">View Report</button></td>
-              </tr>
-              <tr>
-                <td><strong>PR-2026-005</strong></td>
-                <td>Mar 01 - Mar 15, 2026</td>
-                <td>Semi-Monthly</td>
-                <td>&#8369;0.00</td>
-                <td><span class="badge-premium badge-warning"><i data-lucide="loader"></i> Processing</span></td>
-                <td><button class="btn-premium" style="background: var(--brand-green); color: white; padding: 6px 12px;">Finalize</button></td>
-              </tr>
-            </tbody>
+            <tbody id="payrollBatchesBody"></tbody>
           </table>
         </div>
       </div>
@@ -303,48 +289,20 @@ if (!isset($_SESSION['username'])) {
                 <th>Employee</th>
                 <th>Basic Pay</th>
                 <th>Allowances</th>
+                <th>OT Pay</th>
+                <th>SSS Regular</th>
+                <th>SSS WISP</th>
+                <th>PhilHealth</th>
+                <th>Pag-IBIG</th>
+                <th>Late/UT</th>
+                <th>W.Tax</th>
                 <th>Deductions</th>
                 <th>Net Pay</th>
                 <th>Status</th>
                 <th>Payslip</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="user-identity">
-                    <div class="avatar-initials">JS</div>
-                    <div class="user-metadata">
-                      <span class="user-main-name">Joshua Suruiz</span>
-                      <span class="user-sub-info">EMP-10024</span>
-                    </div>
-                  </div>
-                </td>
-                <td>&#8369;80,000.00</td>
-                <td>&#8369;19,400.00</td>
-                <td>&#8369;4,850.00</td>
-                <td><strong>&#8369;94,550.00</strong></td>
-                <td><span class="badge-premium badge-success font-size-xs">Verified</span></td>
-                <td><i data-lucide="file-text" style="color: var(--brand-green); cursor: pointer;"></i></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="user-identity">
-                    <div class="avatar-initials">RB</div>
-                    <div class="user-metadata">
-                      <span class="user-main-name">Red Gin Baldon</span>
-                      <span class="user-sub-info">EMP-10025</span>
-                    </div>
-                  </div>
-                </td>
-                <td>&#8369;45,000.00</td>
-                <td>&#8369;8,000.00</td>
-                <td>&#8369;2,250.00</td>
-                <td><strong>&#8369;50,750.00</strong></td>
-                <td><span class="badge-premium badge-warning font-size-xs">Review</span></td>
-                <td><i data-lucide="file-text" style="color: var(--text-tertiary); cursor: pointer;"></i></td>
-              </tr>
-            </tbody>
+            <tbody id="payrollEmployeesBody"></tbody>
           </table>
         </div>
       </div>

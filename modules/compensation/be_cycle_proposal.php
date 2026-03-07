@@ -34,6 +34,13 @@ try {
         }
     }
     $conn->commit();
+
+    // Notify through system notifications
+    $notifMsg = "New salary scale change proposal submitted by {$_SESSION['username']}. Batch: {$batchRef}";
+    $notifStmt = $conn->prepare("INSERT INTO system_notifications (module_target, message, role_target) VALUES ('compensation_cycle', ?, 'supervisor')");
+    $notifStmt->bind_param("s", $notifMsg);
+    $notifStmt->execute();
+
     echo json_encode(['success' => true]);
 } catch (Exception $e) {
     if ($conn) $conn->rollback();

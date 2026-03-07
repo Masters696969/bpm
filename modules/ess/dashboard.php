@@ -64,7 +64,7 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="receipt-text"></i>
               <span>Claim Management</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="payslip.php" class="nav-item">
               <i data-lucide="ticket-check"></i>
               <span>View Payslip</span>
             </a>

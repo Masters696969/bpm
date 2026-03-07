@@ -14,6 +14,7 @@ $module = 'dashboard';
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manager Dashboard</title>
   <link rel="stylesheet" href="../../css/managerdashboard.css?v=1.2">
+  <link rel="stylesheet" href="../../css/notifications.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -74,9 +75,27 @@ $module = 'dashboard';
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-planning">
-            <a href="#" class="submenu-item"><i data-lucide="file-plus"></i><span>Applications</span></a>
-            <a href="#" class="submenu-item"><i data-lucide="check-circle"></i><span>Approvals</span></a>
+           <div class="submenu" id="submenu-planning">
+             <a href="salarymgt.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
+              <i data-lucide="banknote"></i>
+              <span>Salary & Scales Management</span>
+            </a>
+             <a href="statutorymgt.php" class="submenu-item <?php echo ($page === 'statutorymgt') ? 'active' : ''; ?>">
+              <i data-lucide="scale"></i>
+              <span>Statutory Contribution Management</span>
+            </a>
+            <a href="meritmatrixmgt.php" class="submenu-item <?php echo ($page === 'meritmatrixmgt') ? 'active' : ''; ?>">
+              <i data-lucide="badge-percent"></i>
+              <span>Merit Matrix Management</span>
+            </a>
+             <a href="allowancemgt.php" class="submenu-item <?php echo ($page === 'allowancemgt') ? 'active' : ''; ?>">
+              <i data-lucide="gift"></i>
+              <span>Allowances Management</span>
+            </a>
+             <a href="compensationrev.php" class="submenu-item <?php echo ($page === 'compensationrev') ? 'active' : ''; ?>">
+              <i data-lucide="boxes"></i>
+              <span>Compensation Review</span>
+            </a>
           </div>
         </div>
 
@@ -160,9 +179,21 @@ $module = 'dashboard';
           <i data-lucide="sun" class="sun-icon"></i>
           <i data-lucide="moon" class="moon-icon"></i>
         </button>
-        <button class="icon-btn">
-          <i data-lucide="bell"></i>
-        </button>
+        <div class="header-notifications" style="position: relative;">
+          <button class="icon-btn" id="notifBtn">
+            <i data-lucide="bell"></i>
+            <span class="badge hidden" id="notifBadge">0</span>
+          </button>
+          <div id="notifDropdown" class="notif-dropdown hidden">
+              <div class="notif-header">
+                  <h3>Notifications</h3>
+                  <button id="markReadAll" class="btn-text">Mark all as read</button>
+              </div>
+              <div id="notifList" class="notif-list">
+                  <div class="notif-empty">No new notifications</div>
+              </div>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -170,6 +201,7 @@ $module = 'dashboard';
     
     </div>
   </main>
+  <script src="../../js/notifications.js?v=1.1"></script>
   <script src="../../js/managerdashboard.js"></script>
 </body>
 </html>

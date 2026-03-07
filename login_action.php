@@ -155,6 +155,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $redirectUrl = 'modules/payroll/dashboard.php';
                         } elseif ($roleKey === 'supervisor') {
                             $redirectUrl = 'modules/supervisor/dashboard.php';
+                        } elseif ($roleKey === 'finance' || $roleKey === 'financial officer') {
+                            $redirectUrl = 'modules/finance/dashboard.php';
                         } else {
                             $redirectUrl = 'dashboard.php';
                         }

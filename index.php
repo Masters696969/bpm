@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="LEMON - Affordable microfinance solutions for Filipino entrepreneurs, families, and communities. Fast approval, low interest rates, and flexible payment terms.">
-    <meta name="keywords" content="lending, microfinance, loans, Philippines, business loans, personal loans">
+    <meta name="description" content="Microfinance - Affordable lending solutions for Filipino entrepreneurs, families, and communities. Fast approval, low interest rates, and flexible payment terms.">
+    <meta name="keywords" content="lending, microfinance, loans, Philippines, business loans, personal loans, application">
     <title>Microfinance</title>
     <link rel="icon" type="image/png" href="img/logo.png">
     <link rel="stylesheet" href="css/landing.css">
@@ -43,8 +43,8 @@
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
                 </button>
-                <a class="btn btn-register" href="login.html">Register</a>
-                <a class="btn btn-login" href="login.html">Log In</a>
+                <a class="btn btn-register" href="portalselection.php">Register</a>
+                <a class="btn btn-login" href="portalselection.php">Log In</a>
             </div>
             <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mobileMenu">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
@@ -70,7 +70,7 @@
             Empowering Your Financial <span class="highlight">Dreams</span>
         </h1>
         <p class="hero-subtitle">
-            LEMON provides affordable microfinance solutions tailored for Filipino entrepreneurs, families, and communities. Turn your financial goals into reality with transparent, flexible lending.
+            Microfinance provides affordable lending solutions tailored for Filipino entrepreneurs, families, and communities. Turn your financial goals into reality with transparent, flexible lending.
         </p>
         <button class="cta-button primary" onclick="handleCTA()">
             <span>Start Your Application</span>
@@ -158,7 +158,7 @@
 
     <!-- Why Choose Us Section -->
     <section class="features" id="features">
-        <h2>Why Choose LEMON?</h2>
+        <h2>Why Choose Microfinance?</h2>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon-container">
@@ -243,7 +243,7 @@
     <!-- Testimonials Section -->
     <section class="testimonials">
         <h2>Trusted by Professionals Across Industries</h2>
-        <p style="text-align:center; color:var(--label-text-light); margin-bottom:2.5rem; font-size:1.15rem;">Our clients include business owners, educators, and community leaders who rely on LEMON for their financial growth.</p>
+        <p style="text-align:center; color:var(--label-text-light); margin-bottom:2.5rem; font-size:1.15rem;">Our clients include business owners, educators, and community leaders who rely on Microfinance for their financial growth.</p>
         <div class="testimonials-grid">
             <div class="testimonial-card">
                 <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
@@ -253,7 +253,7 @@
                         <div style="font-size:0.95rem;color:var(--label-text-light);font-weight:500;">Owner, Santos Retail Group</div>
                     </div>
                 </div>
-                <p>"LEMON's expertise and professionalism made our business expansion seamless. Their team provided tailored solutions and transparent advice every step of the way."</p>
+                <p>"Microfinance's expertise and professionalism made our business expansion seamless. Their team provided tailored solutions and transparent advice every step of the way."</p>
                 <div class="stars">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
@@ -270,7 +270,7 @@
                         <div style="font-size:0.95rem;color:var(--label-text-light);font-weight:500;">Principal, Dela Cruz Academy</div>
                     </div>
                 </div>
-                <p>"I trust LEMON for our school's financial needs. Their support and clear communication have helped us fund new programs and scholarships for our students."</p>
+                <p>"I trust Microfinance for our school's financial needs. Their support and clear communication have helped us fund new programs and scholarships for our students."</p>
                 <div class="stars">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
@@ -287,7 +287,7 @@
                         <div style="font-size:0.95rem;color:var(--label-text-light);font-weight:500;">President, Reyes Agricultural Cooperative</div>
                     </div>
                 </div>
-                <p>"With LEMON, our cooperative accessed flexible financing to modernize our equipment and improve productivity. Their professionalism is unmatched in the industry."</p>
+                <p>"With Microfinance, our cooperative accessed flexible financing to modernize our equipment and improve productivity. Their professionalism is unmatched in the industry."</p>
                 <div class="stars">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
@@ -301,9 +301,9 @@
 
     <!-- About Us Section -->
     <section class="about" id="about">
-        <h2>About LEMON </h2>
+        <h2>About Microfinance </h2>
         <div class="about-content">
-            <p style="text-align: center; color: var(--label-text-light); line-height: 1.8; margin-bottom: 2rem;">LEMON is a trusted microfinance institution committed to empowering Filipino communities through affordable and accessible lending solutions. Our mission is to transform lives by providing financial opportunities to entrepreneurs, students, farmers, and families.</p>
+            <p style="text-align: center; color: var(--label-text-light); line-height: 1.8; margin-bottom: 2rem;">Microfinance is a trusted lending institution committed to empowering Filipino communities through affordable and accessible lending solutions. Our mission is to transform lives by providing financial opportunities to entrepreneurs, students, farmers, and families.</p>
             <div class="about-grid">
                 <div class="about-item">
                     <h3>Our Mission</h3>
@@ -383,7 +383,7 @@
             <div class="cta-text">
                 <span class="cta-subtitle">Your Financial Freedom Awaits</span>
                 <h2>Ready to Unlock Your Next Opportunity?</h2>
-                <p>Join over 50,000 Filipinos who have already taken control of their financial future with LEMON. Our fast, transparent process means you could be approved for up to ₱100,000 in as little as 24 hours.</p>
+                <p>Join over 50,000 Filipinos who have already taken control of their financial future with Microfinance. Our fast, transparent process means you could be approved for up to ₱100,000 in as little as 24 hours.</p>
                 
                 <div class="benefits-grid">
                     <div class="benefit-item">
@@ -508,13 +508,13 @@
                 <p><i class="fas fa-map-marker-alt"></i> 123 Financial Street, Metro Manila, Philippines 1000</p>
                 <p><i class="fas fa-phone"></i> +63 0 0123 4567</p>
                 <p><i class="fas fa-mobile-alt"></i> +63 901 123 4567</p>
-                <p><i class="fas fa-envelope"></i> Lemon.corporation@gmail.com</p>
+                <p><i class="fas fa-envelope"></i> microfinance.corporation@gmail.com</p>
                 <p><i class="fas fa-clock"></i> Mon - Fri: 9:00 AM - 6:00 PM</p>
             </div>
         </div>
         
         <div class="footer-bottom">
-            <p>&copy; 2025 LEMON All rights reserved. | 
+            <p>&copy; 2025 Microfinance All rights reserved. | 
               <a href="#">Privacy Policy</a> | 
               <a href="#">Terms & Conditions</a> | 
               <a href="#">Sitemap</a>

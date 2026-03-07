@@ -22,7 +22,7 @@
         <div class="auth-card">
             <!-- Logo Section -->
             <div class="logo-section">
-                <a href="index.html" class="logo-wrapper" style="text-decoration: none; cursor: pointer; display: flex; flex-direction: column; align-items: center;">
+                <a href="index.php" class="logo-wrapper" style="text-decoration: none; cursor: pointer; display: flex; flex-direction: column; align-items: center;">
                     <img src="img/logo.png" alt="Logo" class="logo">
                     <span class="logo-text">Microfinance</span>
                 </a>

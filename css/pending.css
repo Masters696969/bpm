@@ -1,6 +1,8 @@
 :root {
   --brand-green: #2ca078;
   --brand-yellow: #ffc107;
+  --brand-red: #ef4444;
+  --brand-blue: #3b82f6;
   --button-hover: #4fb97a;
 
   /* Light Mode Colors */
@@ -1024,19 +1026,22 @@ body {
   padding: 10px 24px;
   background: var(--brand-green);
   color: #fff;
-  border: none;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  /* Slightly darker border for depth */
   border-radius: 9px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: 0 4px 12px rgba(44, 160, 120, .3);
+  box-shadow: 0 4px 12px rgba(44, 160, 120, .2);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
 
 .rem-btn-send:hover {
   background: #259068;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(44, 160, 120, .4);
+  transform: translateY(-2px) scale(1.02);
+  /* More pronounced hover effect */
+  box-shadow: 0 6px 20px rgba(44, 160, 120, .3);
 }
 
 .rem-btn-send svg {
@@ -1635,4 +1640,28 @@ tbody td {
 .header-clock i {
   width: 18px;
   height: 18px;
+}
+
+.icon-btn .badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  border: 2px solid var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.hidden {
+  display: none !important;
 }

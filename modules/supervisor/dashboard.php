@@ -12,6 +12,7 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   <link rel="stylesheet" href="../../css/supervisordashboard.css?v=1.3">
+  <link rel="stylesheet" href="../../css/notifications.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -202,9 +203,21 @@ if (!isset($_SESSION['username'])) {
           <i data-lucide="sun" class="sun-icon"></i>
           <i data-lucide="moon" class="moon-icon"></i>
         </button>
-        <button class="icon-btn">
-          <i data-lucide="bell"></i>
-        </button>
+        <div class="header-notifications" style="position: relative;">
+          <button class="icon-btn" id="notifBtn">
+            <i data-lucide="bell"></i>
+            <span class="badge hidden" id="notifBadge">0</span>
+          </button>
+          <div id="notifDropdown" class="notif-dropdown hidden">
+              <div class="notif-header">
+                  <h3>Notifications</h3>
+                  <button id="markReadAll" class="btn-text">Mark all as read</button>
+              </div>
+              <div id="notifList" class="notif-list">
+                  <div class="notif-empty">No new notifications</div>
+              </div>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -212,6 +225,7 @@ if (!isset($_SESSION['username'])) {
      
     </div>    
   </main>
+  <script src="../../js/notifications.js?v=1.1"></script>
   <script src="../../js/supervisordashboard.js?v=2.2"></script>
   <script>
     lucide.createIcons();
