@@ -279,10 +279,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (data.success) {
                     Swal.fire({
+                        toast: true,
+                        position: 'top-end',
                         icon: 'success',
-                        title: 'Proposal Submitted!',
+                        title: 'Proposal Submitted Successfully!',
                         text: 'Your statutory change proposal has been sent to the Supervisor for endorsement.',
-                        confirmButtonColor: '#2ca078'
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
                     });
                     closeStatutoryModal();
                 } else {

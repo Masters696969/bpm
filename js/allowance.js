@@ -106,7 +106,15 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    Swal.fire({ icon: 'success', title: 'Success', text: 'Allowance proposal submitted.', confirmButtonColor: '#2ca078' }).then(() => {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Allowance proposal submitted successfully!',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => {
                         window.location.reload();
                     });
                     closeAllowanceModal();

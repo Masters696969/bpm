@@ -328,7 +328,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const res = await response.json();
                 if (res.success) {
-                    Swal.fire('Approved!', res.message, 'success').then(() => {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Proposal Approved!',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => {
                         window.location.reload();
                     });
                 } else {
@@ -360,7 +369,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const res = await response.json();
                 if (res.success) {
-                    Swal.fire('Rejected!', res.message, 'success');
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Proposal Rejected',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
                     document.getElementById('proposalActionModal').classList.add('hidden');
                     fetchEndorsedProposals();
                 } else {

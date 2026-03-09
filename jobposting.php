@@ -1,5 +1,42 @@
 <?php
-// jobposting.php
+require_once 'config/config.php';
+session_start();
+
+// Fetch all live job postings
+$query = "SELECT * FROM job_postings WHERE Status = 'Live' ORDER BY CreatedAt DESC";
+$result = $conn->query($query);
+$jobsList = [];
+
+// Fetch unique departments for the filter
+$deptQuery = "SELECT DISTINCT Department FROM job_postings WHERE Status = 'Live' ORDER BY Department";
+$deptResult = $conn->query($deptQuery);
+$departments = [];
+while ($d = $deptResult->fetch_assoc()) {
+    $departments[] = $d['Department'];
+}
+
+while ($row = $result->fetch_assoc()) {
+    // Convert new-line separated strings to arrays for the frontend
+    $row['responsibilities'] = array_filter(explode("\n", str_replace("\r", "", $row['Responsibilities'])));
+    $row['requirements'] = array_filter(explode("\n", str_replace("\r", "", $row['Requirements'])));
+    
+    // Map database fields to the frontend's expected format
+    $jobsList[] = [
+        'id' => (int)$row['PostID'],
+        'title' => $row['Title'],
+        'company' => "Microfinance Inc.", 
+        'location' => $row['Location'],
+        'type' => $row['JobType'],
+        'department' => $row['Department'],
+        'salary' => $row['SalaryRange'],
+        'salaryType' => $row['SalaryType'] ?? 'Monthly',
+        'posted' => date('M d, Y', strtotime($row['CreatedAt'])),
+        'description' => $row['Description'],
+        'featured' => false,
+        'responsibilities' => $row['responsibilities'],
+        'requirements' => $row['requirements']
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,6 +47,7 @@
     <link rel="icon" type="image/png" href="img/logo.png">
     <link rel="stylesheet" href="css/landing.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Minimalist Job Posting Styles */
         :root {
@@ -339,6 +377,60 @@
             .job-sidebar {
                 display: none;
             }
+            .section-header h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .job-section {
+                padding: 2rem 5%;
+            }
+            .search-filter-container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            .search-input-group, .filter-select, .btn-search {
+                width: 100%;
+                flex: none;
+                min-width: 0;
+            }
+            .modal-container {
+                padding: 1.5rem;
+                max-width: 95%;
+            }
+            .modal-header h2 {
+                font-size: 1.5rem;
+                padding-right: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-header h2 {
+                font-size: 1.75rem;
+            }
+            .job-card {
+                padding: 1.5rem;
+            }
+            .job-card-header {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            .job-meta {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            .job-card-title h3 {
+                font-size: 1.25rem;
+            }
+            .modal-container {
+                border-radius: 12px;
+                padding: 1.25rem;
+            }
+            .btn-apply {
+                padding: 0.8rem;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -369,12 +461,11 @@
             <div class="search-input-group">
                 <input type="text" id="searchInput" placeholder="Search by job title or keywords...">
             </div>
-            <select id="categoryFilter" class="filter-select">
-                <option value="">All Categories</option>
-                <option value="Technology">Technology</option>
-                <option value="Design">Design</option>
-                <option value="Marketing">Marketing</option>
-                <option value="Human Resources">Human Resources</option>
+            <select id="deptFilter" class="filter-select">
+                <option value="">All Departments</option>
+                <?php foreach ($departments as $dept): ?>
+                    <option value="<?php echo htmlspecialchars($dept); ?>"><?php echo htmlspecialchars($dept); ?></option>
+                <?php endforeach; ?>
             </select>
             <button class="btn-search" onclick="handleSearch()">Search</button>
         </div>
@@ -431,93 +522,18 @@
     <!-- Job Details Modal -->
     <div class="modal-overlay" id="jobModal">
         <div class="modal-container">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <button class="modal-close" onclick="closeModal('jobModal')">&times;</button>
             <div id="modalContent">
                 <!-- Javascript will populate this -->
             </div>
-        </div>
-    </div>
-
+        </div>    </div>
     <footer style="padding: 2rem; text-align: center; color: var(--label-text-light); border-top: 1px solid var(--card-border); background: var(--surface);">
-        <p style="font-size: 0.9rem;">&copy; 2025 Microfinance Inc. All rights reserved.</p>
+        <p style="font-size: 0.9rem;">&copy; <?php echo date('Y'); ?> Microfinance Inc. All rights reserved.</p>
         <p style="font-size: 0.8rem; margin-top: 0.5rem;">Empowering Filipino entrepreneurs with accessible lending.</p>
     </footer>
 
     <script>
-        const jobs = [
-            {
-                id: 1,
-                title: "Software Engineer",
-                company: "Microfinance Inc.",
-                location: "Metro Manila",
-                type: "Full-time",
-                category: "Technology",
-                salary: "₱40k - ₱60k",
-                posted: "Today",
-                description: "We are looking for a dedicated Software Engineer to help us build the next generation of microfinance tools.",
-                featured: true,
-                responsibilities: [
-                    "Develop and maintain PHP-based web applications",
-                    "Collaborate with product designers to create seamless UIs",
-                    "Optimize applications for maximum speed and scalability",
-                    "Participate in code reviews and team meetings"
-                ],
-                requirements: [
-                    "Strong knowledge of PHP, JavaScript, and MySQL",
-                    "Experience with modern CSS frameworks",
-                    "Good understanding of version control (Git)",
-                    "Excellent problem-solving skills"
-                ]
-            },
-            {
-                id: 2,
-                title: "Account Officer",
-                company: "Microfinance Inc.",
-                location: "Cebu City",
-                type: "Full-time",
-                category: "Marketing",
-                salary: "₱25k - ₱35k",
-                posted: "2 days ago",
-                description: "Join our field team in helping local entrepreneurs access the capital they need to grow.",
-                featured: false,
-                responsibilities: [
-                    "Identify and recruit potential clients",
-                    "Conduct loan interviews and site visits",
-                    "Evaluate creditworthiness and risk",
-                    "Monitor loan repayment performance"
-                ],
-                requirements: [
-                    "Degree in Business, Marketing, or related field",
-                    "Excellent communication and interpersonal skills",
-                    "Willingness to do field work",
-                    "Integrity and high ethical standards"
-                ]
-            },
-            {
-                id: 3,
-                title: "HR Generalist",
-                company: "Microfinance Inc.",
-                location: "Metro Manila",
-                type: "Full-time",
-                category: "Human Resources",
-                salary: "₱30k - ₱45k",
-                posted: "1 week ago",
-                description: "Help us build a world-class team and maintain our positive company culture.",
-                featured: false,
-                responsibilities: [
-                    "Manage the end-to-end recruitment process",
-                    "Handle employee relations and engagement",
-                    "Coordinate training and development programs",
-                    "Ensure compliance with labor laws"
-                ],
-                requirements: [
-                    "3+ years of HR experience",
-                    "Strong knowledge of Philippine labor laws",
-                    "Proactive and people-oriented approach",
-                    "Strong organizational skills"
-                ]
-            }
-        ];
+        const jobs = <?php echo json_encode($jobsList); ?>;
 
         let filteredJobs = [...jobs];
 
@@ -538,12 +554,13 @@
                         <div class="job-tags">
                             ${job.featured ? '<span class="tag featured">Featured</span>' : ''}
                             <span class="tag">${job.type}</span>
+                            <span class="tag" style="background: rgba(44, 160, 120, 0.15);">${job.department}</span>
                         </div>
                     </div>
                     <p class="job-desc">${job.description}</p>
                     <div class="job-meta">
                         <div class="meta-item"><i data-lucide="map-pin"></i> ${job.location}</div>
-                        <div class="meta-item"><i data-lucide="banknote"></i> ${job.salary}</div>
+                        <div class="meta-item"><i data-lucide="banknote"></i> ${job.salary} / ${job.salaryType}</div>
                         <div class="meta-item"><i data-lucide="clock"></i> ${job.posted}</div>
                     </div>
                 </div>
@@ -552,12 +569,12 @@
 
         function handleSearch() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const category = document.getElementById('categoryFilter').value;
+            const dept = document.getElementById('deptFilter').value;
 
             filteredJobs = jobs.filter(job => {
                 const matchesQuery = job.title.toLowerCase().includes(query) || job.description.toLowerCase().includes(query);
-                const matchesCategory = category === "" || job.category === category;
-                return matchesQuery && matchesCategory;
+                const matchesDept = dept === "" || job.department === dept;
+                return matchesQuery && matchesDept;
             });
 
             renderJobs();
@@ -572,9 +589,9 @@
                 <div class="modal-header">
                     <h2>${job.title}</h2>
                     <div class="job-company">${job.company}</div>
-                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem; color: var(--label-text-light); font-size: 0.9rem;">
+                    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; color: var(--label-text-light); font-size: 0.9rem;">
                         <span style="display: flex; align-items: center; gap: 0.3rem;"><i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> ${job.location}</span>
-                        <span style="display: flex; align-items: center; gap: 0.3rem;"><i data-lucide="banknote" style="width: 14px; height: 14px;"></i> ${job.salary}</span>
+                        <span style="display: flex; align-items: center; gap: 0.3rem;"><i data-lucide="banknote" style="width: 14px; height: 14px;"></i> ${job.salary} / ${job.salaryType}</span>
                         <span style="display: flex; align-items: center; gap: 0.3rem;"><i data-lucide="file-text" style="width: 14px; height: 14px;"></i> ${job.type}</span>
                     </div>
                 </div>
@@ -592,15 +609,15 @@
                         ${job.requirements.map(r => `<li>${r}</li>`).join('')}
                     </ul>
                     
-                    <button class="btn-apply" onclick="alert('In a real application, this would open the application form for ${job.title}.')">Apply for this Position</button>
+                    <a href="apply.php?id=${job.id}" class="btn-apply" style="display: block; text-align: center; text-decoration: none;">Apply for this Position</a>
                 </div>
             `;
             document.getElementById('jobModal').style.display = 'flex';
             initIcons();
         }
 
-        function closeModal() {
-            document.getElementById('jobModal').style.display = 'none';
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
         }
 
         function openCompanyModal() {
@@ -643,8 +660,12 @@
         }
 
         // Close modal on overlay click
-        document.getElementById('jobModal').addEventListener('click', (e) => {
-            if (e.target.id === 'jobModal') closeModal();
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-overlay')) {
+                    e.target.style.display = 'none';
+                }
+            });
         });
 
         // Initial render
@@ -695,6 +716,29 @@
         // Initialize icons on load
         document.addEventListener('DOMContentLoaded', initIcons);
         renderJobs(); // Initial call to render and init icons
+
+        // Cross-Device Sync (The Pulse)
+        let lastPulse = null;
+
+        async function checkPulse() {
+            try {
+                const response = await fetch('sync_pulse.php');
+                const data = await response.json();
+                
+                if (lastPulse === null) {
+                    lastPulse = data.last_update;
+                } else if (lastPulse !== data.last_update) {
+                    console.log('Update detected via pulse. Refreshing...');
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Pulse check failed:', error);
+            }
+        }
+
+        // Check every 5 seconds for cross-device responsiveness
+        setInterval(checkPulse, 5000);
+        checkPulse(); // Initial check
     </script>
 </body>
 </html>

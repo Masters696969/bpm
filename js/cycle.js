@@ -510,8 +510,16 @@
                             .then(res => res.json())
                             .then(data => {
                                 if (data.success) {
-                                    Swal.fire('Proposal Submitted!', 'The compensation structure has been sent to the HR Manager.', 'success')
-                                        .then(() => location.reload());
+                                    Swal.fire({
+                                        toast: true,
+                                        position: 'top-end',
+                                        icon: 'success',
+                                        title: 'Proposal Submitted Successfully!',
+                                        text: 'The compensation structure has been sent to the HR Manager.',
+                                        showConfirmButton: false,
+                                        timer: 2000,
+                                        timerProgressBar: true
+                                    }).then(() => location.reload());
                                 } else {
                                     Swal.fire('Error', data.message || 'Failed to submit proposal.', 'error');
                                 }
@@ -715,11 +723,13 @@
 
                     if (data.success) {
                         Swal.fire({
-                            title: 'Draft Saved',
-                            text: 'Your progress has been saved securely.',
+                            toast: true,
+                            position: 'top-end',
                             icon: 'success',
+                            title: 'Draft Saved Successfully',
+                            showConfirmButton: false,
                             timer: 2000,
-                            showConfirmButton: false
+                            timerProgressBar: true
                         }).then(() => location.reload());
                     } else {
                         Swal.fire('Error', data.message || 'Failed to save draft.', 'error');
@@ -781,11 +791,14 @@
                         });
 
                         Swal.fire({
-                            title: 'Draft Loaded',
-                            text: `Successfully restored ${data.cycle_name}.`,
+                            toast: true,
+                            position: 'top-end',
                             icon: 'success',
-                            timer: 1500,
-                            showConfirmButton: false
+                            title: 'Draft Loaded Successfully',
+                            text: `Restored ${data.cycle_name}.`,
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true
                         }).then(() => {
                             switchTab('simulation');
                         });

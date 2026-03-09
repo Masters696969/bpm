@@ -220,7 +220,16 @@ async function processRequest(requestId, action) {
         const res = await response.json();
 
         if (res.success) {
-            Swal.fire('Success!', res.message, 'success');
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Success!',
+                text: res.message,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
             document.getElementById('requestActionModal').classList.add('hidden');
             fetchEndorsedRequests();
         } else {

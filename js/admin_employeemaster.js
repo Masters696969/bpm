@@ -369,10 +369,13 @@ async function submitEditForm(event) {
         if (result.success) {
             closeModal();
             Swal.fire({
-                title: 'Success!',
-                text: 'Employee updated successfully!',
+                toast: true,
+                position: 'top-end',
                 icon: 'success',
-                confirmButtonColor: '#2ca078'
+                title: 'Employee updated successfully!',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true
             }).then(() => {
                 fetchEmployees();
             });
@@ -475,22 +478,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#6b7280',
-                confirmButtonText: '<i class="swal-icon-logout"></i> Yes, Sign Out',
+                confirmButtonText: 'Yes, Sign Out',
                 cancelButtonText: 'Stay',
-                reverseButtons: true,
-                customClass: {
-                    popup: 'swal-signout-popup',
-                    title: 'swal-signout-title',
-                }
+                reverseButtons: true
             });
             if (result.isConfirmed) {
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Signed Out',
-                    text: 'You have been signed out successfully.',
-                    timer: 1500,
-                    showConfirmButton: false,
-                });
                 window.location.href = dest;
             }
         });

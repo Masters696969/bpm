@@ -150,11 +150,14 @@
 
                     if (data.success) {
                         Swal.fire({
+                            toast: true,
+                            position: 'top-end',
                             icon: 'success',
                             title: 'Saved!',
                             text: 'Salary scales updated successfully.',
+                            showConfirmButton: false,
                             timer: 2000,
-                            showConfirmButton: false
+                            timerProgressBar: true
                         });
                     } else {
                         throw new Error(data.error || 'Failed to save');
@@ -452,9 +455,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await response.json();
 
                 if (res.success) {
-                    await Swal.fire('Approved!', res.message, 'success');
-                    proposalModal.classList.add('hidden');
-                    fetchEndorsedProposals(); // Reload table
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Approved!',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        proposalModal.classList.add('hidden');
+                        fetchEndorsedProposals();
+                    });
                 } else {
                     Swal.fire('Error!', res.message, 'error');
                 }
@@ -490,7 +503,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await response.json();
 
                 if (res.success) {
-                    Swal.fire('Rejected!', res.message, 'success');
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Rejected!',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
                     proposalModal.classList.add('hidden');
                     fetchEndorsedProposals();
                 } else {

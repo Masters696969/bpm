@@ -220,7 +220,15 @@ async function processRequest(requestId, action) {
         const res = await response.json();
 
         if (res.success) {
-            Swal.fire('Success!', res.message, 'success');
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: action === 'approve_request' ? "Request Approved" : "Request Rejected",
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true
+            });
             document.getElementById('requestActionModal').classList.add('hidden');
             fetchEndorsedRequests();
         } else {

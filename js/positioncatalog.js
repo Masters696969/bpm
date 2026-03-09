@@ -16,25 +16,21 @@ function toggleAccordion(deptName) {
     }
 }
 
-// Start Recruitment Trigger
-function startRecruitment(posId) {
+// Send Requisition Trigger
+function sendRequisition(posId, posName) {
     Swal.fire({
-        title: 'Initiate Recruitment?',
-        text: 'You are about to start the recruitment cycle for this vacant position.',
-        icon: 'info',
+        title: 'Send Hiring Requisition?',
+        text: `You are about to initiate a formal hiring request for "${posName}". This will be managed in the Recruitment module.`,
+        icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Start Now',
-        confirmButtonColor: '#ef4444',
+        confirmButtonText: 'Yes, Send Request',
+        confirmButtonColor: '#2ca078',
         cancelButtonText: 'Cancel',
         reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Action Triggered',
-                text: 'Recruitment process has been initiated successfully.',
-                icon: 'success',
-                confirmButtonColor: '#2ca078'
-            });
+            document.getElementById('reqPosId').value = posId;
+            document.getElementById('requisitionForm').submit();
         }
     });
 }
@@ -75,12 +71,23 @@ function launchManagePositionModal(pos) {
                     <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-secondary);">Authorized Headcount</label>
                     <input id="swalManageAuth" type="number" class="swal2-input" value="${pos.auth}" min="1" style="margin: 0; width: 100%;">
                 </div>
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 12px; color: var(--text-tertiary);">Dangerous Action:</span>
+                    <button type="button" onclick="confirmDeletePosition(${pos.id}, '${pos.name.replace(/'/g, "\\'")}')" 
+                        style="padding: 8px 16px; background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                        Delete Position
+                    </button>
+                </div>
             </div>
         `,
         showCancelButton: true,
-        confirmButtonText: 'Update Position',
+        confirmButtonText: 'Submit Change Request',
         confirmButtonColor: '#2ca078',
         cancelButtonText: 'Cancel',
+        didOpen: () => {
+            if (window.lucide) window.lucide.createIcons();
+        },
         preConfirm: () => {
             const name = document.getElementById('swalManageName').value;
             const code = document.getElementById('swalManageCode').value;
@@ -103,6 +110,25 @@ function launchManagePositionModal(pos) {
             document.getElementById('updateGradeId').value = result.value.gradeId;
             document.getElementById('updateAuthHeadcount').value = result.value.auth;
             document.getElementById('updatePositionForm').submit();
+        }
+    });
+}
+
+// Separate function for Delete Confirmation
+function confirmDeletePosition(id, name) {
+    Swal.fire({
+        title: 'Request Deletion?',
+        text: `Are you sure you want to request the deletion of "${name}"? This will go to positionrequest.php for approval.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, Submit Request',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('deletePosId').value = id;
+            document.getElementById('deletePositionForm').submit();
         }
     });
 }

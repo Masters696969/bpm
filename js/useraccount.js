@@ -92,12 +92,11 @@ function initUserAccount() {
         }
         if (shouldReset) {
             createUserForm.reset();
-            document.getElementById("accountId").value = ""; // Ensure ID is cleared on reset
+            document.getElementById("accountId").value = "";
         }
-        modal.style.display = "flex"; // Keep inline style for reliability
+        modal.style.display = "flex";
         modal.classList.add("show");
         modal.setAttribute("aria-hidden", "false");
-        console.log("Modal opened");
     };
 
     // Helper to close modal
@@ -145,9 +144,7 @@ function initUserAccount() {
 
             const accountId = document.getElementById("accountId").value;
             const isEdit = !!accountId;
-            console.log("Form Submit: AccountID:", accountId, "isEdit:", isEdit);
 
-            // Validate passwords match (only if password is provided or it's a new account)
             if ((!isEdit || password) && password !== confirmPassword) {
                 await Swal.fire({
                     icon: "error",
@@ -158,7 +155,6 @@ function initUserAccount() {
                 return;
             }
 
-            // Validate roles selected
             const roles = Array.from(rolesSelect.selectedOptions).map(option => option.value);
             if (roles.length === 0) {
                 await Swal.fire({
@@ -170,7 +166,6 @@ function initUserAccount() {
                 return;
             }
 
-            // Show loading
             Swal.fire({
                 title: isEdit ? "Updating Account..." : "Creating Account...",
                 text: "Please wait",
@@ -180,12 +175,9 @@ function initUserAccount() {
             });
 
             try {
-                // Use URLSearchParams to avoid multipart boundaries issues
                 const params = new URLSearchParams();
-
                 const actionType = isEdit ? "update_account" : "add_account";
                 params.append("action", actionType);
-                console.log("Submitting action:", actionType, "AccountID:", accountId);
 
                 if (isEdit) {
                     params.append("account_id", accountId);
@@ -193,7 +185,7 @@ function initUserAccount() {
 
                 params.append("username", username);
                 params.append("email", email);
-                if (password) { // Only send password if provided
+                if (password) {
                     params.append("password", password);
                     params.append("confirm_password", confirmPassword);
                 }
@@ -201,8 +193,6 @@ function initUserAccount() {
                 roles.forEach(roleId => {
                     params.append("roles[]", roleId);
                 });
-
-                console.log("Submitting with URLSearchParams:", params.toString());
 
                 const response = await fetch("account_action.php", {
                     method: "POST",
@@ -216,13 +206,17 @@ function initUserAccount() {
 
                 if (result.success) {
                     closeModal(); // Close modal first
-                    await Swal.fire({
-                        icon: "success",
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
                         title: isEdit ? "Account Updated" : "Account Created",
-                        text: isEdit ? "Account has been updated successfully" : "New account has been created successfully",
-                        confirmButtonColor: "#2ca078"
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true
+                    }).then(() => {
+                        location.reload();
                     });
-                    location.reload();
                 } else {
                     await Swal.fire({
                         icon: "error",
@@ -275,25 +269,21 @@ function initUserAccount() {
             if (result.success) {
                 const data = result.data;
 
-                // Populate form
                 document.getElementById("accountId").value = data.AccountID;
                 document.getElementById("username").value = data.Username;
                 document.getElementById("email").value = data.Email;
                 document.getElementById("accountStatus").value = data.AccountStatus;
 
-                // Handle roles
                 const rolesSelect = document.getElementById("roles");
                 Array.from(rolesSelect.options).forEach(option => {
                     option.selected = data.Roles.includes(parseInt(option.value));
                 });
 
-                // Update UI for Edit mode
                 const modalTitle = document.getElementById('modalTitle');
                 const submitLabel = document.getElementById('submitBtnLabel');
                 if (modalTitle) modalTitle.textContent = 'Edit Account';
                 if (submitLabel) submitLabel.textContent = 'Update Account';
 
-                // Password fields are optional during edit
                 document.getElementById("password").required = false;
                 document.getElementById("confirmPassword").required = false;
 
@@ -317,7 +307,6 @@ function initUserAccount() {
         }
     };
 
-    // Update openModal to reset to Add mode
     const openAddModal = () => {
         document.getElementById("accountId").value = "";
         const modalTitle = document.getElementById('modalTitle');
@@ -329,9 +318,7 @@ function initUserAccount() {
         openModal(true);
     };
 
-    // Override the click handler for add button
     if (addUserBtn) {
-        // Clone node to strip all existing event listeners (including the one from line 115)
         const newBtn = addUserBtn.cloneNode(true);
         addUserBtn.parentNode.replaceChild(newBtn, addUserBtn);
         newBtn.addEventListener("click", openAddModal);
@@ -364,13 +351,17 @@ function initUserAccount() {
             const result = await response.json();
 
             if (result.success) {
-                await Swal.fire({
-                    icon: "success",
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
                     title: "Account Deleted",
-                    text: "Account has been deleted successfully",
-                    confirmButtonColor: "#2ca078"
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                }).then(() => {
+                    location.reload();
                 });
-                location.reload();
             } else {
                 await Swal.fire({
                     icon: "error",
@@ -390,7 +381,6 @@ function initUserAccount() {
         }
     }
 
-    // Table delegated click handler
     const usersTable = document.getElementById("usersTable");
     if (usersTable) {
         usersTable.addEventListener("click", (e) => {
@@ -411,45 +401,41 @@ function initUserAccount() {
         });
     }
 
-    // Initialize icons
     lucide.createIcons();
 }
 
-// Initialize on DOM ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initUserAccount);
 } else {
     initUserAccount();
 }
 
-// Sidebar Active Link Logic (Merged)
 (function () {
-  const path = window.location.pathname;
-  const page = path.split('/').pop() || 'dashboard.php';
-  const current = page.split('?')[0];
+    const path = window.location.pathname;
+    const page = path.split('/').pop() || 'dashboard.php';
+    const current = page.split('?')[0];
 
-  document.querySelectorAll('.sidebar .nav-item, .sidebar .submenu-item').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.sidebar .nav-item-group').forEach(group => group.classList.remove('active'));
+    document.querySelectorAll('.sidebar .nav-item, .sidebar .submenu-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.sidebar .nav-item-group').forEach(group => group.classList.remove('active'));
 
-  const submenuMatch = document.querySelector(`.sidebar a.submenu-item[href$="${current}"]`);
-  if (submenuMatch) {
-    submenuMatch.classList.add('active');
-    const parentGroup = submenuMatch.closest('.nav-item-group');
-    if (parentGroup) {
-      parentGroup.classList.add('active');
-      const submenu = parentGroup.querySelector('.submenu');
-      if (submenu) submenu.style.maxHeight = '500px';
-      const btn = parentGroup.querySelector('.nav-item.has-submenu');
-      if (btn) btn.classList.add('active');
+    const submenuMatch = document.querySelector(`.sidebar a.submenu-item[href$="${current}"]`);
+    if (submenuMatch) {
+        submenuMatch.classList.add('active');
+        const parentGroup = submenuMatch.closest('.nav-item-group');
+        if (parentGroup) {
+            parentGroup.classList.add('active');
+            const submenu = parentGroup.querySelector('.submenu');
+            if (submenu) submenu.style.maxHeight = '500px';
+            const btn = parentGroup.querySelector('.nav-item.has-submenu');
+            if (btn) btn.classList.add('active');
+        }
+        return;
     }
-    return;
-  }
 
-  const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
-  if (navMatch) navMatch.classList.add('active');
+    const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
+    if (navMatch) navMatch.classList.add('active');
 })();
 
-// User Menu Dropdown Logic (Merged)
 document.addEventListener('DOMContentLoaded', () => {
     const nameEl = document.querySelector('.sidebar-footer .user-name');
     const roleEl = document.querySelector('.sidebar-footer .user-role');
@@ -492,33 +478,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#6b7280',
-                confirmButtonText: '<i class="swal-icon-logout"></i> Yes, Sign Out',
+                confirmButtonText: 'Yes, Sign Out',
                 cancelButtonText: 'Stay',
-                reverseButtons: true,
-                customClass: {
-                    popup: 'swal-signout-popup',
-                    title: 'swal-signout-title',
-                }
+                reverseButtons: true
             });
             if (result.isConfirmed) {
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Signed Out',
-                    text: 'You have been signed out successfully.',
-                    timer: 1500,
-                    showConfirmButton: false,
-                });
                 window.location.href = dest;
             }
         });
     });
 });
 
-// Real-time Clock Functionality
 function initClock() {
     const clockEl = document.getElementById('realTimeClock');
     if (!clockEl) return;
-    
+
     const updateClock = () => {
         const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
         const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -532,12 +506,12 @@ function initClock() {
         const seconds = now.getSeconds().toString().padStart(2, '0');
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
-        hours = hours ? hours : 12; 
+        hours = hours ? hours : 12;
         const formattedHours = hours.toString().padStart(2, '0');
-        
+
         clockEl.textContent = `${dayName}, ${monthName} ${date}, ${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
     };
-    
+
     setInterval(updateClock, 1000);
     updateClock();
 }

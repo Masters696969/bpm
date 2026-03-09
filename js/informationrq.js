@@ -179,10 +179,14 @@ async function processRequest(requestId, action) {
 
         if (res.success) {
             Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
                 title: 'Success!',
                 text: res.message,
-                icon: 'success',
-                confirmButtonColor: '#2ca078'
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
             });
             document.getElementById('requestActionModal').classList.add('hidden');
             fetchPendingRequests(); // Refresh table
@@ -301,29 +305,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Sidebar Active Link Logic (Merged)
 (function () {
-  const path = window.location.pathname;
-  const page = path.split('/').pop() || 'dashboard.php';
-  const current = page.split('?')[0];
+    const path = window.location.pathname;
+    const page = path.split('/').pop() || 'dashboard.php';
+    const current = page.split('?')[0];
 
-  document.querySelectorAll('.sidebar .nav-item, .sidebar .submenu-item').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.sidebar .nav-item-group').forEach(group => group.classList.remove('active'));
+    document.querySelectorAll('.sidebar .nav-item, .sidebar .submenu-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.sidebar .nav-item-group').forEach(group => group.classList.remove('active'));
 
-  const submenuMatch = document.querySelector(`.sidebar a.submenu-item[href$="${current}"]`);
-  if (submenuMatch) {
-    submenuMatch.classList.add('active');
-    const parentGroup = submenuMatch.closest('.nav-item-group');
-    if (parentGroup) {
-      parentGroup.classList.add('active');
-      const submenu = parentGroup.querySelector('.submenu');
-      if (submenu) submenu.style.maxHeight = '500px';
-      const btn = parentGroup.querySelector('.nav-item.has-submenu');
-      if (btn) btn.classList.add('active');
+    const submenuMatch = document.querySelector(`.sidebar a.submenu-item[href$="${current}"]`);
+    if (submenuMatch) {
+        submenuMatch.classList.add('active');
+        const parentGroup = submenuMatch.closest('.nav-item-group');
+        if (parentGroup) {
+            parentGroup.classList.add('active');
+            const submenu = parentGroup.querySelector('.submenu');
+            if (submenu) submenu.style.maxHeight = '500px';
+            const btn = parentGroup.querySelector('.nav-item.has-submenu');
+            if (btn) btn.classList.add('active');
+        }
+        return;
     }
-    return;
-  }
 
-  const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
-  if (navMatch) navMatch.classList.add('active');
+    const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
+    if (navMatch) navMatch.classList.add('active');
 })();
 
 // User Menu Dropdown Logic (Merged)
@@ -399,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initClock() {
     const clockEl = document.getElementById('realTimeClock');
     if (!clockEl) return;
-    
+
     const updateClock = () => {
         const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
         const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -413,12 +417,12 @@ function initClock() {
         const seconds = now.getSeconds().toString().padStart(2, '0');
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
-        hours = hours ? hours : 12; 
+        hours = hours ? hours : 12;
         const formattedHours = hours.toString().padStart(2, '0');
-        
+
         clockEl.textContent = `${dayName}, ${monthName} ${date}, ${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
     };
-    
+
     setInterval(updateClock, 1000);
     updateClock();
 }

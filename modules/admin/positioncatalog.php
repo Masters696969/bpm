@@ -10,22 +10,23 @@ require_once '../../config/config.php';
 $page = 'positioncatalog';
 $module = 'corehumancapital';
 
-// Handle Add Position
+// Handle Add Position (Redirect to Requests)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add_position') {
     $posName = $_POST['position_name'] ?? '';
     $posCode = $_POST['position_code'] ?? '';
     $deptId = $_POST['department_id'] ?? '';
     $gradeId = $_POST['grade_id'] ?? '';
     $authorized = $_POST['authorized_headcount'] ?? 1;
+    $requestedBy = $_SESSION['username'] ?? 'System';
 
     if (!empty($posName) && !empty($deptId) && !empty($gradeId)) {
-        $stmt = $conn->prepare("INSERT INTO positions (PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssiii", $posName, $posCode, $deptId, $gradeId, $authorized);
+        $stmt = $conn->prepare("INSERT INTO position_requests (RequestType, PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount, RequestedBy, Status) VALUES ('Add', ?, ?, ?, ?, ?, ?, 'Pending')");
+        $stmt->bind_param("ssiiis", $posName, $posCode, $deptId, $gradeId, $authorized, $requestedBy);
         
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Position successfully added to the catalog.";
+            $_SESSION['success_message'] = "Your request to add '$posName' has been submitted for approval.";
         } else {
-            $_SESSION['error_message'] = "Error adding position: " . $conn->error;
+            $_SESSION['error_message'] = "Error submitting request: " . $conn->error;
         }
         $stmt->close();
     }
@@ -33,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit();
 }
 
-// Handle Update Position
+// Handle Update Position (Redirect to Requests)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_position') {
     $posId = $_POST['position_id'] ?? '';
     $posName = $_POST['position_name'] ?? '';
@@ -41,18 +42,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $deptId = $_POST['department_id'] ?? '';
     $gradeId = $_POST['grade_id'] ?? '';
     $authorized = $_POST['authorized_headcount'] ?? 1;
+    $requestedBy = $_SESSION['username'] ?? 'System';
 
-    if (!empty($posId)) {
-        $stmt = $conn->prepare("UPDATE positions SET PositionName = ?, PositionCode = ?, DepartmentID = ?, SalaryGradeID = ?, AuthorizedHeadcount = ? WHERE PositionID = ?");
-        $stmt->bind_param("ssiiii", $posName, $posCode, $deptId, $gradeId, $authorized, $posId);
+    if (!empty($posId) && !empty($posName)) {
+        $stmt = $conn->prepare("INSERT INTO position_requests (RequestType, TargetPositionID, PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount, RequestedBy, Status) VALUES ('Update', ?, ?, ?, ?, ?, ?, ?, 'Pending')");
+        $stmt->bind_param("issiiis", $posId, $posName, $posCode, $deptId, $gradeId, $authorized, $requestedBy);
         
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Position updated successfully.";
+            $_SESSION['success_message'] = "Change request for '$posName' has been submitted for approval.";
         } else {
-            $_SESSION['error_message'] = "Error updating position: " . $conn->error;
+            $_SESSION['error_message'] = "Error submitting update request: " . $conn->error;
         }
         $stmt->close();
     }
+    header("Location: positioncatalog.php");
+    exit();
+}
+
+// Handle Delete Position (Redirect to Requests)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_position') {
+    $posId = $_POST['position_id'] ?? '';
+    $posName = $_POST['position_name'] ?? '';
+    $requestedBy = $_SESSION['username'] ?? 'System';
+
+    if (!empty($posId)) {
+        // We still fetch details to store in the request for reference
+        $fetchStmt = $conn->prepare("SELECT * FROM positions WHERE PositionID = ?");
+        $fetchStmt->bind_param("i", $posId);
+        $fetchStmt->execute();
+        $pos = $fetchStmt->get_result()->fetch_assoc();
+        
+        if ($pos) {
+            $stmt = $conn->prepare("INSERT INTO position_requests (RequestType, TargetPositionID, PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount, RequestedBy, Status) VALUES ('Delete', ?, ?, ?, ?, ?, ?, ?, 'Pending')");
+            $stmt->bind_param("issiiis", $posId, $pos['PositionName'], $pos['PositionCode'], $pos['DepartmentID'], $pos['SalaryGradeID'], $pos['AuthorizedHeadcount'], $requestedBy);
+            
+            if ($stmt->execute()) {
+                $_SESSION['success_message'] = "Deletion request for '{$pos['PositionName']}' has been submitted for approval.";
+            } else {
+                $_SESSION['error_message'] = "Error submitting deletion request: " . $conn->error;
+            }
+            $stmt->close();
+        }
+    }
+    header("Location: positioncatalog.php");
+    exit();
+}
+
+// Handle Send Requisition
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'send_requisition') {
+    $posId = $_POST['position_id'] ?? '';
+    $requestedBy = $_SESSION['username'] ?? 'System';
+    $logFile = '../../debug_log.txt';
+    $log = date('[Y-m-d H:i:s]') . " REQUISITION REQUEST: posId=$posId, user=$requestedBy\n";
+    
+    if (!empty($posId)) {
+        // Check if already exists
+        $check = $conn->prepare("SELECT RequisitionID FROM recruitment_requisitions WHERE PositionID = ? AND Status IN ('Pending', 'Active', 'Posted')");
+        $check->bind_param("i", $posId);
+        $check->execute();
+        $res = $check->get_result();
+        if ($res->num_rows > 0) {
+            $_SESSION['error_message'] = "A requisition for this position is already active.";
+            $log .= "ERROR: Requisition already active for posId=$posId\n";
+        } else {
+            $stmt = $conn->prepare("INSERT INTO recruitment_requisitions (PositionID, RequestedBy) VALUES (?, ?)");
+            $stmt->bind_param("is", $posId, $requestedBy);
+            if ($stmt->execute()) {
+                $_SESSION['success_message'] = "Hiring requisition sent to Recruitment module.";
+                $log .= "SUCCESS: Requisition inserted for posId=$posId\n";
+                file_put_contents($logFile, $log, FILE_APPEND);
+                header("Location: recruitment.php");
+                exit();
+            } else {
+                $_SESSION['error_message'] = "Error sending requisition: " . $conn->error;
+                $log .= "DATABASE ERROR: " . $conn->error . "\n";
+            }
+            $stmt->close();
+        }
+        $check->close();
+    } else {
+        $log .= "ERROR: position_id is empty\n";
+    }
+    file_put_contents($logFile, $log, FILE_APPEND);
     header("Location: positioncatalog.php");
     exit();
 }
@@ -74,9 +145,10 @@ while ($row = $gradesResult->fetch_assoc()) {
     $salaryGrades[] = $row;
 }
 
-// Fetch positions with vacancy priority
+// Fetch positions with vacancy priority and recruitment status
 $sql = "SELECT p.*, d.DepartmentName, sg.GradeName,
-        (SELECT COUNT(*) FROM employmentinformation ei WHERE ei.PositionID = p.PositionID) as CurrentHeadcount
+        (SELECT COUNT(*) FROM employmentinformation ei WHERE ei.PositionID = p.PositionID) as CurrentHeadcount,
+        (SELECT COUNT(*) FROM recruitment_requisitions rr WHERE rr.PositionID = p.PositionID AND rr.Status IN ('Pending', 'Active', 'Posted')) as HasRequisition
         FROM positions p
         JOIN department d ON p.DepartmentID = d.DepartmentID
         JOIN salary_grades sg ON p.SalaryGradeID = sg.SalaryGradeID";
@@ -86,7 +158,7 @@ if ($filterDept !== 'all') {
 }
 
 // Vacancy priority logic: (Authorized - Current) > 0 comes first
-$sql .= " ORDER BY (p.AuthorizedHeadcount - (SELECT COUNT(*) FROM employmentinformation ei WHERE ei.PositionID = p.PositionID)) DESC, p.PositionName ASC";
+$sql .= " ORDER BY (p.AuthorizedHeadcount - (SELECT COUNT(*) FROM employmentinformation ei WHERE ei.PositionID = p.PositionID)) DESC, HasRequisition DESC, p.PositionName ASC";
 
 $positionsResult = $conn->query($sql);
 $groupedPositions = [];
@@ -96,12 +168,16 @@ while ($row = $positionsResult->fetch_assoc()) {
         $groupedPositions[$deptName] = [
             'DepartmentID' => $row['DepartmentID'],
             'Positions' => [],
-            'TotalVacancies' => 0
+            'TotalVacancies' => 0,
+            'TotalRequisitions' => 0
         ];
     }
     $groupedPositions[$deptName]['Positions'][] = $row;
     if ($row['CurrentHeadcount'] < $row['AuthorizedHeadcount']) {
         $groupedPositions[$deptName]['TotalVacancies']++;
+        if ($row['HasRequisition'] > 0) {
+            $groupedPositions[$deptName]['TotalRequisitions']++;
+        }
     }
 }
 ?>
@@ -135,15 +211,15 @@ while ($row = $positionsResult->fetch_assoc()) {
       </button>
     </div>
 
-    <nav class="sidebar-nav">
+  <nav class="sidebar-nav">
       <div class="nav-section">
-        <span class="nav-section-title">MAIN MENU</span>
-        
+        <span class="nav-section-title">ANALYTICS & REPORTING</span>
         <a href="dashboard.php" class="nav-item active">
           <i data-lucide="layout-dashboard"></i>
-          <span>Dashboard</span>
+          <span>HR ANALYTICS</span>
         </a>
-
+      <div class="nav-section">
+        <span class="nav-section-title">ADMINISTRATION</span>
         <div class="nav-item-group active">
           <button class="nav-item has-submenu" data-module="accounts">
             <div class="nav-item-content">
@@ -171,8 +247,9 @@ while ($row = $positionsResult->fetch_assoc()) {
             </a>
           </div>
         </div>
-
-       <div class="nav-item-group <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>">
+       <div class="nav-section">
+        <span class="nav-section-title">Human Resources</span>
+          <div class="nav-item-group <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="corehumancapital">
             <div class="nav-item-content">
               <i data-lucide="book-user"></i>
@@ -181,10 +258,6 @@ while ($row = $positionsResult->fetch_assoc()) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-corehumancapital">
-            <a href="" class="submenu-item">
-              <i data-lucide="user-plus"></i>
-              <span>New Hired Onboard Request</span>
-            </a>
              <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
               <i data-lucide="building-2"></i>
               <span>Organization Profile</span>
@@ -211,8 +284,7 @@ while ($row = $positionsResult->fetch_assoc()) {
             </a>
           </div>
         </div>
-
-        <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
@@ -239,17 +311,67 @@ while ($row = $positionsResult->fetch_assoc()) {
             </a>
           </div>
         </div>
+        <div class="nav-item-group">
+          <button class="nav-item has-submenu" data-module="payroll">
+            <div class="nav-item-content">
+              <i data-lucide="banknote"></i>
+              <span>Payroll Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-payroll">
+            <a href="comperules.php" class="submenu-item">
+              <i data-lucide="boxes"></i>
+              <span>Compensation Rules</span>
+            </a>
+            <a href="payroll.php" class="submenu-item active">
+              <i data-lucide="play-circle"></i>
+              <span>Payroll Processing</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="history"></i>
+              <span>Payroll History</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-check"></i>
+              <span>Approvals</span>
+            </a>
+          </div>
+        </div>
+            <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
+              <i data-lucide="layers-plus"></i>
+              <span>Recruitment</span>
+            </a>
+            <a href="applicationmgt.php" class="nav-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
+              <i data-lucide="contact-round"></i>
+              <span>Application Management</span>
+            </a>
+      <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
+              <i data-lucide="user-plus"></i>
+              <span>New Hired Onboard</span>
+            </a>
+        </div>
+       
 
-        <a href="#" class="nav-item">
-          <i data-lucide="users-round"></i>
-          <span>Clients</span>
-        </a>
+      
 
-        <a href="#" class="nav-item">
-          <i data-lucide="file-bar-chart"></i>
-          <span>Reports</span>
-        </a>
-      </div>
+        <div class="nav-section">
+        <span class="nav-section-title">FINANCE</span>
+        
+        <div class="nav-item-group <?php echo ($module === 'budget') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="budget">
+            <div class="nav-item-content">
+              <i data-lucide="hand-coins"></i>
+              <span>Budget Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-budget">
+            <a href="positionrequest.php" class="submenu-item <?php echo ($page === 'positionrequest') ? 'active' : ''; ?>">
+              <i data-lucide="badge-dollar-sign"></i>
+              <span>Position Requests</span>
+            </a>
+          </div>
 
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
@@ -326,22 +448,29 @@ while ($row = $positionsResult->fetch_assoc()) {
     <div class="content-wrapper">
       <?php if (isset($_SESSION['success_message'])): ?>
           <script>
-              Swal.fire({
-                  icon: 'success',
-                  title: 'Success',
-                  text: '<?php echo $_SESSION['success_message']; ?>',
-                  confirmButtonColor: '#2ca078'
+              document.addEventListener('DOMContentLoaded', () => {
+                  Swal.fire({
+                      toast: true,
+                      position: 'top-end',
+                      icon: 'success',
+                      title: '<?php echo $_SESSION['success_message']; ?>',
+                      showConfirmButton: false,
+                      timer: 3000,
+                      timerProgressBar: true
+                  });
               });
           </script>
           <?php unset($_SESSION['success_message']); endif; ?>
 
       <?php if (isset($_SESSION['error_message'])): ?>
           <script>
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: '<?php echo $_SESSION['error_message']; ?>',
-                  confirmButtonColor: '#2ca078'
+              document.addEventListener('DOMContentLoaded', () => {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: '<?php echo $_SESSION['error_message']; ?>',
+                      confirmButtonColor: '#ef4444'
+                  });
               });
           </script>
           <?php unset($_SESSION['error_message']); endif; ?>
@@ -403,7 +532,11 @@ while ($row = $positionsResult->fetch_assoc()) {
                       </div>
                       <div class="header-right">
                           <?php if ($hasVacancies): ?>
-                              <span class="badge-alert">Actively Hiring</span>
+                              <?php if ($data['TotalVacancies'] === $data['TotalRequisitions']): ?>
+                                  <span class="badge-alert" style="background: rgba(59, 130, 246, 0.1); color: #1d4ed8;">IN RECRUITMENT</span>
+                              <?php else: ?>
+                                  <span class="badge-alert">VACANT</span>
+                              <?php endif; ?>
                           <?php endif; ?>
                           <i data-lucide="chevron-down" class="accordion-chevron"></i>
                       </div>
@@ -453,10 +586,17 @@ while ($row = $positionsResult->fetch_assoc()) {
                                       <td style="text-align: center;">
                                           <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                                               <?php if ($isVacancy): ?>
-                                                  <button class="btn-recruit" onclick="event.stopPropagation(); startRecruitment(<?php echo $pos['PositionID']; ?>)">
-                                                      <span class="default-text">Actively Hiring</span>
-                                                      <span class="hover-text">Start Recruitment</span>
-                                                  </button>
+                                                  <?php if ($pos['HasRequisition'] > 0): ?>
+                                                      <button class="btn-recruit" style="background: rgba(59, 130, 246, 0.1); color: #1d4ed8; border: 1px solid rgba(59, 130, 246, 0.2);" onclick="event.stopPropagation(); window.location.href='recruitment.php'">
+                                                          <span class="default-text" style="color: #1d4ed8;">IN RECRUITMENT</span>
+                                                          <span class="hover-text">View in Recruitment</span>
+                                                      </button>
+                                                  <?php else: ?>
+                                                      <button class="btn-recruit" onclick="event.stopPropagation(); sendRequisition(<?php echo $pos['PositionID']; ?>, '<?php echo addslashes($pos['PositionName']); ?>')">
+                                                          <span class="default-text">VACANT</span>
+                                                          <span class="hover-text">Send Requisition</span>
+                                                      </button>
+                                                  <?php endif; ?>
                                               <?php else: ?>
                                                   <div class="status-filled">
                                                       <span class="dot"></span>
@@ -506,6 +646,16 @@ while ($row = $positionsResult->fetch_assoc()) {
           <input type="hidden" name="authorized_headcount" id="updateAuthHeadcount">
       </form>
 
+    <form id="deletePositionForm" method="POST" style="display: none;">
+        <input type="hidden" name="action" value="delete_position">
+        <input type="hidden" name="position_id" id="deletePosId">
+    </form>
+
+    <form id="requisitionForm" method="POST" style="display: none;">
+        <input type="hidden" name="action" value="send_requisition">
+        <input type="hidden" name="position_id" id="reqPosId">
+    </form>
+
       <!-- Data for JS -->
       <script id="dept-data" type="application/json"><?php echo json_encode($departments); ?></script>
       <script id="grade-data" type="application/json"><?php echo json_encode($salaryGrades); ?></script>
@@ -532,6 +682,30 @@ while ($row = $positionsResult->fetch_assoc()) {
   <script src="../../js/positioncatalog.js"></script>
   <script>
     lucide.createIcons();
+    <?php if (isset($_SESSION['success_message'])): ?>
+        Swal.fire({
+            icon: 'success',
+            title: '<?php echo $_SESSION['success_message']; ?>',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['error_message'])): ?>
+        Swal.fire({
+            icon: 'error',
+            title: '<?php echo $_SESSION['error_message']; ?>',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true
+        });
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
   </script>
 </body>
 </html>

@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initClock() {
     const clockEl = document.getElementById('realTimeClock');
     if (!clockEl) return;
-    
+
     const updateClock = () => {
         const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
         const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -199,12 +199,12 @@ function initClock() {
         const seconds = now.getSeconds().toString().padStart(2, '0');
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
-        hours = hours ? hours : 12; 
+        hours = hours ? hours : 12;
         const formattedHours = hours.toString().padStart(2, '0');
-        
+
         clockEl.textContent = `${dayName}, ${monthName} ${date}, ${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
     };
-    
+
     setInterval(updateClock, 1000);
     updateClock();
 }
@@ -216,7 +216,7 @@ if (document.readyState === 'loading') {
 }
 
 // Payroll Approval Logic
-(function() {
+(function () {
     const apiUrl = '../../modules/payroll/payroll_action.php';
     const pendingBatchesBody = document.getElementById('pendingBatchesBody');
     const statPendingCount = document.getElementById('statPendingCount');
@@ -314,7 +314,16 @@ if (document.readyState === 'loading') {
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             body: new URLSearchParams({ action: 'approve_batch', batch_id: batchId }).toString()
                         });
-                        Swal.fire({ icon: 'success', title: 'Approved', text: 'Payroll batch has been approved.', timer: 1500, showConfirmButton: false });
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Approved',
+                            text: 'Payroll batch has been approved.',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
                         loadPendingBatches();
                     } catch (err) {
                         Swal.fire({ icon: 'error', title: 'Error', text: err.message });
@@ -342,7 +351,16 @@ if (document.readyState === 'loading') {
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             body: new URLSearchParams({ action: 'reject_batch', batch_id: batchId }).toString()
                         });
-                        Swal.fire({ icon: 'success', title: 'Rejected', text: 'Payroll batch has been rejected.', timer: 1500, showConfirmButton: false });
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Rejected',
+                            text: 'Payroll batch has been rejected.',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
                         loadPendingBatches();
                     } catch (err) {
                         Swal.fire({ icon: 'error', title: 'Error', text: err.message });

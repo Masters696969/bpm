@@ -52,29 +52,29 @@ if ($rolesResult) {
       </button>
     </div>
 
-    <nav class="sidebar-nav">
+   <nav class="sidebar-nav">
       <div class="nav-section">
-        <span class="nav-section-title">MAIN MENU</span>
-        
-        <a href="dashboard.php" class="nav-item">
+        <span class="nav-section-title">ANALYTICS & REPORTING</span>
+        <a href="dashboard.php" class="nav-item active">
           <i data-lucide="layout-dashboard"></i>
-          <span>Dashboard</span>
+          <span>HR ANALYTICS</span>
         </a>
-
+      <div class="nav-section">
+        <span class="nav-section-title">ADMINISTRATION</span>
         <div class="nav-item-group active">
-          <button class="nav-item has-submenu" data-module="hr">
+          <button class="nav-item has-submenu" data-module="accounts">
             <div class="nav-item-content">
               <i data-lucide="users"></i>
               <span>Account Management</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-hr">
-            <a href="useraccount.php" class="submenu-item">
+          <div class="submenu" id="submenu-accounts">
+            <a href="useraccount.php" class="submenu-item active">
               <i data-lucide="user-plus"></i>
               <span>User Accounts</span>
             </a>
-            <a href="rolespermission.php" class="submenu-item active">
+            <a href="rolespermission.php" class="submenu-item">
               <i data-lucide="contact-round"></i>
               <span>Roles & Permissions</span>
             </a>
@@ -88,47 +88,145 @@ if ($rolesResult) {
             </a>
           </div>
         </div>
-        
-        <!-- Reuse other menus... -->
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="finance">
+       <div class="nav-section">
+        <span class="nav-section-title">Human Resources</span>
+          <div class="nav-item-group <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="corehumancapital">
             <div class="nav-item-content">
-              <i data-lucide="banknote"></i>
-              <span>Finance</span>
+              <i data-lucide="book-user"></i>
+              <span>Core Human Capital</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-finance">
-            <a href="#" class="submenu-item"><i data-lucide="receipt"></i><span>Accounting</span></a>
-            <a href="#" class="submenu-item"><i data-lucide="file-text"></i><span>Invoicing</span></a>
-            <a href="#" class="submenu-item"><i data-lucide="pie-chart"></i><span>Budget Planning</span></a>
+          <div class="submenu" id="submenu-corehumancapital">
+             <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
+              <i data-lucide="building-2"></i>
+              <span>Organization Profile</span>
+            </a>
+            <a href="positioncatalog.php" class="submenu-item <?php echo ($page === 'positioncatalog') ? 'active' : ''; ?>">
+              <i data-lucide="user-star"></i>
+              <span>Position Catalog</span>
+            </a>
+            <a href="employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
+              <i data-lucide="file-user"></i>
+              <span>Employee Master Files</span>
+            </a>
+            <a href="informationapproval.php" class="submenu-item <?php echo ($page === 'informationapproval') ? 'active' : ''; ?>">
+              <i data-lucide="file-check"></i>
+              <span>Information Approval</span>
+            </a>
+            <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
+              <i data-lucide="file-text"></i>
+              <span>Bank Form Management</span>
+            </a>
+            <a href="auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
+              <i data-lucide="book-user"></i>
+              <span>Audit Logs</span>
+            </a>
           </div>
         </div>
-
-        <div class="nav-item-group">
-            <button class="nav-item has-submenu" data-module="loans">
+          <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
-                <i data-lucide="hand-coins"></i>
-                <span>Loan Management</span>
+              <i data-lucide="circle-pile"></i>
+              <span>Compensation Planning</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
-            </button>
-            <div class="submenu" id="submenu-loans">
-            <a href="#" class="submenu-item"><i data-lucide="file-plus"></i><span>Applications</span></a>
-            <a href="#" class="submenu-item"><i data-lucide="check-circle"></i><span>Approvals</span></a>
-            <a href="#" class="submenu-item"><i data-lucide="calendar-clock"></i><span>Disbursements</span></a>
-            <a href="#" class="submenu-item"><i data-lucide="coins"></i><span>Collections</span></a>
-            </div>
+          </button>
+          <div class="submenu" id="submenu-planning">
+            <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
+              <i data-lucide="banknote"></i>
+              <span>Salary & Scales Management</span>
+            </a>
+            <a href="statutory.php" class="submenu-item <?php echo ($page === 'statutory') ? 'active' : ''; ?>">
+              <i data-lucide="scale"></i>
+              <span>Statutory Contributions</span>
+            </a>
+            <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
+              <i data-lucide="scale"></i>
+              <span>Merit Matrix Structure</span>
+            </a>
+            <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
+              <i data-lucide="notebook-pen"></i>
+              <span>Compensation Structure Management</span>
+            </a>
+          </div>
         </div>
+        <div class="nav-item-group">
+          <button class="nav-item has-submenu" data-module="payroll">
+            <div class="nav-item-content">
+              <i data-lucide="banknote"></i>
+              <span>Payroll Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-payroll">
+            <a href="comperules.php" class="submenu-item">
+              <i data-lucide="boxes"></i>
+              <span>Compensation Rules</span>
+            </a>
+            <a href="payroll.php" class="submenu-item active">
+              <i data-lucide="play-circle"></i>
+              <span>Payroll Processing</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="history"></i>
+              <span>Payroll History</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-check"></i>
+              <span>Approvals</span>
+            </a>
+          </div>
+        </div>
+            <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
+              <i data-lucide="layers-plus"></i>
+              <span>Recruitment</span>
+            </a>
+            <a href="applicationmgt.php" class="nav-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
+              <i data-lucide="contact-round"></i>
+              <span>Application Management</span>
+            </a>
+      <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
+              <i data-lucide="user-plus"></i>
+              <span>New Hired Onboard</span>
+            </a>
+        </div>
+       
 
-        <a href="#" class="nav-item"><i data-lucide="users-round"></i><span>Clients</span></a>
-        <a href="#" class="nav-item"><i data-lucide="file-bar-chart"></i><span>Reports</span></a>
-      </div>
+      
+
+        <div class="nav-section">
+        <span class="nav-section-title">FINANCE</span>
+        
+        <div class="nav-item-group <?php echo ($module === 'budget') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="budget">
+            <div class="nav-item-content">
+              <i data-lucide="hand-coins"></i>
+              <span>Budget Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-budget">
+            <a href="positionrequest.php" class="submenu-item <?php echo ($page === 'positionrequest') ? 'active' : ''; ?>">
+              <i data-lucide="badge-dollar-sign"></i>
+              <span>Position Requests</span>
+            </a>
+          </div>
 
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
-        <a href="#" class="nav-item"><i data-lucide="settings"></i><span>Configuration</span></a>
-        <a href="#" class="nav-item"><i data-lucide="shield"></i><span>Security</span></a>
+        
+        <a href="#" class="nav-item">
+          <i data-lucide="settings"></i>
+          <span>Configuration</span>
+        </a>
+
+        <a href="#" class="nav-item">
+          <i data-lucide="shield"></i>
+          <span>Security</span>
+        </a>
+        
       </div>
     </nav>
 
@@ -231,6 +329,12 @@ if ($rolesResult) {
               <i data-lucide="search"></i>
               <input type="search" id="roleSearch" placeholder="Search roles…">
             </div>
+            <select id="roleTypeFilter" class="ua-filter-select">
+              <option value="">All Roles</option>
+              <?php foreach ($roles as $r): ?>
+                <option value="<?php echo strtolower(htmlspecialchars($r['RoleName'])); ?>"><?php echo htmlspecialchars($r['RoleName']); ?></option>
+              <?php endforeach; ?>
+            </select>
             <button id="addRoleBtn" class="btn btn-primary">
               <i data-lucide="plus"></i> Add Role
             </button>
@@ -285,6 +389,8 @@ if ($rolesResult) {
             </table>
           </div>
         </div>
+        <!-- Pagination -->
+        <div class="ua-pagination" id="rpPagination"></div>
       </section>
 
       <!-- Add / Edit Role Modal -->
@@ -336,15 +442,54 @@ if ($rolesResult) {
   <script>
     if (window.lucide) window.lucide.createIcons();
 
-    // Inline search filter
+    // Inline search + filter + pagination
     document.addEventListener('DOMContentLoaded', function() {
-      const s = document.getElementById('roleSearch');
-      if (s) s.addEventListener('input', function() {
-        const q = this.value.toLowerCase();
-        document.querySelectorAll('#rolesTable tbody tr').forEach(r => {
-          r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+      const searchInput  = document.getElementById('roleSearch');
+      const typeFilter   = document.getElementById('roleTypeFilter');
+      const tbody = document.querySelector('#rolesTable tbody');
+      const paginationEl = document.getElementById('rpPagination');
+      const perPage = 10;
+      let currentPage = 1;
+
+      function getAllRows() {
+        return Array.from(tbody.querySelectorAll('tr'));
+      }
+
+      function filterRows() {
+        const q  = (searchInput.value || '').toLowerCase();
+        const tf = (typeFilter.value || '').toLowerCase();
+        return getAllRows().filter(row => {
+          const text = row.textContent.toLowerCase();
+          return (!q || text.includes(q)) && (!tf || text.includes(tf));
         });
+      }
+
+      function renderPage() {
+        const rows = filterRows();
+        const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        getAllRows().forEach(r => r.style.display = 'none');
+        rows.slice((currentPage - 1) * perPage, currentPage * perPage).forEach(r => r.style.display = '');
+
+        let html = `<span class="ua-page-info">${rows.length} result${rows.length !== 1 ? 's' : ''} &bull; Page ${currentPage} of ${totalPages}</span><div class="ua-page-btns">`;
+        html += `<button class="ua-page-btn" onclick="rpChangePage(-1)" ${currentPage === 1 ? 'disabled' : ''}><i data-lucide="chevron-left"></i></button>`;
+        for (let i = 1; i <= totalPages; i++) {
+          html += `<button class="ua-page-btn ${i === currentPage ? 'active' : ''}" onclick="rpGoPage(${i})">${i}</button>`;
+        }
+        html += `<button class="ua-page-btn" onclick="rpChangePage(1)" ${currentPage === totalPages ? 'disabled' : ''}><i data-lucide="chevron-right"></i></button></div>`;
+        paginationEl.innerHTML = html;
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      window.rpChangePage = (dir) => { currentPage += dir; renderPage(); };
+      window.rpGoPage = (p) => { currentPage = p; renderPage(); };
+
+      [searchInput, typeFilter].forEach(el => {
+        if (el) el.addEventListener('input', () => { currentPage = 1; renderPage(); });
       });
+
+      renderPage();
     });
   </script>
 </body>

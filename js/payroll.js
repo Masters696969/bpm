@@ -232,10 +232,14 @@
                     selectedBatchId = data.batch_id;
                     await loadEmployees(selectedBatchId);
                     Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
                         title: 'Batch Created!',
                         text: `Payroll batch ${data.batch_code} created.`,
-                        icon: 'success',
-                        confirmButtonColor: '#2ca078'
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
                     });
 
                     const employeesTab = document.querySelector('.tab-btn[data-tab="employees"]');
@@ -302,7 +306,16 @@
                 if (selectedBatchId === id) {
                     await loadEmployees(id);
                 }
-                Swal.fire({ title: 'Finalized', text: 'Batch finalized successfully.', icon: 'success', confirmButtonColor: '#2ca078' });
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Batch Finalized',
+                    text: 'Batch finalized successfully.',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
             } catch (err) {
                 Swal.fire({ title: 'Failed', text: err.message, icon: 'error', confirmButtonColor: '#ef4444' });
             }
@@ -350,9 +363,9 @@
     if (window.lucide) window.lucide.createIcons();
 
     // Initial data
-    loadStats().catch(() => {});
+    loadStats().catch(() => { });
     if (batchesBody) {
-        loadBatches().catch(() => {});
+        loadBatches().catch(() => { });
     }
     if (employeesBody) {
         renderEmployees([]);
@@ -459,7 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initClock() {
     const clockEl = document.getElementById('realTimeClock');
     if (!clockEl) return;
-    
+
     const updateClock = () => {
         const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
         const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -473,12 +486,12 @@ function initClock() {
         const seconds = now.getSeconds().toString().padStart(2, '0');
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
-        hours = hours ? hours : 12; 
+        hours = hours ? hours : 12;
         const formattedHours = hours.toString().padStart(2, '0');
-        
+
         clockEl.textContent = `${dayName}, ${monthName} ${date}, ${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
     };
-    
+
     setInterval(updateClock, 1000);
     updateClock();
 }

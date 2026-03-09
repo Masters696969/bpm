@@ -150,7 +150,15 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    Swal.fire('Success', 'Salary scale proposal submitted to Supervisor for endorsement.', 'success');
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Salary scale proposal submitted to Supervisor for endorsement.',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
                     closeProposeModal();
                     if (document.getElementById("proposalReason")) document.getElementById("proposalReason").value = '';
                 } else {

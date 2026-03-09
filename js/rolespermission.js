@@ -98,17 +98,10 @@ function initRolesPermission() {
 
     // Edit Role Function (Global to be called from HTML onclick)
     window.editRole = function (id, name, desc = "") {
-        // We can fetch details or just set them if we pass them. 
-        // For now, let's fetch to be safe and get description if it wasn't passed fully.
-        // Actually, let's just use what we have or fetch if needed.
-        // The HTML onclick passes ID and Name. Description might be missing or long.
-        // Let's first open modal and populate what we know, then fetch the rest if needed.
-
         openModal(true);
         document.getElementById("roleId").value = id;
         document.getElementById("roleName").value = name;
 
-        // Optional: Fetch full details if description is not passed or if we want fresh data
         fetch(`roles_action.php?action=get_role&role_id=${id}`)
             .then(res => res.json())
             .then(data => {
@@ -135,7 +128,7 @@ function initRolesPermission() {
         if (result.isConfirmed) {
             try {
                 const params = new URLSearchParams();
-                params.append("action", "archive_role"); // Keeping action name same for backend compatibility
+                params.append("action", "archive_role");
                 params.append("role_id", id);
 
                 const response = await fetch("roles_action.php", {
@@ -147,8 +140,17 @@ function initRolesPermission() {
                 const data = await response.json();
 
                 if (data.success) {
-                    await Swal.fire('Deleted!', 'Role has been deleted.', 'success');
-                    location.reload();
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Role Deleted',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true
+                    }).then(() => {
+                        location.reload();
+                    });
                 } else {
                     Swal.fire('Error!', data.message || 'Failed to archive role.', 'error');
                 }
@@ -190,7 +192,6 @@ function initRolesPermission() {
                     body: params
                 });
 
-                // Check for HTML response error
                 const text = await response.text();
                 let data;
                 try {
@@ -202,13 +203,17 @@ function initRolesPermission() {
 
                 if (data.success) {
                     closeModal(); // Close immediately
-                    await Swal.fire({
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
                         icon: 'success',
-                        title: 'Success',
-                        text: isEdit ? 'Role updated successfully' : 'Role created successfully',
-                        confirmButtonColor: "#2ca078"
+                        title: isEdit ? 'Role Updated' : 'Role Created',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true
+                    }).then(() => {
+                        location.reload();
                     });
-                    location.reload();
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -235,29 +240,29 @@ document.addEventListener('DOMContentLoaded', initRolesPermission);
 
 // Sidebar Active Link Logic (Merged)
 (function () {
-  const path = window.location.pathname;
-  const page = path.split('/').pop() || 'dashboard.php';
-  const current = page.split('?')[0];
+    const path = window.location.pathname;
+    const page = path.split('/').pop() || 'dashboard.php';
+    const current = page.split('?')[0];
 
-  document.querySelectorAll('.sidebar .nav-item, .sidebar .submenu-item').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.sidebar .nav-item-group').forEach(group => group.classList.remove('active'));
+    document.querySelectorAll('.sidebar .nav-item, .sidebar .submenu-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.sidebar .nav-item-group').forEach(group => group.classList.remove('active'));
 
-  const submenuMatch = document.querySelector(`.sidebar a.submenu-item[href$="${current}"]`);
-  if (submenuMatch) {
-    submenuMatch.classList.add('active');
-    const parentGroup = submenuMatch.closest('.nav-item-group');
-    if (parentGroup) {
-      parentGroup.classList.add('active');
-      const submenu = parentGroup.querySelector('.submenu');
-      if (submenu) submenu.style.maxHeight = '500px';
-      const btn = parentGroup.querySelector('.nav-item.has-submenu');
-      if (btn) btn.classList.add('active');
+    const submenuMatch = document.querySelector(`.sidebar a.submenu-item[href$="${current}"]`);
+    if (submenuMatch) {
+        submenuMatch.classList.add('active');
+        const parentGroup = submenuMatch.closest('.nav-item-group');
+        if (parentGroup) {
+            parentGroup.classList.add('active');
+            const submenu = parentGroup.querySelector('.submenu');
+            if (submenu) submenu.style.maxHeight = '500px';
+            const btn = parentGroup.querySelector('.nav-item.has-submenu');
+            if (btn) btn.classList.add('active');
+        }
+        return;
     }
-    return;
-  }
 
-  const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
-  if (navMatch) navMatch.classList.add('active');
+    const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
+    if (navMatch) navMatch.classList.add('active');
 })();
 
 // User Menu Dropdown Logic (Merged)
@@ -303,22 +308,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#6b7280',
-                confirmButtonText: '<i class="swal-icon-logout"></i> Yes, Sign Out',
+                confirmButtonText: 'Yes, Sign Out',
                 cancelButtonText: 'Stay',
-                reverseButtons: true,
-                customClass: {
-                    popup: 'swal-signout-popup',
-                    title: 'swal-signout-title',
-                }
+                reverseButtons: true
             });
             if (result.isConfirmed) {
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Signed Out',
-                    text: 'You have been signed out successfully.',
-                    timer: 1500,
-                    showConfirmButton: false,
-                });
                 window.location.href = dest;
             }
         });
@@ -329,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initClock() {
     const clockEl = document.getElementById('realTimeClock');
     if (!clockEl) return;
-    
+
     const updateClock = () => {
         const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
         const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -343,12 +337,12 @@ function initClock() {
         const seconds = now.getSeconds().toString().padStart(2, '0');
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
-        hours = hours ? hours : 12; 
+        hours = hours ? hours : 12;
         const formattedHours = hours.toString().padStart(2, '0');
-        
+
         clockEl.textContent = `${dayName}, ${monthName} ${date}, ${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
     };
-    
+
     setInterval(updateClock, 1000);
     updateClock();
 }

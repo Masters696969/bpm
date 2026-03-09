@@ -252,7 +252,16 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    Swal.fire("Approved", "Forwarded to Finance successfully.", "success").then(() => location.reload());
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Approved',
+                        text: 'Forwarded to Finance successfully.',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => location.reload());
                 } else {
                     Swal.fire("Error", data.message, "error");
                 }
@@ -280,7 +289,16 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    Swal.fire("Rejected", "Simulation marked as rejected.", "success").then(() => location.reload());
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Rejected',
+                        text: 'Simulation marked as rejected.',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => location.reload());
                 } else {
                     Swal.fire("Error", data.message, "error");
                 }
@@ -307,7 +325,16 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    Swal.fire("Saved", "Changes saved successfully.", "success");
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Saved',
+                        text: 'Changes saved successfully.',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
                 } else {
                     Swal.fire("Error", data.message, "error");
                 }

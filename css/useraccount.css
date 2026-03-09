@@ -1590,7 +1590,93 @@ body {
   font-weight: 500;
   font-size: 14px;
 }
+
 .header-clock i {
   width: 18px;
   height: 18px;
+}
+
+/* ══ Filter Selects ══ */
+.ua-filter-select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  transition: var(--transition);
+  min-width: 120px;
+}
+
+.ua-filter-select:focus {
+  border-color: var(--brand-green);
+  box-shadow: 0 0 0 3px rgba(44, 160, 120, 0.1);
+}
+
+.ua-filter-select:hover {
+  border-color: var(--brand-green);
+}
+
+/* ══ Pagination Bar ══ */
+.ua-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-color);
+  background: var(--surface);
+}
+
+.ua-page-info {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.ua-page-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ua-page-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.ua-page-btn:hover:not(:disabled) {
+  background: rgba(44, 160, 120, 0.08);
+  border-color: var(--brand-green);
+  color: var(--brand-green);
+}
+
+.ua-page-btn.active {
+  background: var(--brand-green);
+  border-color: var(--brand-green);
+  color: #fff;
+  font-weight: 700;
+}
+
+.ua-page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.ua-page-btn svg {
+  width: 14px;
+  height: 14px;
 }

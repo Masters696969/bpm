@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 07, 2026 at 07:19 PM
+-- Generation Time: Mar 09, 2026 at 11:40 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -77,6 +77,46 @@ INSERT INTO `allowance_types` (`AllowanceTypeID`, `AllowanceName`, `IsTaxable`, 
 (3, 'Laundry Allowance', 0, 'Monthly', '2026-02-25 09:41:43', '2026-02-25 09:41:43'),
 (4, 'Travel Allowance', 1, 'Monthly', '2026-02-25 09:41:43', '2026-02-25 17:53:50'),
 (6, 'Communication Allowance', 1, 'Monthly', '2026-02-25 09:41:43', '2026-02-25 17:53:50');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `applicants`
+--
+
+CREATE TABLE `applicants` (
+  `ApplicantID` int(11) NOT NULL,
+  `PostID` int(11) NOT NULL,
+  `FirstName` varchar(100) NOT NULL,
+  `MiddleName` varchar(100) DEFAULT NULL,
+  `LastName` varchar(100) NOT NULL,
+  `Email` varchar(150) NOT NULL,
+  `Phone` varchar(20) NOT NULL,
+  `Gender` varchar(20) DEFAULT NULL,
+  `DateOfBirth` date DEFAULT NULL,
+  `PermanentAddress` text DEFAULT NULL,
+  `EmergencyContactName` varchar(200) DEFAULT NULL,
+  `EmergencyRelationship` varchar(50) DEFAULT NULL,
+  `EmergencyPhone` varchar(20) DEFAULT NULL,
+  `ResumePath` varchar(255) DEFAULT NULL,
+  `GovIDPath` varchar(255) DEFAULT NULL,
+  `ClearancePath` varchar(255) DEFAULT NULL,
+  `TORPath` varchar(255) DEFAULT NULL,
+  `IDPicturePath` varchar(255) DEFAULT NULL,
+  `Status` enum('New','Reviewed','Shortlisted','Interview','Rejected','Accepted') DEFAULT 'New',
+  `AppliedAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `ApprovalStatus` varchar(50) DEFAULT 'Pending Manager Approval'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `applicants`
+--
+
+INSERT INTO `applicants` (`ApplicantID`, `PostID`, `FirstName`, `MiddleName`, `LastName`, `Email`, `Phone`, `Gender`, `DateOfBirth`, `PermanentAddress`, `EmergencyContactName`, `EmergencyRelationship`, `EmergencyPhone`, `ResumePath`, `GovIDPath`, `ClearancePath`, `TORPath`, `IDPicturePath`, `Status`, `AppliedAt`, `ApprovalStatus`) VALUES
+(1, 1, 'Joshua', 'Rivero', 'Suruiz', 'suruizjoshuaandrierivero@gmail.com', '09223311333', 'Male', '2004-04-06', 'congressional', 'joshua', 'Father', '09334455667', 'uploads/applications/Resume_Suruiz_1772957354.pdf', 'uploads/applications/GovID_Suruiz_1772957354.jpg', 'uploads/applications/Clearance_Suruiz_1772957354.jpg', 'uploads/applications/TOR_Suruiz_1772957354.jpg', 'uploads/applications/IDPic_Suruiz_1772957354.jpg', 'Accepted', '2026-03-08 08:09:14', 'Hired'),
+(2, 1, 'Joshua', 'Rivero', 'Suruiz', 'suruizjoshua72@gmail.com', '09223311333', 'Male', '2004-04-06', 'Quezon City', 'joshua', 'Father', '09334455667', 'uploads/applications/Resume_Suruiz_1772968966.pdf', 'uploads/applications/GovID_Suruiz_1772968966.jpg', 'uploads/applications/Clearance_Suruiz_1772968966.jpg', 'uploads/applications/TOR_Suruiz_1772968966.jpg', 'uploads/applications/IDPic_Suruiz_1772968966.jpg', 'New', '2026-03-08 11:22:46', 'Pending Manager Approval'),
+(6, 1, 'Upgrade', NULL, 'Test', 'v2@test.com', '09123456789', 'Female', '1995-05-15', '456 Upgrade Ave', 'John Doe', 'Father', '09887776665', NULL, NULL, NULL, NULL, NULL, 'Accepted', '2026-03-08 16:14:02', 'Approved'),
+(9, 2, 'test', 'lang', 'three', 'suruizjoshua72@gmail.com', '092211333444', 'Male', '2004-04-06', 'dyan lang', 'Suruiz Joshua Andrie Rivero', 'father', '09103840798', 'uploads/applications/Resume_three_1773035846.pdf', 'uploads/applications/GovID_three_1773035846.png', 'uploads/applications/Clearance_three_1773035846.png', 'uploads/applications/TOR_three_1773035846.png', 'uploads/applications/IDPic_three_1773035846.jpg', 'Accepted', '2026-03-09 05:57:26', 'Hired');
 
 -- --------------------------------------------------------
 
@@ -242,7 +282,9 @@ INSERT INTO `emergency_contacts` (`ContactID`, `EmployeeID`, `ContactName`, `Rel
 (3, 3, 'Daniela Magtangob', 'Wife', '09445566778', 1),
 (4, 4, 'Jhustine', 'Father', '09312355667', 1),
 (5, 7, 'Miguel', 'Father', '09132131212', 1),
-(6, 6, 'Jean', 'Mother', '09204132131', 1);
+(6, 6, 'Jean', 'Mother', '09204132131', 1),
+(10, 14, 'joshua', 'Father', '09334455667', 1),
+(11, 15, 'Suruiz Joshua Andrie Rivero', 'father', '09103840798', 1);
 
 -- --------------------------------------------------------
 
@@ -276,7 +318,9 @@ INSERT INTO `employee` (`EmployeeID`, `EmployeeCode`, `FirstName`, `MiddleName`,
 (6, 'HRM20261006', 'Glory', 'J', 'Job', '2001-04-04', 'Male', 'glory@gmail.comm', '09531223344', 'Quezon City', NULL),
 (7, 'CA20261007', 'Miguel', 'M', 'Padre', '2005-05-03', 'Male', 'padre@gmail.com', '09535223344', 'Quezon City', NULL),
 (8, 'PAY20261008', 'Daniella', 'M', 'Magtangob', '2004-02-03', 'Female', 'Daniella@gmail.com', '09532223344', 'Quezon City', NULL),
-(10, 'SV20261009', 'Mike', NULL, 'Dabu', '0000-00-00', NULL, NULL, NULL, NULL, NULL);
+(10, 'SV20261009', 'Mike', NULL, 'Dabu', '0000-00-00', NULL, NULL, NULL, NULL, NULL),
+(14, 'L-OFF20260009', 'Joshua', 'Rivero', 'Suruiz', '2004-04-06', 'Male', 'suruizjoshuaandrierivero@gmail.com', '09223311333', 'congressional', 'uploads/applications/IDPic_Suruiz_1772957354.jpg'),
+(15, 'LM20260010', 'test', 'lang', 'three', '2004-04-06', 'Male', 'suruizjoshua72@gmail.com', '092211333444', 'dyan lang', 'uploads/applications/IDPic_three_1773035846.jpg');
 
 -- --------------------------------------------------------
 
@@ -326,7 +370,7 @@ CREATE TABLE `employmentinformation` (
   `HiringDate` date NOT NULL,
   `WorkEmail` varchar(150) DEFAULT NULL,
   `EmploymentStatus` varchar(50) DEFAULT NULL,
-  `DigitalResume` varchar(255) DEFAULT NULL,
+  `DigitalResume` text DEFAULT NULL,
   `IDPicture` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -342,7 +386,9 @@ INSERT INTO `employmentinformation` (`EmploymentID`, `EmployeeID`, `DepartmentID
 (5, 6, 2, 3, 5, 53000.00, 'Monthly', '2026-02-09', 'glory@gmail.com', 'Regular', NULL, NULL),
 (6, 7, 2, 5, 4, 40000.00, 'Monthly', '2026-02-09', 'padre@gmail.com', 'Regular', NULL, NULL),
 (7, 8, 2, 6, 3, 21000.00, 'Hourly', '2026-02-09', 'Daniella@gmail.com', 'Regular', NULL, NULL),
-(8, 10, 2, 7, 4, 40000.00, 'Monthly', '2026-02-09', 'mike@gmail.com', 'Regular', NULL, NULL);
+(8, 10, 2, 7, 4, 40000.00, 'Monthly', '2026-02-09', 'mike@gmail.com', 'Regular', NULL, NULL),
+(12, 14, 5, 13, 3, 29000.00, 'Monthly', '2026-03-09', NULL, 'Probationary', 'uploads/applications/Resume_Suruiz_1772957354.pdf', 'uploads/applications/IDPic_Suruiz_1772957354.jpg'),
+(13, 15, 4, 15, 5, 54000.00, 'Monthly', '2026-03-09', NULL, 'Probationary', 'uploads/applications/Resume_three_1773035846.pdf,uploads/applications/GovID_three_1773035846.png,uploads/applications/Clearance_three_1773035846.png,uploads/applications/TOR_three_1773035846.png', 'uploads/applications/IDPic_three_1773035846.jpg');
 
 -- --------------------------------------------------------
 
@@ -424,6 +470,92 @@ INSERT INTO `grade_allowances` (`GradeAllowanceID`, `period_id`, `SalaryGradeID`
 (28, 1, 6, 3, 400.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
 (29, 1, 6, 4, 10000.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15'),
 (30, 1, 6, 6, 3000.00, '2026-02-25 17:30:06', '2026-03-01 04:19:15');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `interview_evaluations`
+--
+
+CREATE TABLE `interview_evaluations` (
+  `EvaluationID` int(11) NOT NULL,
+  `ApplicantID` int(11) NOT NULL,
+  `InterviewerID` int(11) NOT NULL,
+  `TechnicalRating` int(11) DEFAULT 0,
+  `CommunicationRating` int(11) DEFAULT 0,
+  `FinancialRating` int(11) DEFAULT 0,
+  `ReliabilityRating` int(11) DEFAULT 0,
+  `AverageRating` decimal(3,2) DEFAULT 0.00,
+  `Rating` int(11) NOT NULL,
+  `Comments` text NOT NULL,
+  `Decision` varchar(50) NOT NULL,
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `interview_evaluations`
+--
+
+INSERT INTO `interview_evaluations` (`EvaluationID`, `ApplicantID`, `InterviewerID`, `TechnicalRating`, `CommunicationRating`, `FinancialRating`, `ReliabilityRating`, `AverageRating`, `Rating`, `Comments`, `Decision`, `CreatedAt`) VALUES
+(1, 1, 2, 4, 5, 5, 4, 4.50, 0, 'goods', 'Strong Hire', '2026-03-08 15:16:02'),
+(2, 9, 2, 4, 4, 5, 3, 4.00, 0, 'tst', 'Strong Hire', '2026-03-09 06:01:03');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `interview_schedules`
+--
+
+CREATE TABLE `interview_schedules` (
+  `ScheduleID` int(11) NOT NULL,
+  `ApplicantID` int(11) NOT NULL,
+  `InterviewerID` int(11) NOT NULL,
+  `InterviewDate` date NOT NULL,
+  `InterviewTime` time NOT NULL,
+  `InterviewMode` enum('Online','Face-to-Face') NOT NULL,
+  `LocationOrLink` text DEFAULT NULL,
+  `Notes` text DEFAULT NULL,
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `interview_schedules`
+--
+
+INSERT INTO `interview_schedules` (`ScheduleID`, `ApplicantID`, `InterviewerID`, `InterviewDate`, `InterviewTime`, `InterviewMode`, `LocationOrLink`, `Notes`, `CreatedAt`) VALUES
+(1, 1, 2, '2026-03-09', '19:00:00', 'Online', 'https://meet.google.com/kjy-bfsv-uhx', 'link', '2026-03-08 10:32:54'),
+(2, 9, 11, '2026-03-09', '14:01:00', 'Online', 'https://meet.google.com/exq-ndjb-jmz', '', '2026-03-09 05:59:30');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `job_postings`
+--
+
+CREATE TABLE `job_postings` (
+  `PostID` int(11) NOT NULL,
+  `RequisitionID` int(11) NOT NULL,
+  `Title` varchar(255) NOT NULL,
+  `Department` varchar(100) DEFAULT NULL,
+  `Location` varchar(100) DEFAULT 'Metro Manila',
+  `JobType` enum('Full-time','Part-time','Contract','Temporary') DEFAULT 'Full-time',
+  `SalaryType` varchar(50) DEFAULT NULL,
+  `SalaryRange` varchar(100) DEFAULT NULL,
+  `Category` enum('Technology','Design','Marketing','Human Resources','Finance','Operations') DEFAULT 'Operations',
+  `Description` text DEFAULT NULL,
+  `Responsibilities` text DEFAULT NULL,
+  `Requirements` text DEFAULT NULL,
+  `Status` enum('Live','Closed','Archived') DEFAULT 'Live',
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `job_postings`
+--
+
+INSERT INTO `job_postings` (`PostID`, `RequisitionID`, `Title`, `Department`, `Location`, `JobType`, `SalaryType`, `SalaryRange`, `Category`, `Description`, `Responsibilities`, `Requirements`, `Status`, `CreatedAt`) VALUES
+(1, 1, 'Loan Officers', 'Core Transaction Department', 'Quezon City', 'Full-time', 'Monthly', '₱29k - 42k', '', 'joshhhhhhhhh', 'test', 'test', 'Live', '2026-03-08 05:32:48'),
+(2, 2, 'Logistic Manager', 'Logistics Department', 'Quezon City', 'Full-time', 'Monthly', '₱54k - 75k', '', 'TEST', 'TEST', 'TEST', 'Live', '2026-03-09 05:49:47');
 
 -- --------------------------------------------------------
 
@@ -1998,7 +2130,7 @@ CREATE TABLE `positions` (
 --
 
 INSERT INTO `positions` (`PositionID`, `PositionName`, `PositionCode`, `DepartmentID`, `SalaryGradeID`, `AuthorizedHeadcount`) VALUES
-(1, 'Administrator', 'ADM', 1, 6, 1),
+(1, 'Administrator', 'ADM', 1, 6, 2),
 (2, 'HR Data Specialist', 'HRDS', 2, 2, 1),
 (3, 'HR Manager', 'HRM', 2, 5, 1),
 (4, 'HR Staff', 'HRS', 2, 1, 1),
@@ -2010,7 +2142,60 @@ INSERT INTO `positions` (`PositionID`, `PositionName`, `PositionCode`, `Departme
 (10, 'Logistics Officer', 'LOG-OFF', 4, 3, 2),
 (11, 'Inventory Clerk', 'INV-CLK', 4, 2, 3),
 (12, 'Loan Service Associates', 'LSA', 5, 6, 1),
-(13, 'Loan Officer', 'L-OFF', 5, 3, 5);
+(13, 'Loan Officers', 'L-OFF', 5, 3, 5),
+(15, 'Logistic Manager', 'LM', 4, 5, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `position_requests`
+--
+
+CREATE TABLE `position_requests` (
+  `RequestID` int(11) NOT NULL,
+  `RequestType` enum('Add','Update','Delete') DEFAULT 'Add',
+  `TargetPositionID` int(11) DEFAULT NULL,
+  `PositionName` varchar(255) NOT NULL,
+  `PositionCode` varchar(50) DEFAULT NULL,
+  `DepartmentID` int(11) NOT NULL,
+  `SalaryGradeID` int(11) NOT NULL,
+  `AuthorizedHeadcount` int(11) DEFAULT 1,
+  `Status` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
+  `RequestedBy` varchar(100) DEFAULT NULL,
+  `DateRequested` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `position_requests`
+--
+
+INSERT INTO `position_requests` (`RequestID`, `RequestType`, `TargetPositionID`, `PositionName`, `PositionCode`, `DepartmentID`, `SalaryGradeID`, `AuthorizedHeadcount`, `Status`, `RequestedBy`, `DateRequested`) VALUES
+(1, 'Add', NULL, 'Logistic Manager', 'LM', 4, 5, 1, 'Approved', 'Red Gin Baldon', '2026-03-07 21:26:37'),
+(2, 'Delete', 14, 'HR Officer', 'HRO', 2, 3, 1, 'Approved', 'Red Gin Baldon', '2026-03-08 02:50:34'),
+(3, 'Update', 11, 'Inventory Clerk', 'INV-CLK', 4, 2, 4, 'Rejected', 'Red Gin Baldon', '2026-03-08 02:51:23');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `recruitment_requisitions`
+--
+
+CREATE TABLE `recruitment_requisitions` (
+  `RequisitionID` int(11) NOT NULL,
+  `PositionID` int(11) NOT NULL,
+  `RequestedBy` varchar(100) NOT NULL,
+  `Status` enum('Pending','Active','Posted','Closed') DEFAULT 'Pending',
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `recruitment_requisitions`
+--
+
+INSERT INTO `recruitment_requisitions` (`RequisitionID`, `PositionID`, `RequestedBy`, `Status`, `CreatedAt`) VALUES
+(1, 13, 'Red Gin Baldon', 'Posted', '2026-03-08 04:47:32'),
+(2, 15, 'Red Gin Baldon', 'Posted', '2026-03-09 05:49:26'),
+(3, 12, 'Red Gin Baldon', 'Pending', '2026-03-09 09:29:53');
 
 -- --------------------------------------------------------
 
@@ -2036,7 +2221,14 @@ INSERT INTO `roles` (`RoleID`, `RoleName`, `Description`) VALUES
 (5, 'Compensation Analyst', 'Professional who researches, analyzes, and designs employee pay structures (salaries, bonuses, benefits) to ensure internal fairness and external market competitiveness'),
 (6, 'Payroll Processor', 'A professional or software system responsible for accurately calculating employee wages, managing tax withholdings, and ensuring on-time pay distribution'),
 (7, 'Supervisor', 'A frontline manager responsible for leading a team, overseeing daily operations, and ensuring work aligns with company goals'),
-(8, 'Financial Officer', 'Is responsible for managing an organization\'s financial health by overseeing budgets, monitoring daily transactions, preparing financial reports, and ensuring compliance with regulations');
+(8, 'Financial Officer', 'Is responsible for managing an organization\'s financial health by overseeing budgets, monitoring daily transactions, preparing financial reports, and ensuring compliance with regulations'),
+(9, 'Loan Officers', 'Use a process called underwriting to assess whether applicants qualify for loans'),
+(10, 'Loan Service Associates', 'Perform routine administrative, transactional, operational, and customer support tasks'),
+(11, 'Inventory Clerk', 'Record inventory for a company so that items are accurately stocked and stored where they belong'),
+(12, 'Logistics Officer', 'Plan and coordinate the logistics operations, including procurement, transportation, warehousing, and distribution activities'),
+(13, 'Logistic Manager', 'A professional responsible for overseeing the storage, transportation, and distribution of goods within a supply chain'),
+(14, 'Accountant job', 'prepare and examine financial records, identify potential areas of opportunity and risk, and provide solutions for businesses and individuals'),
+(15, 'Finance Manager', 'Prepare financial statements, business activity reports, and forecasts');
 
 -- --------------------------------------------------------
 
@@ -2436,7 +2628,9 @@ INSERT INTO `useraccounts` (`AccountID`, `EmployeeID`, `Username`, `Email`, `Pas
 (7, 7, 'Miguel Padre', 'padre@gmail.com', '$2y$10$q5NZoXCW8I2ODBnbXyfaLek/7l1djFj.Xg7Co1WUTTmF/bTwYs8De', NULL, NULL, 1, 'Active'),
 (9, 10, 'Mike Dabu', 'mike@gmail.com', '$2y$10$8ahdIMWbQZsAKJOYB0B67.2NyW4GDGH1HSv3m5XDk9YJhEz7hyUcy', NULL, NULL, 1, 'Active'),
 (10, NULL, 'Charles Linao', 'charles@gmail.com', '$2y$10$t0GJKUE37GrdJyEloEg0q.S6YOgUPcbme3DyUlluYYdAig1Z/eg0.', NULL, NULL, 1, 'Active'),
-(11, 8, 'Daniella Magtangob', 'daniella@gmail.com', '$2y$10$mGPP976yU7jexq.IBsGEe.D1sMCjK5ncsaCV8lGsNldI0v6GQw1Ki', NULL, NULL, 1, 'Active');
+(11, 8, 'Daniella Magtangob', 'daniella@gmail.com', '$2y$10$mGPP976yU7jexq.IBsGEe.D1sMCjK5ncsaCV8lGsNldI0v6GQw1Ki', NULL, NULL, 1, 'Active'),
+(14, 14, 'joshua.suruiz', 'suruizjoshuaandrierivero@gmail.com', '$2y$10$sR.DBW1TiSGXFc.VXYQ6muGk9AyKW.96EwX75ZkaPzWygTkzeetjy', NULL, NULL, 0, 'Inactive'),
+(15, 15, 'test.three', 'suruizjoshua72@gmail.com', '$2y$10$OTX4Q8EjqoZiV9a9n2F4LO.InCl4FqY2AT20CCp3e3QE7.5G97BjW', NULL, NULL, 1, 'Active');
 
 --
 -- Indexes for dumped tables
@@ -2453,6 +2647,13 @@ ALTER TABLE `allowance_proposals`
 --
 ALTER TABLE `allowance_types`
   ADD PRIMARY KEY (`AllowanceTypeID`);
+
+--
+-- Indexes for table `applicants`
+--
+ALTER TABLE `applicants`
+  ADD PRIMARY KEY (`ApplicantID`),
+  ADD KEY `PostID` (`PostID`);
 
 --
 -- Indexes for table `bankdetails`
@@ -2542,6 +2743,27 @@ ALTER TABLE `grade_allowances`
   ADD KEY `fk_grade_allowance_type` (`AllowanceTypeID`);
 
 --
+-- Indexes for table `interview_evaluations`
+--
+ALTER TABLE `interview_evaluations`
+  ADD PRIMARY KEY (`EvaluationID`);
+
+--
+-- Indexes for table `interview_schedules`
+--
+ALTER TABLE `interview_schedules`
+  ADD PRIMARY KEY (`ScheduleID`),
+  ADD KEY `ApplicantID` (`ApplicantID`),
+  ADD KEY `InterviewerID` (`InterviewerID`);
+
+--
+-- Indexes for table `job_postings`
+--
+ALTER TABLE `job_postings`
+  ADD PRIMARY KEY (`PostID`),
+  ADD KEY `RequisitionID` (`RequisitionID`);
+
+--
 -- Indexes for table `merit_matrix_settings`
 --
 ALTER TABLE `merit_matrix_settings`
@@ -2602,6 +2824,21 @@ ALTER TABLE `positions`
   ADD PRIMARY KEY (`PositionID`),
   ADD KEY `DepartmentID` (`DepartmentID`),
   ADD KEY `fk_position_salary_grade` (`SalaryGradeID`);
+
+--
+-- Indexes for table `position_requests`
+--
+ALTER TABLE `position_requests`
+  ADD PRIMARY KEY (`RequestID`),
+  ADD KEY `DepartmentID` (`DepartmentID`),
+  ADD KEY `SalaryGradeID` (`SalaryGradeID`);
+
+--
+-- Indexes for table `recruitment_requisitions`
+--
+ALTER TABLE `recruitment_requisitions`
+  ADD PRIMARY KEY (`RequisitionID`),
+  ADD KEY `PositionID` (`PositionID`);
 
 --
 -- Indexes for table `roles`
@@ -2690,6 +2927,12 @@ ALTER TABLE `allowance_types`
   MODIFY `AllowanceTypeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
+-- AUTO_INCREMENT for table `applicants`
+--
+ALTER TABLE `applicants`
+  MODIFY `ApplicantID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
 -- AUTO_INCREMENT for table `bankdetails`
 --
 ALTER TABLE `bankdetails`
@@ -2717,19 +2960,19 @@ ALTER TABLE `compensation_period`
 -- AUTO_INCREMENT for table `department`
 --
 ALTER TABLE `department`
-  MODIFY `DepartmentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `DepartmentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `emergency_contacts`
 --
 ALTER TABLE `emergency_contacts`
-  MODIFY `ContactID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `ContactID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `EmployeeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `EmployeeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `employee_update_requests`
@@ -2741,7 +2984,7 @@ ALTER TABLE `employee_update_requests`
 -- AUTO_INCREMENT for table `employmentinformation`
 --
 ALTER TABLE `employmentinformation`
-  MODIFY `EmploymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `EmploymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `final_performance_rating`
@@ -2754,6 +2997,24 @@ ALTER TABLE `final_performance_rating`
 --
 ALTER TABLE `grade_allowances`
   MODIFY `GradeAllowanceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
+-- AUTO_INCREMENT for table `interview_evaluations`
+--
+ALTER TABLE `interview_evaluations`
+  MODIFY `EvaluationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `interview_schedules`
+--
+ALTER TABLE `interview_schedules`
+  MODIFY `ScheduleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `job_postings`
+--
+ALTER TABLE `job_postings`
+  MODIFY `PostID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `merit_matrix_settings`
@@ -2789,13 +3050,25 @@ ALTER TABLE `payroll_item_components`
 -- AUTO_INCREMENT for table `positions`
 --
 ALTER TABLE `positions`
-  MODIFY `PositionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `PositionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT for table `position_requests`
+--
+ALTER TABLE `position_requests`
+  MODIFY `RequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `recruitment_requisitions`
+--
+ALTER TABLE `recruitment_requisitions`
+  MODIFY `RequisitionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `RoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `RoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `salary_grades`
@@ -2843,11 +3116,17 @@ ALTER TABLE `useraccountroles`
 -- AUTO_INCREMENT for table `useraccounts`
 --
 ALTER TABLE `useraccounts`
-  MODIFY `AccountID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `AccountID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `applicants`
+--
+ALTER TABLE `applicants`
+  ADD CONSTRAINT `applicants_ibfk_1` FOREIGN KEY (`PostID`) REFERENCES `job_postings` (`PostID`);
 
 --
 -- Constraints for table `bankdetails`
@@ -2904,6 +3183,19 @@ ALTER TABLE `grade_allowances`
   ADD CONSTRAINT `fk_grade_allowance_type` FOREIGN KEY (`AllowanceTypeID`) REFERENCES `allowance_types` (`AllowanceTypeID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `interview_schedules`
+--
+ALTER TABLE `interview_schedules`
+  ADD CONSTRAINT `interview_schedules_ibfk_1` FOREIGN KEY (`ApplicantID`) REFERENCES `applicants` (`ApplicantID`),
+  ADD CONSTRAINT `interview_schedules_ibfk_2` FOREIGN KEY (`InterviewerID`) REFERENCES `useraccounts` (`AccountID`);
+
+--
+-- Constraints for table `job_postings`
+--
+ALTER TABLE `job_postings`
+  ADD CONSTRAINT `job_postings_ibfk_1` FOREIGN KEY (`RequisitionID`) REFERENCES `recruitment_requisitions` (`RequisitionID`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `merit_matrix_settings`
 --
 ALTER TABLE `merit_matrix_settings`
@@ -2927,6 +3219,19 @@ ALTER TABLE `philhealth_settings`
 ALTER TABLE `positions`
   ADD CONSTRAINT `fk_position_salary_grade` FOREIGN KEY (`SalaryGradeID`) REFERENCES `salary_grades` (`SalaryGradeID`) ON DELETE SET NULL,
   ADD CONSTRAINT `positions_ibfk_1` FOREIGN KEY (`DepartmentID`) REFERENCES `department` (`DepartmentID`);
+
+--
+-- Constraints for table `position_requests`
+--
+ALTER TABLE `position_requests`
+  ADD CONSTRAINT `position_requests_ibfk_1` FOREIGN KEY (`DepartmentID`) REFERENCES `department` (`DepartmentID`),
+  ADD CONSTRAINT `position_requests_ibfk_2` FOREIGN KEY (`SalaryGradeID`) REFERENCES `salary_grades` (`SalaryGradeID`);
+
+--
+-- Constraints for table `recruitment_requisitions`
+--
+ALTER TABLE `recruitment_requisitions`
+  ADD CONSTRAINT `recruitment_requisitions_ibfk_1` FOREIGN KEY (`PositionID`) REFERENCES `positions` (`PositionID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `salary_grades`

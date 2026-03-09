@@ -150,7 +150,15 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    Swal.fire({ icon: 'success', title: 'Success', text: 'Merit proposal submitted.', confirmButtonColor: '#2ca078' }).then(() => {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Merit proposal submitted successfully!',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true
+                    }).then(() => {
                         window.location.reload();
                     });
                     closeMeritModal();

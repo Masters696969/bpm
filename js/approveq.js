@@ -494,9 +494,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await response.json();
 
                 if (res.success) {
-                    await Swal.fire('Applied!', res.message, 'success');
-                    proposalModal.classList.add('hidden');
-                    fetchUniversalProposals(); // Reload table
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Applied!',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        proposalModal.classList.add('hidden');
+                        fetchUniversalProposals();
+                    });
                 } else {
                     Swal.fire('Error!', res.message, 'error');
                 }
@@ -532,7 +542,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await response.json();
 
                 if (res.success) {
-                    Swal.fire('Rejected!', res.message, 'success');
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Rejected!',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
                     proposalModal.classList.add('hidden');
                     fetchUniversalProposals();
                 } else {
@@ -715,9 +734,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await response.json();
 
                 if (res.success) {
-                    await Swal.fire('Applied!', res.message, 'success');
-                    statutoryActionModal.classList.add('hidden');
-                    fetchUniversalProposals();
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Applied!',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        statutoryActionModal.classList.add('hidden');
+                        fetchUniversalProposals();
+                    });
                 } else {
                     Swal.fire('Error!', res.message, 'error');
                 }
@@ -751,7 +780,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await response.json();
 
                 if (res.success) {
-                    Swal.fire('Rejected!', res.message, 'success');
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Rejected!',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
                     statutoryActionModal.classList.add('hidden');
                     fetchUniversalProposals();
                 } else {
@@ -912,9 +950,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await response.json();
 
                 if (res.success) {
-                    await Swal.fire('Applied!', res.message, 'success');
-                    meritActionModal.classList.add('hidden');
-                    fetchUniversalProposals();
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Applied!',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        meritActionModal.classList.add('hidden');
+                        fetchUniversalProposals();
+                    });
                 } else {
                     Swal.fire('Error!', res.message, 'error');
                 }
@@ -948,7 +996,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await response.json();
 
                 if (res.success) {
-                    Swal.fire('Rejected!', res.message, 'success');
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Rejected!',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
                     meritActionModal.classList.add('hidden');
                     fetchUniversalProposals();
                 } else {
@@ -1107,9 +1164,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await response.json();
 
                 if (res.success) {
-                    await Swal.fire('Applied!', res.message, 'success');
-                    allowanceActionModal.classList.add('hidden');
-                    fetchUniversalProposals();
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Applied!',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        allowanceActionModal.classList.add('hidden');
+                        fetchUniversalProposals();
+                    });
                 } else {
                     Swal.fire('Error!', res.message, 'error');
                 }
@@ -1143,7 +1210,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const res = await response.json();
 
                 if (res.success) {
-                    Swal.fire('Rejected!', res.message, 'success');
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Rejected!',
+                        text: res.message,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
                     allowanceActionModal.classList.add('hidden');
                     fetchUniversalProposals();
                 } else {
@@ -1255,7 +1331,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 const r = await fetch(`../manager/be_fetch_simulations.php?action=reject&id=${currentSimBatchRef}`);
                 const data = await r.json();
                 if (data.success) {
-                    Swal.fire('Rejected!', '', 'success').then(() => location.reload());
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Rejected!',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => location.reload());
                 }
             }
         });
@@ -1280,7 +1364,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     });
                     const data = await r.json();
                     if (data.success) {
-                        Swal.fire('Finalized!', data.message, 'success').then(() => location.reload());
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Finalized!',
+                            text: data.message,
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true
+                        }).then(() => location.reload());
                     } else {
                         Swal.fire('Error!', data.message, 'error');
                     }

@@ -100,3 +100,110 @@ function sendOtpEmail($toEmail, $otp, $userName = '') {
         return false;
     }
 }
+
+// Function to send official hiring email using PHPMailer
+function sendHiringEmail($toEmail, $employeeName, $position, $hiringDate, $username, $password, $evaluation) {
+    global $mail_config;
+    require_once __DIR__ . '/../vendor/autoload.php';
+    
+    try {
+        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+        $mail->isSMTP();
+        $mail->Host = $mail_config['host'];
+        $mail->SMTPAuth = $mail_config['smtp_auth'];
+        $mail->Username = $mail_config['username'];
+        $mail->Password = $mail_config['password'];
+        $mail->SMTPSecure = $mail_config['smtp_secure'];
+        $mail->Port = $mail_config['port'];
+        
+        $mail->setFrom($mail_config['from_email'], $mail_config['from_name']);
+        $mail->addAddress($toEmail);
+        $mail->isHTML(true);
+        $mail->Subject = 'Official Hiring Notification - Microfinance System';
+        
+        $rating = number_format($evaluation['AverageRating'] ?? 0, 1);
+        $decision = $evaluation['Decision'] ?? 'Approved';
+
+        $emailBody = "
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4;'>
+            <div style='background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>
+                <div style='text-align: center; margin-bottom: 30px;'>
+                    <img src='http://localhost/microfinance/img/logo.png' alt='Microfinance System Logo' style='width: 60px; height: 60px; border-radius: 10px; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;'>
+                    <h2 style='color: #2ca078; margin: 0;'>Microfinance System</h2>
+                    <p style='color: #666; margin: 5px 0 0 0;'>Human Resources Department</p>
+                </div>
+                
+                <div style='background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;'>
+                    <h3 style='color: #333; margin: 0 0 10px 0;'>Congratulations, $employeeName!</h3>
+                    <p style='color: #666; margin: 0 0 12px 0; font-size: 15px;'>You have been officially hired at <strong>Microfinance System</strong> as <strong style='color: #2ca078;'>$position</strong>.</p>
+                    <p style='color: #555; margin: 0; font-size: 14px; line-height: 1.7;'>
+                        We are thrilled to welcome you to our team! After a thorough review of your application and interview performance, 
+                        we are confident that you will be a great addition to the organization. 
+                        Your journey with us starts on <strong>$hiringDate</strong> &mdash; we look forward to working with you.
+                    </p>
+                </div>
+
+                <div style='margin: 30px 0;'>
+                    <h4 style='color: #333; margin: 0 0 10px 0;'>Employment Details:</h4>
+                    <table style='width: 100%; border-collapse: collapse; font-size: 14px;'>
+                        <tr style='border-bottom: 1px solid #eee;'>
+                            <td style='padding: 10px 0; color: #666;'>Position</td>
+                            <td style='padding: 10px 0; font-weight: bold; color: #333; text-align: right;'>$position</td>
+                        </tr>
+                        <tr style='border-bottom: 1px solid #eee;'>
+                            <td style='padding: 10px 0; color: #666;'>Hiring Date</td>
+                            <td style='padding: 10px 0; font-weight: bold; color: #333; text-align: right;'>$hiringDate</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 10px 0; color: #666;'>Evaluation Result</td>
+                            <td style='padding: 10px 0; font-weight: bold; color: #2ca078; text-align: right;'>$decision &mdash; $rating / 5.0</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style='background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;'>
+                    <h4 style='color: #333; margin: 0 0 15px 0;'>Your Work Account Credentials:</h4>
+                    <table style='width: 100%; border-collapse: collapse; font-size: 14px;'>
+                        <tr style='border-bottom: 1px solid #eee;'>
+                            <td style='padding: 10px 0; color: #666;'>Username</td>
+                            <td style='padding: 10px 0; text-align: right;'><span style='font-family: monospace; font-size: 16px; font-weight: bold; color: #2ca078; letter-spacing: 1px;'>$username</span></td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 10px 0; color: #666;'>Temporary Password</td>
+                            <td style='padding: 10px 0; text-align: right;'><span style='font-family: monospace; font-size: 16px; font-weight: bold; color: #2ca078; letter-spacing: 1px;'>$password</span></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style='margin: 30px 0;'>
+                    <h4 style='color: #333; margin: 0 0 10px 0;'>Instructions:</h4>
+                    <ol style='color: #666; margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.8;'>
+                        <li>Use the credentials above to log in to the portal</li>
+                        <li>Change your password immediately after your first login</li>
+                        <li>Do not share your credentials with anyone</li>
+                        <li>Contact HR if you encounter any login issues</li>
+                    </ol>
+                </div>
+
+                <div style='text-align: center; margin: 30px 0;'>
+                    <a href='http://localhost/microfinance/login.php' style='display: inline-block; padding: 14px 32px; background: #2ca078; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px;'>Access Your Portal &rarr;</a>
+                </div>
+                
+                <div style='border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px; text-align: center;'>
+                    <p style='color: #999; font-size: 12px; margin: 0;'>
+                        This is an automated message from Microfinance System &mdash; Human Resources Dept.<br>
+                        Please do not reply to this email.
+                    </p>
+                </div>
+            </div>
+        </div>";
+        
+        $mail->Body = $emailBody;
+        $mail->send();
+        return true;
+        
+    } catch (Exception $e) {
+        error_log("PHPMailer Error: " . $e->getMessage());
+        return false;
+    }
+}
