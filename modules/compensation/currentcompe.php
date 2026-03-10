@@ -35,7 +35,7 @@ if (!isset($_SESSION['username'])) {
       </button>
     </div>
 
-    <nav class="sidebar-nav">
+     <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
@@ -53,11 +53,15 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-hr">
+            <a href="../admin/dispatch.php" class="submenu-item">
+              <i data-lucide="send"></i>
+              <span>Master Data Dispatch</span>
+            </a>
             <a href="" class="submenu-item">
               <i data-lucide="user-plus"></i>
               <span>New Hired Onboard Request</span>
             </a>
-            <a href="employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
+            <a href="../admin/employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
             </a>
@@ -69,14 +73,12 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="user-cog"></i>
               <span>Security Settings</span>
             </a>
-            <a href="auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
+            <a href="../admin/auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
               <i data-lucide="book-user"></i>
               <span>Audit Logs</span>
             </a>
           </div>
-        </div>
-
-        <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
@@ -85,6 +87,10 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
+            <a href="intake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Master Data Intake</span>
+            </a>
             <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
@@ -105,18 +111,9 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="notebook-pen"></i>
               <span>Compensation Structure Management</span>
             </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="calendar-clock"></i>
-              <span>Disbursements</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="coins"></i>
-              <span>Collections</span>
-            </a>
           </div>
         </div>
-
-           <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
+        <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="payroll">
             <div class="nav-item-content">
               <i data-lucide="banknote-arrow-down"></i>
@@ -144,8 +141,20 @@ if (!isset($_SESSION['username'])) {
           </div>
         </div>
       </div>
-
-
+      <div class="nav-section">
+          <span class="nav-section-title">FINANCE</span>
+          <div class="nav-item-group">
+            <button class="nav-item has-submenu" data-module="budget">
+              <div class="nav-item-content">
+                <i data-lucide="hand-coins"></i>
+                <span>Budget Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-budget">
+            </div>
+          </div>
+        </div>
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
         
@@ -160,6 +169,7 @@ if (!isset($_SESSION['username'])) {
         </a>
         
       </div>
+    </div>
     </nav>
 
     <div class="sidebar-footer">

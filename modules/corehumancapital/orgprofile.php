@@ -130,7 +130,7 @@ function renderNode($deptId, $departments) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Organizational Profile | Microfinance</title>
-  <link rel="stylesheet" href="../../css/orgprofile.css?v=1.4">
+  <link rel="stylesheet" href="../../css/chcorgprofile.css?v=1.4">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -153,59 +153,29 @@ function renderNode($deptId, $departments) {
         <i data-lucide="panel-left-close"></i>
       </button>
     </div>
-
-    <nav class="sidebar-nav">
+ <nav class="sidebar-nav">
       <div class="nav-section">
-        <span class="nav-section-title">ANALYTICS & REPORTING</span>
-        <a href="dashboard.php" class="nav-item active">
-          <i data-lucide="layout-dashboard"></i>
+        <span class="nav-section-title">MAIN MENU</span>
+        
+        <a href="dashboard.php" class="nav-item <?php echo ($page === 'dashboard') ? 'active' : ''; ?>">
+          <i data-lucide="chart-no-axes-combined"></i>
           <span>HR ANALYTICS</span>
         </a>
-      <div class="nav-section">
-        <span class="nav-section-title">ADMINISTRATION</span>
-        <div class="nav-item-group active">
-          <button class="nav-item has-submenu" data-module="accounts">
-            <div class="nav-item-content">
-              <i data-lucide="users"></i>
-              <span>Account Management</span>
-            </div>
-            <i data-lucide="chevron-down" class="submenu-icon"></i>
-          </button>
-          <div class="submenu" id="submenu-accounts">
-            <a href="useraccount.php" class="submenu-item active">
-              <i data-lucide="user-plus"></i>
-              <span>User Accounts</span>
-            </a>
-            <a href="rolespermission.php" class="submenu-item">
-              <i data-lucide="contact-round"></i>
-              <span>Roles & Permissions</span>
-            </a>
-            <a href="securitysetting.php" class="submenu-item">
-              <i data-lucide="user-cog"></i>
-              <span>Security Settings</span>
-            </a>
-            <a href="auditlogs.php" class="submenu-item">
-              <i data-lucide="book-user"></i>
-              <span>Audit Logs</span>
-            </a>
-          </div>
-        </div>
-       <div class="nav-section">
-        <span class="nav-section-title">Human Resources</span>
-          <div class="nav-item-group <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="corehumancapital">
+
+        <div class="nav-item-group <?php echo ($module === 'hr') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="hr">
             <div class="nav-item-content">
               <i data-lucide="book-user"></i>
               <span>Core Human Capital</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-corehumancapital">
-            <a href="dispatch.php" class="submenu-item <?php echo ($page === 'dispatch') ? 'active' : ''; ?>">
+          <div class="submenu" id="submenu-hr">
+            <a href="dispatch.php" class="submenu-item">
               <i data-lucide="send"></i>
               <span>Master Data Dispatch</span>
             </a>
-             <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
+            <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
               <i data-lucide="building-2"></i>
               <span>Organization Profile</span>
             </a>
@@ -217,9 +187,9 @@ function renderNode($deptId, $departments) {
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
             </a>
-            <a href="informationapproval.php" class="submenu-item <?php echo ($page === 'informationapproval') ? 'active' : ''; ?>">
-              <i data-lucide="file-check"></i>
-              <span>Information Approval</span>
+             <a href="informationrq.php" class="submenu-item <?php echo ($page === 'informationrq') ? 'active' : ''; ?>">
+              <i data-lucide="user-round-pen"></i>
+              <span>Information Request</span>
             </a>
             <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
               <i data-lucide="file-text"></i>
@@ -231,6 +201,7 @@ function renderNode($deptId, $departments) {
             </a>
           </div>
         </div>
+
           <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
@@ -240,89 +211,53 @@ function renderNode($deptId, $departments) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
-            <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
-              <i data-lucide="banknote"></i>
-              <span>Salary & Scales Management</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-plus"></i>
+              <span>Applications</span>
             </a>
-            <a href="statutory.php" class="submenu-item <?php echo ($page === 'statutory') ? 'active' : ''; ?>">
-              <i data-lucide="scale"></i>
-              <span>Statutory Contributions</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="check-circle"></i>
+              <span>Approvals</span>
             </a>
-            <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
-              <i data-lucide="scale"></i>
-              <span>Merit Matrix Structure</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="calendar-clock"></i>
+              <span>Disbursements</span>
             </a>
-            <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
-              <i data-lucide="notebook-pen"></i>
-              <span>Compensation Structure Management</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="coins"></i>
+              <span>Collections</span>
             </a>
           </div>
         </div>
-        <div class="nav-item-group">
+
+           <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="payroll">
             <div class="nav-item-content">
-              <i data-lucide="banknote"></i>
-              <span>Payroll Management</span>
+              <i data-lucide="banknote-arrow-down"></i>
+              <span>Payroll</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-payroll">
-            <a href="comperules.php" class="submenu-item">
-              <i data-lucide="boxes"></i>
-              <span>Compensation Rules</span>
-            </a>
-            <a href="payroll.php" class="submenu-item active">
-              <i data-lucide="play-circle"></i>
-              <span>Payroll Processing</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-plus"></i>
+              <span>Applications</span>
             </a>
             <a href="#" class="submenu-item">
-              <i data-lucide="history"></i>
-              <span>Payroll History</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="file-check"></i>
+              <i data-lucide="check-circle"></i>
               <span>Approvals</span>
             </a>
-          </div>
-        </div>
-            <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
-              <i data-lucide="layers-plus"></i>
-              <span>Recruitment</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="calendar-clock"></i>
+              <span>Disbursements</span>
             </a>
-            <a href="applicationmgt.php" class="nav-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
-              <i data-lucide="contact-round"></i>
-              <span>Application Management</span>
-            </a>
-      <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
-              <i data-lucide="user-plus"></i>
-              <span>New Hired Onboard</span>
-            </a>
-        </div>
-       
-
-      
-
-        <div class="nav-section">
-        <span class="nav-section-title">FINANCE</span>
-        
-        <div class="nav-item-group <?php echo ($module === 'budget') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="budget">
-            <div class="nav-item-content">
-              <i data-lucide="hand-coins"></i>
-              <span>Budget Management</span>
-            </div>
-            <i data-lucide="chevron-down" class="submenu-icon"></i>
-          </button>
-          <div class="submenu" id="submenu-budget">
-            <a href="positionrequest.php" class="submenu-item <?php echo ($page === 'positionrequest') ? 'active' : ''; ?>">
-              <i data-lucide="badge-dollar-sign"></i>
-              <span>Position Requests</span>
-            </a>
-            <a href="intake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
-              <i data-lucide="send-to-back"></i>
-              <span>Master Data Intake</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="coins"></i>
+              <span>Collections</span>
             </a>
           </div>
+        </div>
+      </div>
 
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
@@ -473,7 +408,7 @@ function renderNode($deptId, $departments) {
     ?>;
   </script>
 
-  <script src="../../js/orgprofile.js"></script>
+  <script src="../../js/chcorgprofile.js"></script>
   <script>
     lucide.createIcons();
     <?php if (isset($_SESSION['msg'])): ?>

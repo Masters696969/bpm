@@ -35,29 +35,110 @@ if (!isset($_SESSION['username'])) {
       </button>
     </div>
 
-    <nav class="sidebar-nav">
+  <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-        <a href="#" class="nav-item">
-          <i data-lucide="layout-dashboard"></i>
-          <span>Dashboard</span>
+        <a href="dashboard.php" class="nav-item <?php echo ($page === 'dashboard') ? 'active' : ''; ?>">
+          <i data-lucide="chart-no-axes-combined"></i>
+          <span>HR ANALYTICS</span>
         </a>
 
-        <a href="newhiredonboared.php" class="nav-item">
-          <i data-lucide="user-plus"></i>
-          <span>New Hired Onboard Management</span>
-        </a>
+        <div class="nav-item-group <?php echo ($module === 'hr') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="hr">
+            <div class="nav-item-content">
+              <i data-lucide="book-user"></i>
+              <span>Core Human Capital</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-hr">
+            <a href="dispatch.php" class="submenu-item">
+              <i data-lucide="send"></i>
+              <span>Master Data Dispatch</span>
+            </a>
+            <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
+              <i data-lucide="building-2"></i>
+              <span>Organization Profile</span>
+            </a>
+            <a href="positioncatalog.php" class="submenu-item <?php echo ($page === 'positioncatalog') ? 'active' : ''; ?>">
+              <i data-lucide="user-star"></i>
+              <span>Position Catalog</span>
+            </a>
+            <a href="employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
+              <i data-lucide="file-user"></i>
+              <span>Employee Master Files</span>
+            </a>
+             <a href="informationrq.php" class="submenu-item <?php echo ($page === 'informationrq') ? 'active' : ''; ?>">
+              <i data-lucide="user-round-pen"></i>
+              <span>Information Request</span>
+            </a>
+            <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
+              <i data-lucide="file-text"></i>
+              <span>Bank Form Management</span>
+            </a>
+            <a href="auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
+              <i data-lucide="book-user"></i>
+              <span>Audit Logs</span>
+            </a>
+          </div>
+        </div>
 
-        <a href="employeemaster.php" class="nav-item">
-          <i data-lucide="file-user"></i>
-          <span>Employee Master File</span>
-        </a>
+          <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="planning">
+            <div class="nav-item-content">
+              <i data-lucide="circle-pile"></i>
+              <span>Compensation Planning</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-planning">
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-plus"></i>
+              <span>Applications</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="check-circle"></i>
+              <span>Approvals</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="calendar-clock"></i>
+              <span>Disbursements</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="coins"></i>
+              <span>Collections</span>
+            </a>
+          </div>
+        </div>
 
-         <a href="rolemanagement.php" class="nav-item active">
-          <i data-lucide="user-cog"></i>
-          <span>Role & Position Management</span>
-        </a>
+           <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="payroll">
+            <div class="nav-item-content">
+              <i data-lucide="banknote-arrow-down"></i>
+              <span>Payroll</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-payroll">
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-plus"></i>
+              <span>Applications</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="check-circle"></i>
+              <span>Approvals</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="calendar-clock"></i>
+              <span>Disbursements</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="coins"></i>
+              <span>Collections</span>
+            </a>
+          </div>
+        </div>
       </div>
 
       <div class="nav-section">
@@ -72,11 +153,7 @@ if (!isset($_SESSION['username'])) {
           <i data-lucide="shield"></i>
           <span>Security</span>
         </a>
-       
-       <a href="../../logout.php" class="nav-item" onclick="return confirm ('Are you sure you want to log out?')">
-            <i data-lucide="log-out"></i>
-            <span>Logout</span>
-        </a>
+        
       </div>
     </nav>
 

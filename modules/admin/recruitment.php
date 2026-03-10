@@ -34,7 +34,7 @@ $query = "
     JOIN department d ON p.DepartmentID = d.DepartmentID
     JOIN salary_grades sg ON p.SalaryGradeID = sg.SalaryGradeID
     LEFT JOIN job_postings jp ON r.RequisitionID = jp.RequisitionID
-    WHERE r.Status != 'Closed'
+    WHERE r.Status NOT IN ('Closed', 'Cancelled')
     ORDER BY r.CreatedAt DESC
 ";
 $requisitions = $conn->query($query);
@@ -186,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         </div>
         <div class="logo-text">
           <h2 class="app-name">Microfinance</h2>
-          <span class="app-tagline">Recruitment Hub</span>
+          <span class="app-tagline">32005</span>
         </div>
       </div>
       <button class="sidebar-toggle" id="sidebarToggle">
@@ -241,6 +241,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-corehumancapital">
+            <a href="dispatch.php" class="submenu-item <?php echo ($page === 'dispatch') ? 'active' : ''; ?>">
+              <i data-lucide="send"></i>
+              <span>Master Data Dispatch</span>
+            </a>
              <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
               <i data-lucide="building-2"></i>
               <span>Organization Profile</span>
@@ -353,6 +357,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <a href="positionrequest.php" class="submenu-item <?php echo ($page === 'positionrequest') ? 'active' : ''; ?>">
               <i data-lucide="badge-dollar-sign"></i>
               <span>Position Requests</span>
+            </a>
+            <a href="intake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="send-to-back"></i>
+              <span>Master Data Intake</span>
             </a>
           </div>
 

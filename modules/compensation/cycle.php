@@ -70,13 +70,13 @@ if ($drafts_query) {
 }
 
 // Fetch Live Stats
-$target_employees_query = $conn->query("SELECT COUNT(*) as total FROM employmentinformation WHERE EmploymentStatus = 'Regular'");
+$target_employees_query = $conn->query("SELECT COUNT(*) as total FROM employmentinformation WHERE EmploymentStatus IN ('Regular', 'Probationary')");
 $target_employees = ($target_employees_query) ? $target_employees_query->fetch_assoc()['total'] : 0;
 
 $max_increase_query = $conn->query("SELECT MAX(max_increase_pct) as max_target FROM merit_matrix_settings WHERE period_id = $period_id");
 $max_increase = ($max_increase_query && $max_increase_query->num_rows > 0) ? number_format($max_increase_query->fetch_assoc()['max_target'], 1) : "0.0";
 
-$baseline_payroll_query = $conn->query("SELECT SUM(BaseSalary) as base_total FROM employmentinformation WHERE EmploymentStatus = 'Regular'");
+$baseline_payroll_query = $conn->query("SELECT SUM(BaseSalary) as base_total FROM employmentinformation WHERE EmploymentStatus IN ('Regular', 'Probationary')");
 $baseline_payroll = ($baseline_payroll_query) ? $baseline_payroll_query->fetch_assoc()['base_total'] : 0.00;
 
 function getGradeAllowances($conn) {
@@ -118,7 +118,7 @@ $simulation_query = $conn->query("
         FROM final_performance_rating
         ORDER BY period_id DESC
     ) fpr ON e.EmployeeID = fpr.EmployeeID
-    WHERE ei.EmploymentStatus = 'Regular'
+    WHERE ei.EmploymentStatus IN ('Regular', 'Probationary')
     ORDER BY e.EmployeeCode ASC
 ");
 $simulation_data = [];
@@ -182,12 +182,12 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-        <a href="dashboard.php" class="nav-item">
+        <a href="dashboard.php" class="nav-item active">
           <i data-lucide="layout-dashboard"></i>
           <span>Dashboard</span>
         </a>
 
-        <div class="nav-item-group">
+        <div class="nav-item-group <?php echo ($module === 'hr') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="hr">
             <div class="nav-item-content">
               <i data-lucide="book-user"></i>
@@ -196,15 +196,19 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-hr">
+            <a href="../admin/dispatch.php" class="submenu-item">
+              <i data-lucide="send"></i>
+              <span>Master Data Dispatch</span>
+            </a>
             <a href="" class="submenu-item">
               <i data-lucide="user-plus"></i>
               <span>New Hired Onboard Request</span>
             </a>
-            <a href="employeemaster.php" class="submenu-item">
+            <a href="../admin/employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
             </a>
-            <a href="bankform.php" class="submenu-item">
+            <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
               <i data-lucide="file-text"></i>
               <span>Bank Form Management</span>
             </a>
@@ -212,54 +216,47 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
               <i data-lucide="user-cog"></i>
               <span>Security Settings</span>
             </a>
-            <a href="auditlogs.php" class="submenu-item">
+            <a href="../admin/auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
               <i data-lucide="book-user"></i>
               <span>Audit Logs</span>
             </a>
           </div>
-        </div>
-
-        <div class="nav-item-group active">
-          <button class="nav-item has-submenu active" data-module="planning">
+          <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
               <span>Compensation Planning</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-planning" style="max-height: 500px;">
-            <a href="salary.php" class="submenu-item">
+          <div class="submenu" id="submenu-planning">
+            <a href="intake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Master Data Intake</span>
+            </a>
+            <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
             </a>
-            <a href="statutory.php" class="submenu-item">
+            <a href="statutory.php" class="submenu-item <?php echo ($page === 'statutory') ? 'active' : ''; ?>">
               <i data-lucide="scale"></i>
               <span>Statutory Contributions</span>
             </a>
-            <a href="matrix.php" class="submenu-item">
+            <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
               <i data-lucide="percent"></i>
               <span>Merit Matrix Structure</span>
             </a>
-            <a href="allowance.php" class="submenu-item">
+            <a href="allowance.php" class="submenu-item <?php echo ($page === 'allowance') ? 'active' : ''; ?>">
               <i data-lucide="gift"></i>
               <span>Allowance Structure</span>
             </a>
-            <a href="cycle.php" class="submenu-item active">
-              <i data-lucide="calculator"></i>
-              <span>Simulation</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="calendar-clock"></i>
-              <span>Disbursements</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="coins"></i>
-              <span>Collections</span>
+            <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
+              <i data-lucide="notebook-pen"></i>
+              <span>Compensation Structure Management</span>
             </a>
           </div>
         </div>
-
-           <div class="nav-item-group">
+        <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="payroll">
             <div class="nav-item-content">
               <i data-lucide="banknote-arrow-down"></i>
@@ -286,6 +283,21 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
             </a>
           </div>
         </div>
+      </div>
+      <div class="nav-section">
+          <span class="nav-section-title">FINANCE</span>
+          <div class="nav-item-group">
+            <button class="nav-item has-submenu" data-module="budget">
+              <div class="nav-item-content">
+                <i data-lucide="hand-coins"></i>
+                <span>Budget Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-budget">
+            </div>
+          </div>
+        </div>
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
         
@@ -298,13 +310,14 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
           <i data-lucide="shield"></i>
           <span>Security</span>
         </a>
+        
       </div>
+    </div>
     </nav>
 
     <div class="sidebar-footer">
       <div class="user-profile">
         <div class="user-avatar" id="sidebarAvatar">
-          <!-- Initials will be inserted by JS -->
           <?php echo strtoupper(substr($_SESSION['username'] ?? 'A', 0, 1)); ?>
         </div>
         <div class="user-info">

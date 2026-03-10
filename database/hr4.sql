@@ -2279,7 +2279,8 @@ CREATE TABLE `salary_grade_proposals` (
   `ProposedBy` int(11) DEFAULT NULL,
   `Status` enum('Pending','Endorsed','Manager Approved','Applied','Rejected') DEFAULT 'Pending',
   `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UpdatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `UpdatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `proof_file_url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

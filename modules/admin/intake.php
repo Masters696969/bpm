@@ -4,17 +4,16 @@ if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
     exit();
 }
-$page = 'informationapproval';
-$module = 'corehumancapital';
+$module = 'shiftmanagement';
+$page = 'intake';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Information Approval</title>
-  <link rel="stylesheet" href="../../css/informationapproval.css?v=1.2">
-  <link rel="stylesheet" href="../../css/notifications.css?v=1.1">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="../../css/adminintake.css?v=1.2">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -38,16 +37,16 @@ $module = 'corehumancapital';
       </button>
     </div>
 
- <nav class="sidebar-nav">
+     <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">ANALYTICS & REPORTING</span>
-        <a href="dashboard.php" class="nav-item active">
+        <a href="dashboard.php" class="nav-item">
           <i data-lucide="layout-dashboard"></i>
           <span>HR ANALYTICS</span>
         </a>
       <div class="nav-section">
         <span class="nav-section-title">ADMINISTRATION</span>
-        <div class="nav-item-group active">
+        <div class="nav-item-group <?php echo ($module === 'accounts') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="accounts">
             <div class="nav-item-content">
               <i data-lucide="users"></i>
@@ -56,19 +55,19 @@ $module = 'corehumancapital';
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-accounts">
-            <a href="useraccount.php" class="submenu-item active">
+            <a href="useraccount.php" class="submenu-item <?php echo ($page === 'useraccount') ? 'active' : ''; ?>">
               <i data-lucide="user-plus"></i>
               <span>User Accounts</span>
             </a>
-            <a href="rolespermission.php" class="submenu-item">
+            <a href="rolespermission.php" class="submenu-item <?php echo ($page === 'rolespermission') ? 'active' : ''; ?>">
               <i data-lucide="contact-round"></i>
               <span>Roles & Permissions</span>
             </a>
-            <a href="securitysetting.php" class="submenu-item">
+            <a href="securitysetting.php" class="submenu-item <?php echo ($page === 'securitysetting') ? 'active' : ''; ?>">
               <i data-lucide="user-cog"></i>
               <span>Security Settings</span>
             </a>
-            <a href="auditlogs.php" class="submenu-item">
+            <a href="auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
               <i data-lucide="book-user"></i>
               <span>Audit Logs</span>
             </a>
@@ -142,7 +141,7 @@ $module = 'corehumancapital';
             </a>
           </div>
         </div>
-        <div class="nav-item-group">
+        <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="payroll">
             <div class="nav-item-content">
               <i data-lucide="banknote"></i>
@@ -151,11 +150,11 @@ $module = 'corehumancapital';
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-payroll">
-            <a href="comperules.php" class="submenu-item">
+            <a href="comperules.php" class="submenu-item <?php echo ($page === 'comperules') ? 'active' : ''; ?>">
               <i data-lucide="boxes"></i>
               <span>Compensation Rules</span>
             </a>
-            <a href="payroll.php" class="submenu-item active">
+            <a href="payroll.php" class="submenu-item <?php echo ($page === 'payroll') ? 'active' : ''; ?>">
               <i data-lucide="play-circle"></i>
               <span>Payroll Processing</span>
             </a>
@@ -169,6 +168,21 @@ $module = 'corehumancapital';
             </a>
           </div>
         </div>
+         <div class="nav-section">        
+        <div class="nav-item-group <?php echo ($module === 'shiftmanagement') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="shiftmanagement">
+            <div class="nav-item-content">
+              <i data-lucide="calendar-check"></i>
+              <span>Shift & Scheduling</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu active" id="submenu-shiftmanagement">
+            <a href="intake.php" class="submenu-item active">
+              <i data-lucide="send-to-back"></i>
+              <span>Master Data Intake</span>
+             </a>
+          </div>
             <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
               <i data-lucide="layers-plus"></i>
               <span>Recruitment</span>
@@ -182,13 +196,9 @@ $module = 'corehumancapital';
               <span>New Hired Onboard</span>
             </a>
         </div>
-       
-
-      
 
         <div class="nav-section">
         <span class="nav-section-title">FINANCE</span>
-        
         <div class="nav-item-group <?php echo ($module === 'budget') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="budget">
             <div class="nav-item-content">
@@ -202,28 +212,20 @@ $module = 'corehumancapital';
               <i data-lucide="badge-dollar-sign"></i>
               <span>Position Requests</span>
             </a>
-            <a href="intake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
-              <i data-lucide="send-to-back"></i>
-              <span>Master Data Intake</span>
-            </a>
           </div>
 
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
-        
         <a href="#" class="nav-item">
           <i data-lucide="settings"></i>
           <span>Configuration</span>
         </a>
-
         <a href="#" class="nav-item">
           <i data-lucide="shield"></i>
           <span>Security</span>
         </a>
-        
       </div>
     </nav>
-
 
     <div class="sidebar-footer">
       <div class="user-profile">
@@ -242,8 +244,8 @@ $module = 'corehumancapital';
             <div class="umd-avatar" id="umdAvatar"></div>
             <div class="umd-info">
               <span class="umd-signed">Signed in as</span>
-              <span class="umd-name" id="umdName"></span>
-              <span class="umd-role" id="umdRole"></span>
+              <span class="umd-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'Admin'); ?></span>
+              <span class="umd-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'Administrator'); ?></span>
             </div>
           </div>
           <div class="umd-divider"></div>
@@ -263,115 +265,174 @@ $module = 'corehumancapital';
           <i data-lucide="menu"></i>
         </button>
         <div class="header-title">
-          <h1>Information Approval</h1>
-          <p>Final review and approval of employee information updates.</p>
+          <h1 style="font-size: 24px; font-weight: 600;">Master Data Intake</h1>
+          <p style="color: var(--text-secondary); font-size: 14px;">Review and sync incoming employee master data dispatches.</p>
         </div>
       </div>
-      <div class="header-right">
-                        <div class="header-clock">
+      <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+        <div class="header-clock">
           <span id="realTimeClock"></span>
         </div>
+        <button class="icon-btn" aria-label="Notifications">
+            <i data-lucide="bell"></i>
+            <span class="badge">0</span>
+        </button>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
           <i data-lucide="moon" class="moon-icon"></i>
         </button>
-        <div class="header-notifications" style="position: relative;">
-          <button class="icon-btn" id="notifBtn">
-            <i data-lucide="bell"></i>
-            <span class="badge hidden" id="notifBadge">0</span>
-          </button>
-          <div id="notifDropdown" class="notif-dropdown hidden">
-              <div class="notif-header">
-                  <h3>Notifications</h3>
-                  <button id="markReadAll" class="btn-text">Mark all as read</button>
-              </div>
-              <div id="notifList" class="notif-list">
-                  <div class="notif-empty">No new notifications</div>
-              </div>
-          </div>
-        </div>
       </div>
     </header>
 
     <div class="content-wrapper">
-        <div class="content-card">
-            <div class="card-header">
-                <div class="card-header-left">
-                    <h3 class="card-title">Information Update Approvals</h3>
-                    <p class="card-subtitle">Review and give final approval for endorsed information updates.</p>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="data-table">
-                    <table id="requestsTable">
-                        <thead>
-                            <tr>
-                                <th>Employee</th>
-                                <th>Request Type</th>
-                                <th>Endorsed Date</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="requestsTableBody">
-                            <tr>
-                                <td colspan="5">
-                                    <div class="empty-state">
-                                        <i data-lucide="loader-2"></i>
-                                        <p>Loading requests…</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- View/Approve Modal styled like Information Management Request Edit -->
-    <div class="modal-overlay hidden" id="requestActionModal">
-      <div class="rem-dialog">
-        <!-- Header -->
-        <div class="rem-header">
-          <div class="rem-header-left">
-            <div class="rem-icon-box">
-              <i data-lucide="file-check-2"></i>
-            </div>
-            <div class="rem-title-group">
-              <h3 class="rem-title">Final Review & Approval</h3>
-              <p class="rem-subtitle">Approve or Reject the endorsed employee information changes.</p>
-            </div>
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i data-lucide="package"></i>
           </div>
-          <button type="button" class="rem-close" id="btnCloseActionModal">
-            <i data-lucide="x"></i>
-          </button>
-        </div>
-
-        <!-- Body -->
-        <div class="rem-body">
-            <div class="rem-section" id="requestDetailsBody">
-                <!-- Dynamic Content injected by JS -->
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="rem-footer">
-          <div class="rem-footer-hint" style="margin-right: auto;">
-            <i data-lucide="info"></i>
-            Approval updates the official records immediately.
+          <div class="stat-content">
+            <span class="stat-label">Pending Batches</span>
+            <h3 class="stat-value" id="statPendingBatches">0</h3>
           </div>
-          <button type="button" class="rem-btn-send rem-btn-secondary" id="btnReject">
-            <i data-lucide="x-circle" style="color:var(--brand-red);"></i> Reject
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+            <i data-lucide="users"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Total Records</span>
+            <h3 class="stat-value" id="statTotalRecords">0</h3>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow);">
+            <i data-lucide="clock"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Last Sync</span>
+            <h3 class="stat-value" id="statLastSync" style="font-size: 20px;">--:--</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Card -->
+      <div class="content-card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Intake Queue</h3>
+            <p class="card-subtitle">Grouped employee records awaiting final system synchronization.</p>
+          </div>
+          <button class="btn-refresh" onclick="location.reload()" style="padding: 10px 18px; border-radius: 10px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="refresh-cw" style="width: 16px;"></i>
+            Refresh Queue
           </button>
-          <button type="button" class="rem-btn-send rem-btn-blue" id="btnApprove">
-            <i data-lucide="check-circle"></i> Approve
-          </button>
+        </div>
+        
+        <div class="dispatch-table-container">
+          <table class="dispatch-table" id="intakeTable">
+            <thead>
+              <tr>
+                <th style="width: 250px;">Dispatcher Name</th>
+                <th style="width: 200px;">Position</th>
+                <th style="width: 150px; text-align: center;">Records</th>
+                <th style="width: 180px; text-align: center;">Last Activity</th>
+                <th style="width: 150px; text-align: center;">Status</th>
+                <th style="width: 200px; text-align: center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="intakeTableBody">
+                <tr id="loadingState">
+                    <td colspan="6" style="text-align: center; padding: 60px;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                            <i data-lucide="loader-2" class="animate-spin" style="width: 32px; color: var(--brand-green);"></i>
+                            <p style="color: var(--text-secondary); font-weight: 500;">Retrieving intake queue...</p>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
+
+    <!-- Batch Review Modal -->
+    <div id="batchReviewModal" class="modal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+        <div class="modal-content" style="background: var(--surface); border-radius: 20px; width: 95%; max-width: 950px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: var(--shadow-lg); border: 1px solid var(--border-color);">
+            
+            <!-- Modal Header -->
+            <div style="padding: 24px 32px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: var(--background);">
+                <div>
+                    <h2 style="font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Batch Review Queue</h2>
+                    <p id="batchReviewSummary" style="font-size: 13px; color: var(--text-secondary);">Review individual records within this dispatch batch.</p>
+                </div>
+                <button onclick="closeBatchModal()" style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--surface); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition);">
+                    <i data-lucide="x" style="width: 20px;"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div style="padding: 32px; overflow-y: auto; flex: 1;">
+                <div class="dispatch-table-container" style="border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden;">
+                    <table class="dispatch-table">
+                        <thead style="background: var(--background);">
+                            <tr>
+                                <th style="padding: 16px;">Employee Name</th>
+                                <th style="padding: 16px;">System Code</th>
+                                <th style="padding: 16px;">Department</th>
+                                <th style="padding: 16px;">Current Position</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalBatchEmployeeList" style="font-size: 14px;">
+                            <!-- List of employees -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 28px;">
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px;">Reviewer Remarks</label>
+                    <textarea id="batchRemarks" style="width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--background); color: var(--text-primary); outline: none; resize: none; font-family: inherit; font-size: 14px; min-height: 100px; transition: var(--transition);" placeholder="Internal notes regarding this batch sync..."></textarea>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div style="padding: 24px 32px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background: var(--background);">
+                <button onclick="closeBatchModal()" style="padding: 12px 24px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--surface); color: var(--text-secondary); cursor: pointer; font-weight: 600; font-size: 14px; transition: var(--transition);">Cancel</button>
+                <button onclick="processBatch('Rejected')" style="padding: 12px 24px; border-radius: 12px; border: none; background: #ef4444; color: white; cursor: pointer; font-weight: 600; font-size: 14px; transition: var(--transition);">Reject Batch</button>
+                <button onclick="processBatch('Received')" style="padding: 12px 24px; border-radius: 12px; border: none; background: var(--brand-green); color: white; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; transition: var(--transition);">
+                    <i data-lucide="refresh-cw" style="width: 16px;"></i>
+                    Sync Batch
+                </button>
+            </div>
+        </div>
+    </div>
   </main>
-  <script src="../../js/notifications.js?v=1.1"></script>
-  <script src="../../js/admin_informationapproval.js"></script>
+
+  <script src="../../js/adminintake.js"></script>
+  <script>
+    if (window.lucide) window.lucide.createIcons();
+
+    // Real-time clock
+    function updateClock() {
+        const now = new Date();
+        const options = { 
+            weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
+        };
+        const clockEl = document.getElementById('realTimeClock');
+        if (clockEl) clockEl.textContent = now.toLocaleDateString('en-US', options);
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
 </body>
 </html>
+
+
+
+
+
+
+

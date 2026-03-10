@@ -29,7 +29,7 @@ while ($row = $grades_query->fetch_assoc()) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Salary & Scales Management</title>
-  <link rel="stylesheet" href="../../css/cycle.css?v=1.2">
+  <link rel="stylesheet" href="../../css/salary.css?v=1.0">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -71,6 +71,10 @@ while ($row = $grades_query->fetch_assoc()) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-hr">
+            <a href="dispatch.php" class="submenu-item">
+              <i data-lucide="send"></i>
+              <span>Master Data Dispatch</span>
+            </a>
             <a href="" class="submenu-item">
               <i data-lucide="user-plus"></i>
               <span>New Hired Onboard Request</span>
@@ -162,7 +166,29 @@ while ($row = $grades_query->fetch_assoc()) {
           </div>
         </div>
       </div>
-
+ 
+       <div class="nav-section">
+         <span class="nav-section-title">FINANCE</span>
+         <div class="nav-item-group">
+           <button class="nav-item has-submenu" data-module="finance">
+             <div class="nav-item-content">
+               <i data-lucide="hand-coins"></i>
+               <span>Budget Management</span>
+             </div>
+             <i data-lucide="chevron-down" class="submenu-icon"></i>
+           </button>
+           <div class="submenu" id="submenu-finance">
+             <a href="intake.php" class="submenu-item">
+               <i data-lucide="send-to-back"></i>
+               <span>Master Data Intake</span>
+             </a>
+             <a href="positionrequest.php" class="submenu-item">
+               <i data-lucide="badge-dollar-sign"></i>
+               <span>Position Requests</span>
+             </a>
+           </div>
+         </div>
+       </div>
 
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
@@ -403,6 +429,21 @@ while ($row = $grades_query->fetch_assoc()) {
             <label>Reason for Proposal <span class="required">*</span></label>
             <textarea id="proposalReason" rows="3" class="input-premium no-icon" placeholder="Explain the rationale behind these proposed changes..."></textarea>
           </div>
+
+          <!-- Proof upload section -->
+          <div class="form-group" style="margin-top: 16px;">
+            <label>Supporting Document <span style="font-weight:400; color:var(--text-tertiary);">(Optional — Government file, Salary Structure, etc.)</span></label>
+            <div class="proof-upload-area" id="proofUploadArea">
+              <input type="file" id="proofFileInput" accept=".pdf,.doc,.docx,image/*">
+              <div class="proof-upload-icon"><i data-lucide="upload-cloud"></i></div>
+              <span class="proof-upload-label">Click or drag to upload proof</span>
+              <span class="proof-upload-hint">PDF, Word, or Image (Max 5MB)</span>
+            </div>
+            <div class="proof-file-badge" id="proofFileBadge">
+              <i data-lucide="file-check"></i>
+              <span id="proofBadgeName">No file selected</span>
+            </div>
+          </div>
         </div>
         <div class="modal-footer-premium">
           <button type="button" id="cancelProposeBtn" class="btn-cancel-premium">Cancel</button>
@@ -462,23 +503,8 @@ while ($row = $grades_query->fetch_assoc()) {
               <h4 style="margin-bottom: 8px;" id="stepperBatchTitle">Batch Details</h4>
               <p style="color: var(--text-secondary); margin-bottom: 24px;" id="stepperBatchReason"></p>
 
-              <style>
-                  .stepper-container { display: flex; flex-wrap: nowrap; align-items: flex-start; justify-content: space-between; position: relative; width: 100%; max-width: 600px; margin: 0 auto; }
-                  .stepper-step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; width: 120px; }
-                  .step-circle { width: 32px; height: 32px; border-radius: 50%; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; border: 4px solid white; box-shadow: 0 0 0 2px #e5e7eb; margin-bottom: 12px; }
-                  .step-circle i { width: 14px; height: 14px; }
-                  .step-completed .step-circle { background-color: #10b981; box-shadow: 0 0 0 2px #10b981; }
-                  .step-current .step-circle { background-color: #3b82f6; box-shadow: 0 0 0 2px #3b82f6; }
-                  .step-rejected .step-circle { background-color: #ef4444; box-shadow: 0 0 0 2px #ef4444; }
-                  .stepper-line { position: absolute; top: 16px; left: 60px; right: 60px; width: calc(100% - 120px); height: 2px; background-color: #e5e7eb; z-index: 1; }
-                  .stepper-line-fill { height: 100%; background-color: #10b981; width: 0%; transition: width 0.3s ease; }
-                  .step-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); font-weight: 600; margin-bottom: 4px; }
-                  .step-title { font-size: 14px; font-weight: 600; color: var(--text-primary); text-align: center; margin-bottom: 4px; }
-                  .step-desc { font-size: 12px; color: #10b981; text-align: center; }
-                  .step-current .step-desc { color: #3b82f6; }
-                  .step-pending .step-title, .step-pending .step-desc { color: #9ca3af; }
-                  .step-rejected .step-desc { color: #ef4444; }
-              </style>
+
+
 
               <div class="stepper-wrapper" style="background:var(--surface-hover); border-radius:12px; padding:32px 16px; display: flex; justify-content: center;">
                   <div class="stepper-container">

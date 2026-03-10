@@ -111,7 +111,7 @@
 
     if (submitProposalScaleBtn) {
         submitProposalScaleBtn.addEventListener("click", async () => {
-            const reason = document.getElementById("proposalReason") ? document.getElementById("proposalReason").value.trim() : "";
+            const reason = document.getElementById("proposalReason")?.value.trim() ?? "";
             if (!reason) {
                 Swal.fire('Error', 'Please provide a reason for the proposal.', 'error');
                 return;
@@ -142,10 +142,19 @@
             submitProposalScaleBtn.disabled = true;
 
             try {
-                const response = await fetch('be_cycle_proposal.php', {
+                // Use FormData so we can attach the proof file
+                const fd = new FormData();
+                fd.append('reason', reason);
+                fd.append('proposals', JSON.stringify(proposals));
+
+                const proofInput = document.getElementById('proofFileInput');
+                if (proofInput && proofInput.files[0]) {
+                    fd.append('proof_file', proofInput.files[0]);
+                }
+
+                const response = await fetch('be_salary.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reason: reason, proposals: proposals })
+                    body: fd
                 });
                 const data = await response.json();
 
@@ -161,6 +170,7 @@
                     });
                     closeProposeModal();
                     if (document.getElementById("proposalReason")) document.getElementById("proposalReason").value = '';
+                    if (proofInput) { proofInput.value = ''; document.getElementById('proofFileBadge')?.classList.remove('visible'); }
                 } else {
                     throw new Error(data.message || 'Error saving proposal');
                 }
@@ -172,6 +182,32 @@
             }
         });
     }
+
+    // Proof file upload — name display + drag-over
+    const proofInput = document.getElementById('proofFileInput');
+    const proofBadge = document.getElementById('proofFileBadge');
+    const proofBadgeName = document.getElementById('proofBadgeName');
+    const proofUploadArea = document.getElementById('proofUploadArea');
+
+    if (proofInput && proofBadge) {
+        proofInput.addEventListener('change', () => {
+            const file = proofInput.files[0];
+            if (file) {
+                proofBadgeName.textContent = file.name;
+                proofBadge.classList.add('visible');
+            } else {
+                proofBadge.classList.remove('visible');
+            }
+            if (window.lucide) window.lucide.createIcons();
+        });
+    }
+
+    if (proofUploadArea) {
+        proofUploadArea.addEventListener('dragover', e => { e.preventDefault(); proofUploadArea.classList.add('drag-over'); });
+        proofUploadArea.addEventListener('dragleave', () => proofUploadArea.classList.remove('drag-over'));
+        proofUploadArea.addEventListener('drop', () => proofUploadArea.classList.remove('drag-over'));
+    }
+
 
     // Track Status Logic
     const btnTrackStatus = document.getElementById('btnTrackStatus');

@@ -112,6 +112,10 @@ if ($rolesResult) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-corehumancapital">
+            <a href="dispatch.php" class="submenu-item <?php echo ($page === 'dispatch') ? 'active' : ''; ?>">
+              <i data-lucide="send"></i>
+              <span>Master Data Dispatch</span>
+            </a>
              <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
               <i data-lucide="building-2"></i>
               <span>Organization Profile</span>
@@ -224,6 +228,10 @@ if ($rolesResult) {
             <a href="positionrequest.php" class="submenu-item <?php echo ($page === 'positionrequest') ? 'active' : ''; ?>">
               <i data-lucide="badge-dollar-sign"></i>
               <span>Position Requests</span>
+            </a>
+            <a href="intake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="send-to-back"></i>
+              <span>Master Data Intake</span>
             </a>
           </div>
 

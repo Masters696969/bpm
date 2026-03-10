@@ -82,6 +82,10 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-corehumancapital">
+            <a href="dispatch.php" class="submenu-item <?php echo ($page === 'dispatch') ? 'active' : ''; ?>">
+              <i data-lucide="send"></i>
+              <span>Master Data Dispatch</span>
+            </a>
              <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
               <i data-lucide="building-2"></i>
               <span>Organization Profile</span>
@@ -162,6 +166,21 @@ if (!isset($_SESSION['username'])) {
             </a>
           </div>
         </div>
+         <div class="nav-section">        
+        <div class="nav-item-group <?php echo ($module === 'budget') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="budget">
+            <div class="nav-item-content">
+              <i data-lucide="calendar-check"></i>
+              <span>Shift & Scheduling</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-budget">
+            <a href="intake.php" class="submenu-item <?php echo ($page === 'positionrequest') ? 'active' : ''; ?>">
+              <i data-lucide="send-to-back"></i>
+              <span>Master Data Intake</span>
+             </a>
+          </div>
             <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
               <i data-lucide="layers-plus"></i>
               <span>Recruitment</span>

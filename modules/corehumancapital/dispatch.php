@@ -1,17 +1,19 @@
-﻿<?php
+<?php
 session_start();
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../../login.php');
-    exit;
+if (!isset($_SESSION['username'])) {
+    header("Location: ../../login.php");
+    exit();
 }
+$page = 'dispatch';
+$module = 'corehumancapital';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/employeemaster.css?v=1.1">
+  <title>Master Data Dispatch | Core Human Capital</title>
+  <link rel="stylesheet" href="../../css/chcdispatch.css"> <!-- Consolidated styles -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -35,7 +37,7 @@ if (!isset($_SESSION['user_id'])) {
       </button>
     </div>
 
-    <nav class="sidebar-nav">
+      <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
@@ -194,13 +196,13 @@ if (!isset($_SESSION['user_id'])) {
         <button class="mobile-menu-btn" id="mobileMenuBtn">
           <i data-lucide="menu"></i>
         </button>
-          <div class="header-title">
-          <h1>Employee Master File</h1>
-          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
+        <div class="header-title">
+          <h1>Master Data Dispatch</h1>
+          <p>Review and dispatch employee master data to the Intake module.</p>
         </div>
       </div>
-      <div class="header-right">
-                        <div class="header-clock">
+      <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
+        <div class="header-clock">
           <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
@@ -213,109 +215,83 @@ if (!isset($_SESSION['user_id'])) {
       </div>
     </header>
 
-      <!-- Stats Strip -->
-      <div class="em-content-wrapper">
+    <div class="content-wrapper">
+      <div class="dispatch-container">
+        <!-- Main Data Table -->
+        <div class="data-section">
+            <div class="section-header">
+                <div>
+                    <h2>Data Verification Queue</h2>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin: 4px 0 0 0;">
+                        The table below shows employee records waiting to be dispatched.
+                    </p>
+                </div>
+                <button class="btn-refresh" style="padding: 8px 16px; background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;" onclick="location.reload()">
+                    <i data-lucide="rotate-cw" style="width: 14px;"></i>
+                    Refresh
+                </button>
+            </div>
 
-        <div class="stats-strip">
-          <div class="stat-card">
-            <div class="stat-icon em-total">
-              <i data-lucide="users"></i>
+            <div class="dispatch-table-container">
+                <table class="dispatch-table">
+                    <thead>
+                        <tr>
+                            <th>Dispatcher Name</th>
+                            <th>Position</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dispatchTableBody">
+                        <!-- Will be populated with 1 row for the dispatcher -->
+                    </tbody>
+                </table>
             </div>
-            <div class="stat-info">
-              <span class="stat-value" id="statTotal">—</span>
-              <span class="stat-label">Total Employees</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon em-regular">
-              <i data-lucide="user-check"></i>
-            </div>
-            <div class="stat-info">
-              <span class="stat-value" id="statRegular">—</span>
-              <span class="stat-label">Regular</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon em-probationary">
-              <i data-lucide="hourglass"></i>
-            </div>
-            <div class="stat-info">
-              <span class="stat-value" id="statProbationary">—</span>
-              <span class="stat-label">Probationary</span>
-            </div>
-          </div>
         </div>
+    </div>
+    </div>
 
-        <!-- Employee Table -->
-        <div class="content-card">
-          <div class="card-header">
-            <div class="card-header-left">
-              <h3 class="card-title">Employee Master Files</h3>
-              <p class="card-subtitle">View and manage all employee records.</p>
+    <!-- View Employee Modal -->
+    <div id="viewEmployeeModal" class="modal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+        <div class="modal-content" style="background: var(--surface); padding: 32px; border-radius: 16px; width: 90%; max-width: 900px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: var(--shadow-lg);">
+            <button onclick="closeViewModal()" style="position: absolute; right: 24px; top: 24px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-tertiary);">&times;</button>
+            
+            <div style="margin-bottom: 24px;">
+                <h2 style="font-size: 22px; font-weight: 700; color: var(--text-primary);">Employees Pending Dispatch</h2>
+                <p style="font-size: 14px; color: var(--text-secondary);">The following records will be sent to the Intake module.</p>
             </div>
-            <div class="card-header-right">
-              <label class="table-search">
-                <i data-lucide="search"></i>
-                <input type="text" id="empTableSearch" placeholder="Search employees…">
-              </label>
+
+            <div class="dispatch-table-container">
+                <table class="dispatch-table">
+                    <thead>
+                        <tr>
+                            <th>Employee Name</th>
+                            <th>Employee Code</th>
+                            <th>Department</th>
+                            <th>Position</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalEmployeeList">
+                        <!-- List of employees -->
+                    </tbody>
+                </table>
             </div>
-          </div>
-          <div class="card-body" style="padding:0;">
-            <div class="table-responsive">
-              <table class="users-table" id="employeeTable">
-                <thead>
-                  <tr>
-                    <th>Employee</th>
-                    <th>Position</th>
-                    <th>Department</th>
-                    <th>Status</th>
-                    <th>Salary Grade</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- Data will be populated by JS -->
-                </tbody>
-              </table>
+
+            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px;">
+                <button class="btn-refresh" onclick="closeViewModal()" style="padding: 10px 24px; border-radius: 10px; border: 1px solid var(--border-color); background: transparent; cursor: pointer; font-weight: 600; color: var(--text-secondary);">Close</button>
+                <button class="btn-dispatch-single" id="modalDispatchBtn" style="background: var(--brand-green); color: white; border: none;" onclick="dispatchAll()">
+                    <i data-lucide="send" style="width: 14px;"></i>
+                    Dispatch All
+                </button>
             </div>
-          </div>
         </div>
-
-      </div>
-
-      <!-- Employee Details Modal -->
-      <div id="employeeModal" class="modal">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h3 id="modalTitle">Employee Profile</h3>
-              <button class="close-modal" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body" id="modalBody">
-              <!-- Content injected by JS -->
-            </div>
-          </div>
-        </div>
-      </div>
-
+    </div>
   </main>
-  <script src="../../js/chcdashboard.js"></script>
-  <script src="../../js/employeemaster.js"></script>
+  <script src="../../js/chcdispatch.js"></script>
   <script>
-    lucide.createIcons();
-    // Wire up inline search
-    document.getElementById('empTableSearch')?.addEventListener('input', function() {
-      const q = this.value.toLowerCase();
-      document.querySelectorAll('#employeeTable tbody tr').forEach(r => {
-        r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
-      });
-    });
+    if (window.lucide) window.lucide.createIcons();
   </script>
 </body>
 </html>
-
-
-
-
-
-

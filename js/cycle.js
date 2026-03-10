@@ -61,6 +61,27 @@
         if (simBtn) simBtn.classList.add('locked-tab');
     }
 
+    // 5. Start Simulation Cycle Button
+    const startCycleBtn = document.getElementById("startCycleBtn");
+    if (startCycleBtn) {
+        startCycleBtn.addEventListener("click", () => {
+            // Unlock simulation tab and switch to it
+            switchTab('simulation');
+
+            // Optional: Smooth scroll or feedback
+            if (window.Swal) {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'info',
+                    title: 'Simulation cycle started. Tab unlocked.',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+        });
+    }
+
     function switchTab(tabId) {
         if (tabId === 'simulation') {
             window.simulationUnlocked = true;
@@ -696,7 +717,7 @@
                 });
             });
 
-            const totalCostStr = document.getElementById("totalSimulationCost")?.innerText || "0";
+            const totalCostStr = document.getElementById("totalMonthlyImpact")?.innerText || "0";
             const totalCost = parseFloat(totalCostStr.replace(/[^\d.-]/g, '')) || 0;
             const totalBudgetStr = document.getElementById("budgetAllocation")?.value || "5000000";
             const totalBudget = parseFloat(totalBudgetStr.replace(/[^\d.-]/g, '')) || 5000000;

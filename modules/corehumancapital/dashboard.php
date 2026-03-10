@@ -13,6 +13,7 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   <link rel="stylesheet" href="../../css/chcdashboard.css?v=1.2">
+  <link rel="stylesheet" href="../../css/sidebar-fix.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
@@ -53,21 +54,29 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-hr">
-            <a href="" class="submenu-item">
-              <i data-lucide="user-plus"></i>
-              <span>New Hired Onboard Request</span>
+            <a href="dispatch.php" class="submenu-item">
+              <i data-lucide="send"></i>
+              <span>Master Data Dispatch</span>
+            </a>
+            <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
+              <i data-lucide="building-2"></i>
+              <span>Organization Profile</span>
+            </a>
+            <a href="positioncatalog.php" class="submenu-item <?php echo ($page === 'positioncatalog') ? 'active' : ''; ?>">
+              <i data-lucide="user-star"></i>
+              <span>Position Catalog</span>
             </a>
             <a href="employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
             </a>
+             <a href="informationrq.php" class="submenu-item <?php echo ($page === 'informationrq') ? 'active' : ''; ?>">
+              <i data-lucide="user-round-pen"></i>
+              <span>Information Request</span>
+            </a>
             <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
               <i data-lucide="file-text"></i>
               <span>Bank Form Management</span>
-            </a>
-            <a href="" class="submenu-item">
-              <i data-lucide="user-cog"></i>
-              <span>Security Settings</span>
             </a>
             <a href="auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
               <i data-lucide="book-user"></i>
@@ -192,8 +201,9 @@ if (!isset($_SESSION['username'])) {
         </div>
       </div>
       <div class="header-right">
-                        <div class="header-clock">
-          <span id="realTimeClock"></span>
+        <div class="search-box">
+          <i data-lucide="search"></i>
+          <input type="search" placeholder="Search...">
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -380,6 +390,7 @@ if (!isset($_SESSION['username'])) {
                 <span>Generate Report</span>
               </button>
               <button class="action-btn">
+                <i data-lucide="calendar"></i>
                 <span>Schedule Meeting</span>
               </button>
               <button class="action-btn">
@@ -503,17 +514,16 @@ if (!isset($_SESSION['username'])) {
 // Actually footer.php includes sidebar-active.js and chcdashboard.js for everything in this module.
 ?>
   </main>
+  
+  <script src="../../js/sidebar-active.js"></script>
   <script src="../../js/chcdashboard.js"></script>
   <?php if (isset($extraScripts)) echo $extraScripts; ?>
   <script>
     lucide.createIcons();
   </script>
+  
+  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
-
-
-
-
-
 
 

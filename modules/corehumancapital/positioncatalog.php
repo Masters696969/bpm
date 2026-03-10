@@ -105,13 +105,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $_SESSION['error_message'] = "A requisition for this position is already active.";
             $log .= "ERROR: Requisition already active for posId=$posId\n";
         } else {
-            $stmt = $conn->prepare("INSERT INTO recruitment_requisitions (PositionID, RequestedBy) VALUES (?, ?)");
+            $stmt = $conn->prepare("INSERT INTO recruitment_requisitions (PositionID, RequestedBy, Status) VALUES (?, ?, 'Pending')");
             $stmt->bind_param("is", $posId, $requestedBy);
             if ($stmt->execute()) {
                 $_SESSION['success_message'] = "Hiring requisition sent to Recruitment module.";
                 $log .= "SUCCESS: Requisition inserted for posId=$posId\n";
                 file_put_contents($logFile, $log, FILE_APPEND);
-                header("Location: recruitment.php");
+                header("Location: positioncatalog.php");
                 exit();
             } else {
                 $_SESSION['error_message'] = "Error sending requisition: " . $conn->error;
@@ -124,6 +124,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $log .= "ERROR: position_id is empty\n";
     }
     file_put_contents($logFile, $log, FILE_APPEND);
+    header("Location: positioncatalog.php");
+    exit();
+}
+
+// Handle Cancel Requisition
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'cancel_requisition') {
+    $posId = $_POST['position_id'] ?? '';
+    if (!empty($posId)) {
+        $stmt = $conn->prepare("UPDATE recruitment_requisitions SET Status = 'Cancelled' WHERE PositionID = ? AND (Status IN ('Pending', 'Active', 'Posted') OR Status IS NULL OR Status = '')");
+        $stmt->bind_param("i", $posId);
+        if ($stmt->execute()) {
+            $_SESSION['success_message'] = "Hiring requisition cancelled successfully.";
+        } else {
+            $_SESSION['error_message'] = "Error cancelling requisition: " . $conn->error;
+        }
+        $stmt->close();
+    }
     header("Location: positioncatalog.php");
     exit();
 }
@@ -187,7 +204,7 @@ while ($row = $positionsResult->fetch_assoc()) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/positioncatalog.css?v=1.2">
+  <link rel="stylesheet" href="../../css/chcpositioncatalog.css?v=1.2">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -213,56 +230,27 @@ while ($row = $positionsResult->fetch_assoc()) {
 
   <nav class="sidebar-nav">
       <div class="nav-section">
-        <span class="nav-section-title">ANALYTICS & REPORTING</span>
-        <a href="dashboard.php" class="nav-item active">
-          <i data-lucide="layout-dashboard"></i>
+        <span class="nav-section-title">MAIN MENU</span>
+        
+        <a href="dashboard.php" class="nav-item <?php echo ($page === 'dashboard') ? 'active' : ''; ?>">
+          <i data-lucide="chart-no-axes-combined"></i>
           <span>HR ANALYTICS</span>
         </a>
-      <div class="nav-section">
-        <span class="nav-section-title">ADMINISTRATION</span>
-        <div class="nav-item-group active">
-          <button class="nav-item has-submenu" data-module="accounts">
-            <div class="nav-item-content">
-              <i data-lucide="users"></i>
-              <span>Account Management</span>
-            </div>
-            <i data-lucide="chevron-down" class="submenu-icon"></i>
-          </button>
-          <div class="submenu" id="submenu-accounts">
-            <a href="useraccount.php" class="submenu-item active">
-              <i data-lucide="user-plus"></i>
-              <span>User Accounts</span>
-            </a>
-            <a href="rolespermission.php" class="submenu-item">
-              <i data-lucide="contact-round"></i>
-              <span>Roles & Permissions</span>
-            </a>
-            <a href="securitysetting.php" class="submenu-item">
-              <i data-lucide="user-cog"></i>
-              <span>Security Settings</span>
-            </a>
-            <a href="auditlogs.php" class="submenu-item">
-              <i data-lucide="book-user"></i>
-              <span>Audit Logs</span>
-            </a>
-          </div>
-        </div>
-       <div class="nav-section">
-        <span class="nav-section-title">Human Resources</span>
-          <div class="nav-item-group <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="corehumancapital">
+
+        <div class="nav-item-group <?php echo ($module === 'hr') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="hr">
             <div class="nav-item-content">
               <i data-lucide="book-user"></i>
               <span>Core Human Capital</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-corehumancapital">
-            <a href="dispatch.php" class="submenu-item <?php echo ($page === 'dispatch') ? 'active' : ''; ?>">
+          <div class="submenu" id="submenu-hr">
+            <a href="dispatch.php" class="submenu-item">
               <i data-lucide="send"></i>
               <span>Master Data Dispatch</span>
             </a>
-             <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
+            <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
               <i data-lucide="building-2"></i>
               <span>Organization Profile</span>
             </a>
@@ -274,9 +262,9 @@ while ($row = $positionsResult->fetch_assoc()) {
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
             </a>
-            <a href="informationapproval.php" class="submenu-item <?php echo ($page === 'informationapproval') ? 'active' : ''; ?>">
-              <i data-lucide="file-check"></i>
-              <span>Information Approval</span>
+             <a href="informationrq.php" class="submenu-item <?php echo ($page === 'informationrq') ? 'active' : ''; ?>">
+              <i data-lucide="user-round-pen"></i>
+              <span>Information Request</span>
             </a>
             <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
               <i data-lucide="file-text"></i>
@@ -288,6 +276,7 @@ while ($row = $positionsResult->fetch_assoc()) {
             </a>
           </div>
         </div>
+
           <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
@@ -297,89 +286,53 @@ while ($row = $positionsResult->fetch_assoc()) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
-            <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
-              <i data-lucide="banknote"></i>
-              <span>Salary & Scales Management</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-plus"></i>
+              <span>Applications</span>
             </a>
-            <a href="statutory.php" class="submenu-item <?php echo ($page === 'statutory') ? 'active' : ''; ?>">
-              <i data-lucide="scale"></i>
-              <span>Statutory Contributions</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="check-circle"></i>
+              <span>Approvals</span>
             </a>
-            <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
-              <i data-lucide="scale"></i>
-              <span>Merit Matrix Structure</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="calendar-clock"></i>
+              <span>Disbursements</span>
             </a>
-            <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
-              <i data-lucide="notebook-pen"></i>
-              <span>Compensation Structure Management</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="coins"></i>
+              <span>Collections</span>
             </a>
           </div>
         </div>
-        <div class="nav-item-group">
+
+           <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="payroll">
             <div class="nav-item-content">
-              <i data-lucide="banknote"></i>
-              <span>Payroll Management</span>
+              <i data-lucide="banknote-arrow-down"></i>
+              <span>Payroll</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-payroll">
-            <a href="comperules.php" class="submenu-item">
-              <i data-lucide="boxes"></i>
-              <span>Compensation Rules</span>
-            </a>
-            <a href="payroll.php" class="submenu-item active">
-              <i data-lucide="play-circle"></i>
-              <span>Payroll Processing</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-plus"></i>
+              <span>Applications</span>
             </a>
             <a href="#" class="submenu-item">
-              <i data-lucide="history"></i>
-              <span>Payroll History</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="file-check"></i>
+              <i data-lucide="check-circle"></i>
               <span>Approvals</span>
             </a>
-          </div>
-        </div>
-            <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
-              <i data-lucide="layers-plus"></i>
-              <span>Recruitment</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="calendar-clock"></i>
+              <span>Disbursements</span>
             </a>
-            <a href="applicationmgt.php" class="nav-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
-              <i data-lucide="contact-round"></i>
-              <span>Application Management</span>
-            </a>
-      <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
-              <i data-lucide="user-plus"></i>
-              <span>New Hired Onboard</span>
-            </a>
-        </div>
-       
-
-      
-
-        <div class="nav-section">
-        <span class="nav-section-title">FINANCE</span>
-        
-        <div class="nav-item-group <?php echo ($module === 'budget') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="budget">
-            <div class="nav-item-content">
-              <i data-lucide="hand-coins"></i>
-              <span>Budget Management</span>
-            </div>
-            <i data-lucide="chevron-down" class="submenu-icon"></i>
-          </button>
-          <div class="submenu" id="submenu-budget">
-            <a href="positionrequest.php" class="submenu-item <?php echo ($page === 'positionrequest') ? 'active' : ''; ?>">
-              <i data-lucide="badge-dollar-sign"></i>
-              <span>Position Requests</span>
-            </a>
-            <a href="intake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
-              <i data-lucide="send-to-back"></i>
-              <span>Master Data Intake</span>
+            <a href="#" class="submenu-item">
+              <i data-lucide="coins"></i>
+              <span>Collections</span>
             </a>
           </div>
+        </div>
+      </div>
 
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
@@ -595,10 +548,15 @@ while ($row = $positionsResult->fetch_assoc()) {
                                           <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                                               <?php if ($isVacancy): ?>
                                                   <?php if ($pos['HasRequisition'] > 0): ?>
-                                                      <button class="btn-recruit" style="background: rgba(59, 130, 246, 0.1); color: #1d4ed8; border: 1px solid rgba(59, 130, 246, 0.2);" onclick="event.stopPropagation(); window.location.href='recruitment.php'">
-                                                          <span class="default-text" style="color: #1d4ed8;">IN RECRUITMENT</span>
-                                                          <span class="hover-text">View in Recruitment</span>
-                                                      </button>
+                                                       <div style="display: flex; gap: 8px; align-items: center;">
+                                                           <button class="btn-recruit" style="background: rgba(59, 130, 246, 0.1); color: #1d4ed8; border: 1px solid rgba(59, 130, 246, 0.2);" onclick="event.stopPropagation(); window.location.href='recruitment.php'">
+                                                               <span class="default-text" style="color: #1d4ed8;">IN RECRUITMENT</span>
+                                                               <span class="hover-text">View in Recruitment</span>
+                                                           </button>
+                                                           <button class="btn-cancel-recruit" onclick="event.stopPropagation(); cancelRequisition(<?php echo $pos['PositionID']; ?>, '<?php echo addslashes($pos['PositionName']); ?>')" title="Cancel Recruitment" style="padding: 8px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; cursor: pointer; transition: var(--transition);">
+                                                               <i data-lucide="x-circle" style="width: 16px; height: 16px;"></i>
+                                                           </button>
+                                                       </div>
                                                   <?php else: ?>
                                                       <button class="btn-recruit" onclick="event.stopPropagation(); sendRequisition(<?php echo $pos['PositionID']; ?>, '<?php echo addslashes($pos['PositionName']); ?>')">
                                                           <span class="default-text">VACANT</span>
@@ -664,6 +622,11 @@ while ($row = $positionsResult->fetch_assoc()) {
         <input type="hidden" name="position_id" id="reqPosId">
     </form>
 
+    <form id="cancelRequisitionForm" method="POST" style="display: none;">
+        <input type="hidden" name="action" value="cancel_requisition">
+        <input type="hidden" name="position_id" id="cancelReqPosId">
+    </form>
+
       <!-- Data for JS -->
       <script id="dept-data" type="application/json"><?php echo json_encode($departments); ?></script>
       <script id="grade-data" type="application/json"><?php echo json_encode($salaryGrades); ?></script>
@@ -687,7 +650,7 @@ while ($row = $positionsResult->fetch_assoc()) {
       </style>
     </div>
   </main>
-  <script src="../../js/positioncatalog.js"></script>
+  <script src="../../js/chcpositioncatalog.js"></script>
   <script>
     lucide.createIcons();
     <?php if (isset($_SESSION['success_message'])): ?>

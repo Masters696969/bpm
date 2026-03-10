@@ -27,7 +27,7 @@ while ($row = $grades_query->fetch_assoc()) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Salary & Scales Management</title>
-  <link rel="stylesheet" href="../../css/cycle.css?v=1.2">
+  <link rel="stylesheet" href="../../css/salary.css?v=1.0">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -51,16 +51,16 @@ while ($row = $grades_query->fetch_assoc()) {
       </button>
     </div>
 
-    <nav class="sidebar-nav">
+     <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-        <a href="dashboard.php" class="nav-item">
+        <a href="dashboard.php" class="nav-item active">
           <i data-lucide="layout-dashboard"></i>
           <span>Dashboard</span>
         </a>
 
-        <div class="nav-item-group">
+        <div class="nav-item-group <?php echo ($module === 'hr') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="hr">
             <div class="nav-item-content">
               <i data-lucide="book-user"></i>
@@ -69,15 +69,19 @@ while ($row = $grades_query->fetch_assoc()) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-hr">
+            <a href="../admin/dispatch.php" class="submenu-item">
+              <i data-lucide="send"></i>
+              <span>Master Data Dispatch</span>
+            </a>
             <a href="" class="submenu-item">
               <i data-lucide="user-plus"></i>
               <span>New Hired Onboard Request</span>
             </a>
-            <a href="employeemaster.php" class="submenu-item">
+            <a href="../admin/employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
             </a>
-            <a href="bankform.php" class="submenu-item">
+            <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
               <i data-lucide="file-text"></i>
               <span>Bank Form Management</span>
             </a>
@@ -85,54 +89,47 @@ while ($row = $grades_query->fetch_assoc()) {
               <i data-lucide="user-cog"></i>
               <span>Security Settings</span>
             </a>
-            <a href="auditlogs.php" class="submenu-item">
+            <a href="../admin/auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
               <i data-lucide="book-user"></i>
               <span>Audit Logs</span>
             </a>
           </div>
-        </div>
-
-        <div class="nav-item-group active">
-          <button class="nav-item has-submenu active" data-module="planning">
+          <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
               <span>Compensation Planning</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-planning" style="max-height: 500px;">
-            <a href="salary.php" class="submenu-item active">
+          <div class="submenu" id="submenu-planning">
+            <a href="intake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Master Data Intake</span>
+            </a>
+            <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
             </a>
-            <a href="statutory.php" class="submenu-item">
+            <a href="statutory.php" class="submenu-item <?php echo ($page === 'statutory') ? 'active' : ''; ?>">
               <i data-lucide="scale"></i>
               <span>Statutory Contributions</span>
             </a>
-            <a href="matrix.php" class="submenu-item">
+            <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
               <i data-lucide="percent"></i>
               <span>Merit Matrix Structure</span>
             </a>
-            <a href="allowance.php" class="submenu-item">
+            <a href="allowance.php" class="submenu-item <?php echo ($page === 'allowance') ? 'active' : ''; ?>">
               <i data-lucide="gift"></i>
               <span>Allowance Structure</span>
             </a>
-            <a href="cycle.php" class="submenu-item">
+            <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
               <i data-lucide="notebook-pen"></i>
               <span>Compensation Structure Management</span>
             </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="calendar-clock"></i>
-              <span>Disbursements</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="coins"></i>
-              <span>Collections</span>
-            </a>
           </div>
         </div>
-
-           <div class="nav-item-group">
+        <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="payroll">
             <div class="nav-item-content">
               <i data-lucide="banknote-arrow-down"></i>
@@ -160,8 +157,20 @@ while ($row = $grades_query->fetch_assoc()) {
           </div>
         </div>
       </div>
-
-
+      <div class="nav-section">
+          <span class="nav-section-title">FINANCE</span>
+          <div class="nav-item-group">
+            <button class="nav-item has-submenu" data-module="budget">
+              <div class="nav-item-content">
+                <i data-lucide="hand-coins"></i>
+                <span>Budget Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-budget">
+            </div>
+          </div>
+        </div>
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
         
@@ -176,6 +185,7 @@ while ($row = $grades_query->fetch_assoc()) {
         </a>
         
       </div>
+    </div>
     </nav>
 
     <div class="sidebar-footer">
@@ -401,6 +411,20 @@ while ($row = $grades_query->fetch_assoc()) {
             <label>Reason for Proposal <span class="required">*</span></label>
             <textarea id="proposalReason" rows="3" class="input-premium no-icon" placeholder="Explain the rationale behind these proposed changes..."></textarea>
           </div>
+
+          <div class="form-group" style="margin-top: 16px;">
+            <label>Supporting Document <span style="font-weight:400; color:var(--text-tertiary);">(Optional — Government file, Salary Structure, etc.)</span></label>
+            <div class="proof-upload-area" id="proofUploadArea">
+              <input type="file" id="proofFileInput" accept=".pdf,.doc,.docx,image/*">
+              <div class="proof-upload-icon"><i data-lucide="upload-cloud"></i></div>
+              <span class="proof-upload-label">Click or drag to upload proof</span>
+              <span class="proof-upload-hint">PDF, Word, or Image (Max 5MB)</span>
+            </div>
+            <div class="proof-file-badge" id="proofFileBadge">
+              <i data-lucide="file-check"></i>
+              <span id="proofBadgeName">No file selected</span>
+            </div>
+          </div>
         </div>
         <div class="modal-footer-premium">
           <button type="button" id="cancelProposeBtn" class="btn-cancel-premium">Cancel</button>
@@ -460,23 +484,7 @@ while ($row = $grades_query->fetch_assoc()) {
               <h4 style="margin-bottom: 8px;" id="stepperBatchTitle">Batch Details</h4>
               <p style="color: var(--text-secondary); margin-bottom: 24px;" id="stepperBatchReason"></p>
 
-              <style>
-                  .stepper-container { display: flex; flex-wrap: nowrap; align-items: flex-start; justify-content: space-between; position: relative; width: 100%; max-width: 600px; margin: 0 auto; }
-                  .stepper-step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; width: 120px; }
-                  .step-circle { width: 32px; height: 32px; border-radius: 50%; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; border: 4px solid white; box-shadow: 0 0 0 2px #e5e7eb; margin-bottom: 12px; }
-                  .step-circle i { width: 14px; height: 14px; }
-                  .step-completed .step-circle { background-color: #10b981; box-shadow: 0 0 0 2px #10b981; }
-                  .step-current .step-circle { background-color: #3b82f6; box-shadow: 0 0 0 2px #3b82f6; }
-                  .step-rejected .step-circle { background-color: #ef4444; box-shadow: 0 0 0 2px #ef4444; }
-                  .stepper-line { position: absolute; top: 16px; left: 60px; right: 60px; width: calc(100% - 120px); height: 2px; background-color: #e5e7eb; z-index: 1; }
-                  .stepper-line-fill { height: 100%; background-color: #10b981; width: 0%; transition: width 0.3s ease; }
-                  .step-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); font-weight: 600; margin-bottom: 4px; }
-                  .step-title { font-size: 14px; font-weight: 600; color: var(--text-primary); text-align: center; margin-bottom: 4px; }
-                  .step-desc { font-size: 12px; color: #10b981; text-align: center; }
-                  .step-current .step-desc { color: #3b82f6; }
-                  .step-pending .step-title, .step-pending .step-desc { color: #9ca3af; }
-                  .step-rejected .step-desc { color: #ef4444; }
-              </style>
+
 
               <div class="stepper-wrapper" style="background:var(--surface-hover); border-radius:12px; padding:32px 16px; display: flex; justify-content: center;">
                   <div class="stepper-container">
