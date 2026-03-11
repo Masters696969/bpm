@@ -1,9 +1,14 @@
-﻿<?php
+<?php
+set_time_limit(120);
 require_once 'config/config.php';
 session_start();
 
-// Fetch all live job postings
-$query = "SELECT * FROM job_postings WHERE Status = 'Live' ORDER BY CreatedAt DESC";
+// Fetch all live job postings (Optimized Query)
+$query = "SELECT PostID, Title, Location, JobType, Department, SalaryRange, SalaryType, CreatedAt, Responsibilities, Requirements, Description 
+          FROM job_postings 
+          WHERE Status = 'Live' 
+          ORDER BY CreatedAt DESC 
+          LIMIT 50";
 $result = $conn->query($query);
 $jobsList = [];
 
@@ -45,8 +50,18 @@ while ($row = $result->fetch_assoc()) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Openings - Microfinance</title>
     <link rel="icon" type="image/png" href="img/logo.png">
+    <!-- Bootstrap 5 CSS & JS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmxc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- App Styles -->
     <link rel="stylesheet" href="css/landing.css">
     <link rel="stylesheet" href="css/jobposting.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <!-- Lucide Icons & SweetAlert2 -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>

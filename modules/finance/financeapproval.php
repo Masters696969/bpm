@@ -10,8 +10,11 @@ if (!isset($_SESSION['username'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/gl.css?v=1.2">
+  <title>Finance Approval</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/financeapproval.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -35,6 +38,7 @@ if (!isset($_SESSION['username'])) {
       </button>
     </div>
 
+     
     <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
@@ -47,11 +51,11 @@ if (!isset($_SESSION['username'])) {
           <i data-lucide="check-circle"></i>
           <span>Approval Queue</span>
         </a>
-         <a href="financeapproval.php" class="nav-item">
+         <a href="financeapproval.php" class="nav-item active">
           <i data-lucide="user-check"></i>
           <span>Finance Approval</span>
         </a>
-        <a href="gl.php" class="nav-item active">
+           <a href="gl.php" class="nav-item">
           <i data-lucide="receipt-text"></i>
           <span>General Ledger</span>
         </a>
@@ -118,58 +122,52 @@ if (!isset($_SESSION['username'])) {
   <main class="main-content">
     <header class="page-header">
       <div class="header-left">
-        <button class="mobile-menu-btn" id="mobileMenuBtn">
-          <i data-lucide="menu"></i>
-        </button>
         <div class="header-title">
-          <h1>Dashboard Overview</h1>
-          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
+          <h1>Finance Approval</h1>
+          <p>Review and release approved payroll funds to accounts.</p>
         </div>
       </div>
       <div class="header-right">
-                        <div class="header-clock">
+        <div class="header-clock">
           <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
           <i data-lucide="moon" class="moon-icon"></i>
         </button>
-        <button class="icon-btn">
-          <i data-lucide="bell"></i>
-        </button>
+        <button class="icon-btn"><i data-lucide="bell"></i></button>
       </div>
     </header>
-
     <div class="content-wrapper">
       <!-- Stats Grid -->
       <div class="stats-grid">
         <div class="stat-card-premium">
-          <div class="stat-icon-wrapper" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
-            <i data-lucide="arrow-down-left"></i>
-          </div>
-          <div class="stat-info">
-            <span class="stat-label">Total Debit</span>
-            <h3 class="stat-value" id="statTotalDebit">&#8369;0.00</h3>
-          </div>
-        </div>
-
-        <div class="stat-card-premium">
           <div class="stat-icon-wrapper" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-            <i data-lucide="arrow-up-right"></i>
+            <i data-lucide="loader"></i>
           </div>
           <div class="stat-info">
-            <span class="stat-label">Total Credit</span>
-            <h3 class="stat-value" id="statTotalCredit">&#8369;0.00</h3>
+            <span class="stat-label">Pending Disbursement</span>
+            <h3 class="stat-value" id="statPendingDisbursement">&#8369;0.00</h3>
           </div>
         </div>
 
         <div class="stat-card-premium">
-          <div class="stat-icon-wrapper" style="background: rgba(245, 158, 11, 0.1); color: #d97706;">
-            <i data-lucide="receipt"></i>
+          <div class="stat-icon-wrapper" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
+            <i data-lucide="check-circle"></i>
           </div>
           <div class="stat-info">
-            <span class="stat-label">Total Entries</span>
-            <h3 class="stat-value" id="statTransactionCount">0</h3>
+            <span class="stat-label">Total Disbursed</span>
+            <h3 class="stat-value" id="statTotalDisbursed">&#8369;0.00</h3>
+          </div>
+        </div>
+
+        <div class="stat-card-premium">
+          <div class="stat-icon-wrapper" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow);">
+            <i data-lucide="package"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Ready Batches</span>
+            <h3 class="stat-value" id="statPendingCount">0 Batches</h3>
           </div>
         </div>
       </div>
@@ -177,62 +175,63 @@ if (!isset($_SESSION['username'])) {
       <!-- Control Header -->
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
         <div class="premium-tabs">
-          <button class="tab-btn active" data-tab="all">
-            <i data-lucide="list-video" style="width: 18px;"></i>
-            All Entries
+          <button class="tab-btn active" data-tab="ready">
+            <i data-lucide="play-circle" style="width: 18px;"></i>
+            Ready for Disbursement
           </button>
-          <button class="tab-btn" data-tab="posted">
-            <i data-lucide="check-circle-2" style="width: 18px;"></i>
-            Posted
-          </button>
-          <button class="tab-btn" data-tab="pending">
-            <i data-lucide="clock" style="width: 18px;"></i>
-            Pending
+          <button class="tab-btn" data-tab="history">
+            <i data-lucide="history" style="width: 18px;"></i>
+            Disbursement History
           </button>
         </div>
-
+        
         <div class="search-box">
           <i data-lucide="search"></i>
-          <input type="search" placeholder="Search by reference, account..." id="glSearchInput">
+          <input type="search" placeholder="Search batch code...">
         </div>
       </div>
 
-      <!-- Tab Content -->
-      <div class="tab-panel active" id="all">
+      <!-- Tab Content: Ready -->
+      <div class="tab-panel active" id="ready">
         <div class="payroll-table-container">
           <table class="payroll-table">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Reference ID</th>
-                <th>Account Name</th>
-                <th>Description</th>
-                <th style="text-align:right;">Debit</th>
-                <th style="text-align:right;">Credit</th>
+                <th>Batch ID</th>
+                <th>Period</th>
+                <th>Type</th>
+                <th>Total Distributed</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
-            <tbody id="glTableBody">
+            <tbody id="disbursementBatchesBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab Content: History -->
+      <div class="tab-panel" id="history">
+        <div class="payroll-table-container">
+          <table class="payroll-table">
+            <thead>
               <tr>
-                <td colspan="7" style="text-align:center; padding: 24px; color: var(--text-tertiary);">Loading General Ledger Entries...</td>
+                <th>Batch ID</th>
+                <th>Period</th>
+                <th>Type</th>
+                <th>Total Distributed</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
-            </tbody>
+            </thead>
+            <tbody id="disbursementHistoryBody"></tbody>
           </table>
         </div>
       </div>
 
     </div>
   </main>
-  <script src="../../js/gl.js"></script>
-  <script>
-    lucide.createIcons();
-  </script>
+
+  <script src="../../js/financeapproval.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-

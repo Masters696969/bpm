@@ -26,6 +26,12 @@ $mail_config = [
     'reply_to' => 'suruiz.joshuabcp@gmail.com',
 ];
 
+// Xendit configuration
+$xendit_config = [
+    'secret_key' => 'xnd_development_E2yXH8Yvvha2Yw8NkBZF3JXPOeKvFyY8qELYF0E8zvs3zgpAYQE3ZZ51h42kmx',
+    'payout_endpoint' => 'https://api.xendit.co/v2/payouts'
+];
+
 // Function to send OTP email using PHPMailer
 function sendOtpEmail($toEmail, $otp, $userName = '') {
     global $mail_config;

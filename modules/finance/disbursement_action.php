@@ -5,8 +5,10 @@ session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 function respond($ok, $data = [], $httpCode = 200) {
+    global $conn;
     http_response_code($httpCode);
     echo json_encode(array_merge(['ok' => $ok], $data));
+    if (isset($conn)) $conn->close();
     exit;
 }
 
@@ -14,84 +16,92 @@ if (!isset($_SESSION['username'])) {
     respond(false, ['error' => 'Unauthorized'], 401);
 }
 
+// Xendit API settings from config
+$xendit_secret_key = $xendit_config['secret_key'] ?? '';
+$xendit_endpoint = $xendit_config['payout_endpoint'] ?? 'https://api.xendit.co/v2/payouts';
+
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
 if ($action === 'stats') {
     $stats = [
-        'pending_disbursement' => 0,
-        'total_disbursed' => 0,
-        'batch_count' => 0
+        'pending_payout' => 0,
+        'total_paid' => 0
     ];
 
-    // Total for disbursement (Approved)
-    $res = $conn->query("SELECT SUM(i.net_pay) as total FROM payroll_batch_items i INNER JOIN payroll_batches b ON i.batch_id = b.id WHERE b.status = 'Approved'");
+    $res = $conn->query("SELECT SUM(i.net_pay) as total FROM payroll_batch_items i INNER JOIN payroll_batches b ON i.batch_id = b.id WHERE b.status = 'Finance Approved' AND (i.status != 'Paid' OR i.status IS NULL)");
     if ($res && ($row = $res->fetch_assoc())) {
-        $stats['pending_disbursement'] = (float)($row['total'] ?? 0);
+        $stats['pending_payout'] = (float)($row['total'] ?? 0);
     }
 
-    // Total disbursed (Disbursed or Archived)
-    $res = $conn->query("SELECT SUM(i.net_pay) as total FROM payroll_batch_items i INNER JOIN payroll_batches b ON i.batch_id = b.id WHERE b.status IN ('Disbursed', 'Archived')");
+    $res = $conn->query("SELECT SUM(i.net_pay) as total FROM payroll_batch_items i INNER JOIN payroll_batches b ON i.batch_id = b.id WHERE i.status = 'Paid'");
     if ($res && ($row = $res->fetch_assoc())) {
-        $stats['total_disbursed'] = (float)($row['total'] ?? 0);
-    }
-
-    // Counts
-    $res = $conn->query("SELECT COUNT(*) as cnt FROM payroll_batches WHERE status = 'Approved'");
-    if ($res && ($row = $res->fetch_assoc())) {
-        $stats['pending_count'] = (int)$row['cnt'];
+        $stats['total_paid'] = (float)($row['total'] ?? 0);
     }
 
     respond(true, $stats);
 }
 
+if ($action === 'list_history') {
+    $res = $conn->query("SELECT * FROM payout_history ORDER BY created_at DESC LIMIT 50");
+    $rows = [];
+    while ($r = $res->fetch_assoc()) $rows[] = $r;
+    respond(true, ['history' => $rows]);
+}
+
 if ($action === 'list_batches') {
-    $filter = $_GET['filter'] ?? 'ready'; // 'ready' or 'history'
-    
-    $status = ($filter === 'history') ? "'Disbursed', 'Archived'" : "'Approved'";
-    
+    $filter = $_GET['filter'] ?? 'pending';
+    // History only shows Disbursed batches. Anything else (Finance Approved, Archived with remaining) stays in Pending.
+    $statusCondition = ($filter === 'history') ? "b.status = 'Disbursed'" : "b.status IN ('Finance Approved', 'Archived')";
+
     $sql = "SELECT b.id, b.batch_code, b.period_start, b.period_end, b.pay_type, b.status, 
-                   COALESCE(SUM(i.net_pay),0) AS total_distributed,
-                   COUNT(i.id) as employee_count
+                   COUNT(i.id) as employee_count,
+                   SUM(CASE WHEN i.status = 'Paid' THEN 1 ELSE 0 END) as paid_count
             FROM payroll_batches b 
             LEFT JOIN payroll_batch_items i ON i.batch_id = b.id 
-            WHERE b.status IN ($status)
+            WHERE $statusCondition
             GROUP BY b.id 
             ORDER BY b.id DESC";
             
     $res = $conn->query($sql);
-    if (!$res) {
-        respond(false, ['error' => $conn->error], 500);
-    }
+    if (!$res) respond(false, ['error' => $conn->error], 500);
     
     $rows = [];
     while ($r = $res->fetch_assoc()) {
+        $r['employees_remaining'] = (int)$r['employee_count'] - (int)$r['paid_count'];
+        
+        // Auto-mark as Disbursed if all are paid and it was still Finance Approved
+        if ($filter === 'pending' && $r['employees_remaining'] <= 0 && $r['employee_count'] > 0 && $r['status'] === 'Finance Approved') {
+            $conn->query("UPDATE payroll_batches SET status = 'Disbursed' WHERE id = " . (int)$r['id']);
+            continue;
+        }
+
+        // If filtering for history, we already have only 'Disbursed' from statusCondition.
+        // If filtering for pending, we exclude 'Archived' batches if they have 0 unpaid (i.e. they are fully finished or empty)
+        if ($filter === 'pending' && $r['status'] === 'Archived' && $r['employees_remaining'] <= 0) {
+            continue;
+        }
+
         $rows[] = $r;
     }
     respond(true, ['batches' => $rows]);
 }
 
-if ($action === 'view_items') {
+if ($action === 'list_employees') {
     $batchId = (int)($_GET['batch_id'] ?? 0);
-    if ($batchId <= 0) respond(false, ['error' => 'Invalid ID'], 400);
+    $showAll = isset($_GET['all']) && $_GET['all'] === '1';
+    
+    if ($batchId <= 0) respond(false, ['error' => 'Invalid batch ID'], 400);
 
-    $sql = "SELECT i.*, e.FirstName, e.LastName, e.EmployeeCode,
-                   COALESCE(ot.amount, 0) AS overtime_pay,
-                   COALESCE(lu.amount, 0) AS late_undertime
+    $statusClause = $showAll ? "" : " AND (i.status != 'Paid' OR i.status IS NULL)";
+
+    $sql = "SELECT i.id as item_id, i.employee_id, i.net_pay, i.status as item_status,
+                   e.FirstName, e.LastName,
+                   COALESCE(bd.AccountNumber, 'Not Set') as account_number,
+                   COALESCE(bd.BankName, 'BDO') as bank_name
             FROM payroll_batch_items i
             INNER JOIN employee e ON e.EmployeeID = i.employee_id
-            LEFT JOIN (
-                SELECT c.item_id, SUM(c.amount) AS amount
-                FROM payroll_item_components c
-                WHERE c.component_type='Allowance' AND c.component_name='Overtime Pay'
-                GROUP BY c.item_id
-            ) ot ON ot.item_id = i.id
-            LEFT JOIN (
-                SELECT c.item_id, SUM(c.amount) AS amount
-                FROM payroll_item_components c
-                WHERE c.component_type='Deduction' AND c.component_name='Late/Undertime'
-                GROUP BY c.item_id
-            ) lu ON lu.item_id = i.id
-            WHERE i.batch_id = $batchId
+            LEFT JOIN bankdetails bd ON bd.EmployeeID = i.employee_id
+            WHERE i.batch_id = $batchId $statusClause
             ORDER BY e.LastName ASC";
             
     $res = $conn->query($sql);
@@ -101,100 +111,121 @@ if ($action === 'view_items') {
     while ($r = $res->fetch_assoc()) {
         $rows[] = $r;
     }
-    respond(true, ['items' => $rows]);
+    respond(true, ['employees' => $rows]);
 }
 
-if ($action === 'disburse_batch') {
-    $batchId = (int)($_POST['batch_id'] ?? 0);
-    if ($batchId <= 0) respond(false, ['error' => 'Invalid ID'], 400);
+if ($action === 'pay_employee') {
+    $itemId = (int)($_POST['item_id'] ?? 0);
+    if ($itemId <= 0) respond(false, ['error' => 'Invalid Item ID'], 400);
 
-    $conn->begin_transaction();
-    try {
-        $stmt = $conn->prepare("UPDATE payroll_batches SET status = 'Disbursed' WHERE id = ? AND status = 'Approved'");
-        $stmt->bind_param("i", $batchId);
-        $stmt->execute();
-        $affectedRows = $stmt->affected_rows;
-        $stmt->close();
-        
-        if ($affectedRows > 0) {
-            $aggSql = "SELECT 
-                SUM(sss_regular_ee + sss_regular_er + sss_wisp_ee + sss_wisp_er) as sss_total,
-                SUM(philhealth_ee + philhealth_er) as philhealth_total,
-                SUM(pagibig_ee + pagibig_er) as pagibig_total,
-                SUM(withholding_tax) as tax_total,
-                SUM(net_pay) as net_total,
-                b.batch_code
+    $sql = "SELECT i.net_pay, b.batch_code, e.FirstName, e.LastName, 
+                   bd.AccountNumber, bd.BankName, i.batch_id
             FROM payroll_batch_items i
-            JOIN payroll_batches b ON b.id = i.batch_id
-            WHERE i.batch_id = ?
-            GROUP BY b.id";
+            INNER JOIN payroll_batches b ON b.id = i.batch_id
+            INNER JOIN employee e ON e.EmployeeID = i.employee_id
+            LEFT JOIN bankdetails bd ON bd.EmployeeID = i.employee_id
+            WHERE i.id = $itemId AND (i.status != 'Paid' OR i.status IS NULL)";
             
-            $stmtAgg = $conn->prepare($aggSql);
-            $stmtAgg->bind_param('i', $batchId);
-            $stmtAgg->execute();
-            $resAgg = $stmtAgg->get_result();
-            if ($row = $resAgg->fetch_assoc()) {
-                $batchCode = $row['batch_code'];
-                $netTotal = (float)$row['net_total'];
-                
-                $apData = [
-                    ['SSS', 'Social Security System', (float)$row['sss_total']],
-                    ['PhilHealth', 'PhilHealth Corporation', (float)$row['philhealth_total']],
-                    ['PagIBIG', 'Pag-IBIG Fund', (float)$row['pagibig_total']],
-                    ['BIR', 'Bureau of Internal Revenue', (float)$row['tax_total']]
-                ];
+    $res = $conn->query($sql);
+    if (!$res || $res->num_rows === 0) {
+        respond(false, ['error' => 'Item not found or already paid.'], 404);
+    }
+    $row = $res->fetch_assoc();
 
-                $stmtAp = $conn->prepare("INSERT INTO accounts_payable (batch_id, category, payee_name, description, amount, status) VALUES (?, ?, ?, ?, ?, 'Pending')");
-                foreach ($apData as $ap) {
-                    if ($ap[2] <= 0) continue;
-                    $desc = "Payroll Deductions & Benefits for Batch $batchCode";
-                    $stmtAp->bind_param('isssd', $batchId, $ap[0], $ap[1], $desc, $ap[2]);
-                    $stmtAp->execute();
-                }
-                $stmtAp->close();
+    $accountNum = preg_replace('/[^0-9]/', '', $row['AccountNumber']);
+    if (empty($accountNum)) {
+        respond(false, ['error' => 'Invalid bank account number. It must contain only digits.'], 400);
+    }
 
-                // Create GL Entry for the net pay disbursed
-                if ($netTotal > 0) {
-                    $ref = "PAY-" . $batchCode;
-                    $glDesc = "Payroll Disbursement for Batch $batchCode";
-                    $stmtGl = $conn->prepare("INSERT INTO general_ledger (reference_id, account_name, description, debit, credit) VALUES (?, 'Salaries & Wages Payable', ?, ?, 0.00)");
-                    $stmtGl->bind_param('ssd', $ref, $glDesc, $netTotal);
-                    $stmtGl->execute();
-                    $stmtGl->close();
+    $amount = (float)$row['net_pay'];
+    if ($amount <= 0) {
+        respond(false, ['error' => 'Net pay must be greater than zero to process a payout.'], 400);
+    }
+
+    $bankName = strtoupper($row['BankName'] ?? 'BDO');
+    
+    // Map Bank Name to Xendit Channel Code
+    $channelCode = 'PH_BDO';
+    if (strpos($bankName, 'BPI') !== false) $channelCode = 'PH_BPI';
+    if (strpos($bankName, 'METRO') !== false) $channelCode = 'PH_METROBANK';
+    if (strpos($bankName, 'UNION') !== false) $channelCode = 'PH_UNIONBANK';
+    if (strpos($bankName, 'GCASH') !== false) $channelCode = 'PH_GCASH';
+    if (strpos($bankName, 'PAYMAYA') !== false || strpos($bankName, 'MAYA') !== false) $channelCode = 'PH_MAYA';
+
+    $accountHolderName = trim($row['FirstName'] . ' ' . $row['LastName']);
+    // Xendit usually prefers alphanumeric + spaces
+    $accountHolderName = preg_replace('/[^A-Za-z0-9 ]/', '', $accountHolderName);
+
+    $payload = [
+        'reference_id' => 'PAYOUT-' . $itemId . '-' . time(),
+        'channel_code' => $channelCode,
+        'amount' => $amount,
+        'currency' => 'PHP',
+        'channel_properties' => [
+            'account_number' => $accountNum,
+            'account_holder_name' => $accountHolderName
+        ],
+        'description' => "Payroll Batch " . $row['batch_code']
+    ];
+
+    $ch = curl_init($xendit_endpoint);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Authorization: Basic ' . base64_encode($xendit_secret_key . ':'),
+        'Idempotency-key: ' . uniqid()
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    $resData = json_decode($response, true);
+
+    if ($httpCode >= 200 && $httpCode < 300) {
+        $xenditData = $resData;
+        $xenditId = $xenditData['id'] ?? '';
+        
+        $employeeName = $accountHolderName;
+
+        // Success (ACCEPTED or COMPLETED) - Mark item as Paid
+        $conn->query("UPDATE payroll_batch_items SET status = 'Paid' WHERE id = $itemId");
+
+        // Log to Payout History
+        $stmt = $conn->prepare("INSERT INTO payout_history (reference_id, employee_id, employee_name, amount, bank_name, account_number, status, xendit_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $status = $xenditData['status'] ?? 'ACCEPTED';
+        $stmt->bind_param("sisdssss", $payload['reference_id'], $row['employee_id'], $employeeName, $amount, $channelCode, $accountNum, $status, $xenditId);
+        $stmt->execute();
+
+        $batchId = (int)$row['batch_id'];
+        $checkRes = $conn->query("SELECT COUNT(*) as unpaid FROM payroll_batch_items WHERE batch_id = $batchId AND (status != 'Paid' OR status IS NULL)");
+        if ($checkRes && $checkRow = $checkRes->fetch_assoc()) {
+            if ((int)$checkRow['unpaid'] === 0) {
+                $conn->query("UPDATE payroll_batches SET status = 'Disbursed' WHERE id = $batchId");
+            }
+        }
+
+        respond(true, ['message' => 'Payout initiated successfully via Xendit!', 'xendit' => $resData]);
+    } else {
+        $errorMsg = $resData['message'] ?? 'Xendit API Request Failed';
+        
+        // If there are validation errors, extract them for the UI
+        if (isset($resData['errors']) && is_array($resData['errors'])) {
+            $details = [];
+            foreach ($resData['errors'] as $err) {
+                if (isset($err['messages'])) {
+                    $details[] = implode(', ', $err['messages']);
                 }
             }
-            $stmtAgg->close();
-            
-            $conn->commit();
-            respond(true, ['message' => 'Batch thoroughly disbursed. AP Vouchers & GL entries generated.']);
-        } else {
-            $conn->rollback();
-            respond(false, ['error' => 'Batch not found or not in Approved status.']);
+            if (!empty($details)) {
+                $errorMsg .= ': ' . implode('; ', $details);
+            }
         }
-    } catch (Exception $e) {
-        $conn->rollback();
-        respond(false, ['error' => $e->getMessage()], 500);
+        
+        respond(false, ['error' => $errorMsg, 'details' => $resData], 500);
     }
-}
-
-if ($action === 'archive_batch') {
-    $batchId = (int)($_POST['batch_id'] ?? 0);
-    if ($batchId <= 0) respond(false, ['error' => 'Invalid ID'], 400);
-
-    // Update status to Archived
-    $stmt = $conn->prepare("UPDATE payroll_batches SET status = 'Archived' WHERE id = ? AND status = 'Approved'");
-    $stmt->bind_param("i", $batchId);
-    
-    if ($stmt->execute()) {
-        if ($stmt->affected_rows > 0) {
-            respond(true, ['message' => 'Batch successfully archived to history.']);
-        } else {
-            respond(false, ['error' => 'Batch not found or not in Approved status.']);
-        }
-    } else {
-        respond(false, ['error' => $stmt->error], 500);
-    }
-    $stmt->close();
 }
 
 respond(false, ['error' => 'Unknown action'], 400);

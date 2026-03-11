@@ -14,6 +14,7 @@
     --text-color-right-light: #333333;
     --input-bg-light: #ffffff;
     --label-text-light: #555555;
+    --surface: #ffffff;
 }
 
 .dark-mode {
@@ -22,6 +23,7 @@
     --input-bg-light: #2c2c2c;
     --label-text-light: #aaaaaa;
     --input-border: #444444;
+    --surface: #242424;
 }
 
 body {

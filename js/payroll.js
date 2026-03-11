@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     // 1. Tab Switching Logic
     const tabButtons = document.querySelectorAll(".tab-btn");
     const tabPanels = document.querySelectorAll(".tab-panel");
@@ -48,20 +48,20 @@
 
     const statusBadge = (status) => {
         const s = String(status || '').toLowerCase();
-        if (s === 'disbursed' || s === 'completed') {
-            return `<span class="badge-premium badge-success" style="font-weight: 700; font-size: 11px; text-transform: uppercase;"><i data-lucide="check-check"></i> ${status}</span>`;
+        if (s.includes('disbursed') || s.includes('completed')) {
+            return `<span class="badge-premium badge-success"><i data-lucide="check-check" style="width:14px;"></i> ${status}</span>`;
         }
-        if (s === 'approved' || s === 'finalized') {
-            return `<span class="badge-premium badge-success" style="font-weight: 700; font-size: 11px; text-transform: uppercase;"><i data-lucide="check"></i> ${status}</span>`;
+        if (s.includes('approved') || s.includes('finalized')) {
+            return `<span class="badge-premium badge-info" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: #3b82f6;"><i data-lucide="star" style="width:14px;"></i> ${status}</span>`;
         }
-        if (s === 'pending approval' || s === 'pending') {
-            return `<span class="badge-premium badge-warning" style="font-weight: 700; font-size: 11px; text-transform: uppercase;"><i data-lucide="clock"></i> ${status}</span>`;
+        if (s.includes('pending')) {
+            return `<span class="badge-premium badge-warning"><i data-lucide="clock" style="width:14px;"></i> ${status}</span>`;
         }
-        if (s === 'archived') {
-            return `<span class="badge-premium badge-secondary" style="font-weight: 700; font-size: 11px; text-transform: uppercase;"><i data-lucide="archive"></i> ${status}</span>`;
+        if (s.includes('archived')) {
+            return `<span class="badge-premium badge-secondary"><i data-lucide="archive" style="width:14px;"></i> ${status}</span>`;
         }
         // Processing or default
-        return `<span class="badge-premium badge-info" style="font-weight: 700; font-size: 11px; text-transform: uppercase;"><i data-lucide="loader" class="spin"></i> ${status || 'Processing'}</span>`;
+        return `<span class="badge-premium badge-info"><i data-lucide="loader" class="spin" style="width:14px;"></i> ${status || 'Processing'}</span>`;
     };
 
     const renderBatches = (batches) => {

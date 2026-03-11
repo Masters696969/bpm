@@ -727,7 +727,7 @@ if ($action === 'employee_payslips') {
     $debug['all_batch_statuses'] = $batchStatuses;
     
     // Check if there are any approved batches first
-    $approvedCheck = $conn->query("SELECT COUNT(*) as cnt FROM payroll_batches WHERE status='Approved'");
+    $approvedCheck = $conn->query("SELECT COUNT(*) as cnt FROM payroll_batches WHERE status IN ('Approved', 'Finance Approved', 'Disbursed')");
     $approvedCount = $approvedCheck ? (int)$approvedCheck->fetch_assoc()['cnt'] : 0;
     $debug['approved_batches'] = $approvedCount;
     
@@ -755,7 +755,7 @@ if ($action === 'employee_payslips') {
                 WHERE c.component_type='Deduction' AND c.component_name='Late/Undertime'
                 GROUP BY c.item_id
             ) lu ON lu.item_id = i.id
-            WHERE i.employee_id = $employeeId AND b.status='Approved'
+            WHERE i.employee_id = $employeeId AND b.status IN ('Approved', 'Finance Approved', 'Disbursed')
             ORDER BY b.period_start DESC";
     
     $res = $conn->query($sql);

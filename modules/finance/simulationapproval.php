@@ -47,6 +47,10 @@ if (!isset($_SESSION['username'])) {
           <i data-lucide="check-circle"></i>
           <span>Approval Queue</span>
         </a>
+         <a href="financeapproval.php" class="nav-item active">
+          <i data-lucide="user-check"></i>
+          <span>Finance Approval</span>
+        </a>
            <a href="gl.php" class="nav-item">
           <i data-lucide="receipt-text"></i>
           <span>General Ledger</span>

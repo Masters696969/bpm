@@ -172,7 +172,7 @@ if (!isset($_SESSION['username'])) {
             </a>
             <a href="applicationmgt.php" class="nav-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
               <i data-lucide="contact-round"></i>
-              <span>Application Management</span>
+              <span>Applicant Management</span>
             </a>
       <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
               <i data-lucide="user-plus"></i>

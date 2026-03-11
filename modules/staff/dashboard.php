@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (empty($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 'hr staff') {
   header("Location: /microfinance/login.php");
@@ -38,14 +38,29 @@ if (empty($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-        <a href="#" class="nav-item active">
+        <a href="dashboard.php" class="nav-item active">
           <i data-lucide="layout-dashboard"></i>
           <span>Dashboard</span>
         </a>
 
+        <a href="recruitment.php" class="nav-item">
+          <i data-lucide="layers-plus"></i>
+          <span>Recruitment</span>
+        </a>
+
+        <a href="applicationmgt.php" class="nav-item">
+          <i data-lucide="contact-round"></i>
+          <span>Applicant Management</span>
+        </a>
+
+        <a href="newhiredonboard.php" class="nav-item">
+          <i data-lucide="user-plus"></i>
+          <span>New Hired Onboard</span>
+        </a>
+
         <a href="#" class="nav-item">
           <i data-lucide="users-round"></i>
-          <span>Clients</span>
+          <span>Employee Recruitment</span>
         </a>
 
         <a href="#" class="nav-item">
@@ -83,23 +98,9 @@ if (empty($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 
           <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
           <span class="user-role"><?php echo htmlspecialchars(ucwords($_SESSION['user_role'] ?? '')); ?></span>
         </div>
-        <button class="user-menu-btn" id="userMenuBtn">
+        <button class="user-menu-btn">
           <i data-lucide="more-vertical"></i>
         </button>
-        <div class="user-menu-dropdown" id="userMenuDropdown">
-          <div class="umd-header">
-            <div class="umd-avatar" id="umdAvatar"></div>
-            <div class="umd-info">
-              <span class="umd-signed">Signed in as</span>
-              <span class="umd-name" id="umdName"></span>
-              <span class="umd-role" id="umdRole"></span>
-            </div>
-          </div>
-          <div class="umd-divider"></div>
-          <a href="profile.php" class="umd-item"><i data-lucide="user-round"></i><span>Profile</span></a>
-          <div class="umd-divider"></div>
-          <a href="../../login.php" class="umd-item umd-item-danger umd-sign-out"><i data-lucide="log-out"></i><span>Sign Out</span></a>
-        </div>
       </div>
     </div>
   </aside>
@@ -117,8 +118,9 @@ if (empty($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 
         </div>
       </div>
       <div class="header-right">
-                        <div class="header-clock">
-          <span id="realTimeClock"></span>
+        <div class="search-box">
+          <i data-lucide="search"></i>
+          <input type="search" placeholder="Search...">
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -138,11 +140,6 @@ if (empty($_SESSION['user_id']) || strtolower($_SESSION['user_role'] ?? '') !== 
   <script>
     lucide.createIcons();
   </script>
+  
 </body>
 </html>
-
-
-
-
-
-
