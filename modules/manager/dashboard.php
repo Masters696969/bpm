@@ -67,15 +67,15 @@ $module = 'dashboard';
           </div>
         </div>
 
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="planning">
+        <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'planning') ? 'active' : ''; ?>" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
               <span>Compensation Planning</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-           <div class="submenu" id="submenu-planning">
+           <div class="submenu <?php echo ($module === 'planning') ? 'active' : ''; ?>" id="submenu-planning">
              <a href="salarymgt.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
@@ -99,17 +99,18 @@ $module = 'dashboard';
           </div>
         </div>
 
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="payroll">
+        <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'payroll') ? 'active' : ''; ?>" data-module="payroll">
             <div class="nav-item-content">
               <i data-lucide="banknote-arrow-down"></i>
               <span>Payroll</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-payroll">
-            <a href="#" class="submenu-item"><i data-lucide="file-plus"></i><span>Applications</span></a>
-            <a href="#" class="submenu-item"><i data-lucide="check-circle"></i><span>Approvals</span></a>
+          <div class="submenu <?php echo ($module === 'payroll') ? 'active' : ''; ?>" id="submenu-payroll">
+            <a href="#" class="submenu-item <?php echo ($page === 'applications') ? 'active' : ''; ?>"><i data-lucide="file-plus"></i><span>Applications</span></a>
+            <a href="payrollapproval.php" class="submenu-item <?php echo ($page === 'payrollapproval') ? 'active' : ''; ?>"><i data-lucide="check-circle"></i><span>Payroll Approval</span></a>
+            <a href="#" class="submenu-item <?php echo ($page === 'approvals') ? 'active' : ''; ?>"><i data-lucide="check-circle"></i><span>Approvals</span></a>
           </div>
         </div>
       </div>

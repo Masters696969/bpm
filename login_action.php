@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         } elseif ($roleKey === 'hr data specialist') {
                             $redirectUrl = 'modules/corehumancapital/dashboard.php';
                         } elseif ($roleKey === 'hr staff') {
-                            $redirectUrl = 'modules/hr1staff/dashboard.php';
+                            $redirectUrl = 'modules/staff/dashboard.php';
                         } elseif ($roleKey === 'compensation analyst') {
                             $redirectUrl = 'modules/compensation/dashboard.php';
                         } elseif ($roleKey === 'payroll processor') {

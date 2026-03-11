@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -11,7 +11,7 @@ if (!isset($_SESSION['username'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/compensationdashboard.css?v=1.2">
+  <link rel="stylesheet" href="../../css/gl.css?v=1.2">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -39,15 +39,15 @@ if (!isset($_SESSION['username'])) {
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-        <a href="dashboard.php" class="nav-item active">
+        <a href="dashboard.php" class="nav-item">
           <i data-lucide="layout-dashboard"></i>
           <span>Dashboard</span>
         </a>
-        <a href="Approvalq.php" class="nav-item active">
+        <a href="Approvalq.php" class="nav-item">
           <i data-lucide="check-circle"></i>
           <span>Approval Queue</span>
         </a>
-           <a href="gl.php" class="nav-item active">
+        <a href="gl.php" class="nav-item active">
           <i data-lucide="receipt-text"></i>
           <span>General Ledger</span>
         </a>
@@ -137,10 +137,89 @@ if (!isset($_SESSION['username'])) {
     </header>
 
     <div class="content-wrapper">
-  
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card-premium">
+          <div class="stat-icon-wrapper" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
+            <i data-lucide="arrow-down-left"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Total Debit</span>
+            <h3 class="stat-value" id="statTotalDebit">&#8369;0.00</h3>
+          </div>
+        </div>
+
+        <div class="stat-card-premium">
+          <div class="stat-icon-wrapper" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+            <i data-lucide="arrow-up-right"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Total Credit</span>
+            <h3 class="stat-value" id="statTotalCredit">&#8369;0.00</h3>
+          </div>
+        </div>
+
+        <div class="stat-card-premium">
+          <div class="stat-icon-wrapper" style="background: rgba(245, 158, 11, 0.1); color: #d97706;">
+            <i data-lucide="receipt"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Total Entries</span>
+            <h3 class="stat-value" id="statTransactionCount">0</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div class="premium-tabs">
+          <button class="tab-btn active" data-tab="all">
+            <i data-lucide="list-video" style="width: 18px;"></i>
+            All Entries
+          </button>
+          <button class="tab-btn" data-tab="posted">
+            <i data-lucide="check-circle-2" style="width: 18px;"></i>
+            Posted
+          </button>
+          <button class="tab-btn" data-tab="pending">
+            <i data-lucide="clock" style="width: 18px;"></i>
+            Pending
+          </button>
+        </div>
+
+        <div class="search-box">
+          <i data-lucide="search"></i>
+          <input type="search" placeholder="Search by reference, account..." id="glSearchInput">
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-panel active" id="all">
+        <div class="payroll-table-container">
+          <table class="payroll-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Reference ID</th>
+                <th>Account Name</th>
+                <th>Description</th>
+                <th style="text-align:right;">Debit</th>
+                <th style="text-align:right;">Credit</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="glTableBody">
+              <tr>
+                <td colspan="7" style="text-align:center; padding: 24px; color: var(--text-tertiary);">Loading General Ledger Entries...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   </main>
-  <script src="../../js/compensationdashboard.js"></script>
+  <script src="../../js/gl.js"></script>
   <script>
     lucide.createIcons();
   </script>

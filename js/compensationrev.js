@@ -9,7 +9,6 @@
     // 1. Theme Logic
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") body.classList.add("dark-mode");
-
     if (themeToggle) {
         themeToggle.addEventListener("click", () => {
             body.classList.toggle("dark-mode");
@@ -44,6 +43,7 @@
     const approveBtn = document.getElementById("approveBtn");
     const rejectBtn = document.getElementById("rejectBtn");
     const closeModal = document.getElementById("closeModal");
+    const saveProgressBtn = document.getElementById("saveProgressBtn");
 
     let currentReviewId = "";
     let currentSimData = null;
@@ -54,8 +54,8 @@
             const res = await fetch("be_fetch_simulations.php?action=fetch");
             const data = await res.json();
             if (data.success && data.data) {
-                const pending = data.data.filter(s => s.Status === 'Endorsed');
-                const approved = data.data.filter(s => s.Status === 'Approved');
+                const pending = data.data.filter(s => s.Status === 'Verified');
+                const approved = data.data.filter(s => s.Status === 'Reviewed');
 
                 if (document.getElementById("submittedSimsCount"))
                     document.getElementById("submittedSimsCount").innerText = pending.length;
@@ -69,11 +69,11 @@
                         <tr>
                             <td>
                                 <div style="font-weight:700; color:var(--text-primary);">${s.CycleName}</div>
-                                <div style="font-size:11px; color:var(--text-secondary);">Compensation Cycle</div>
+                                <div style="font-size:11px; color:var(--text-secondary);">Ref: #${s.DraftID}</div>
                             </td>
                             <td style="color:var(--brand-green); font-weight:700; font-size:15px;">\u20B1${parseFloat(s.TotalCost).toLocaleString()}</td>
-                            <td><span class="badge ${s.Status.toLowerCase()}">${s.Status}</span></td>
-                            <td>${new Date(s.CreatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                            <td><span class="badge verified">${s.Status}</span></td>
+                            <td>${new Date(s.CreatedAt).toLocaleDateString()}</td>
                             <td>
                                 <button class="action-btn btn-review review-sim-btn" data-id="${s.DraftID}">
                                     <i data-lucide="calculator"></i> Review
@@ -88,14 +88,15 @@
     };
 
     document.addEventListener("click", async (e) => {
-        if (e.target.closest(".review-sim-btn")) {
-            const id = e.target.closest(".review-sim-btn").getAttribute("data-id");
+        const btn = e.target.closest(".review-sim-btn");
+        if (btn) {
+            const id = btn.getAttribute("data-id");
             currentReviewId = id;
 
-            document.getElementById("modalTitle").innerText = "Review & Edit Merit Simulation";
-            document.getElementById("saveProgressBtn").style.display = "block";
+            document.getElementById("modalTitle").innerText = "Review & Edit Compensation Simulation";
+            if (saveProgressBtn) saveProgressBtn.style.display = "block";
             modalDetails.innerHTML = "Loading simulation details...";
-            reviewModal.querySelector(".modal-content").style.maxWidth = "1100px";
+            reviewModal.querySelector(".modal-content").style.maxWidth = "1600px";
             reviewModal.style.display = "flex";
 
             try {
@@ -115,7 +116,7 @@
                                 <span class="rem-hero-val">${currentSimData.length} Active</span>
                             </div>
                             <div class="rem-hero-item" id="remHeroImpact">
-                                <span class="rem-hero-label">Total Monthly Impact</span>
+                                <span class="rem-hero-label">Total Impact</span>
                                 <span class="rem-hero-val" style="color:var(--brand-green);">\u20B1${parseFloat(data.data.TotalCost).toLocaleString()}</span>
                             </div>
                         `;
@@ -137,230 +138,195 @@
             return;
         }
 
+        const headers = [
+            "EE ID", "Name & Position", "Rating", "Status", "Salary", "Grade Midpoint", "Compa-Ratio",
+            "Promote", "Prop. %", "Prop. Increase (\u20B1)", "Basic (New)", "Total Allowances",
+            "Gross Salary", "Semi-Monthly", "Daily", "Hourly", "Employer Share", "Full Load",
+            "SSS Regular", "SSS WISP", "PhilHealth", "Pag-IBIG", "W. Tax", "Net Pay", "Increase"
+        ];
+
         const html = `
-            <table class="role-table" style="width:100%;">
-                <thead>
-                    <tr>
-                        <th style="padding:12px 24px;">Employee</th>
-                        <th style="text-align:center; padding:12px;">Current Sal.</th>
-                        <th style="text-align:center; padding:12px;">Prop. %</th>
-                        <th style="text-align:right; padding:12px;">Monthly Inc.</th>
-                        <th style="text-align:right; padding:12px 24px;">New Salary</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${currentSimData.map((e, idx) => `
+            <div style="overflow-x:auto;">
+                <table class="role-table" style="width:100%; font-size:11px; min-width:2800px;">
+                    <thead>
                         <tr>
-                            <td style="padding:14px 24px;">
-                                <div style="font-weight:600; color:var(--text-primary); text-transform: capitalize;">${e.name || 'Unknown'}</div>
-                                <div style="font-size:11px; color:var(--text-secondary);">${e.department || '-'} | ${e.grade || '-'}</div>
-                            </td>
-                            <td style="text-align:center;">\u20B1${parseFloat(e.current_salary || 0).toLocaleString()}</td>
-                            <td style="text-align:center;">
-                                <input type="number" step="0.1" class="edit-prop-pct" data-idx="${idx}" value="${e.prop_pct || 0}" 
-                                       style="width:75px; padding:6px 10px; text-align:center; border:1px solid var(--border-color); border-radius:8px; background:var(--background); color:var(--text-primary); font-weight:600;">
-                            </td>
-                            <td style="text-align:right; font-weight:600; color:var(--brand-green);">+\u20B1${parseFloat(e.prop_inc || 0).toLocaleString()}</td>
-                            <td style="text-align:right; padding:14px 24px; font-weight:700; color:var(--brand-blue);">\u20B1${parseFloat(e.new_salary || 0).toLocaleString()}</td>
+                            ${headers.map(h => `<th style="padding:12px 8px; text-align:left;">${h}</th>`).join("")}
                         </tr>
-                    `).join("")}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        ${currentSimData.map((e, idx) => `
+                            <tr data-idx="${idx}">
+                                <td style="padding:8px; font-family:monospace;">${e.EmployeeCode || '---'}</td>
+                                <td style="padding:8px; white-space:nowrap;">
+                                    <div style="font-weight:600; color:var(--text-primary); text-transform: capitalize;">${e.Name || 'Unknown'}</div>
+                                    <div style="font-size:10px; color:var(--text-secondary);">${e.Position || '-'}</div>
+                                </td>
+                                <td style="padding:8px; text-align:center;">${e.Rating}</td>
+                                <td style="padding:8px; text-align:center;"><span class="badge verified">${e.Status}</span></td>
+                                <td style="padding:8px;">\u20B1${parseFloat(e.Salary || 0).toLocaleString()}</td>
+                                <td style="padding:8px;">\u20B1${parseFloat(e.GradeMidpoint || 0).toLocaleString()}</td>
+                                <td style="padding:8px; text-align:center;">${e.CompaRatio}</td>
+                                <td style="padding:8px; color:var(--brand-purple); font-weight:600;">${e.Promote || '-'}</td>
+                                <td style="padding:8px; text-align:center;">
+                                    <input type="number" step="0.1" class="edit-prop-pct" data-idx="${idx}" value="${e.PropPct || 0}" 
+                                           style="width:65px; padding:4px 6px; text-align:center; border:1px solid var(--border-color); border-radius:6px; background:var(--background); color:var(--text-primary); font-weight:700;">
+                                </td>
+                                <td style="padding:8px; color:var(--brand-green); font-weight:600;">
+                                    <input type="number" step="1" class="edit-prop-inc" data-idx="${idx}" value="${e.PropInc || 0}" 
+                                           style="width:100px; padding:4px 6px; text-align:right; border:1px solid var(--border-color); border-radius:6px; background:var(--background); color:var(--brand-green); font-weight:700;">
+                                </td>
+                                <td style="padding:8px; font-weight:700;">\u20B1${parseFloat(e.BasicNew).toLocaleString()}</td>
+                                <td style="padding:8px;">\u20B1${parseFloat(e.TotalAllowances).toLocaleString()}</td>
+                                <td style="padding:8px; font-weight:700; color:var(--brand-blue);">\u20B1${parseFloat(e.GrossSalary).toLocaleString()}</td>
+                                <td style="padding:8px;">\u20B1${parseFloat(e.SemiMonthly).toLocaleString()}</td>
+                                <td style="padding:8px;">\u20B1${parseFloat(e.Daily).toLocaleString()}</td>
+                                <td style="padding:8px;">\u20B1${parseFloat(e.Hourly).toLocaleString()}</td>
+                                <td style="padding:8px;">\u20B1${parseFloat(e.EmployerShare).toLocaleString()}</td>
+                                <td style="padding:8px;">\u20B1${parseFloat(e.FullLoad).toLocaleString()}</td>
+                                <td style="padding:8px; color:var(--brand-red);">\u20B1${parseFloat(e.SSSRegular).toLocaleString()}</td>
+                                <td style="padding:8px; color:var(--brand-red);">\u20B1${parseFloat(e.SSSWISP).toLocaleString()}</td>
+                                <td style="padding:8px; color:var(--brand-red);">\u20B1${parseFloat(e.PhilHealth).toLocaleString()}</td>
+                                <td style="padding:8px; color:var(--brand-red);">\u20B1${parseFloat(e.PagIBIG).toLocaleString()}</td>
+                                <td style="padding:8px; color:var(--brand-red);">\u20B1${parseFloat(e.WTax).toLocaleString()}</td>
+                                <td style="padding:8px; font-weight:700; color:var(--brand-green);">\u20B1${parseFloat(e.NetPay).toLocaleString()}</td>
+                                <td style="padding:8px; font-weight:700; color:var(--brand-green);">+\u20B1${parseFloat(e.Increase).toLocaleString()}</td>
+                            </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+            </div>
         `;
         modalDetails.innerHTML = html;
 
-        // Listen for changes
+        // Add Listeners
         document.querySelectorAll(".edit-prop-pct").forEach(input => {
             input.addEventListener("input", (ev) => {
                 const idx = ev.target.getAttribute("data-idx");
-                const newPct = parseFloat(ev.target.value) || 0;
-                updateEmployeeRow(idx, newPct);
+                const pct = parseFloat(ev.target.value) || 0;
+                updateCalculations(idx, 'pct', pct);
+            });
+        });
+
+        document.querySelectorAll(".edit-prop-inc").forEach(input => {
+            input.addEventListener("input", (ev) => {
+                const idx = ev.target.getAttribute("data-idx");
+                const val = parseFloat(ev.target.value) || 0;
+                updateCalculations(idx, 'amt', val);
             });
         });
     };
 
-    const updateEmployeeRow = (idx, newPct) => {
+    const updateCalculations = (idx, type, value) => {
         const emp = currentSimData[idx];
-        emp.prop_pct = newPct;
-        const currentSal = parseFloat(emp.current_salary || 0);
-        emp.prop_inc = (currentSal * (newPct / 100)).toFixed(2);
-        emp.new_salary = (currentSal + parseFloat(emp.prop_inc)).toFixed(2);
+        const salary = parseFloat(emp.Salary || 0);
 
-        const row = document.querySelectorAll("#modalDetails tbody tr")[idx];
-        if (row) {
-            row.cells[3].innerHTML = `+\u20B1${parseFloat(emp.prop_inc).toLocaleString()}`;
-            row.cells[4].innerHTML = `\u20B1${parseFloat(emp.new_salary).toLocaleString()}`;
+        if (type === 'pct') {
+            emp.PropPct = value;
+            emp.PropInc = (salary * (value / 100)).toFixed(2);
+        } else {
+            emp.PropInc = value;
+            emp.PropPct = ((value / salary) * 100).toFixed(1);
         }
 
-        // Update Hero Total
+        // Logic for re-calculating net pay, etc. would normally be here.
+        // For now, we update the primary fields and visible new basic.
+        emp.BasicNew = salary + parseFloat(emp.PropInc);
+        emp.Increase = emp.PropInc; // Simplified for this view
+        emp.NetPay = parseFloat(emp.NetPay || 0) + (parseFloat(emp.PropInc) - (parseFloat(emp.PropInc) * 0.1)); // Placeholder tax logic
+
+        const row = document.querySelector(`#modalDetails tbody tr[data-idx="${idx}"]`);
+        if (row) {
+            row.querySelector(".edit-prop-pct").value = emp.PropPct;
+            row.querySelector(".edit-prop-inc").value = emp.PropInc;
+            row.cells[10].innerText = `\u20B1${parseFloat(emp.BasicNew).toLocaleString()}`;
+            row.cells[23].innerText = `\u20B1${parseFloat(emp.NetPay).toLocaleString()}`;
+            row.cells[24].innerText = `+\u20B1${parseFloat(emp.Increase).toLocaleString()}`;
+        }
+
+        // Update Total Impact in Hero
         let total = 0;
-        currentSimData.forEach(e => total += parseFloat(e.prop_inc || 0));
+        currentSimData.forEach(e => total += parseFloat(e.PropInc || 0));
         const impactVal = document.querySelector("#remHeroImpact .rem-hero-val");
         if (impactVal) impactVal.innerHTML = `\u20B1${total.toLocaleString()}`;
     };
 
-    // Modal Actions
-    if (closeModal) {
-        closeModal.addEventListener("click", () => {
-            reviewModal.style.display = "none";
-            document.getElementById("modalHero").innerHTML = "";
-            document.getElementById("saveProgressBtn").style.display = "none";
-        });
-    }
-
-    const cancelModal = document.getElementById("cancelModal");
-    if (cancelModal) {
-        cancelModal.addEventListener("click", () => {
-            reviewModal.style.display = "none";
-            document.getElementById("modalHero").innerHTML = "";
-            document.getElementById("saveProgressBtn").style.display = "none";
-        });
-    }
-
     if (approveBtn) {
         approveBtn.addEventListener("click", async () => {
             const result = await Swal.fire({
-                title: "Approve Simulation?",
-                text: "This will forward the data to Finance for final application.",
+                title: "Forward to Finance?",
+                text: "This will endorse the reviewed simulation for final Finance approval.",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#10b981",
-                confirmButtonText: "Yes, Approve"
+                confirmButtonText: "Yes, Endorse"
             });
             if (!result.isConfirmed) return;
 
-            try {
-                // Save current edits first
-                let total = 0;
-                currentSimData.forEach(e => total += parseFloat(e.prop_inc || 0));
+            // Save edits first
+            let total = 0;
+            currentSimData.forEach(e => total += parseFloat(e.PropInc || 0));
 
-                await fetch("be_fetch_simulations.php", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        action: "save",
-                        id: currentReviewId,
-                        employee_data: JSON.stringify(currentSimData),
-                        total_cost: total
-                    })
-                });
-
-                const res = await fetch("be_fetch_simulations.php", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ action: "approve", id: currentReviewId })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Approved',
-                        text: 'Forwarded to Finance successfully.',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true
-                    }).then(() => location.reload());
-                } else {
-                    Swal.fire("Error", data.message, "error");
-                }
-            } catch (err) { Swal.fire("Error", "Network error.", "error"); }
-        });
-    }
-
-    if (rejectBtn) {
-        rejectBtn.addEventListener("click", async () => {
-            const result = await Swal.fire({
-                title: "Reject Simulation?",
-                text: "Are you sure you want to reject this batch?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#ef4444",
-                confirmButtonText: "Yes, Reject"
+            await fetch("be_fetch_simulations.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "save", id: currentReviewId, employee_data: JSON.stringify(currentSimData), total_cost: total })
             });
-            if (!result.isConfirmed) return;
 
-            try {
-                const res = await fetch("be_fetch_simulations.php", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ action: "reject", id: currentReviewId })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Rejected',
-                        text: 'Simulation marked as rejected.',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true
-                    }).then(() => location.reload());
-                } else {
-                    Swal.fire("Error", data.message, "error");
-                }
-            } catch (err) { Swal.fire("Error", "Network error.", "error"); }
+            const res = await fetch("be_fetch_simulations.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "approve", id: currentReviewId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                Swal.fire("Verified", "Simulation forwarded to Finance successfully.", "success").then(() => location.reload());
+            }
         });
     }
 
-    const saveProgressBtn = document.getElementById("saveProgressBtn");
     if (saveProgressBtn) {
         saveProgressBtn.addEventListener("click", async () => {
-            if (!currentSimData) return;
             let total = 0;
-            currentSimData.forEach(e => total += parseFloat(e.prop_inc || 0));
-            try {
-                const res = await fetch("be_fetch_simulations.php", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        action: "save",
-                        id: currentReviewId,
-                        employee_data: JSON.stringify(currentSimData),
-                        total_cost: total
-                    })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Saved',
-                        text: 'Changes saved successfully.',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true
-                    });
-                } else {
-                    Swal.fire("Error", data.message, "error");
-                }
-            } catch (err) { Swal.fire("Error", "Network error.", "error"); }
+            currentSimData.forEach(e => total += parseFloat(e.PropInc || 0));
+
+            const res = await fetch("be_fetch_simulations.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "save", id: currentReviewId, employee_data: JSON.stringify(currentSimData), total_cost: total })
+            });
+            const data = await res.json();
+            if (data.success) {
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Progress Saved', showConfirmButton: false, timer: 2000 });
+            }
         });
     }
+    // Premium Clock Functionality
+    function initPremiumClock() {
+        const clockEl = document.getElementById('realTimeClock');
+        if (!clockEl) return;
 
+        const updateClock = () => {
+            const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            const now = new Date();
+            const dayName = days[now.getDay()];
+            const monthName = months[now.getMonth()];
+            const date = now.getDate();
+            const year = now.getFullYear();
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            const formattedHours = hours.toString().padStart(2, '0');
+
+            clockEl.textContent = `${dayName}, ${monthName} ${date}, ${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
+        };
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    }
+    initPremiumClock();
     loadSimSubmissions();
-    if (window.lucide) window.lucide.createIcons();
-    initClock();
 });
-
-function initClock() {
-    const clockEl = document.getElementById('realTimeClock');
-    if (!clockEl) return;
-    const update = () => {
-        const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-        const now = new Date();
-        const hrs = now.getHours();
-        const ampm = hrs >= 12 ? 'PM' : 'AM';
-        const h = (hrs % 12 || 12).toString().padStart(2, '0');
-        const m = now.getMinutes().toString().padStart(2, '0');
-        const s = now.getSeconds().toString().padStart(2, '0');
-        clockEl.textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}, ${h}:${m}:${s} AM`;
-    };
-    setInterval(update, 1000);
-    update();
-}

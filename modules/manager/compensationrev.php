@@ -4,8 +4,8 @@ if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
     exit();
 }
-$page = 'dashboard';
-$module = 'dashboard';
+$page = 'compensationrev';
+$module = 'planning';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -67,15 +67,15 @@ $module = 'dashboard';
           </div>
         </div>
 
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="planning">
+                <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'planning') ? 'active' : ''; ?>" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
               <span>Compensation Planning</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-           <div class="submenu" id="submenu-planning">
+           <div class="submenu <?php echo ($module === 'planning') ? 'active' : ''; ?>" id="submenu-planning">
              <a href="salarymgt.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
@@ -92,24 +92,25 @@ $module = 'dashboard';
               <i data-lucide="gift"></i>
               <span>Allowances Management</span>
             </a>
-            <a href="compensationrev.php" class="submenu-item <?php echo ($page === 'compensationrev') ? 'active' : ''; ?>">
+             <a href="compensationrev.php" class="submenu-item <?php echo ($page === 'compensationrev') ? 'active' : ''; ?>">
               <i data-lucide="boxes"></i>
               <span>Compensation Review</span>
             </a>
           </div>
         </div>
 
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="payroll">
+                <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'payroll') ? 'active' : ''; ?>" data-module="payroll">
             <div class="nav-item-content">
               <i data-lucide="banknote-arrow-down"></i>
               <span>Payroll</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-payroll">
-            <a href="#" class="submenu-item"><i data-lucide="file-plus"></i><span>Applications</span></a>
-            <a href="#" class="submenu-item"><i data-lucide="check-circle"></i><span>Approvals</span></a>
+          <div class="submenu <?php echo ($module === 'payroll') ? 'active' : ''; ?>" id="submenu-payroll">
+            <a href="#" class="submenu-item <?php echo ($page === 'applications') ? 'active' : ''; ?>"><i data-lucide="file-plus"></i><span>Applications</span></a>
+            <a href="payrollapproval.php" class="submenu-item <?php echo ($page === 'payrollapproval') ? 'active' : ''; ?>"><i data-lucide="check-circle"></i><span>Payroll Approval</span></a>
+            <a href="#" class="submenu-item <?php echo ($page === 'approvals') ? 'active' : ''; ?>"><i data-lucide="check-circle"></i><span>Approvals</span></a>
           </div>
         </div>
       </div>
@@ -167,8 +168,8 @@ $module = 'dashboard';
           <i data-lucide="menu"></i>
         </button>
         <div class="header-title">
-          <h1>Dashboard Overview</h1>
-          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
+          <h1>Compensation Review</h1>
+          <p>Review and endorse compensation simulations.</p>
         </div>
       </div>
       <div class="header-right">
@@ -285,6 +286,11 @@ $module = 'dashboard';
   </main>
   <script src="../../js/notifications.js?v=1.1"></script>
   <script src="../../js/compensationrev.js"></script>
+  <script>
+    if (typeof initGlobalNotifications === 'function') {
+        initGlobalNotifications('compensation_review');
+    }
+  </script>
 </body>
 </html>
 

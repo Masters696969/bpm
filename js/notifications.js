@@ -1,5 +1,5 @@
 /* Shared Notification Logic - Premium Polling System */
-function initGlobalNotifications() {
+function initGlobalNotifications(moduleTarget = 'compensation_cycle') {
     const notifBtn = document.getElementById('notifBtn');
     const notifDropdown = document.getElementById('notifDropdown');
     const notifBadge = document.getElementById('notifBadge');
@@ -25,8 +25,8 @@ function initGlobalNotifications() {
             // Determine path based on module location
             const isSubmodule = window.location.pathname.includes('/modules/');
             const apiPath = isSubmodule
-                ? '../compensation/be_notifications.php?action=fetch&module_target=compensation_cycle'
-                : 'modules/compensation/be_notifications.php?action=fetch&module_target=compensation_cycle';
+                ? `../compensation/be_notifications.php?action=fetch&module_target=${moduleTarget}`
+                : `modules/compensation/be_notifications.php?action=fetch&module_target=${moduleTarget}`;
 
             const res = await fetch(apiPath);
             const data = await res.json();
@@ -50,6 +50,7 @@ function initGlobalNotifications() {
 
         if (notifs.length === 0) {
             notifList.innerHTML = '<div class="notif-empty">No new notifications</div>';
+            notifBadge.classList.add('hidden'); // Hide badge if list is empty
             return;
         }
 
@@ -90,7 +91,7 @@ function initGlobalNotifications() {
                 const res = await fetch(apiPath, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: 'action=mark_read&module_target=compensation_cycle'
+                    body: `action=mark_read&module_target=${moduleTarget}`
                 });
                 const data = await res.json();
                 if (data.success) {
@@ -107,4 +108,6 @@ function initGlobalNotifications() {
     setInterval(fetchNotifs, 30000);
 }
 
-document.addEventListener('DOMContentLoaded', initGlobalNotifications);
+// Don't auto-init here if we want to pass parameters, or use a default
+// document.addEventListener('DOMContentLoaded', () => initGlobalNotifications('compensation_cycle'));
+

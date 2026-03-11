@@ -215,16 +215,28 @@ if (!isset($_SESSION['username'])) {
         </div>
       </div>
       <div class="header-right">
-                        <div class="header-clock">
+        <div class="header-clock">
           <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
           <i data-lucide="moon" class="moon-icon"></i>
         </button>
-        <button class="icon-btn">
-          <i data-lucide="bell"></i>
-        </button>
+        <div class="header-notifications" style="position: relative;">
+          <button class="icon-btn" id="bellIconBtn">
+            <i data-lucide="bell"></i>
+            <span class="badge" id="notifBadge" style="display: none;">0</span>
+          </button>
+          <div id="notifDropdown" class="notif-dropdown" style="display: none; position: absolute; right: 0; top: 100%; width: 320px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: var(--shadow-lg); z-index: 1000; margin-top: 10px;">
+            <div style="padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <h3 style="margin: 0; font-size: 16px; font-weight: 600;">Notifications</h3>
+              <button id="markReadBtn" style="background: none; border: none; color: var(--brand-green); font-size: 12px; cursor: pointer; font-weight: 500;">Mark all as read</button>
+            </div>
+            <div id="notifList" style="max-height: 360px; overflow-y: auto;">
+              <div style="padding: 16px; text-align: center; color: var(--text-secondary); font-size: 14px;">Loading...</div>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -232,7 +244,13 @@ if (!isset($_SESSION['username'])) {
   
     </div>
   </main>
-  <script src="../../js/compensationdashboard.js"></script>
+  <script src="../../js/notifications.js?v=2.0"></script>
+  <script src="../../js/compensationdashboard.js?v=2.1"></script>
+  <script>
+    if (typeof initGlobalNotifications === 'function') {
+        initGlobalNotifications('compensation_cycle');
+    }
+  </script>
   <script>
     lucide.createIcons();
   </script>

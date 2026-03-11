@@ -10,9 +10,8 @@ if (!isset($_SESSION['username'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/supervisordashboard.css?v=1.3">
-  <link rel="stylesheet" href="../../css/notifications.css?v=1.1">
+  <title>Verify Simulation</title>
+  <link rel="stylesheet" href="../../css/verifysimulation.css?v=1.3">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -40,7 +39,7 @@ if (!isset($_SESSION['username'])) {
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-        <a href="dashboard.php" class="nav-item active">
+        <a href="dashboard.php" class="nav-item">
           <i data-lucide="layout-dashboard"></i>
           <span>Dashboard</span>
         </a>
@@ -48,7 +47,7 @@ if (!isset($_SESSION['username'])) {
           <i data-lucide="circle-ellipsis"></i>
           <span>Pending Reviews</span>
         </a>
-         <a href="simulatiomverify.php" class="nav-item">
+         <a href="simulatiomverify.php" class="nav-item active">
           <i data-lucide="calculator"></i>
           <span>Verify Simulation</span>
         </a>
@@ -195,8 +194,8 @@ if (!isset($_SESSION['username'])) {
           <i data-lucide="menu"></i>
         </button>
         <div class="header-title">
-          <h1>Dashboard Overview</h1>
-          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
+          <h1>Simulation Verification</h1>
+          <p>Verify submitted compensation cycles for approval.</p>
         </div>
       </div>
       <div class="header-right">
@@ -226,13 +225,85 @@ if (!isset($_SESSION['username'])) {
     </header>
 
     <div class="content-wrapper">
-     
+        <!-- Stats Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 24px;">
+            <div class="stat-card" style="background: var(--surface); padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 16px; border: 1px solid var(--border-color);">
+                <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i data-lucide="clipboard-list"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label" style="display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">For Verification</span>
+                    <span class="stat-value" id="pendingVerifyCount" style="display: block; font-size: 24px; font-weight: 700; color: var(--text-primary);">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulations Table -->
+        <div class="content-card" style="background: var(--surface); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden;">
+            <div class="card-header" style="padding: 20px; border-bottom: 1px solid var(--border-color);">
+                <h3 class="card-title" style="font-size: 18px; font-weight: 700; color: var(--text-primary);">Simulation Verification</h3>
+                <p class="card-subtitle" style="font-size: 13px; color: var(--text-secondary);">Verify submitted compensation simulations before endorsement.</p>
+            </div>
+            <div class="card-body" style="padding: 20px;">
+                <div class="data-table" style="overflow-x: auto;">
+                    <table class="role-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="text-align: left; border-bottom: 1px solid var(--border-color);">
+                                <th style="padding: 12px; font-size: 13px; font-weight: 600; color: var(--text-secondary);">Cycle Name</th>
+                                <th style="padding: 12px; font-size: 13px; font-weight: 600; color: var(--text-secondary);">Total Cost</th>
+                                <th style="padding: 12px; font-size: 13px; font-weight: 600; color: var(--text-secondary);">Submitted By</th>
+                                <th style="padding: 12px; font-size: 13px; font-weight: 600; color: var(--text-secondary);">Date</th>
+                                <th style="padding: 12px; font-size: 13px; font-weight: 600; color: var(--text-secondary);">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="verifyTableBody">
+                            <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--text-secondary);">Loading simulations...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Screen Review Modal -->
+    <div id="reviewModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1050; align-items:center; justify-content:center; padding:20px;">
+        <div class="modal-content" style="background: var(--surface); width: 100%; max-width: 1400px; max-height: 90vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border-color); box-shadow: var(--shadow-lg);">
+            <div class="modal-header" style="padding:20px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h3 id="modalTitle" style="font-size:18px; font-weight:700; color:var(--text-primary); margin:0;">Verify Compensation Simulation</h3>
+                    <p id="modalSubtitle" style="font-size:13px; color:var(--text-secondary); margin:4px 0 0 0;">Review full calculation details below.</p>
+                </div>
+                <button id="closeModal" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; position:relative; z-index:1051; padding:10px; border-radius:8px; display:flex; align-items:center; justify-content:center; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='none'"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div class="modal-body" style="padding:0; flex-grow:1; overflow:auto;">
+                <div id="modalTableContainer" style="padding:20px;">
+                    <!-- Full calculation table injected here -->
+                </div>
+            </div>
+
+            <div class="modal-footer" style="padding:20px; border-top:1px solid var(--border-color); display:flex; gap:12px; justify-content:flex-end; background:var(--background-alt);">
+                <div id="rejectionReason" style="display:none; flex-grow:1; margin-right:20px;">
+                    <input type="text" id="rejectReasonInput" placeholder="Enter reason for rejection..." style="width:100%; padding:8px 12px; border:1px solid var(--brand-red); border-radius:8px; font-size:14px; background:var(--surface);">
+                </div>
+                <button class="action-btn btn-secondary" id="cancelReview" style="padding:8px 20px; border-radius:8px; border:1px solid var(--border-color); background:var(--surface); color:var(--text-secondary); cursor:pointer; font-weight:600;">Cancel</button>
+                <button class="action-btn btn-reject" id="rejectBtn" style="padding:8px 20px; border-radius:8px; border:1px solid var(--brand-red); background:rgba(239,68,68,0.1); color:var(--brand-red); cursor:pointer; font-weight:600; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="x-circle" style="width:16px;height:16px;"></i> Reject
+                </button>
+                <button class="action-btn btn-approve" id="approveBtn" style="padding:8px 20px; border-radius:8px; border:1px solid var(--brand-green); background:var(--brand-green); color:white; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="check-circle" style="width:16px;height:16px;"></i> Approve & Forward
+                </button>
+            </div>
+        </div>
     </div>    
   </main>
-  <script src="../../js/notifications.js?v=1.1"></script>
-  <script src="../../js/supervisordashboard.js?v=2.2"></script>
+  <script src="../../js/verifysimulation.js?v=2.2"></script>
   <script>
     lucide.createIcons();
+    // Initialize notifications with verify target
+    if (typeof initGlobalNotifications === 'function') {
+        initGlobalNotifications('compensation_verify');
+    }
   </script>
 </body>
 </html>

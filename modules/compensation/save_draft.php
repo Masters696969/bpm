@@ -15,46 +15,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($cycleName) || $periodId === 0 || empty($employeeDataStr)) {
         $response['message'] = 'Missing required fields.';
     } else {
-        // Validate JSON
-        $jsonData = json_decode($employeeDataStr);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $response['message'] = 'Invalid Employee Data format.';
-        } else {
-            // Check if draft for this cycle already exists
-            $check_stmt = $conn->prepare("SELECT DraftID FROM simulation_drafts WHERE CycleName = ?");
-            $check_stmt->bind_param("s", $cycleName);
-            $check_stmt->execute();
-            $result = $check_stmt->get_result();
-
-            if ($result->num_rows > 0) {
-                // Update existing draft
-                $row = $result->fetch_assoc();
-                $draftId = $row['DraftID'];
-                $update_stmt = $conn->prepare("UPDATE simulation_drafts SET EmployeeData = ?, BudgetUsedPct = ?, TotalBudget = ?, TotalCost = ? WHERE DraftID = ?");
-                $update_stmt->bind_param("sdddi", $employeeDataStr, $budgetUsedPct, $totalBudget, $totalCost, $draftId);
-                
-                if ($update_stmt->execute()) {
-                    $response['success'] = true;
-                    $response['message'] = 'Draft updated successfully.';
-                } else {
-                    $response['message'] = 'Failed to update draft: ' . $conn->error;
-                }
-                $update_stmt->close();
-            } else {
-                // Insert new draft
-                $insert_stmt = $conn->prepare("INSERT INTO simulation_drafts (CycleName, period_id, BudgetUsedPct, TotalBudget, TotalCost, EmployeeData) VALUES (?, ?, ?, ?, ?, ?)");
-                $insert_stmt->bind_param("siddds", $cycleName, $periodId, $budgetUsedPct, $totalBudget, $totalCost, $employeeDataStr);
-                
-                if ($insert_stmt->execute()) {
-                    $response['success'] = true;
-                    $response['message'] = 'Draft saved successfully.';
-                } else {
-                    $response['message'] = 'Failed to save draft: ' . $conn->error;
-                }
-                $insert_stmt->close();
-            }
-            $check_stmt->close();
+        $userId = $_SESSION['user_id'] ?? 0;
+        
+        // 1. Check if Status column exists, if not add it (Self-healing schema)
+        $checkCol = $conn->query("SHOW COLUMNS FROM simulation_drafts LIKE 'Status'");
+        if ($checkCol->num_rows == 0) {
+            $conn->query("ALTER TABLE simulation_drafts ADD COLUMN Status VARCHAR(20) DEFAULT 'Draft'");
         }
+
+        // 2. Check if DraftID exists for this cycle
+        $check_stmt = $conn->prepare("SELECT DraftID FROM simulation_drafts WHERE CycleName = ?");
+        $check_stmt->bind_param("s", $cycleName);
+        $check_stmt->execute();
+        $result = $check_stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            // Update existing draft
+            $row = $result->fetch_assoc();
+            $draftId = $row['DraftID'];
+            $update_stmt = $conn->prepare("UPDATE simulation_drafts SET EmployeeData = ?, BudgetUsedPct = ?, TotalBudget = ?, TotalCost = ?, Status = 'Draft', ProposedBy = ?, LastSaved = NOW() WHERE DraftID = ?");
+            $update_stmt->bind_param("sdddii", $employeeDataStr, $budgetUsedPct, $totalBudget, $totalCost, $userId, $draftId);
+            
+            if ($update_stmt->execute()) {
+                $response['success'] = true;
+                $response['message'] = "Draft '$cycleName' updated successfully.";
+            } else {
+                $response['message'] = 'Database update error: ' . $conn->error;
+            }
+            $update_stmt->close();
+        } else {
+            // Insert new draft
+            $insert_stmt = $conn->prepare("INSERT INTO simulation_drafts (CycleName, period_id, BudgetUsedPct, TotalBudget, TotalCost, EmployeeData, Status, ProposedBy, LastSaved) VALUES (?, ?, ?, ?, ?, ?, 'Draft', ?, NOW())");
+            $insert_stmt->bind_param("sidddsi", $cycleName, $periodId, $budgetUsedPct, $totalBudget, $totalCost, $employeeDataStr, $userId);
+            
+            if ($insert_stmt->execute()) {
+                $response['success'] = true;
+                $response['message'] = "Draft '$cycleName' saved successfully.";
+            } else {
+                $response['message'] = 'Database insert error: ' . $conn->error;
+            }
+            $insert_stmt->close();
+        }
+        $check_stmt->close();
     }
 } else {
     $response['message'] = 'Invalid request method.';

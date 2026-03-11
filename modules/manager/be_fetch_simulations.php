@@ -8,8 +8,8 @@ $input = json_decode(file_get_contents('php://input'), true);
 $action = $input['action'] ?? $_POST['action'] ?? $_GET['action'] ?? 'fetch';
 
 if ($action === 'fetch') {
-    // Fetch Endorsed simulations for Manager Review
-    $sql = "SELECT DraftID, CycleName, TotalCost, Status, CreatedAt FROM simulation_drafts WHERE Status IN ('Endorsed', 'Approved') ORDER BY CreatedAt DESC";
+    // Fetch Verified simulations for Manager Review
+    $sql = "SELECT DraftID, CycleName, TotalCost, Status, CreatedAt, ProposedBy FROM simulation_drafts WHERE Status IN ('Verified', 'Reviewed') ORDER BY CreatedAt DESC";
     $result = $conn->query($sql);
     $sims = [];
     if ($result) {
@@ -45,11 +45,11 @@ if ($action === 'fetch') {
 } elseif ($action === 'approve') {
     $id = (int)($input['id'] ?? 0);
     // Forward to Finance
-    $stmt = $conn->prepare("UPDATE simulation_drafts SET Status = 'Approved', UpdatedAt = NOW() WHERE DraftID = ?");
+    $stmt = $conn->prepare("UPDATE simulation_drafts SET Status = 'Reviewed', LastSaved = NOW() WHERE DraftID = ?");
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {
         // Notify Finance
-        $notifMsg = "A compensation simulation has been approved by the Manager and awaits final Finance review.";
+        $notifMsg = "A compensation simulation has been reviewed by the Manager and awaits final Finance approval.";
         $notifStmt = $conn->prepare("INSERT INTO system_notifications (module_target, message, role_target) VALUES ('finance_approval', ?, 'finance manager')");
         $notifStmt->bind_param("s", $notifMsg);
         $notifStmt->execute();

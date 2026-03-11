@@ -35,55 +35,36 @@ if (!isset($_SESSION['username'])) {
       </button>
     </div>
 
+   
     <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">MAIN MENU</span>
         
-        <a href="dashboard.php" class="nav-item">
+        <a href="dashboard.php" class="nav-item active">
           <i data-lucide="layout-dashboard"></i>
           <span>Dashboard</span>
         </a>
-
         <a href="Approvalq.php" class="nav-item active">
           <i data-lucide="check-circle"></i>
           <span>Approval Queue</span>
         </a>
-        
-        <div class="nav-item-group <?php echo ($module === 'hr') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="hr">
-            <div class="nav-item-content">
-              <i data-lucide="book-user"></i>
-              <span>Core Human Capital</span>
-            </div>
-            <i data-lucide="chevron-down" class="submenu-icon"></i>
-          </button>
-          <div class="submenu" id="submenu-hr">
-            <a href="" class="submenu-item">
-              <i data-lucide="user-plus"></i>
-              <span>New Hired Onboard Request</span>
+           <a href="gl.php" class="nav-item active">
+          <i data-lucide="receipt-text"></i>
+          <span>General Ledger</span>
+        </a>
+          <a href="ap.php" class="nav-item">
+          <i data-lucide="scale"></i>
+          <span>AP Management</span>
+        </a>
+        <a href="simulationapproval.php" class="nav-item">
+              <i data-lucide="calculator"></i>
+              <span>Simulation Approval</span>
             </a>
-            <a href="employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
-              <i data-lucide="file-user"></i>
-              <span>Employee Master Files</span>
+        <a href="disbursement.php" class="nav-item">
+              <i data-lucide="banknote-arrow-up"></i>
+              <span>Payroll Disbursement</span>
             </a>
-            <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
-              <i data-lucide="file-text"></i>
-              <span>Bank Form Management</span>
-            </a>
-            <a href="" class="submenu-item">
-              <i data-lucide="user-cog"></i>
-              <span>Security Settings</span>
-            </a>
-            <a href="auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
-              <i data-lucide="book-user"></i>
-              <span>Audit Logs</span>
-            </a>
-          </div>
         </div>
-
-       
-
-
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
         

@@ -4,16 +4,19 @@ if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
     exit();
 }
-$page = 'dashboard';
-$module = 'dashboard';
+$page = 'payrollapproval';
+$module = 'payroll';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payroll Approval</title>
-  <link rel="stylesheet" href="../../css/payrollapproval.css?v=1.2">
+  <title>Payroll Approval | Microfinance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/payrollapproval.css?v=1.3">
   <link rel="stylesheet" href="../../css/notifications.css?v=1.1">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -67,15 +70,15 @@ $module = 'dashboard';
           </div>
         </div>
 
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="planning">
+        <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'planning') ? 'active' : ''; ?>" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
               <span>Compensation Planning</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-           <div class="submenu" id="submenu-planning">
+           <div class="submenu <?php echo ($module === 'planning') ? 'active' : ''; ?>" id="submenu-planning">
              <a href="salarymgt.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
@@ -99,17 +102,18 @@ $module = 'dashboard';
           </div>
         </div>
 
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="payroll">
+        <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'payroll') ? 'active' : ''; ?>" data-module="payroll">
             <div class="nav-item-content">
               <i data-lucide="banknote-arrow-down"></i>
               <span>Payroll</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-payroll">
-            <a href="#" class="submenu-item"><i data-lucide="file-plus"></i><span>Applications</span></a>
-            <a href="#" class="submenu-item"><i data-lucide="check-circle"></i><span>Approvals</span></a>
+          <div class="submenu <?php echo ($module === 'payroll') ? 'active' : ''; ?>" id="submenu-payroll">
+            <a href="#" class="submenu-item <?php echo ($page === 'applications') ? 'active' : ''; ?>"><i data-lucide="file-plus"></i><span>Applications</span></a>
+            <a href="payrollapproval.php" class="submenu-item <?php echo ($page === 'payrollapproval') ? 'active' : ''; ?>"><i data-lucide="check-circle"></i><span>Payroll Approval</span></a>
+            <a href="#" class="submenu-item <?php echo ($page === 'approvals') ? 'active' : ''; ?>"><i data-lucide="check-circle"></i><span>Approvals</span></a>
           </div>
         </div>
       </div>
@@ -163,11 +167,8 @@ $module = 'dashboard';
   <main class="main-content">
     <header class="page-header">
       <div class="header-left">
-        <button class="mobile-menu-btn" id="mobileMenuBtn">
-          <i data-lucide="menu"></i>
-        </button>
         <div class="header-title">
-          <h1>Dashboard Overview</h1>
+          <h1>Payroll Approval</h1>
           <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
         </div>
       </div>
@@ -196,13 +197,7 @@ $module = 'dashboard';
         </div>
       </div>
     </header>
-
     <div class="content-wrapper">
-      <!-- Page Title -->
-      <div style="margin-bottom: 32px;">
-        <h2 style="font-size: 28px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.02em;">Payroll Approval</h2>
-        <p style="font-size: 15px; color: var(--text-secondary); margin-top: 4px;">Review and approve pending payroll batches before disbursement</p>
-      </div>
 
       <!-- Stats Cards -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 32px;">
@@ -259,12 +254,12 @@ $module = 'dashboard';
           </div>
         </div>
       </div>
+      </div>
     </div>
   </main>
   <script src="../../js/notifications.js?v=1.1"></script>
   <script src="../../js/payrollapproval.js"></script>
 </body>
-</html>
 
 
 

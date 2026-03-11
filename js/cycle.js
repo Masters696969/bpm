@@ -129,7 +129,8 @@
             const midPayVal = parseFloat(row.getAttribute("data-midpoint")) || 0;
             const maxPayVal = parseFloat(row.getAttribute("data-max-salary")) || 0;
 
-            const proposedBasic = parseCurrency(row.querySelector(".proposed-gross")) || currentPayVal;
+            const propPctInput = row.querySelector(".prop-increase-input");
+            const proposedBasic = (propPctInput && propPctInput.value !== "") ? parseCurrency(row.querySelector(".proposed-gross")) : currentPayVal;
             const totalAllowances = parseCurrency(row.querySelector(".total-allowances"));
             const taxableAllowances = gradeTaxableMap[gradeID] || 0;
 
@@ -216,8 +217,12 @@
             }
 
             if (propIncAmtCell) {
-                const incValText = `+\u20B1${netIncrease.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-                propIncAmtCell.innerText = incValText;
+                if (propPctInput && propPctInput.value !== "") {
+                    const incValText = `+\u20B1${netIncrease.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+                    propIncAmtCell.innerText = incValText;
+                } else {
+                    propIncAmtCell.innerText = "";
+                }
 
                 // Zero Rule: neutral gray if 0
                 if (netIncrease === 0) {
@@ -260,7 +265,11 @@
 
             const increaseCell = row.querySelector(".increase-cell");
             if (increaseCell) {
-                increaseCell.innerText = `+\u20B1${netIncrease.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
+                if (propPctInput && propPctInput.value !== "") {
+                    increaseCell.innerText = `+\u20B1${netIncrease.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
+                } else {
+                    increaseCell.innerText = "";
+                }
                 if (netIncrease === 0) increaseCell.classList.add('text-neutral-gray');
                 else increaseCell.classList.remove('text-neutral-gray');
             }
@@ -336,10 +345,7 @@
     }
 
 
-    // Auto-run on page load once listeners are bound
-    setTimeout(() => {
-        runAutoSimulation();
-    }, 500);
+
 
     if (tableInputs.length > 0) {
         tableInputs.forEach(input => {
@@ -502,16 +508,36 @@
                             const gradeLabel = row.querySelector(".promote-current-label span")?.innerText || "";
                             const promoGrade = row.querySelector(".promote-inline .promote-grade-select option:checked")?.text.split(" \u2013 ")[0] || "";
 
+                            const clean = (val) => parseFloat(val.replace(/[^\d.-]/g, '')) || 0;
+
                             employeeData.push({
                                 EmployeeID: eeId,
-                                name: name,
-                                department: dept,
-                                grade: gradeLabel,
-                                current_salary: currentSal,
-                                prop_pct: parseFloat(propPct),
-                                prop_inc: propAmt,
-                                new_salary: newSal,
-                                promotion_grade: (newGrade != row.getAttribute("data-grade-id")) ? promoGrade : "",
+                                EmployeeCode: row.querySelector(".u-code")?.innerText || "",
+                                Name: row.querySelector(".u-name-premium")?.innerText || "",
+                                Position: row.querySelector(".u-pos")?.innerText || "",
+                                Rating: row.getAttribute("data-rating") || "0",
+                                Status: "Submitted",
+                                Salary: row.getAttribute("data-base-salary") || "0",
+                                GradeMidpoint: row.getAttribute("data-midpoint") || "0",
+                                CompaRatio: row.querySelector(".compa-ratio")?.innerText || "0%",
+                                Promote: row.querySelector(".promote-current-label span")?.innerText || "",
+                                PropPct: parseFloat(propPct),
+                                PropInc: propAmt,
+                                BasicNew: clean(row.querySelector(".proposed-gross")?.innerText || "0"),
+                                TotalAllowances: clean(row.querySelector(".total-allowances")?.innerText || "0"),
+                                GrossSalary: clean(row.querySelector(".total-gross")?.innerText || "0"),
+                                SemiMonthly: clean(row.querySelector(".rate-semi")?.innerText || "0"),
+                                Daily: clean(row.querySelector(".rate-daily")?.innerText || "0"),
+                                Hourly: clean(row.querySelector(".rate-hourly")?.innerText || "0"),
+                                EmployerShare: clean(row.querySelector(".employer-share")?.innerText || "0"),
+                                FullLoad: clean(row.querySelector(".full-load")?.innerText || "0"),
+                                SSSRegular: clean(row.querySelector(".deduction-sss")?.innerText || "0"),
+                                SSSWISP: clean(row.querySelector(".deduction-wisp")?.innerText || "0"),
+                                PhilHealth: clean(row.querySelector(".deduction-ph")?.innerText || "0"),
+                                PagIBIG: clean(row.querySelector(".deduction-pi")?.innerText || "0"),
+                                WTax: clean(row.querySelector(".deduction-tax")?.innerText || "0"),
+                                NetPay: clean(row.querySelector(".net-pay-cell")?.innerText || "0"),
+                                Increase: clean(row.querySelector(".increase-cell")?.innerText || "0"),
                                 GradeID: newGrade
                             });
                         });
@@ -837,8 +863,8 @@
         });
     });
 
-    // Initial calculation
-    calculateDeductions();
+    // Initial calculation (only run if a draft is being loaded or if specifically needed)
+    // calculateDeductions(); 
     if (window.lucide) window.lucide.createIcons();
 
 });

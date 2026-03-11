@@ -114,9 +114,15 @@ $simulation_query = $conn->query("
     LEFT JOIN positions p ON ei.PositionID = p.PositionID
     LEFT JOIN department d ON ei.DepartmentID = d.DepartmentID
     LEFT JOIN (
-        SELECT EmployeeID, FinalRating
-        FROM final_performance_rating
-        ORDER BY period_id DESC
+        SELECT r1.EmployeeID, r1.FinalRating
+        FROM final_performance_rating r1
+        INNER JOIN (
+            SELECT EmployeeID, MAX(period_id) as MaxPeriod
+            FROM final_performance_rating
+            WHERE EvaluationStatus = 'Finalized'
+            GROUP BY EmployeeID
+        ) r2 ON r1.EmployeeID = r2.EmployeeID AND r1.period_id = r2.MaxPeriod
+        WHERE r1.EvaluationStatus = 'Finalized'
     ) fpr ON e.EmployeeID = fpr.EmployeeID
     WHERE ei.EmploymentStatus IN ('Regular', 'Probationary')
     ORDER BY e.EmployeeCode ASC
@@ -154,7 +160,7 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simulation</title>
-  <link rel="stylesheet" href="../../css/cycle.css?v=3.5">
+  <link rel="stylesheet" href="../../css/cycle.css?v=3.8">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -385,8 +391,8 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
 
     <div class="content-wrapper">
       <!-- Compensation Planning Tabs -->
-      <div class="tabs-container">
-        <div class="tabs-header">
+      <div style="margin-bottom: 24px;">
+        <div class="premium-tabs">
           <button class="tab-btn active" data-tab="strategic">
             <i data-lucide="target"></i>
             <span>Strategic Planning</span>
@@ -462,16 +468,16 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
             <!-- Drafts Section -->
             <div class="drafts-section" style="margin-top: 32px;">
               <h3 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">Recent Drafts & In-Progress Cycles</h3>
-              <div class="table-container">
-                <table class="drafts-table w-full text-left" style="border-collapse: collapse;">
+              <div class="payroll-table-container">
+                <table class="payroll-table w-full text-left" style="border-collapse: collapse;">
                   <thead>
-                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-tertiary); font-size: 12px; font-weight: 600; text-transform: uppercase;">
-                      <th style="padding: 12px 16px;">Cycle Name</th>
-                      <th style="padding: 12px 16px;">Date Started</th>
-                      <th style="padding: 12px 16px;">Last Saved</th>
-                      <th style="padding: 12px 16px;">Budget Used (%)</th>
-                      <th style="padding: 12px 16px;">Status</th>
-                      <th style="padding: 12px 16px; text-align: right;">Action</th>
+                    <tr>
+                      <th>Cycle Name</th>
+                      <th>Date Started</th>
+                      <th>Last Saved</th>
+                      <th>Budget Used (%)</th>
+                      <th>Status</th>
+                      <th style="text-align: right;">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -509,23 +515,46 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
 
           <!-- Simulation Tab -->
           <div class="tab-panel" id="simulation">
-            <div class="simulation-dashboard">
-              <div class="sim-dashboard-grid">
-                <div class="sim-dash-box">
-                  <div class="dash-box-label">Staff Count</div>
-                  <div class="dash-box-value" id="simStaffCount">8 Active Employees</div>
+            <div class="simulation-dashboard" style="margin-bottom: 24px;">
+              <div class="sim-dashboard-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+                <div class="stat-card-premium" style="padding: 12px 16px;">
+                  <div class="stat-icon-wrapper" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; width: 32px; height: 32px;">
+                    <i data-lucide="users" style="width: 16px; height: 16px;"></i>
+                  </div>
+                  <div class="stat-info">
+                    <span class="stat-label" style="font-size: 11px;">Staff Count</span>
+                    <h3 class="stat-value" id="simStaffCount" style="font-size: 18px;">8 Active</h3>
+                  </div>
                 </div>
-                <div class="sim-dash-box highlight-premium">
-                  <div class="dash-box-label">Monthly Impact (Basic + ER)</div>
-                  <div class="dash-box-value" id="totalMonthlyImpact">+&#8369;42,140.00</div>
+                
+                <div class="stat-card-premium" style="padding: 12px 16px;">
+                  <div class="stat-icon-wrapper" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green); width: 32px; height: 32px;">
+                    <i data-lucide="trending-up" style="width: 16px; height: 16px;"></i>
+                  </div>
+                  <div class="stat-info">
+                    <span class="stat-label" style="font-size: 11px;">Monthly Impact (Basic + ER)</span>
+                    <h3 class="stat-value" id="totalMonthlyImpact" style="font-size: 18px;">+&#8369;42,140</h3>
+                  </div>
                 </div>
-                <div class="sim-dash-box">
-                  <div class="dash-box-label">Yearly Impact</div>
-                  <div class="dash-box-value" id="totalYearlyImpact">&#8369;505,680.00</div>
+
+                <div class="stat-card-premium" style="padding: 12px 16px;">
+                  <div class="stat-icon-wrapper" style="background: rgba(245, 158, 11, 0.1); color: var(--brand-yellow); width: 32px; height: 32px;">
+                    <i data-lucide="calendar" style="width: 16px; height: 16px;"></i>
+                  </div>
+                  <div class="stat-info">
+                    <span class="stat-label" style="font-size: 11px;">Yearly Impact</span>
+                    <h3 class="stat-value" id="totalYearlyImpact" style="font-size: 18px;">&#8369;505,680</h3>
+                  </div>
                 </div>
-                <div class="sim-dash-box">
-                  <div class="dash-box-label">Health Check (Avg. Compa-Ratio)</div>
-                  <div class="dash-box-value" id="avgCompaRatio">82%</div>
+
+                <div class="stat-card-premium" style="padding: 12px 16px;">
+                  <div class="stat-icon-wrapper" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6; width: 32px; height: 32px;">
+                    <i data-lucide="activity" style="width: 16px; height: 16px;"></i>
+                  </div>
+                  <div class="stat-info">
+                    <span class="stat-label" style="font-size: 11px;">Avg. Compa-Ratio</span>
+                    <h3 class="stat-value" id="avgCompaRatio" style="font-size: 18px;">82%</h3>
+                  </div>
                 </div>
               </div>
             </div>
@@ -555,8 +584,8 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
               </div>
             </div>
             
-            <div class="table-container">
-               <table class="comp-table simulation-table">
+            <div class="payroll-table-container" style="overflow-x: auto;">
+               <table class="payroll-table simulation-table" style="white-space: nowrap;">
                 <thead>
                   <tr>
                     <th>EE ID</th>
@@ -568,7 +597,7 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
                     <th>Compa-Ratio</th>
                     <th style="min-width:180px;">Promote</th>
                     <th>Prop. %</th>
-                    <th>Prop. Increase (₱)</th>
+                    <th style="color: var(--brand-green);">Prop. Increase (₱)</th>
                     <th>Basic (New)</th>
                     <th>Total Allowances</th>
                     <th>Gross Salary</th>
@@ -583,7 +612,7 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
                     <th>Pag-IBIG</th>
                     <th>W. Tax</th>
                     <th>Net Pay</th>
-                    <th>Increase</th>
+                    <th style="color: var(--brand-green);">Increase</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -616,12 +645,6 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
                     $rating_key = number_format((float)$rating, 1);
                     if (isset($merit_matrix[$rating_key][$compa_range])) {
                         $recommended_pct = (float)$merit_matrix[$rating_key][$compa_range]['min_increase_pct'];
-                    } elseif (!empty($merit_matrix)) {
-                        // Fallback: use lowest available rating entry
-                        $fallback_key = min(array_keys($merit_matrix));
-                        if (isset($merit_matrix[$fallback_key][$compa_range])) {
-                            $recommended_pct = (float)$merit_matrix[$fallback_key][$compa_range]['min_increase_pct'];
-                        }
                     }
                   ?>
                   <tr class="sim-row" 
@@ -674,11 +697,10 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
                     </td>
                     <td>
                       <div class="input-tooltip-wrapper">
-                        <input type="number" class="table-input prop-increase-input" value="0.0" step="0.5" max="100.0" min="0">%
-                        <div class="input-tooltip">Grade Ceiling Reached - Promotion Required</div>
+                        <input type="number" class="table-input prop-increase-input" value="" placeholder="0.0" step="0.5" max="100.0" min="0">%
                       </div>
                     </td>
-                    <td class="prop-increase-amount" contenteditable="true" style="color: #10b981; font-weight: 600;">+&#8369;0.00</td>
+                    <td class="prop-increase-amount" contenteditable="true" style="color: #10b981; font-weight: 600;"></td>
                     <td class="proposed-gross">&#8369;<?php echo number_format($current_pay, 0); ?></td>
                     <td class="total-allowances" data-value="<?php echo $allowances; ?>">&#8369;<?php echo number_format($allowances, 2); ?></td>
                     <td class="total-gross">&#8369;0.00</td>
@@ -687,13 +709,13 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
                     <td class="rate-hourly">&#8369;0.00</td>
                     <td class="employer-share">&#8369;0.00</td>
                     <td class="full-load">&#8369;0.00</td>
-                    <td class="deduction-sss">&#8369;0.00</td>
+                    <td class="deduction-sss" style="color: #ef4444; font-weight: 600;">&#8369;0.00</td>
                     <td class="deduction-wisp" style="color: #ef4444; font-weight: 600;">&#8369;0.00</td>
-                    <td class="deduction-ph">&#8369;0.00</td>
-                    <td class="deduction-pi">&#8369;0.00</td>
-                    <td class="deduction-tax">&#8369;0.00</td>
-                    <td class="net-pay-cell">&#8369;0.00</td>
-                    <td class="increase-cell" data-increase="0">+&#8369;0</td>
+                    <td class="deduction-ph" style="color: #ef4444; font-weight: 600;">&#8369;0.00</td>
+                    <td class="deduction-pi" style="color: #ef4444; font-weight: 600;">&#8369;0.00</td>
+                    <td class="deduction-tax" style="color: #ef4444; font-weight: 600;">&#8369;0.00</td>
+                    <td class="net-pay-cell" style="color: #10b981; font-weight: 600;">&#8369;0.00</td>
+                    <td class="increase-cell" data-increase="0" style="color: #10b981; font-weight: 600;"></td>
                   </tr>
                   <?php endforeach; ?>
                 </tbody>
@@ -701,9 +723,8 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
             </div>
           </div>
         </div>
-          </div>
-        </div>
       </div>
+    </div>
 
   </main>
 

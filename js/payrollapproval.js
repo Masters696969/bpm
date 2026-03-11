@@ -10,20 +10,25 @@
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") body.classList.add("dark-mode");
 
-    themeToggle.addEventListener("click", () => {
-        body.classList.toggle("dark-mode");
-        localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
-    });
+    if (themeToggle) {
+        themeToggle.addEventListener("click", () => {
+            body.classList.toggle("dark-mode");
+            localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
+        });
+    }
 
     // 2. Sidebar & Mobile Logic
-    sidebarToggle.addEventListener("click", () => {
-        sidebar.classList.toggle("collapsed");
-        localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
-    });
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener("click", () => {
+            sidebar.classList.toggle("collapsed");
+            localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+        });
+        if (localStorage.getItem("sidebarCollapsed") === "true") sidebar.classList.add("collapsed");
+    }
 
-    if (localStorage.getItem("sidebarCollapsed") === "true") sidebar.classList.add("collapsed");
-
-    mobileMenuBtn.addEventListener("click", () => sidebar.classList.toggle("mobile-open"));
+    if (mobileMenuBtn && sidebar) {
+        mobileMenuBtn.addEventListener("click", () => sidebar.classList.toggle("mobile-open"));
+    }
 
     // 3. Submenu Logic
     document.querySelectorAll(".nav-item.has-submenu").forEach((item) => {
@@ -258,31 +263,31 @@ if (document.readyState === 'loading') {
 
         batches.forEach(b => {
             const card = document.createElement('div');
-            card.style.cssText = 'background: var(--background); border-radius: 16px; padding: 20px; margin-bottom: 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease;';
+            card.className = 'approval-batch-card';
             card.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(44, 160, 120, 0.15), rgba(59, 130, 246, 0.1)); display: flex; align-items: center; justify-content: center;">
-                        <i data-lucide="file-text" style="width: 22px; height: 22px; color: var(--brand-green);"></i>
+                <div class="abc-info">
+                    <div class="abc-icon">
+                        <i data-lucide="file-text"></i>
                     </div>
-                    <div>
-                        <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">${b.batch_code}</div>
-                        <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-secondary);">
-                            <span><i data-lucide="calendar" style="width: 14px; height: 14px; margin-right: 4px;"></i>${b.period_start} - ${b.period_end}</span>
-                            <span style="padding: 2px 8px; border-radius: 6px; background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow); font-size: 11px; font-weight: 600;">${b.pay_type}</span>
+                    <div class="abc-details">
+                        <div class="abc-code">${b.batch_code}</div>
+                        <div class="abc-meta">
+                            <span><i data-lucide="calendar"></i>${b.period_start} - ${b.period_end}</span>
+                            <span class="abc-type-badge">${b.pay_type}</span>
                         </div>
                     </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 24px;">
-                    <div style="text-align: right;">
-                        <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 2px;">${b.employee_count} employees</div>
-                        <div style="font-size: 18px; font-weight: 700; color: var(--brand-green);">${peso(b.total_distributed)}</div>
+                <div class="abc-actions-wrapper">
+                    <div class="abc-stats">
+                        <div class="abc-stat-label">${b.employee_count} employees</div>
+                        <div class="abc-stat-value">${peso(b.total_distributed)}</div>
                     </div>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn-approve" data-batch-id="${b.id}" style="padding: 10px 20px; border-radius: 10px; border: none; background: var(--brand-green); color: #fff; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
-                            <i data-lucide="check" style="width: 16px; height: 16px;"></i> Approve
+                    <div class="abc-buttons">
+                        <button class="btn-approve" data-batch-id="${b.id}">
+                            <i data-lucide="check"></i> Approve
                         </button>
-                        <button class="btn-reject" data-batch-id="${b.id}" style="padding: 10px 20px; border-radius: 10px; border: none; background: transparent; color: #ef4444; cursor: pointer; font-weight: 600; font-size: 14px; border: 1px solid #ef4444; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
-                            <i data-lucide="x" style="width: 16px; height: 16px;"></i> Reject
+                        <button class="btn-reject" data-batch-id="${b.id}">
+                            <i data-lucide="x"></i> Reject
                         </button>
                     </div>
                 </div>
@@ -319,9 +324,9 @@ if (document.readyState === 'loading') {
                             position: 'top-end',
                             icon: 'success',
                             title: 'Approved',
-                            text: 'Payroll batch has been approved.',
+                            text: 'Payroll batch has been approved and sent to Disbursement.',
                             showConfirmButton: false,
-                            timer: 2000,
+                            timer: 2500,
                             timerProgressBar: true
                         });
                         loadPendingBatches();

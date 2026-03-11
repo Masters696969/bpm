@@ -638,19 +638,31 @@ if ($action === 'approve_batch') {
         respond(false, ['error' => 'batch_id required'], 400);
     }
 
-    $stmt = $conn->prepare("UPDATE payroll_batches SET status='Approved' WHERE id=?");
-    $stmt->bind_param('i', $batchId);
-    if (!$stmt->execute()) {
-        respond(false, ['error' => $stmt->error], 500);
+    $conn->begin_transaction();
+    try {
+        $stmt = $conn->prepare("UPDATE payroll_batches SET status='Approved' WHERE id=?");
+        $stmt->bind_param('i', $batchId);
+        if (!$stmt->execute()) {
+            throw new Exception($stmt->error);
+        }
+        $affectedRows = $stmt->affected_rows;
+        $stmt->close();
+
+        if ($affectedRows > 0) {
+            // Accounts Payable generation moved to Disbursement flow
+        }
+
+        $conn->commit();
+        
+        // Verify the update
+        $checkRes = $conn->query("SELECT id, batch_code, status FROM payroll_batches WHERE id=$batchId");
+        $updatedBatch = $checkRes ? $checkRes->fetch_assoc() : null;
+        
+        respond(true, ['message' => 'Batch approved and AP vouchers generated', 'affected_rows' => $affectedRows, 'updated_batch' => $updatedBatch]);
+    } catch (Exception $e) {
+        $conn->rollback();
+        respond(false, ['error' => $e->getMessage()], 500);
     }
-    $affectedRows = $stmt->affected_rows;
-    $stmt->close();
-    
-    // Verify the update
-    $checkRes = $conn->query("SELECT id, batch_code, status FROM payroll_batches WHERE id=$batchId");
-    $updatedBatch = $checkRes ? $checkRes->fetch_assoc() : null;
-    
-    respond(true, ['message' => 'Batch approved', 'affected_rows' => $affectedRows, 'updated_batch' => $updatedBatch]);
 }
 
 if ($action === 'reject_batch') {

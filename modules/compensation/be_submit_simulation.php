@@ -15,13 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // We will save this as a "Submitted" draft for now, or use a specific proposals table if available.
         // For maximum compatibility with existing code, we'll ensure simulation_drafts can handle a 'status'
         
-        // Let's create a notification for the manager
+        // Let's create a notification for the supervisor
         $submittedBy = $_SESSION['username'] ?? 'User';
-        $notifMsg = "New Compensation Proposal submitted for cycle: $cycleName by $submittedBy. Total Impact: ₱" . number_format($totalCost, 2);
+        $notifMsg = "New Compensation Proposal submitted for cycle: $cycleName by $submittedBy. Awaiting your verification.";
         
         $conn->begin_transaction();
         try {
-            // 1. Check if Status column exists, if not add it (Self-healing schema)
+            // 1. Check if Status column exists
             $checkCol = $conn->query("SHOW COLUMNS FROM simulation_drafts LIKE 'Status'");
             if ($checkCol->num_rows == 0) {
                 $conn->query("ALTER TABLE simulation_drafts ADD COLUMN Status VARCHAR(20) DEFAULT 'Draft'");
@@ -33,28 +33,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $check_stmt->execute();
             $result = $check_stmt->get_result();
 
+            $userId = $_SESSION['user_id'] ?? 0;
             if ($result->num_rows > 0) {
                 $row = $result->fetch_assoc();
                 $draftId = $row['DraftID'];
-                $update_stmt = $conn->prepare("UPDATE simulation_drafts SET EmployeeData = ?, TotalCost = ?, Status = 'Submitted', ProposedBy = ?, UpdatedAt = NOW() WHERE DraftID = ?");
-                $userId = $_SESSION['user_id'] ?? 0;
+                $update_stmt = $conn->prepare("UPDATE simulation_drafts SET EmployeeData = ?, TotalCost = ?, Status = 'Submitted', ProposedBy = ?, LastSaved = NOW() WHERE DraftID = ?");
                 $update_stmt->bind_param("sdii", $employeeDataStr, $totalCost, $userId, $draftId);
                 $update_stmt->execute();
             } else {
                 $insert_stmt = $conn->prepare("INSERT INTO simulation_drafts (CycleName, period_id, TotalCost, EmployeeData, Status, ProposedBy) VALUES (?, 1, ?, ?, 'Submitted', ?)");
-                $userId = $_SESSION['user_id'] ?? 0;
                 $insert_stmt->bind_param("sdsi", $cycleName, $totalCost, $employeeDataStr, $userId);
                 $insert_stmt->execute();
             }
 
-            // 3. Create System Notification
-            $notifStmt = $conn->prepare("INSERT INTO system_notifications (module_target, message, role_target) VALUES ('compensation_review', ?, 'hr manager')");
+            // 3. Create System Notification for Supervisor
+            $notifStmt = $conn->prepare("INSERT INTO system_notifications (module_target, message, role_target) VALUES ('compensation_verify', ?, 'supervisor')");
             $notifStmt->bind_param("s", $notifMsg);
             $notifStmt->execute();
 
             $conn->commit();
             $response['success'] = true;
-            $response['message'] = 'Proposal submitted successfully.';
+            $response['message'] = 'Proposal submitted to Supervisor successfully.';
         } catch (Exception $e) {
             $conn->rollback();
             $response['message'] = 'Error: ' . $e->getMessage();

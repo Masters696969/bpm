@@ -49,12 +49,19 @@
     const statusBadge = (status) => {
         const s = String(status || '').toLowerCase();
         if (s === 'disbursed' || s === 'completed') {
-            return `<span class="badge-premium badge-success"><i data-lucide="check-check"></i> ${status}</span>`;
+            return `<span class="badge-premium badge-success" style="font-weight: 700; font-size: 11px; text-transform: uppercase;"><i data-lucide="check-check"></i> ${status}</span>`;
         }
-        if (s === 'finalized') {
-            return `<span class="badge-premium badge-success"><i data-lucide="check"></i> ${status}</span>`;
+        if (s === 'approved' || s === 'finalized') {
+            return `<span class="badge-premium badge-success" style="font-weight: 700; font-size: 11px; text-transform: uppercase;"><i data-lucide="check"></i> ${status}</span>`;
         }
-        return `<span class="badge-premium badge-warning"><i data-lucide="loader"></i> ${status || 'Processing'}</span>`;
+        if (s === 'pending approval' || s === 'pending') {
+            return `<span class="badge-premium badge-warning" style="font-weight: 700; font-size: 11px; text-transform: uppercase;"><i data-lucide="clock"></i> ${status}</span>`;
+        }
+        if (s === 'archived') {
+            return `<span class="badge-premium badge-secondary" style="font-weight: 700; font-size: 11px; text-transform: uppercase;"><i data-lucide="archive"></i> ${status}</span>`;
+        }
+        // Processing or default
+        return `<span class="badge-premium badge-info" style="font-weight: 700; font-size: 11px; text-transform: uppercase;"><i data-lucide="loader" class="spin"></i> ${status || 'Processing'}</span>`;
     };
 
     const renderBatches = (batches) => {
