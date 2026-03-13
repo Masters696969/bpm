@@ -1,4 +1,4 @@
-﻿/**
+/**
  * User Account Management - v1.0
  * Handles modal, theme toggle, sidebar, and account actions (Edit/Delete)
  * Last Updated: February 8, 2026
@@ -194,7 +194,7 @@ function initUserAccount() {
                     params.append("roles[]", roleId);
                 });
 
-                const response = await fetch("account_action.php", {
+                const response = await fetch("backend/account_action.php", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -263,7 +263,7 @@ function initUserAccount() {
     // =====================
     window.editUser = async function (accountId) {
         try {
-            const response = await fetch(`account_action.php?action=get_account&account_id=${accountId}`);
+            const response = await fetch(`backend/account_action.php?action=get_account&account_id=${accountId}`);
             const result = await response.json();
 
             if (result.success) {
@@ -343,7 +343,7 @@ function initUserAccount() {
             formData.append("action", "delete_account");
             formData.append("account_id", id);
 
-            const response = await fetch("account_action.php", {
+            const response = await fetch("backend/account_action.php", {
                 method: "POST",
                 body: formData
             });

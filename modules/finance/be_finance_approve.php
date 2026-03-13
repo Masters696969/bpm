@@ -17,10 +17,6 @@ if ($action === 'approve') {
     $stmt = $conn->prepare("UPDATE simulation_drafts SET Status = 'Approved', LastSaved = NOW() WHERE DraftID = ?");
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {
-        // Here we would typically trigger the actual update of employee salary records
-        // but since the user only asked for the flow and review, we just set status to Approved.
-        
-        // Notify HR/Supervisor that it's finalized
         $notifMsg = "Compensation simulation for cycle has been FINALLY APPROVED by Finance.";
         $notifStmt = $conn->prepare("INSERT INTO system_notifications (module_target, message, role_target) VALUES ('compensation_cycle', ?, 'hr manager')");
         $notifStmt->bind_param("s", $notifMsg);

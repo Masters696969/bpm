@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id']) || strtolower($_SESSION['user_role']) !== 'admi
     exit;
 }
 
-require_once '../../config/config.php';
+require_once '../../../config/config.php';
 
 // Allow GET for fetching data, POST for updates
 $action = $_REQUEST['action'] ?? '';

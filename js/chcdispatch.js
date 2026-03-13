@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const lucide = window.lucide;
     const body = document.body;
     const themeToggle = document.getElementById("themeToggle");
@@ -130,9 +130,9 @@
     async function initDispatchView() {
         if (!tableBody) return;
         try {
-            const summaryRes = await fetch('be_dispatch.php?action=fetch_dispatcher_summary');
+            const summaryRes = await fetch('backend/be_dispatch.php?action=fetch_dispatcher_summary');
             const summary = await summaryRes.json();
-            const employeeRes = await fetch('be_dispatch.php?action=fetch_new_hires');
+            const employeeRes = await fetch('backend/be_dispatch.php?action=fetch_new_hires');
             const employeeData = await employeeRes.json();
             if (summary.success && employeeData.success) {
                 currentPendingEmployees = employeeData.data;
@@ -212,7 +212,7 @@
         if (confirm.isConfirmed) {
             Swal.fire({ title: 'Dispatching...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
             try {
-                const response = await fetch('be_dispatch.php', {
+                const response = await fetch('backend/be_dispatch.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'dispatch_all' })

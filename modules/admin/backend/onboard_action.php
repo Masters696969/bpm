@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require_once '../../config/config.php';
+require_once '../../../config/config.php';
 session_start();
 
 // Helper to get next ID for frontend display

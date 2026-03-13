@@ -1,5 +1,5 @@
 <?php
-require_once '../../config/config.php';
+require_once '../../../config/config.php';
 
 // Suppress display errors to return clean JSON
 ini_set('display_errors', 0);

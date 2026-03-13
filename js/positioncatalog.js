@@ -1,4 +1,4 @@
-﻿// Filter by Department
+// Filter by Department
 function filterByDept(deptId) {
     if (deptId === 'all') {
         window.location.href = 'positioncatalog.php';
@@ -57,13 +57,13 @@ function launchManagePositionModal(pos) {
                 </div>
                 <div class="swal-field" style="margin-top: 15px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-secondary);">Department</label>
-                    <select id="swalManageDept" class="swal2-select" style="margin: 0; width: 100%; display: block;">
+                    <select id="swalManageDept" style="margin: 0; width: 100%; display: block; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--surface); color: var(--text-primary); cursor: pointer;">
                         ${deptOptions}
                     </select>
                 </div>
                 <div class="swal-field" style="margin-top: 15px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-secondary);">Salary Grade</label>
-                    <select id="swalManageGrade" class="swal2-select" style="margin: 0; width: 100%; display: block;">
+                    <select id="swalManageGrade" style="margin: 0; width: 100%; display: block; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--surface); color: var(--text-primary); cursor: pointer;">
                         ${gradeOptions}
                     </select>
                 </div>
@@ -103,6 +103,14 @@ function launchManagePositionModal(pos) {
         }
     }).then((result) => {
         if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Updating Position...',
+                text: 'Please wait while we submit the change request.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
             document.getElementById('updatePosId').value = pos.id;
             document.getElementById('updatePosName').value = result.value.name;
             document.getElementById('updatePosCode').value = result.value.code;
@@ -117,16 +125,24 @@ function launchManagePositionModal(pos) {
 // Separate function for Delete Confirmation
 function confirmDeletePosition(id, name) {
     Swal.fire({
-        title: 'Request Deletion?',
-        text: `Are you sure you want to request the deletion of "${name}"? This will go to positionrequest.php for approval.`,
+        title: 'Delete Position?',
+        text: `Are you sure you want to delete "${name}"? This action cannot be undone.`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc2626',
         cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Yes, Submit Request',
+        confirmButtonText: 'Yes, Delete Position',
         reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Requesting Deletion...',
+                text: 'Please wait while we submit your request.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
             document.getElementById('deletePosId').value = id;
             document.getElementById('deletePositionForm').submit();
         }
@@ -155,13 +171,13 @@ function launchAddPositionModal() {
                 </div>
                 <div class="swal-field" style="margin-top: 15px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-secondary);">Department</label>
-                    <select id="swalDeptId" class="swal2-select" style="margin: 0; width: 100%; display: block;">
+                    <select id="swalDeptId" style="margin: 0; width: 100%; display: block; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--surface); color: var(--text-primary); cursor: pointer;">
                         ${deptOptions}
                     </select>
                 </div>
                 <div class="swal-field" style="margin-top: 15px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-secondary);">Salary Grade</label>
-                    <select id="swalGradeId" class="swal2-select" style="margin: 0; width: 100%; display: block;">
+                    <select id="swalGradeId" style="margin: 0; width: 100%; display: block; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--surface); color: var(--text-primary); cursor: pointer;">
                         ${gradeOptions}
                     </select>
                 </div>
@@ -190,6 +206,14 @@ function launchAddPositionModal() {
         }
     }).then((result) => {
         if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Adding Position...',
+                text: 'Please wait while we update the catalog.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
             document.getElementById('formPosName').value = result.value.name;
             document.getElementById('formPosCode').value = result.value.code;
             document.getElementById('formDeptId').value = result.value.deptId;

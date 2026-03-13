@@ -11,7 +11,7 @@ if (!isset($_SESSION['username'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Payroll Disbursement</title>
-  <link rel="stylesheet" href="../../css/disbursement.css?v=1.2">
+  <link rel="stylesheet" href="../../css/disbursement.css?v=1.3">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -144,7 +144,7 @@ if (!isset($_SESSION['username'])) {
       <!-- Minimalist Stats Grid -->
       <div class="stats-grid">
         <div class="stat-card-minimal">
-          <div class="stat-icon" style="color: var(--brand-green);">
+          <div class="stat-icon text-brand-green">
             <i data-lucide="wallet"></i>
           </div>
           <div class="stat-info">
@@ -154,7 +154,7 @@ if (!isset($_SESSION['username'])) {
         </div>
 
         <div class="stat-card-minimal">
-          <div class="stat-icon" style="color: #3b82f6;">
+          <div class="stat-icon text-accent-blue">
             <i data-lucide="check-circle-2"></i>
           </div>
           <div class="stat-info">
@@ -164,7 +164,7 @@ if (!isset($_SESSION['username'])) {
         </div>
 
         <div class="stat-card-minimal">
-          <div class="stat-icon" style="color: #8b5cf6;">
+          <div class="stat-icon text-accent-purple">
             <i data-lucide="history"></i>
           </div>
           <div class="stat-info">
@@ -202,10 +202,10 @@ if (!isset($_SESSION['username'])) {
                 </thead>
                 <tbody id="disbursementBatchesBody">
                    <tr>
-                     <td colspan="6" style="padding: 60px; text-align: center; color: var(--text-secondary);">
+                     <td colspan="6" class="td-loading-state">
                         <div class="loading-sync">
-                            <i data-lucide="refresh-cw" class="spin" style="margin-bottom: 12px; opacity: 0.5;"></i>
-                            <p style="font-weight: 500; letter-spacing: 0.5px;">Synchronizing batch data...</p>
+                            <i data-lucide="refresh-cw" class="spin icon-loading-spin"></i>
+                            <p class="text-sync-msg">Synchronizing batch data...</p>
                         </div>
                      </td>
                    </tr>
@@ -241,7 +241,7 @@ if (!isset($_SESSION['username'])) {
                     </thead>
                     <tbody id="payoutHistoryBody">
                         <tr>
-                            <td colspan="6" style="padding: 40px; text-align: center; color: var(--text-secondary);">No history found.</td>
+                            <td colspan="6" class="td-empty-state">No history found.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -251,23 +251,23 @@ if (!isset($_SESSION['username'])) {
     </div>
 
     <!-- Batch Detail Modal -->
-    <div id="batchDetailModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: var(--background); z-index: 1050; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
-      <div class="modal-premium" style="background: var(--surface-card); width: 90%; max-width: 800px; max-height: 85vh; border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; transform: scale(0.95); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
-        <div class="section-header" style="padding: 24px; border-bottom: 1px solid var(--border-color); margin: 0;">
+    <div id="batchDetailModal" class="modal-overlay">
+      <div class="modal-premium">
+        <div class="modal-header-premium">
             <div class="section-title">
-                <i data-lucide="users" style="color: var(--brand-green);"></i>
-                <span>Batch Detail: <span id="currentBatchCodeLabel" style="color: var(--brand-green);"></span></span>
+                <i data-lucide="users" class="text-brand-green"></i>
+                <span>Batch Detail: <span id="currentBatchCodeLabel" class="text-brand-green"></span></span>
             </div>
-            <div style="display: flex; gap: 12px; align-items: center;">
-                <button class="btn-premium" id="btnPayAll" style="background: var(--brand-green); color: white; border-radius: 12px; padding: 10px 24px; font-weight: 700; box-shadow: 0 4px 6px -1px rgba(44, 160, 120, 0.2);">
-                   <i data-lucide="send" style="width: 14px; margin-right: 6px;"></i> Execute Bulk
+            <div class="flex-center-gap">
+                <button class="btn-execute-bulk" id="btnPayAll">
+                   <i data-lucide="send" class="btn-icon-tiny"></i> Execute Bulk
                 </button>
-                <button id="closeBatchModal" style="background: var(--background); border: 1px solid var(--border-color); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: all 0.2s;">
+                <button id="closeBatchModal">
                     <i data-lucide="x"></i>
                 </button>
             </div>
         </div>
-        <div class="payroll-table-container" style="padding: 24px; overflow-y: auto; flex: 1;">
+        <div class="modal-body-premium">
             <table class="payroll-table">
             <thead>
                 <tr>
@@ -281,7 +281,7 @@ if (!isset($_SESSION['username'])) {
             </thead>
             <tbody id="batchEmployeesBody">
                 <tr>
-                    <td colspan="6" style="padding: 40px; text-align: center; color: var(--text-secondary);">Select a batch.</td>
+                    <td colspan="6" class="td-empty-state">Select a batch.</td>
                 </tr>
             </tbody>
             </table>
@@ -289,112 +289,7 @@ if (!isset($_SESSION['username'])) {
       </div>
     </div>
 
-    <style>
-        .modal-overlay {
-            background: var(--background) !important;
-        }
-        .modal-overlay.open {
-            opacity: 1 !important;
-            pointer-events: auto !important;
-        }
-        .modal-overlay.open .modal-premium {
-            transform: scale(1) !important;
-        }
-        #closeBatchModal:hover {
-            background: var(--surface-hover);
-            color: #ef4444;
-            border-color: #ef4444;
-        }
-        
-        /* Modal Table Card Styles */
-        #batchDetailModal .payroll-table {
-            border-spacing: 0 10px;
-            border-collapse: separate;
-        }
-        #batchDetailModal .payroll-table th {
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 1px;
-            color: var(--text-tertiary);
-            padding: 0 24px 12px;
-            border: none;
-        }
-        #batchDetailModal .payroll-table tr td {
-            background: var(--background);
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            padding: 16px 24px;
-        }
-        #batchDetailModal .payroll-table tr td:first-child {
-            border-left: 1px solid var(--border-color);
-            border-radius: 16px 0 0 16px;
-        }
-        #batchDetailModal .payroll-table tr td:last-child {
-            border-right: 1px solid var(--border-color);
-            border-radius: 0 16px 16px 0;
-        }
-        
-        #batchDetailModal .payroll-table tr:hover td {
-            background: var(--surface-hover);
-            border-color: var(--brand-green-light);
-        }
-
-        .institution-badge {
-            background: rgba(59, 130, 246, 0.08);
-            color: #3b82f6;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            display: inline-flex;
-            align-items: center;
-        }
-        
-        .processed-indicator {
-            color: var(--brand-green);
-            font-size: 12px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            opacity: 0.8;
-        }
-
-        /* Modal Scrollbar */
-        .payroll-table-container::-webkit-scrollbar {
-            width: 6px;
-        }
-        .payroll-table-container::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .payroll-table-container::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 10px;
-        }
-        .payroll-table-container::-webkit-scrollbar-thumb:hover {
-            background: var(--text-tertiary);
-        }
-
-        .spin {
-            animation: spin 2s linear infinite;
-            display: inline-block;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .loading-sync {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Ensure SweetAlert is always on top */
-        .swal2-container {
-            z-index: 11000 !important;
-        }
-    </style>
+    <br>
   </main>
   <script src="../../js/disbursement.js"></script>
   <script>

@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     const lucide = window.lucide;
     const body = document.body;
     const themeToggle = document.getElementById("themeToggle");
@@ -69,7 +69,7 @@
             if (displayCodeEl) {
                 // Fetch next ID from server or use a placeholder
                 try {
-                    const response = await fetch('onboard_action.php?get_next_id=1');
+                    const response = await fetch('backend/onboard_action.php?get_next_id=1');
                     const resData = await response.json();
                     const nextId = resData.next_id || '1011'; // Fallback
                     const posCode = data.pos_code || 'EMP';
@@ -117,7 +117,7 @@
             if (result.isConfirmed) {
                 const formData = new FormData(onboardForm);
                 try {
-                    const response = await fetch('onboard_action.php', {
+                    const response = await fetch('backend/onboard_action.php', {
                         method: 'POST',
                         body: formData
                     });

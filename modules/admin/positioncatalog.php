@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -10,23 +10,22 @@ require_once '../../config/config.php';
 $page = 'positioncatalog';
 $module = 'corehumancapital';
 
-// Handle Add Position (Redirect to Requests)
+// Handle Add Position (Direct Injection)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add_position') {
     $posName = $_POST['position_name'] ?? '';
     $posCode = $_POST['position_code'] ?? '';
     $deptId = $_POST['department_id'] ?? '';
     $gradeId = $_POST['grade_id'] ?? '';
     $authorized = $_POST['authorized_headcount'] ?? 1;
-    $requestedBy = $_SESSION['username'] ?? 'System';
 
     if (!empty($posName) && !empty($deptId) && !empty($gradeId)) {
-        $stmt = $conn->prepare("INSERT INTO position_requests (RequestType, PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount, RequestedBy, Status) VALUES ('Add', ?, ?, ?, ?, ?, ?, 'Pending')");
-        $stmt->bind_param("ssiiis", $posName, $posCode, $deptId, $gradeId, $authorized, $requestedBy);
+        $stmt = $conn->prepare("INSERT INTO positions (PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssiii", $posName, $posCode, $deptId, $gradeId, $authorized);
         
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Your request to add '$posName' has been submitted for approval.";
+            $_SESSION['success_message'] = "Position Created! The new role '$posName' is now live in the catalog.";
         } else {
-            $_SESSION['error_message'] = "Error submitting request: " . $conn->error;
+            $_SESSION['error_message'] = "Error adding position: " . $conn->error;
         }
         $stmt->close();
     }
@@ -59,30 +58,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit();
 }
 
-// Handle Delete Position (Redirect to Requests)
+// Handle Delete Position (Direct Action)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_position') {
     $posId = $_POST['position_id'] ?? '';
     $posName = $_POST['position_name'] ?? '';
-    $requestedBy = $_SESSION['username'] ?? 'System';
 
     if (!empty($posId)) {
-        // We still fetch details to store in the request for reference
-        $fetchStmt = $conn->prepare("SELECT * FROM positions WHERE PositionID = ?");
-        $fetchStmt->bind_param("i", $posId);
-        $fetchStmt->execute();
-        $pos = $fetchStmt->get_result()->fetch_assoc();
+        $stmt = $conn->prepare("DELETE FROM positions WHERE PositionID = ?");
+        $stmt->bind_param("i", $posId);
         
-        if ($pos) {
-            $stmt = $conn->prepare("INSERT INTO position_requests (RequestType, TargetPositionID, PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount, RequestedBy, Status) VALUES ('Delete', ?, ?, ?, ?, ?, ?, ?, 'Pending')");
-            $stmt->bind_param("issiiis", $posId, $pos['PositionName'], $pos['PositionCode'], $pos['DepartmentID'], $pos['SalaryGradeID'], $pos['AuthorizedHeadcount'], $requestedBy);
-            
-            if ($stmt->execute()) {
-                $_SESSION['success_message'] = "Deletion request for '{$pos['PositionName']}' has been submitted for approval.";
-            } else {
-                $_SESSION['error_message'] = "Error submitting deletion request: " . $conn->error;
-            }
-            $stmt->close();
+        if ($stmt->execute()) {
+            $_SESSION['success_message'] = "Position Deleted! '$posName' has been removed from the catalog.";
+        } else {
+            $_SESSION['error_message'] = "Error deleting position: " . $conn->error;
         }
+        $stmt->close();
     }
     header("Location: positioncatalog.php");
     exit();
@@ -454,34 +444,31 @@ while ($row = $positionsResult->fetch_assoc()) {
     </header>
 
     <div class="content-wrapper">
-      <?php if (isset($_SESSION['success_message'])): ?>
-          <script>
-              document.addEventListener('DOMContentLoaded', () => {
-                  Swal.fire({
-                      toast: true,
-                      position: 'top-end',
-                      icon: 'success',
-                      title: '<?php echo $_SESSION['success_message']; ?>',
-                      showConfirmButton: false,
-                      timer: 3000,
-                      timerProgressBar: true
-                  });
-              });
-          </script>
-          <?php unset($_SESSION['success_message']); endif; ?>
+<?php if (isset($_SESSION['success_message'])): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: <?php echo json_encode($_SESSION['success_message']); ?>,
+                confirmButtonColor: '#2ca078'
+            });
+        });
+    </script>
+<?php unset($_SESSION['success_message']); endif; ?>
 
-      <?php if (isset($_SESSION['error_message'])): ?>
-          <script>
-              document.addEventListener('DOMContentLoaded', () => {
-                  Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      text: '<?php echo $_SESSION['error_message']; ?>',
-                      confirmButtonColor: '#ef4444'
-                  });
-              });
-          </script>
-          <?php unset($_SESSION['error_message']); endif; ?>
+<?php if (isset($_SESSION['error_message'])): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: <?php echo json_encode($_SESSION['error_message']); ?>,
+                confirmButtonColor: '#ef4444'
+            });
+        });
+    </script>
+<?php unset($_SESSION['error_message']); endif; ?>
 
       <!-- Management Header -->
       <div class="management-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
@@ -622,6 +609,9 @@ while ($row = $positionsResult->fetch_assoc()) {
                                               })" title="Manage Position">
                                                   <i data-lucide="settings"></i>
                                               </button>
+                                              <button class="btn-delete-pos" onclick="event.stopPropagation(); confirmDeletePosition(<?php echo $pos['PositionID']; ?>, '<?php echo addslashes($pos['PositionName']); ?>')" title="Delete Position" style="padding: 8px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; cursor: pointer; transition: var(--transition);">
+                                                  <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                                              </button>
                                           </div>
                                       </td>
                                   </tr>
@@ -690,30 +680,6 @@ while ($row = $positionsResult->fetch_assoc()) {
   <script src="../../js/positioncatalog.js"></script>
   <script>
     lucide.createIcons();
-    <?php if (isset($_SESSION['success_message'])): ?>
-        Swal.fire({
-            icon: 'success',
-            title: '<?php echo $_SESSION['success_message']; ?>',
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
-        });
-        <?php unset($_SESSION['success_message']); ?>
-    <?php endif; ?>
-    <?php if (isset($_SESSION['error_message'])): ?>
-        Swal.fire({
-            icon: 'error',
-            title: '<?php echo $_SESSION['error_message']; ?>',
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 4000,
-            timerProgressBar: true
-        });
-        <?php unset($_SESSION['error_message']); ?>
-    <?php endif; ?>
   </script>
 </body>
 </html>

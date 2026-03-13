@@ -1,10 +1,10 @@
 <?php
 header('Content-Type: application/json');
 session_start();
-require_once '../../config/config.php';
+require_once '../../../config/config.php';
 
 // Import PHPMailer (assuming it's in vendor as per config.php)
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;

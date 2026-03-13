@@ -1,5 +1,5 @@
 <?php
-require_once '../../config/config.php';
+require_once '../../../config/config.php';
 
 header('Content-Type: application/json');
 
@@ -44,7 +44,7 @@ if ($action === 'update_profile') {
 
     $profilePhotoPath = null;
     if (isset($_FILES['ProfilePhoto']) && $_FILES['ProfilePhoto']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = '../../img/profiles/';
+        $uploadDir = '../../../img/profiles/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }

@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     console.log("Recruitment JS Initializing...");
     const body = document.body;
     const themeToggle = document.getElementById("themeToggle");
@@ -77,7 +77,7 @@
             const id = btn.getAttribute("data-id");
             activeApplicantId = id;
             try {
-                const response = await fetch(`applicant_action.php?action=get_details&id=${id}`);
+                const response = await fetch(`backend/applicant_action.php?action=get_details&id=${id}`);
                 const result = await response.json();
                 if (result.success) {
                     const data = result.data;
@@ -218,7 +218,7 @@
 
             const formData = new FormData(scheduleForm);
             try {
-                const response = await fetch('interview_action.php', { method: 'POST', body: formData });
+                const response = await fetch('backend/interview_action.php', { method: 'POST', body: formData });
                 const result = await response.json();
 
                 if (result.success) {
@@ -316,7 +316,7 @@
         evaluationForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const formData = new FormData(evaluationForm);
-            const response = await fetch('evaluation_action.php', { method: 'POST', body: formData });
+            const response = await fetch('backend/evaluation_action.php', { method: 'POST', body: formData });
             const result = await response.json();
             if (result.success) {
                 Swal.fire('Evaluation Submitted', result.message, 'success').then(() => location.reload());
@@ -329,7 +329,7 @@
         const viewBtn = e.target.closest('.view-eval');
         if (viewBtn) {
             const evalId = viewBtn.getAttribute('data-id');
-            fetch(`applicant_action.php?action=get_evaluation&id=${evalId}`)
+            fetch(`backend/applicant_action.php?action=get_evaluation&id=${evalId}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -364,7 +364,7 @@
                     const formData = new FormData();
                     formData.append('id', appId);
                     formData.append('action', 'approve_hire');
-                    fetch('applicant_action.php', { method: 'POST', body: formData })
+                    fetch('backend/applicant_action.php', { method: 'POST', body: formData })
                         .then(res => res.json())
                         .then(data => {
                             if (data.success) { Swal.fire('Hired!', data.message, 'success').then(() => location.reload()); }

@@ -1,7 +1,7 @@
-﻿<?php
+<?php
 session_start();
 header('Content-Type: application/json');
-require_once '../../config/config.php';
+require_once '../../../config/config.php';
 
 if (!isset($_SESSION['username'])) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
@@ -21,7 +21,7 @@ if (empty($reason) || empty($proposals)) {
 // Handle File Upload (Optional)
 $proofFileUrl = null;
 if (isset($_FILES['proof_file']) && $_FILES['proof_file']['error'] === UPLOAD_ERR_OK) {
-    $uploadDir = '../../uploads/proofs/';
+    $uploadDir = '../../../uploads/proofs/';
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0777, true);
     }

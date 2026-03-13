@@ -1,11 +1,11 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     fetchEmployees();
     lucide.createIcons();
 });
 
 async function fetchEmployees() {
     try {
-        const response = await fetch('be_employeemaster.php?action=fetch_employees');
+        const response = await fetch('backend/be_employeemaster.php?action=fetch_employees');
         const result = await response.json();
 
         if (result.success) {
@@ -65,7 +65,7 @@ function renderTable(employees) {
 
 async function viewProfile(id) {
     try {
-        const response = await fetch(`be_employeemaster.php?action=get_employee_details&id=${id}`);
+        const response = await fetch(`backend/be_employeemaster.php?action=get_employee_details&id=${id}`);
         const result = await response.json();
 
         if (result.success) {
@@ -231,7 +231,7 @@ async function editEmployee(id) {
         if (dlg) dlg.classList.add('ep-edit-dialog');
 
         // Reuse get_employee_details to fetch fresh data
-        const response = await fetch(`be_employeemaster.php?action=get_employee_details&id=${id}`);
+        const response = await fetch(`backend/be_employeemaster.php?action=get_employee_details&id=${id}`);
         const result = await response.json();
 
         if (result.success) {
@@ -386,7 +386,7 @@ async function submitEditForm(event) {
     formData.append('action', 'update_employee');
 
     try {
-        const response = await fetch('be_employeemaster.php', {
+        const response = await fetch('backend/be_employeemaster.php', {
             method: 'POST',
             body: formData
         });

@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     fetchEndorsedRequests();
     lucide.createIcons();
 
@@ -128,7 +128,7 @@ async function fetchEndorsedRequests() {
     if (!tableBody) return;
 
     try {
-        const response = await fetch('be_informationapproval.php?action=fetch_endorsed');
+        const response = await fetch('backend/be_informationapproval.php?action=fetch_endorsed');
         const result = await response.json();
 
         if (result.success) {
@@ -212,7 +212,7 @@ async function processRequest(requestId, action) {
     if (!result.isConfirmed) return;
 
     try {
-        const response = await fetch('be_informationapproval.php', {
+        const response = await fetch('backend/be_informationapproval.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: action, request_id: requestId })

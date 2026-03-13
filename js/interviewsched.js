@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     const scheduleForm = document.getElementById("scheduleForm");
     const interviewMode = document.getElementById("interviewMode");
     const locationLabel = document.getElementById("locationLabel");
@@ -39,7 +39,7 @@
             });
 
             try {
-                const response = await fetch("interview_action.php", {
+                const response = await fetch("backend/interview_action.php", {
                     method: "POST",
                     body: formData
                 });

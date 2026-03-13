@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Fetch Pending Dispatches
     async function fetchPendingDispatches() {
         try {
-            const response = await fetch('be_dispatch.php?action=fetch_pending_dispatches');
+            const response = await fetch('backend/be_dispatch.php?action=fetch_pending_dispatches');
             const responseText = await response.text();
 
             let result = null;
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.lucide) window.lucide.createIcons();
 
         try {
-            const response = await fetch(`be_dispatch.php?action=fetch_batch_employees&dispatched_by=${encodeURIComponent(dispatchedBy)}`);
+            const response = await fetch(`backend/be_dispatch.php?action=fetch_batch_employees&dispatched_by=${encodeURIComponent(dispatchedBy)}`);
             const responseText = await response.text();
 
             try {
@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
             Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
             try {
-                const response = await fetch('be_dispatch.php', {
+                const response = await fetch('backend/be_dispatch.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

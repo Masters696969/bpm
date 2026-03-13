@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     const lucide = window.lucide;
     const body = document.body;
     const themeToggle = document.getElementById("themeToggle");
@@ -152,7 +152,7 @@
                     fd.append('proof_file', proofInput.files[0]);
                 }
 
-                const response = await fetch('be_salary.php', {
+                const response = await fetch('backend/be_salary.php', {
                     method: 'POST',
                     body: fd
                 });
@@ -284,7 +284,7 @@
 
     function loadTrackingBatches() {
         trackingBatchesBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px;">Loading proposals...</td></tr>';
-        fetch('be_track_proposals.php?action=fetch_all')
+        fetch('backend/be_track_proposals.php?action=fetch_all')
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
@@ -320,7 +320,7 @@
         document.getElementById('stepperLineFill').style.backgroundColor = '#10b981';
         document.getElementById('step4Title').textContent = 'Approved';
 
-        fetch(`be_track_proposals.php?action=fetch_details&batch_reference=${batchRef}`)
+        fetch(`backend/be_track_proposals.php?action=fetch_details&batch_reference=${batchRef}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Roles & Permissions Management
  */
 
@@ -102,7 +102,7 @@ function initRolesPermission() {
         document.getElementById("roleId").value = id;
         document.getElementById("roleName").value = name;
 
-        fetch(`roles_action.php?action=get_role&role_id=${id}`)
+        fetch(`backend/roles_action.php?action=get_role&role_id=${id}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
@@ -131,7 +131,7 @@ function initRolesPermission() {
                 params.append("action", "archive_role");
                 params.append("role_id", id);
 
-                const response = await fetch("roles_action.php", {
+                const response = await fetch("backend/roles_action.php", {
                     method: "POST",
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: params
@@ -186,7 +186,7 @@ function initRolesPermission() {
                 params.append("role_name", roleName);
                 params.append("description", description);
 
-                const response = await fetch("roles_action.php", {
+                const response = await fetch("backend/roles_action.php", {
                     method: "POST",
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: params

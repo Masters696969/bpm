@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     const lucide = window.lucide;
     const body = document.body;
     const themeToggle = document.getElementById("themeToggle");
@@ -141,7 +141,7 @@
             });
 
             try {
-                const response = await fetch("profile_action.php", {
+                const response = await fetch("backend/profile_action.php", {
                     method: "POST",
                     body: formData
                 });

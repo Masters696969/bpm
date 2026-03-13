@@ -176,7 +176,7 @@ $module = 'corehumancapital';
               <i data-lucide="contact-round"></i>
               <span>Applicant Management</span>
             </a>
-      <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
+        <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
               <i data-lucide="user-plus"></i>
               <span>New Hired Onboard</span>
             </a>

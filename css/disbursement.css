@@ -1162,3 +1162,219 @@ body {
     width: 18px;
     height: 18px;
 }
+
+/* --- Added from refactoring --- */
+
+.modal-overlay {
+    background: var(--background) !important;
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-overlay.open {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+.modal-premium {
+    background: var(--surface-card);
+    width: 90%;
+    max-width: 800px;
+    max-height: 85vh;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.95);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-overlay.open .modal-premium {
+    transform: scale(1) !important;
+}
+
+.modal-header-premium {
+    padding: 24px;
+    border-bottom: 1px solid var(--border-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-body-premium {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+#closeBatchModal {
+    background: var(--background);
+    border: 1px solid var(--border-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+#closeBatchModal:hover {
+    background: var(--surface-hover);
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+/* Modal Table Card Styles */
+#batchDetailModal .payroll-table {
+    border-spacing: 0 10px;
+    border-collapse: separate;
+}
+
+#batchDetailModal .payroll-table th {
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--text-tertiary);
+    padding: 0 24px 12px;
+    border: none;
+}
+
+#batchDetailModal .payroll-table tr td {
+    background: var(--background);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px 24px;
+}
+
+#batchDetailModal .payroll-table tr td:first-child {
+    border-left: 1px solid var(--border-color);
+    border-radius: 16px 0 0 16px;
+}
+
+#batchDetailModal .payroll-table tr td:last-child {
+    border-right: 1px solid var(--border-color);
+    border-radius: 0 16px 16px 0;
+}
+
+#batchDetailModal .payroll-table tr:hover td {
+    background: var(--surface-hover);
+    border-color: var(--brand-green-light);
+}
+
+.institution-badge {
+    background: rgba(59, 130, 246, 0.08);
+    color: #3b82f6;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    display: inline-flex;
+    align-items: center;
+}
+
+.processed-indicator {
+    color: var(--brand-green);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    opacity: 0.8;
+}
+
+/* Modal Scrollbar */
+.payroll-table-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.payroll-table-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.payroll-table-container::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+
+.payroll-table-container::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+}
+
+.spin {
+    animation: spin 2s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-sync {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Ensure SweetAlert is always on top */
+.swal2-container {
+    z-index: 11000 !important;
+}
+
+/* Color Utilities */
+.text-brand-green { color: var(--brand-green); }
+.text-accent-blue { color: #3b82f6; }
+.text-accent-purple { color: #8b5cf6; }
+
+/* Spacing and Layout Utilities */
+.td-empty-state { padding: 40px; text-align: center; color: var(--text-secondary); }
+.td-loading-state { padding: 60px; text-align: center; color: var(--text-secondary); }
+.icon-loading-spin { margin-bottom: 12px; opacity: 0.5; }
+.text-sync-msg { font-weight: 500; letter-spacing: 0.5px; }
+
+.flex-center-gap { display: flex; gap: 12px; align-items: center; }
+
+/* Premium Buttons */
+.btn-execute-bulk {
+    background: var(--brand-green);
+    color: white !important;
+    border-radius: 12px;
+    padding: 10px 24px;
+    font-weight: 700;
+    box-shadow: 0 4px 6px -1px rgba(44, 160, 120, 0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-execute-bulk:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px -1px rgba(44, 160, 120, 0.3);
+    background: var(--brand-green-hover, #248b68);
+}
+
+.btn-icon-tiny {
+    width: 14px;
+    margin-right: 6px;
+}
