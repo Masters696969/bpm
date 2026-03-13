@@ -43,11 +43,22 @@ if (!isset($_SESSION['username'])) {
           <i data-lucide="chart-no-axes-combined"></i>
           <span>Dashboard</span>
         </a>
-
-        <a href="#" class="nav-item">
+        <div class="nav-item-group <?php echo ($module === 'time') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="time">
+            <div class="nav-item-content">
               <i data-lucide="file-clock"></i>
               <span>Time Attendance</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-time">
+           <a href="#" class="nav-item">
+              <i data-lucide="clock"></i>
+              <span>Time In/Out</span>
             </a>
+          </div>
+        </div>
+        
             <a href="information_management.php" class="nav-item">
               <i data-lucide="user-pen"></i>
               <span>Information Management</span>
@@ -56,14 +67,36 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="landmark"></i>
               <span>Apply Bank Account</span>
             </a>
-            <a href="#" class="nav-item">
-              <i data-lucide="tickets-plane"></i>
+             <div class="nav-item-group <?php echo ($module === 'leave') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="leave">
+            <div class="nav-item-content">
+              <i data-lucide="file-clock"></i>
               <span>Leave Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-leave">
+           <a href="#" class="nav-item">
+              <i data-lucide="ticket-plane"></i>
+              <span>Leave Application</span>
             </a>
-             <a href="#" class="nav-item">
+          </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'claim') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="claim">
+            <div class="nav-item-content">
               <i data-lucide="receipt-text"></i>
               <span>Claim Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-claim">
+           <a href="#" class="nav-item">
+              <i data-lucide="receipt-text"></i>
+              <span>Claim Application</span>
             </a>
+          </div>
+        </div>
             <a href="payslip.php" class="nav-item">
               <i data-lucide="ticket-check"></i>
               <span>View Payslip</span>
