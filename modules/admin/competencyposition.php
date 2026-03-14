@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -11,7 +11,7 @@ if (!isset($_SESSION['username'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/admindashboard.css?v=1.2">
+  <link rel="stylesheet" href="../../css/competencyposition.css?v=1.2">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -35,7 +35,7 @@ if (!isset($_SESSION['username'])) {
       </button>
     </div>
 
-     <nav class="sidebar-nav">
+    <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">ANALYTICS & REPORTING</span>
         <a href="dashboard.php" class="nav-item active">
@@ -436,7 +436,7 @@ if (!isset($_SESSION['username'])) {
         </div>
       </div>
       <div class="header-right">
-                <div class="header-clock">
+        <div class="header-clock">
           <span id="realTimeClock"></span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
@@ -450,299 +450,228 @@ if (!isset($_SESSION['username'])) {
     </header>
 
     <div class="content-wrapper">
-      <!-- Stats Grid -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
-            <i data-lucide="users"></i>
+      <?php require_once __DIR__ . '/../../config/config.php'; ?>
+      
+      <!-- Stats Overview Section -->
+      <div class="stats-overview-pos">
+        <?php
+        // Fetch stats for cards
+        $stats_q = "SELECT 
+            (SELECT COUNT(*) FROM positions) as total_positions,
+            (SELECT COUNT(*) FROM position_competencies) as total_mappings,
+            (SELECT COUNT(DISTINCT DepartmentID) FROM department) as total_depts";
+        $stats_res = $conn->query($stats_q);
+        $stats = $stats_res->fetch_assoc();
+        ?>
+        <div class="stat-card-pos">
+          <div class="sc-icon-pos" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
+            <i data-lucide="briefcase"></i>
           </div>
-          <div class="stat-content">
-            <span class="stat-label">Total Clients</span>
-            <h3 class="stat-value">2,847</h3>
-            <div class="stat-trend positive">
-              <i data-lucide="trending-up"></i>
-              <span>+12.5% from last month</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow);">
-            <i data-lucide="banknote"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Active Loans</span>
-            <h3 class="stat-value">1,234</h3>
-            <div class="stat-trend positive">
-              <i data-lucide="trending-up"></i>
-              <span>+8.3% from last month</span>
-            </div>
+          <div class="sc-info-pos">
+            <span class="sc-label-pos">Total Positions</span>
+            <h3 class="sc-value-pos"><?php echo number_format($stats['total_positions'] ?? 0); ?></h3>
           </div>
         </div>
 
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-            <i data-lucide="alert-circle"></i>
+        <div class="stat-card-pos">
+          <div class="sc-icon-pos" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">
+            <i data-lucide="award"></i>
           </div>
-          <div class="stat-content">
-            <span class="stat-label">Overdue Payments</span>
-            <h3 class="stat-value">89</h3>
-            <div class="stat-trend negative">
-              <i data-lucide="trending-down"></i>
-              <span>-3.2% from last month</span>
-            </div>
+          <div class="sc-info-pos">
+            <span class="sc-label-pos">Active Mappings</span>
+            <h3 class="sc-value-pos"><?php echo number_format($stats['total_mappings'] ?? 0); ?></h3>
           </div>
         </div>
 
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-            <i data-lucide="wallet"></i>
+        <div class="stat-card-pos">
+          <div class="sc-icon-pos" style="background: rgba(155, 89, 182, 0.1); color: #9b59b6;">
+            <i data-lucide="building-2"></i>
           </div>
-          <div class="stat-content">
-            <span class="stat-label">Total Portfolio</span>
-            <h3 class="stat-value">$4.2M</h3>
-            <div class="stat-trend positive">
-              <i data-lucide="trending-up"></i>
-              <span>+15.7% from last month</span>
-            </div>
+          <div class="sc-info-pos">
+            <span class="sc-label-pos">Departments</span>
+            <h3 class="sc-value-pos"><?php echo number_format($stats['total_depts'] ?? 0); ?></h3>
           </div>
         </div>
       </div>
 
-      <!-- Content Grid -->
-      <div class="content-grid">
-        <!-- Recent Applications -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Recent Loan Applications</h3>
-              <p class="card-subtitle">Latest applications requiring review</p>
-            </div>
-            <button class="btn-text">View All</button>
-          </div>
-          <div class="card-body">
-            <div class="data-table">
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #2ca078;">JD</div>
-                    <div>
-                      <span class="client-name">John Doe</span>
-                      <span class="client-detail">Personal Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$15,000</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status pending">Pending</span>
-                </div>
-              </div>
-
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #ffc107;">SM</div>
-                    <div>
-                      <span class="client-name">Sarah Miller</span>
-                      <span class="client-detail">Business Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$25,000</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status approved">Approved</span>
-                </div>
-              </div>
-
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #3b82f6;">RJ</div>
-                    <div>
-                      <span class="client-name">Robert Johnson</span>
-                      <span class="client-detail">Agricultural Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$8,500</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status review">Under Review</span>
-                </div>
-              </div>
-
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #ef4444;">LW</div>
-                    <div>
-                      <span class="client-name">Lisa Williams</span>
-                      <span class="client-detail">Education Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$12,000</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status pending">Pending</span>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="action-bar-pos">
+        <div class="ab-left-pos">
+          <h2>Competency Position Mapping</h2>
+          <p>Align proficiency requirements with specific organizational roles.</p>
         </div>
-
-        <!-- Quick Actions -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Quick Actions</h3>
-              <p class="card-subtitle">Common tasks and shortcuts</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="quick-actions">
-              <button class="action-btn">
-                <i data-lucide="user-plus"></i>
-                <span>Add New Client</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="file-plus"></i>
-                <span>New Loan Application</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="receipt"></i>
-                <span>Record Payment</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="file-text"></i>
-                <span>Generate Report</span>
-              </button>
-              <button class="action-btn">
-                <span>Schedule Meeting</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="send"></i>
-                <span>Send Notification</span>
-              </button>
-            </div>
-          </div>
+        <div class="ab-right-pos">
+           <div class="search-filter-group">
+              <div class="search-box-pos">
+                <i data-lucide="search"></i>
+                <input type="text" id="positionSearch" placeholder="Search positions...">
+              </div>
+              <select id="deptFilter" class="filter-select-pos">
+                <option value="">All Departments</option>
+                <?php
+                $depts = $conn->query("SELECT * FROM department ORDER BY DepartmentName ASC");
+                while($d = $depts->fetch_assoc()) {
+                    echo "<option value='".htmlspecialchars($d['DepartmentName'])."'>".htmlspecialchars($d['DepartmentName'])."</option>";
+                }
+                ?>
+              </select>
+           </div>
         </div>
       </div>
 
-      <!-- Bottom Grid -->
-      <div class="bottom-grid">
-        <!-- Upcoming Payments -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Upcoming Payments</h3>
-              <p class="card-subtitle">Payments due in the next 7 days</p>
-            </div>
-            <button class="btn-text">View Calendar</button>
-          </div>
-          <div class="card-body">
-            <div class="payment-list">
-              <div class="payment-item">
-                <div class="payment-date">
-                  <span class="date-day">15</span>
-                  <span class="date-month">Dec</span>
+      <div class="mapping-grid">
+        <table class="mapping-table" id="mainMappingTable">
+          <thead>
+            <tr>
+              <th>Position</th>
+              <th>Department</th>
+              <th style="width: 220px; text-align: center;">Mapping Status</th>
+              <th style="width: 140px; text-align: center;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+            $query = "SELECT p.PositionID, p.PositionName, d.DepartmentName, 
+                             (SELECT COUNT(*) FROM position_competencies pc WHERE pc.position_id = p.PositionID) as total_comp
+                       FROM positions p
+                       JOIN department d ON p.DepartmentID = d.DepartmentID
+                       ORDER BY p.PositionName ASC";
+            $result = $conn->query($query);
+            if ($result && $result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $count = $row['total_comp'];
+                    $count_label = ($count > 0) ? "$count Competencies" : "No Mappings";
+                    $count_color = ($count > 0) ? 'var(--brand-green)' : '#94a3b8';
+                    
+                    // Department Badge Colors (Modern Palette)
+                    $dept_clean = strtolower(trim($row['DepartmentName']));
+                    $dept_color = '#64748b'; // Default gray
+                    if (strpos($dept_clean, 'finance') !== false) $dept_color = '#3498db';
+                    else if (strpos($dept_clean, 'hr') !== false || strpos($dept_clean, 'human') !== false) $dept_color = '#9b59b6';
+                    else if (strpos($dept_clean, 'microfinance') !== false || strpos($dept_clean, 'loan') !== false) $dept_color = '#2ecc71';
+                    else if (strpos($dept_clean, 'admin') !== false) $dept_color = '#f39c12';
+            ?>
+            <tr data-pos-name="<?php echo strtolower(htmlspecialchars($row['PositionName'])); ?>" 
+                data-dept-name="<?php echo htmlspecialchars($row['DepartmentName']); ?>">
+              <td class="pos-name-cell">
+                <div class="pos-icon-mini">
+                  <i data-lucide="award"></i>
                 </div>
-                <div class="payment-details">
-                  <span class="payment-client">Michael Chen</span>
-                  <span class="payment-type">Monthly Installment</span>
-                </div>
-                <div class="payment-amount">$850</div>
-              </div>
+                <strong><?php echo htmlspecialchars($row['PositionName']); ?></strong>
+              </td>
+              <td>
+                <span class="dept-pill-pos" style="border-left: 3px solid <?php echo $dept_color; ?>;">
+                  <?php echo htmlspecialchars($row['DepartmentName']); ?>
+                </span>
+              </td>
+              <td style="text-align: center;">
+                <span class="count-badge-pos v2" style="background: <?php echo $count_color; ?>10; color: <?php echo $count_color; ?>; border: 1px solid <?php echo $count_color; ?>20;">
+                  <i data-lucide="<?php echo ($count > 0) ? 'check-circle' : 'alert-circle'; ?>" style="width: 14px; height: 14px; margin-right: 6px;"></i>
+                  <?php echo $count_label; ?>
+                </span>
+              </td>
+              <td style="text-align: center;">
+                <button class="view-manage-btn" onclick="openManageModal(<?php echo $row['PositionID']; ?>)">
+                  Manage
+                </button>
+              </td>
+            </tr>
+            <?php
+                }
+            } else {
+                echo '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-tertiary);">No positions found in the catalog.</td></tr>';
+            }
+            ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-              <div class="payment-item">
-                <div class="payment-date">
-                  <span class="date-day">16</span>
-                  <span class="date-month">Dec</span>
-                </div>
-                <div class="payment-details">
-                  <span class="payment-client">Emma Davis</span>
-                  <span class="payment-type">Loan Payment</span>
-                </div>
-                <div class="payment-amount">$1,200</div>
-              </div>
-
-              <div class="payment-item">
-                <div class="payment-date">
-                  <span class="date-day">18</span>
-                  <span class="date-month">Dec</span>
-                </div>
-                <div class="payment-details">
-                  <span class="payment-client">James Wilson</span>
-                  <span class="payment-type">Interest Payment</span>
-                </div>
-                <div class="payment-amount">$450</div>
-              </div>
-            </div>
+    <!-- Management Modal (Shows list of competencies for a position) -->
+    <div id="manageCompetenciesModal" class="modal-overlay-pos">
+      <div class="modal-content-pos" style="max-width: 800px;">
+        <div class="modal-header-pos">
+          <div class="mh-icon-pos"><i data-lucide="briefcase"></i></div>
+          <div class="mh-info-pos">
+            <h3 id="manageTitle">Position Name</h3>
+            <span id="manageSubTitle">Department Name</span>
           </div>
+          <button class="close-modal-pos" id="closeManageModal"><i data-lucide="x"></i></button>
         </div>
-
-        <!-- Activity Feed -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Recent Activity</h3>
-              <p class="card-subtitle">Latest system activities</p>
-            </div>
+        
+        <div class="manage-body-pos">
+          <div class="manage-actions-pos">
+             <h4>Mapped Competencies</h4>
+             <button class="add-comp-inline-btn" id="openAddInlineBtn">
+               <i data-lucide="plus"></i> Assign New
+             </button>
           </div>
-          <div class="card-body">
-            <div class="activity-list">
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
-                  <i data-lucide="check-circle"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>Loan Approved</strong> for Sarah Miller</p>
-                  <span class="activity-time">2 minutes ago</span>
-                </div>
-              </div>
 
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow);">
-                  <i data-lucide="dollar-sign"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>Payment Received</strong> from John Doe ($850)</p>
-                  <span class="activity-time">15 minutes ago</span>
-                </div>
-              </div>
-
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-                  <i data-lucide="user-plus"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>New Client</strong> registered: Lisa Williams</p>
-                  <span class="activity-time">1 hour ago</span>
-                </div>
-              </div>
-
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-                  <i data-lucide="alert-triangle"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>Payment Overdue</strong> for Michael Chen</p>
-                  <span class="activity-time">3 hours ago</span>
-                </div>
-              </div>
-            </div>
+          <table class="manage-details-table">
+            <thead>
+              <tr>
+                <th>Competency</th>
+                <th style="width: 150px; text-align: center;">Required Level</th>
+                <th style="width: 100px; text-align: center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="manageTableBody">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+          <div class="pagination-container" id="managePagination">
+            <button type="button" class="btn-page" id="prevManagePage"><i data-lucide="chevron-left"></i></button>
+            <span class="page-info" id="managePageInfo">Page 1 of 1</span>
+            <button type="button" class="btn-page" id="nextManagePage"><i data-lucide="chevron-right"></i></button>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Add/Edit Inline Modal (Now Batch) -->
+    <div id="inlineActionModal" class="modal-overlay-pos" style="z-index: 3000;">
+      <div class="modal-content-pos" style="max-width: 600px;">
+        <div class="modal-header-pos">
+          <div class="mh-icon-pos" id="inlineIcon"><i data-lucide="check-square"></i></div>
+          <div class="mh-info-pos">
+            <h3 id="inlineTitle">Assign Competencies</h3>
+            <span>Select skill and proficiency levels to assign or update</span>
+          </div>
+          <button class="close-modal-pos" id="closeInlineModal"><i data-lucide="x"></i></button>
+        </div>
+        <form id="inlineActionForm" class="modal-form-pos batch-assign-form">
+          <input type="hidden" name="position_id" id="inline_pos_id">
+          
+          <div class="batch-table-container">
+            <table class="batch-assign-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px; text-align: center;">
+                    <input type="checkbox" id="selectAllBatch" class="batch-check">
+                  </th>
+                  <th>Competency</th>
+                  <th style="width: 180px;">Required Level</th>
+                </tr>
+              </thead>
+              <tbody id="batchTableBody">
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination-container" id="batchPagination">
+            <button type="button" class="btn-page" id="prevBatchPage"><i data-lucide="chevron-left"></i></button>
+            <span class="page-info" id="batchPageInfo">Page 1 of 1</span>
+            <button type="button" class="btn-page" id="nextBatchPage"><i data-lucide="chevron-right"></i></button>
+          </div>
+
+          <div class="modal-footer-pos">
+            <button type="button" class="btn-cancel-pos" id="cancelInline">Cancel</button>
+            <button type="submit" class="btn-save-pos" id="inlineSubmitBtn">Save Assignments</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </main>
-  <script src="../../js/admindashboard.js"></script>
+  <script src="../../js/competencyposition.js"></script>
   <script>
     lucide.createIcons();
   </script>
