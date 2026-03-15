@@ -47,8 +47,8 @@ try {
     $stmt->bind_param("iisssss", $applicantId, $interviewerId, $date, $time, $mode, $location, $notes);
     $stmt->execute();
 
-    // 4. Update Applicant Status to 'Interview'
-    $stmt = $conn->prepare("UPDATE applicants SET Status = 'Interview' WHERE ApplicantID = ?");
+    // 4. Update Applicant Status to 'Interview' and set Resume Score to 100%
+    $stmt = $conn->prepare("UPDATE applicants SET Status = 'Interview', ResumeScore = 100 WHERE ApplicantID = ?");
     $stmt->bind_param("i", $applicantId);
     $stmt->execute();
 

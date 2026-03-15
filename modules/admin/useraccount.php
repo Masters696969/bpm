@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 
 // Check if user is logged in and is admin
@@ -32,6 +32,20 @@ $roles = [];
 if ($rolesResult) {
     while ($row = $rolesResult->fetch_assoc()) {
         $roles[] = $row;
+    }
+}
+
+// Fetch employees who DON'T have a user account yet
+$unlinkedEmployeesSql = "SELECT e.EmployeeID, e.EmployeeCode, e.FirstName, e.LastName 
+                         FROM employee e 
+                         LEFT JOIN useraccounts ua ON e.EmployeeID = ua.EmployeeID 
+                         WHERE ua.AccountID IS NULL 
+                         ORDER BY e.LastName ASC";
+$unlinkedResult = $conn->query($unlinkedEmployeesSql);
+$unlinkedEmployees = [];
+if ($unlinkedResult) {
+    while ($row = $unlinkedResult->fetch_assoc()) {
+        $unlinkedEmployees[] = $row;
     }
 }
 ?>
@@ -458,6 +472,19 @@ if ($rolesResult) {
           <div class="modal-body">
             <form id="createUserForm">
               <input type="hidden" id="accountId" name="account_id" value="">
+
+              <div class="form-row" id="employeeLinkRow">
+                <label for="employeeId">Link to Employee <span class="hint">(Optional)</span></label>
+                <select id="employeeId" name="employee_id">
+                  <option value="">-- No Employee Link --</option>
+                  <?php foreach ($unlinkedEmployees as $emp): ?>
+                    <option value="<?php echo $emp['EmployeeID']; ?>">
+                      <?php echo htmlspecialchars($emp['LastName'] . ', ' . $emp['FirstName'] . ' (' . $emp['EmployeeCode'] . ')'); ?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
+                <small class="hint">Select an employee to link this account to.</small>
+              </div>
 
               <div class="form-row">
                 <label for="username">Username <span class="required">*</span></label>

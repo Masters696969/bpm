@@ -140,6 +140,14 @@ if (!isset($_SESSION['username'])) {
                 <i data-lucide="briefcase"></i>
                 <span>Competency Position</span>
               </a>
+              <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+                <i data-lucide="square-user"></i>
+                <span>Competency Employee</span>
+              </a>
+                <a href="bankquestion.php" class="submenu-item <?php echo ($page === 'bankquestion') ? 'active' : ''; ?>">
+                <i data-lucide="book-open-check"></i>
+                <span>Bank Question</span>
+              </a>
             </div>
         </div>
          <div class="nav-item-group <?php echo ($module === 'training') ? 'active' : ''; ?>">

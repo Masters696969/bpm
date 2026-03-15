@@ -157,6 +157,7 @@
      line-height: 1.6;
      display: -webkit-box;
      -webkit-line-clamp: 2;
+     line-clamp: 2;
      -webkit-box-orient: vertical;
      overflow: hidden;
  }
@@ -285,6 +286,167 @@
 
  .btn-apply:hover {
      background: var(--button-hover);
+ }
+
+ /* Redesigned Minimalist Modal */
+ .modal-container {
+     background: var(--surface);
+     width: 100%;
+     max-width: 800px;
+     border-radius: 24px;
+     padding: 0;
+     overflow-y: auto;
+     max-height: 90vh;
+     border: 1px solid var(--card-border);
+     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+ }
+
+ .minimal-modal-header {
+     padding: 3rem 3rem 2rem;
+     background: linear-gradient(to bottom, rgba(44, 160, 120, 0.05), transparent);
+     border-bottom: 1px solid var(--card-border);
+ }
+
+ .header-main-info h2 {
+     font-size: 2rem;
+     font-weight: 800;
+     color: var(--text-color-right-light);
+     margin-bottom: 0.5rem;
+     letter-spacing: -0.025em;
+ }
+
+ .company-badge-minimal {
+     display: inline-block;
+     padding: 0.25rem 0.75rem;
+     background: var(--brand-green);
+     color: white;
+     border-radius: 6px;
+     font-size: 0.85rem;
+     font-weight: 700;
+     margin-bottom: 1.5rem;
+ }
+
+ .header-meta-grid {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 1.5rem;
+ }
+
+ .meta-pill {
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+     font-size: 0.9rem;
+     color: var(--label-text-light);
+     font-weight: 500;
+ }
+
+ .meta-pill i {
+     color: var(--brand-green);
+     width: 16px;
+     height: 16px;
+ }
+
+ .minimal-modal-body {
+     padding: 2.5rem 3rem 3rem;
+ }
+
+ .modal-section-minimal {
+     margin-bottom: 2.5rem;
+ }
+
+ .modal-section-minimal h3 {
+     font-size: 1.1rem;
+     font-weight: 700;
+     color: var(--text-color-right-light);
+     margin-bottom: 1rem;
+     text-transform: uppercase;
+     letter-spacing: 0.05em;
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+ }
+
+ .modal-section-minimal h3::after {
+     content: '';
+     flex: 1;
+     height: 1px;
+     background: var(--card-border);
+ }
+
+ .modal-section-minimal p {
+     color: var(--label-text-light);
+     line-height: 1.7;
+     font-size: 1rem;
+ }
+
+ .qual-grid-minimal {
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     gap: 3rem;
+ }
+
+ .sleek-list {
+     list-style: none;
+     padding: 0;
+     margin: 0;
+ }
+
+ .sleek-list li {
+     position: relative;
+     padding-left: 1.5rem;
+     margin-bottom: 0.75rem;
+     color: var(--label-text-light);
+     font-size: 0.95rem;
+     line-height: 1.5;
+ }
+
+ .sleek-list li::before {
+     content: '→';
+     position: absolute;
+     left: 0;
+     color: var(--brand-green);
+     font-weight: 700;
+ }
+
+ .modal-footer-minimal {
+     margin-top: 1rem;
+     padding-top: 2rem;
+     border-top: 1px solid var(--card-border);
+ }
+
+ .btn-apply-minimal {
+     display: block;
+     width: 100%;
+     padding: 1.25rem;
+     background: linear-gradient(135deg, var(--brand-green), #4fb97a);
+     color: white;
+     text-align: center;
+     text-decoration: none;
+     border-radius: 12px;
+     font-weight: 700;
+     font-size: 1.1rem;
+     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+     box-shadow: 0 10px 15px -3px rgba(44, 160, 120, 0.3);
+ }
+
+ .btn-apply-minimal:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 20px 25px -5px rgba(44, 160, 120, 0.4);
+     filter: brightness(1.1);
+ }
+
+ @media (max-width: 768px) {
+     .minimal-modal-header, .minimal-modal-body {
+         padding: 2rem;
+     }
+     .qual-grid-minimal {
+         grid-template-columns: 1fr;
+         gap: 1.5rem;
+     }
+     .header-main-info h2 {
+         font-size: 1.5rem;
+     }
  }
 
  /* Theme Toggle Box Styling */

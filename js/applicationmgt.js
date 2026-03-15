@@ -124,6 +124,21 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     });
 
+                    // Assessment Info
+                    const resumeInput = document.getElementById("resumeScoreInput");
+                    if (resumeInput) resumeInput.value = data.ResumeScore || 0;
+
+                    const ratingText = document.getElementById("modalRatingText");
+                    if (ratingText) {
+                        const score = data.ExamScore || 0; // Temporarily using ExamScore if rating not available
+                        // We actually have e.AverageRating joined in some queries but maybe not here
+                        // Let's assume we fetch evaluation avg if present
+                        ratingText.innerText = data.AverageRating ? `${Number(data.AverageRating).toFixed(1)} / 5.0` : "No Rating";
+                    }
+
+                    const examText = document.getElementById("modalExamText");
+                    if (examText) examText.innerText = data.ExamScore ? `${data.ExamScore} / 15` : "Not Taken";
+
                     const schedBtn = document.getElementById("scheduleInterviewBtn");
                     const evalBtn = document.getElementById("evaluateBtn");
 
@@ -146,6 +161,44 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (error) { console.error("Error fetching details:", error); }
         });
     });
+
+    // Handle Resume Score Save
+    const saveResumeBtn = document.getElementById("saveResumeScoreBtn");
+    if (saveResumeBtn) {
+        saveResumeBtn.addEventListener("click", async () => {
+            const score = document.getElementById("resumeScoreInput").value;
+            if (score === "" || score < 0 || score > 100) {
+                Swal.fire("Invalid Score", "Please enter a value between 0 and 100.", "warning");
+                return;
+            }
+
+            saveResumeBtn.disabled = true;
+            saveResumeBtn.innerText = "Saving...";
+
+            const formData = new FormData();
+            formData.append("action", "update_resume_score");
+            formData.append("id", activeApplicantId);
+            formData.append("score", score);
+
+            try {
+                const response = await fetch("backend/applicant_action.php", { method: "POST", body: formData });
+                const result = await response.json();
+                if (result.success) {
+                    Swal.fire("Saved", "Resume score updated successfully. Refreshing selection rankings...", "success").then(() => {
+                        location.reload(); // Refresh to update the selection ranking tab
+                    });
+                } else {
+                    Swal.fire("Error", result.message, "error");
+                }
+            } catch (error) {
+                console.error("Error saving resume score:", error);
+                Swal.fire("Error", "Failed to save score.", "error");
+            } finally {
+                saveResumeBtn.disabled = false;
+                saveResumeBtn.innerText = "Save";
+            }
+        });
+    }
 
     if (closeModal) closeModal.addEventListener("click", () => modal.style.display = "none");
     window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
