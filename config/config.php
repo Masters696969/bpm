@@ -11,7 +11,8 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
-}   
+}
+
 
 // PHPMailer configuration
 $mail_config = [
@@ -19,8 +20,8 @@ $mail_config = [
     'port' => 587,
     'smtp_secure' => 'tls',
     'smtp_auth' => true,
-    'username' => 'suruiz.joshuabcp@gmail.com',  
-    'password' => 'aovb dqcb sqve rbsa',     
+    'username' => 'suruiz.joshuabcp@gmail.com',
+    'password' => 'aovb dqcb sqve rbsa',
     'from_email' => 'suruiz.joshuabcp@gmail.com',
     'from_name' => 'Microfinance System',
     'reply_to' => 'suruiz.joshuabcp@gmail.com',
@@ -33,15 +34,16 @@ $xendit_config = [
 ];
 
 // Function to send OTP email using PHPMailer
-function sendOtpEmail($toEmail, $otp, $userName = '') {
+function sendOtpEmail($toEmail, $otp, $userName = '')
+{
     global $mail_config;
-    
+
     // Import PHPMailer
     require_once __DIR__ . '/../vendor/autoload.php';
-    
+
     try {
         $mail = new PHPMailer\PHPMailer\PHPMailer(true);
-        
+
         // Server settings
         $mail->isSMTP();
         $mail->Host = $mail_config['host'];
@@ -50,16 +52,16 @@ function sendOtpEmail($toEmail, $otp, $userName = '') {
         $mail->Password = $mail_config['password'];
         $mail->SMTPSecure = $mail_config['smtp_secure'];
         $mail->Port = $mail_config['port'];
-        
+
         // Recipients
         $mail->setFrom($mail_config['from_email'], $mail_config['from_name']);
         $mail->addAddress($toEmail);
         $mail->addReplyTo($mail_config['reply_to']);
-        
+
         // Content
         $mail->isHTML(true);
         $mail->Subject = 'Microfinance Login OTP Code';
-        
+
         $emailBody = "
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4;'>
             <div style='background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>
@@ -93,14 +95,15 @@ function sendOtpEmail($toEmail, $otp, $userName = '') {
                 </div>
             </div>
         </div>";
-        
+
         $mail->Body = $emailBody;
         $mail->AltBody = "Your OTP code is: $otp\n\nThis code will expire in 10 minutes.\n\nIf you didn't request this code, please ignore this email.";
-        
+
         $mail->send();
         return true;
-        
-    } catch (Exception $e) {
+
+    }
+    catch (Exception $e) {
         // Log error for debugging
         error_log("PHPMailer Error: " . $e->getMessage());
         return false;
@@ -108,10 +111,11 @@ function sendOtpEmail($toEmail, $otp, $userName = '') {
 }
 
 // Function to send official hiring email using PHPMailer
-function sendHiringEmail($toEmail, $employeeName, $position, $hiringDate, $username, $password, $evaluation) {
+function sendHiringEmail($toEmail, $employeeName, $position, $hiringDate, $username, $password, $evaluation)
+{
     global $mail_config;
     require_once __DIR__ . '/../vendor/autoload.php';
-    
+
     try {
         $mail = new PHPMailer\PHPMailer\PHPMailer(true);
         $mail->isSMTP();
@@ -121,12 +125,12 @@ function sendHiringEmail($toEmail, $employeeName, $position, $hiringDate, $usern
         $mail->Password = $mail_config['password'];
         $mail->SMTPSecure = $mail_config['smtp_secure'];
         $mail->Port = $mail_config['port'];
-        
+
         $mail->setFrom($mail_config['from_email'], $mail_config['from_name']);
         $mail->addAddress($toEmail);
         $mail->isHTML(true);
         $mail->Subject = 'Official Hiring Notification - Microfinance System';
-        
+
         $rating = number_format($evaluation['AverageRating'] ?? 0, 1);
         $decision = $evaluation['Decision'] ?? 'Approved';
 
@@ -203,13 +207,15 @@ function sendHiringEmail($toEmail, $employeeName, $position, $hiringDate, $usern
                 </div>
             </div>
         </div>";
-        
+
         $mail->Body = $emailBody;
         $mail->send();
         return true;
-        
-    } catch (Exception $e) {
+
+    }
+    catch (Exception $e) {
         error_log("PHPMailer Error: " . $e->getMessage());
         return false;
     }
 }
+define('GROQ_API_KEY ', '');
