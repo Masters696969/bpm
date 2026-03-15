@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -10,8 +10,8 @@ if (!isset($_SESSION['username'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/admindashboard.css?v=1.2">
+  <title>Competency Library</title>
+  <link rel="stylesheet" href="../../css/competencylibrary.css?v=1.2">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -136,7 +136,7 @@ if (!isset($_SESSION['username'])) {
                 <i data-lucide="circle-gauge"></i>
                 <span>Competency Level</span>
               </a>
-              <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
+                <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
                 <i data-lucide="briefcase"></i>
                 <span>Competency Position</span>
               </a>
@@ -449,300 +449,205 @@ if (!isset($_SESSION['username'])) {
       </div>
     </header>
 
+<?php
+require_once __DIR__ . '/../../config/config.php';
+
+// Fetch competency categories
+$categories_query = "SELECT * FROM competency_categories ORDER BY id ASC";
+$categories_result = $conn->query($categories_query);
+?>
     <div class="content-wrapper">
-      <!-- Stats Grid -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
-            <i data-lucide="users"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Total Clients</span>
-            <h3 class="stat-value">2,847</h3>
-            <div class="stat-trend positive">
-              <i data-lucide="trending-up"></i>
-              <span>+12.5% from last month</span>
-            </div>
-          </div>
+      <div class="action-bar">
+        <div class="ab-left">
+          <h2>Competency Library</h2>
+          <p>Define and manage employee core and department-specific competencies.</p>
         </div>
-
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow);">
-            <i data-lucide="banknote"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Active Loans</span>
-            <h3 class="stat-value">1,234</h3>
-            <div class="stat-trend positive">
-              <i data-lucide="trending-up"></i>
-              <span>+8.3% from last month</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-            <i data-lucide="alert-circle"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Overdue Payments</span>
-            <h3 class="stat-value">89</h3>
-            <div class="stat-trend negative">
-              <i data-lucide="trending-down"></i>
-              <span>-3.2% from last month</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-            <i data-lucide="wallet"></i>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Total Portfolio</span>
-            <h3 class="stat-value">$4.2M</h3>
-            <div class="stat-trend positive">
-              <i data-lucide="trending-up"></i>
-              <span>+15.7% from last month</span>
-            </div>
-          </div>
-        </div>
+        <button class="add-competency-btn" id="addCompetencyBtn">
+          <i data-lucide="plus"></i>
+          <span>Add Competency</span>
+        </button>
       </div>
 
-      <!-- Content Grid -->
-      <div class="content-grid">
-        <!-- Recent Applications -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Recent Loan Applications</h3>
-              <p class="card-subtitle">Latest applications requiring review</p>
+      <div class="competency-container">
+        <?php
+        if ($categories_result && $categories_result->num_rows > 0) {
+            while ($category = $categories_result->fetch_assoc()) {
+                $category_id = $category['id'];
+                // Fetch competencies for this category
+                $competencies_query = "SELECT * FROM competencies WHERE category_id = $category_id ORDER BY id ASC";
+                $competencies_result = $conn->query($competencies_query);
+
+                $catName = strtolower($category['name']);
+                $displayIcon = 'folder'; // Default
+
+                if (strpos($catName, 'common') !== false) $displayIcon = 'users';
+                else if (strpos($catName, 'hr') !== false || strpos($catName, 'human') !== false) $displayIcon = 'user';
+                else if (strpos($catName, 'finance') !== false || strpos($catName, 'accounting') !== false) $displayIcon = 'banknote';
+                else if (strpos($catName, 'logistics') !== false) $displayIcon = 'truck';
+                else if (strpos($catName, 'microfinance') !== false || strpos($catName, 'core') !== false) $displayIcon = 'landmark';
+                else if (strpos($catName, 'admin') !== false) $displayIcon = 'briefcase';
+                else if (strpos($catName, 'it') !== false || strpos($catName, 'tech') !== false) $displayIcon = 'monitor';
+                else if (strpos($catName, 'leadership') !== false || strpos($catName, 'lead') !== false) $displayIcon = 'users';
+                else if (strpos($catName, 'behavioral') !== false || strpos($catName, 'soft') !== false) $displayIcon = 'heart';
+        ?>
+        <div class="competency-card">
+          <div class="competency-header">
+            <div class="ch-left">
+              <div class="ch-icon"><i data-lucide="<?php echo $displayIcon; ?>"></i></div>
+              <div class="ch-info">
+                <h3><?php echo htmlspecialchars($category['name']); ?></h3>
+                <span><?php echo htmlspecialchars($category['subtitle']); ?></span>
+              </div>
             </div>
-            <button class="btn-text">View All</button>
+            <i data-lucide="chevron-down" class="ch-chevron"></i>
           </div>
-          <div class="card-body">
-            <div class="data-table">
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #2ca078;">JD</div>
-                    <div>
-                      <span class="client-name">John Doe</span>
-                      <span class="client-detail">Personal Loan</span>
+          <div class="competency-content">
+            <table class="competency-table">
+              <thead>
+                <tr>
+                  <th>Competency</th>
+                  <th>Description</th>
+                  <th style="width: 100px; text-align: center;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                if ($competencies_result && $competencies_result->num_rows > 0) {
+                    while ($competency = $competencies_result->fetch_assoc()) {
+                ?>
+                <tr data-id="<?php echo $competency['id']; ?>">
+                  <td class="comp-name"><?php echo htmlspecialchars($competency['name']); ?></td>
+                  <td class="comp-desc"><?php echo htmlspecialchars($competency['description']); ?></td>
+                  <td style="text-align: center;">
+                    <div class="table-actions">
+                      <button class="action-btn edit-btn" title="Edit Competency" 
+                              data-id="<?php echo $competency['id']; ?>"
+                              data-category="<?php echo $category_id; ?>">
+                        <i data-lucide="settings"></i>
+                      </button>
+                      <button class="action-btn delete-btn" title="Delete Competency" 
+                              data-id="<?php echo $competency['id']; ?>">
+                        <i data-lucide="trash-2"></i>
+                      </button>
                     </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$15,000</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status pending">Pending</span>
-                </div>
-              </div>
-
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #ffc107;">SM</div>
-                    <div>
-                      <span class="client-name">Sarah Miller</span>
-                      <span class="client-detail">Business Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$25,000</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status approved">Approved</span>
-                </div>
-              </div>
-
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #3b82f6;">RJ</div>
-                    <div>
-                      <span class="client-name">Robert Johnson</span>
-                      <span class="client-detail">Agricultural Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$8,500</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status review">Under Review</span>
-                </div>
-              </div>
-
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #ef4444;">LW</div>
-                    <div>
-                      <span class="client-name">Lisa Williams</span>
-                      <span class="client-detail">Education Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$12,000</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status pending">Pending</span>
-                </div>
-              </div>
-            </div>
+                  </td>
+                </tr>
+                <?php
+                    }
+                } else {
+                ?>
+                <tr><td colspan="3" style="text-align: center; color: var(--text-tertiary);">No competencies defined yet.</td></tr>
+                <?php } ?>
+              </tbody>
+            </table>
           </div>
         </div>
-
-        <!-- Quick Actions -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Quick Actions</h3>
-              <p class="card-subtitle">Common tasks and shortcuts</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="quick-actions">
-              <button class="action-btn">
-                <i data-lucide="user-plus"></i>
-                <span>Add New Client</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="file-plus"></i>
-                <span>New Loan Application</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="receipt"></i>
-                <span>Record Payment</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="file-text"></i>
-                <span>Generate Report</span>
-              </button>
-              <button class="action-btn">
-                <span>Schedule Meeting</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="send"></i>
-                <span>Send Notification</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <?php
+            }
+        } else {
+            echo '<p style="text-align: center; color: var(--text-secondary);">No competency categories found.</p>';
+        }
+        ?>
       </div>
+    </div>
 
-      <!-- Bottom Grid -->
-      <div class="bottom-grid">
-        <!-- Upcoming Payments -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Upcoming Payments</h3>
-              <p class="card-subtitle">Payments due in the next 7 days</p>
-            </div>
-            <button class="btn-text">View Calendar</button>
-          </div>
-          <div class="card-body">
-            <div class="payment-list">
-              <div class="payment-item">
-                <div class="payment-date">
-                  <span class="date-day">15</span>
-                  <span class="date-month">Dec</span>
-                </div>
-                <div class="payment-details">
-                  <span class="payment-client">Michael Chen</span>
-                  <span class="payment-type">Monthly Installment</span>
-                </div>
-                <div class="payment-amount">$850</div>
-              </div>
 
-              <div class="payment-item">
-                <div class="payment-date">
-                  <span class="date-day">16</span>
-                  <span class="date-month">Dec</span>
-                </div>
-                <div class="payment-details">
-                  <span class="payment-client">Emma Davis</span>
-                  <span class="payment-type">Loan Payment</span>
-                </div>
-                <div class="payment-amount">$1,200</div>
-              </div>
-
-              <div class="payment-item">
-                <div class="payment-date">
-                  <span class="date-day">18</span>
-                  <span class="date-month">Dec</span>
-                </div>
-                <div class="payment-details">
-                  <span class="payment-client">James Wilson</span>
-                  <span class="payment-type">Interest Payment</span>
-                </div>
-                <div class="payment-amount">$450</div>
-              </div>
+    <!-- Edit Competency Modal -->
+    <div id="editCompetencyModal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="mh-left">
+            <div class="mh-icon" style="background: rgba(52, 152, 219, 0.1); color: #3498db;"><i data-lucide="edit-3"></i></div>
+            <div class="mh-info">
+              <h3>Edit Competency</h3>
+              <span>Update the competency details</span>
             </div>
           </div>
+          <button class="close-modal" id="closeEditModal">
+            <i data-lucide="x"></i>
+          </button>
         </div>
+        <form id="editCompetencyForm" class="modal-form">
+          <input type="hidden" name="competency_id" id="edit_competency_id">
+          <div class="form-group">
+            <label for="edit_category_id">Category</label>
+            <select name="category_id" id="edit_category_id" required>
+              <option value="" disabled>Select Category</option>
+              <?php
+              $categories_result->data_seek(0);
+              while ($cat = $categories_result->fetch_assoc()) {
+                  echo "<option value='{$cat['id']}'>{$cat['name']}</option>";
+              }
+              ?>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit_competency_name">Competency Name</label>
+            <input type="text" name="competency_name" id="edit_competency_name" required>
+          </div>
+          <div class="form-group">
+            <label for="edit_description">Description</label>
+            <textarea name="description" id="edit_competency_description" required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" id="cancelEdit">Cancel</button>
+            <button type="submit" class="btn-primary" style="background: #3498db; box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);">
+              <i data-lucide="save"></i>
+              <span>Update Competency</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
-        <!-- Activity Feed -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Recent Activity</h3>
-              <p class="card-subtitle">Latest system activities</p>
+    <!-- Add Competency Modal -->
+    <div id="addCompetencyModal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="mh-left">
+            <div class="mh-icon"><i data-lucide="plus-circle"></i></div>
+            <div class="mh-info">
+              <h3>New Competency</h3>
+              <span>Fill out the details below</span>
             </div>
           </div>
-          <div class="card-body">
-            <div class="activity-list">
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
-                  <i data-lucide="check-circle"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>Loan Approved</strong> for Sarah Miller</p>
-                  <span class="activity-time">2 minutes ago</span>
-                </div>
-              </div>
-
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow);">
-                  <i data-lucide="dollar-sign"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>Payment Received</strong> from John Doe ($850)</p>
-                  <span class="activity-time">15 minutes ago</span>
-                </div>
-              </div>
-
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-                  <i data-lucide="user-plus"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>New Client</strong> registered: Lisa Williams</p>
-                  <span class="activity-time">1 hour ago</span>
-                </div>
-              </div>
-
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-                  <i data-lucide="alert-triangle"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>Payment Overdue</strong> for Michael Chen</p>
-                  <span class="activity-time">3 hours ago</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <button class="close-modal" id="closeAddModal">
+            <i data-lucide="x"></i>
+          </button>
         </div>
+        <form id="addCompetencyForm" class="modal-form">
+          <div class="form-group">
+            <label for="category_id">Category</label>
+            <select name="category_id" id="category_id" required>
+              <option value="" disabled selected>Select Category</option>
+              <?php
+              $categories_result->data_seek(0); // Reset pointer
+              while ($cat = $categories_result->fetch_assoc()) {
+                  echo "<option value='{$cat['id']}'>{$cat['name']}</option>";
+              }
+              ?>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="competency_name">Competency Name</label>
+            <input type="text" name="competency_name" id="competency_name" placeholder="e.g. Strategic Planning" required>
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea name="description" id="competency_description" placeholder="Describe the competency and its requirements..." required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" id="cancelAdd">Cancel</button>
+            <button type="submit" class="btn-primary" id="saveCompetencyBtn">
+              <i data-lucide="save"></i>
+              <span>Save Competency</span>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </main>
-  <script src="../../js/admindashboard.js"></script>
+  <script src="../../js/competencylibrary.js"></script>
   <script>
     lucide.createIcons();
   </script>
