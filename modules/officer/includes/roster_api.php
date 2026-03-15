@@ -11,7 +11,8 @@ if (!isset($conn) || !($conn instanceof mysqli)) {
     if (isset($mysqli) && $mysqli instanceof mysqli) {
         $conn = $mysqli;
     } else {
-        $conn = new mysqli("localhost", "root", "", "microfinance");
+        // Make sure this points to your actual HR4 connection if config is missing.
+        $conn = new mysqli("localhost", "root", "", "hr4");
     }
 }
 
@@ -116,22 +117,6 @@ function minutes_to_hours_float(int $minutes): float
     return round($minutes / 60, 2);
 }
 
-function format_hours_label_from_minutes(int $minutes): string
-{
-    if ($minutes <= 0) {
-        return '0 hr';
-    }
-
-    $hours = $minutes / 60;
-
-    if (floor($hours) == $hours) {
-        $whole = (int)$hours;
-        return $whole . ' hr' . ($whole > 1 ? 's' : '');
-    }
-
-    return rtrim(rtrim(number_format($hours, 2, '.', ''), '0'), '.') . ' hrs';
-}
-
 function format_hours_and_minutes_label(int $minutes): string
 {
     if ($minutes <= 0) {
@@ -213,10 +198,10 @@ function get_or_create_roster(mysqli $conn, int $departmentId, int $accountId, s
 
     if ($res) {
         return [
-            "RosterID" => (int)$res['RosterID'],
-            "Status"   => (string)$res['Status'],
-            "WeekStart"=> (string)$res['WeekStart'],
-            "WeekEnd"  => (string)$res['WeekEnd'],
+            "RosterID"  => (int)$res['RosterID'],
+            "Status"    => (string)$res['Status'],
+            "WeekStart" => (string)$res['WeekStart'],
+            "WeekEnd"   => (string)$res['WeekEnd'],
         ];
     }
 
@@ -231,49 +216,34 @@ function get_or_create_roster(mysqli $conn, int $departmentId, int $accountId, s
     $insert->execute();
 
     return [
-        "RosterID" => (int)$conn->insert_id,
-        "Status"   => $status,
-        "WeekStart"=> $start,
-        "WeekEnd"  => $end,
+        "RosterID"  => (int)$conn->insert_id,
+        "Status"    => $status,
+        "WeekStart" => $start,
+        "WeekEnd"   => $end,
     ];
 }
 
+/**
+ * FINAL HR4 LOGIC:
+ * No supervisor_employees table.
+ * Officer roster scope = all employees in the same department.
+ */
 function get_allowed_employee_ids(mysqli $conn, array $ctx): array
 {
     $allowed = [];
 
     $stmt = $conn->prepare("
-        SELECT DISTINCT se.EmployeeID
-        FROM supervisor_employees se
-        INNER JOIN employmentinformation ei
-            ON ei.EmployeeID = se.EmployeeID
-        WHERE se.SupervisorAccountID = ?
-          AND se.DepartmentID = ?
-          AND se.IsActive = 1
-          AND ei.DepartmentID = ?
+        SELECT DISTINCT ei.EmployeeID
+        FROM employmentinformation ei
+        WHERE ei.DepartmentID = ?
+        ORDER BY ei.EmployeeID ASC
     ");
-    $stmt->bind_param("iii", $ctx['account_id'], $ctx['department_id'], $ctx['department_id']);
+    $stmt->bind_param("i", $ctx['department_id']);
     $stmt->execute();
     $res = $stmt->get_result();
 
     while ($row = $res->fetch_assoc()) {
         $allowed[] = (int)$row['EmployeeID'];
-    }
-
-    if (!empty($ctx['employee_id'])) {
-        $selfCheck = $conn->prepare("
-            SELECT EmployeeID
-            FROM employmentinformation
-            WHERE EmployeeID = ? AND DepartmentID = ?
-            LIMIT 1
-        ");
-        $selfCheck->bind_param("ii", $ctx['employee_id'], $ctx['department_id']);
-        $selfCheck->execute();
-        $self = $selfCheck->get_result()->fetch_assoc();
-
-        if ($self) {
-            $allowed[] = (int)$ctx['employee_id'];
-        }
     }
 
     $allowed = array_values(array_unique(array_filter($allowed)));
@@ -373,12 +343,8 @@ function get_shift_catalog(mysqli $conn): array
             "start_time"    => $start,
             "end_time"      => $end,
             "is_day_off"    => ($code === 'OFF' ? 1 : 0),
-
-            // backward compatible
             "break_mins"    => $breakMinutes,
             "grace_mins"    => $graceMinutes,
-
-            // upgraded display fields
             "break_hours"   => minutes_to_hours_float($breakMinutes),
             "grace_hours"   => minutes_to_hours_float($graceMinutes),
             "break_label"   => ($code === 'OFF' ? 'No break' : format_break_hours_label($breakMinutes)),
@@ -515,19 +481,14 @@ function get_assignments(mysqli $conn, int $rosterId): array
             "class"         => shift_class($code),
             "start_time"    => $row['StartTime'],
             "end_time"      => $row['EndTime'],
-
-            // backward compatible
             "break_mins"    => $breakMinutes,
             "grace_mins"    => $graceMinutes,
-
-            // upgraded display fields
             "break_hours"   => minutes_to_hours_float($breakMinutes),
             "grace_hours"   => minutes_to_hours_float($graceMinutes),
             "break_label"   => ($code === 'OFF' ? 'No break' : format_break_hours_label($breakMinutes)),
             "grace_label"   => format_grace_hours_label($graceMinutes),
             "break_display" => ($code === 'OFF' ? 'No break' : format_break_hours_label($breakMinutes)),
             "grace_display" => format_grace_hours_label($graceMinutes),
-
             "is_day_off"    => ($code === 'OFF' ? 1 : 0),
             "source"        => 'saved'
         ];

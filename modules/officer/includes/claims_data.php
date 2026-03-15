@@ -2,7 +2,7 @@
 require_once __DIR__ . "/auth_officer.php";
 require_once __DIR__ . "/../../../config/config.php";
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 function respond($ok, $data = [], $code = 200) {
     http_response_code($code);
@@ -14,11 +14,11 @@ if (!isset($conn) || !($conn instanceof mysqli)) {
     respond(false, ['message' => 'Database connection not available.'], 500);
 }
 
-$accountId  = $_SESSION['user_id'] ?? null;
-$deptId     = $_SESSION['department_id'] ?? null;
-$employeeId = $_SESSION['employee_id'] ?? null;
+$accountId  = (int)($_SESSION['account_id'] ?? $_SESSION['AccountID'] ?? $_SESSION['user_id'] ?? 0);
+$deptId     = (int)($_SESSION['department_id'] ?? 0);
+$employeeId = (int)($_SESSION['employee_id'] ?? $_SESSION['EmployeeID'] ?? 0);
 
-if (!$accountId || !$deptId || !$employeeId) {
+if ($accountId <= 0 || $deptId <= 0 || $employeeId <= 0) {
     respond(false, ['message' => 'Unauthorized session.'], 401);
 }
 
@@ -87,23 +87,19 @@ if ($method === 'GET') {
         FROM reimbursement_claims rc
         INNER JOIN employee e
             ON e.EmployeeID = rc.EmployeeID
-        INNER JOIN supervisor_employees se
-            ON se.EmployeeID = rc.EmployeeID
-           AND se.SupervisorAccountID = ?
-           AND se.DepartmentID = ?
-           AND se.IsActive = 1
-        LEFT JOIN employmentinformation ei
-            ON ei.EmployeeID = e.EmployeeID
+        INNER JOIN employmentinformation ei
+            ON ei.EmployeeID = rc.EmployeeID
         LEFT JOIN department d
             ON d.DepartmentID = ei.DepartmentID
         LEFT JOIN positions p
             ON p.PositionID = ei.PositionID
         LEFT JOIN timesheet_period tp
             ON tp.PeriodID = rc.PeriodID
+        WHERE ei.DepartmentID = ?
     ";
 
     if ($statusFilter !== 'ALL') {
-        $sql .= " WHERE rc.Status = ? ";
+        $sql .= " AND rc.Status = ? ";
     }
 
     $sql .= " ORDER BY rc.CreatedAt DESC, rc.ClaimID DESC ";
@@ -114,9 +110,9 @@ if ($method === 'GET') {
     }
 
     if ($statusFilter !== 'ALL') {
-        $stmt->bind_param("iis", $accountId, $deptId, $statusFilter);
+        $stmt->bind_param("is", $deptId, $statusFilter);
     } else {
-        $stmt->bind_param("ii", $accountId, $deptId);
+        $stmt->bind_param("i", $deptId);
     }
 
     $stmt->execute();
@@ -145,14 +141,14 @@ if ($method === 'POST') {
     }
 
     $checkSql = "
-        SELECT rc.ClaimID, rc.Status
+        SELECT
+            rc.ClaimID,
+            rc.Status
         FROM reimbursement_claims rc
-        INNER JOIN supervisor_employees se
-            ON se.EmployeeID = rc.EmployeeID
-           AND se.SupervisorAccountID = ?
-           AND se.DepartmentID = ?
-           AND se.IsActive = 1
+        INNER JOIN employmentinformation ei
+            ON ei.EmployeeID = rc.EmployeeID
         WHERE rc.ClaimID = ?
+          AND ei.DepartmentID = ?
         LIMIT 1
     ";
 
@@ -161,14 +157,14 @@ if ($method === 'POST') {
         respond(false, ['message' => 'Failed to prepare validation query.'], 500);
     }
 
-    $stmtCheck->bind_param("iii", $accountId, $deptId, $claimId);
+    $stmtCheck->bind_param("ii", $claimId, $deptId);
     $stmtCheck->execute();
     $res = $stmtCheck->get_result();
     $claim = $res->fetch_assoc();
     $stmtCheck->close();
 
     if (!$claim) {
-        respond(false, ['message' => 'Claim not found or not under your supervision.'], 404);
+        respond(false, ['message' => 'Claim not found or not under your department.'], 404);
     }
 
     if ($action === 'approve') {
@@ -184,6 +180,7 @@ if ($method === 'POST') {
                 OfficerApprovedBy = ?,
                 OfficerNotes = ?
             WHERE ClaimID = ?
+              AND Status = 'PENDING'
             LIMIT 1
         ";
 
@@ -197,6 +194,11 @@ if ($method === 'POST') {
         if (!$stmt->execute()) {
             $stmt->close();
             respond(false, ['message' => 'Failed to approve claim.'], 500);
+        }
+
+        if ($stmt->affected_rows <= 0) {
+            $stmt->close();
+            respond(false, ['message' => 'No rows updated. Claim may already be processed.'], 409);
         }
 
         $stmt->close();
@@ -221,6 +223,7 @@ if ($method === 'POST') {
                 OfficerApprovedBy = ?,
                 OfficerNotes = ?
             WHERE ClaimID = ?
+              AND Status = 'PENDING'
             LIMIT 1
         ";
 
@@ -234,6 +237,11 @@ if ($method === 'POST') {
         if (!$stmt->execute()) {
             $stmt->close();
             respond(false, ['message' => 'Failed to reject claim.'], 500);
+        }
+
+        if ($stmt->affected_rows <= 0) {
+            $stmt->close();
+            respond(false, ['message' => 'No rows updated. Claim may already be processed.'], 409);
         }
 
         $stmt->close();

@@ -2,7 +2,7 @@
 require_once __DIR__ . "/auth_officer.php";
 require_once __DIR__ . "/../../../config/config.php";
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 function respond($ok, $data = [], $code = 200) {
     http_response_code($code);
@@ -10,11 +10,15 @@ function respond($ok, $data = [], $code = 200) {
     exit;
 }
 
-$accountId    = $_SESSION['user_id'] ?? null;
-$departmentId = $_SESSION['department_id'] ?? null;
+$accountId    = isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : 0;
+$departmentId = isset($_SESSION['department_id']) ? (int) $_SESSION['department_id'] : 0;
 
-if (!$accountId) {
+if ($accountId <= 0) {
     respond(false, ['message' => 'Unauthorized access. Missing officer account.'], 401);
+}
+
+if ($departmentId <= 0) {
+    respond(false, ['message' => 'Unauthorized access. Missing department session.'], 401);
 }
 
 try {
@@ -48,7 +52,7 @@ try {
             FROM leave_requests lr
             INNER JOIN employee e
                 ON e.EmployeeID = lr.EmployeeID
-            LEFT JOIN employmentinformation ei
+            INNER JOIN employmentinformation ei
                 ON ei.EmployeeID = lr.EmployeeID
             LEFT JOIN department d
                 ON d.DepartmentID = ei.DepartmentID
@@ -60,12 +64,8 @@ try {
                 ON elb.EmployeeID = lr.EmployeeID
                AND elb.LeaveTypeID = lr.LeaveTypeID
                AND elb.Year = YEAR(lr.StartDate)
-            INNER JOIN supervisor_employees se
-                ON se.EmployeeID = lr.EmployeeID
-               AND se.SupervisorAccountID = ?
-               AND se.IsActive = 1
-            WHERE se.DepartmentID = ?
-            ORDER BY lr.CreatedAt DESC
+            WHERE ei.DepartmentID = ?
+            ORDER BY lr.CreatedAt DESC, lr.LeaveRequestID DESC
         ";
 
         $stmt = $conn->prepare($sql);
@@ -73,7 +73,7 @@ try {
             respond(false, ['message' => 'SQL prepare failed: ' . $conn->error], 500);
         }
 
-        $stmt->bind_param("ii", $accountId, $departmentId);
+        $stmt->bind_param("i", $departmentId);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -91,7 +91,7 @@ try {
             $rows[] = $row;
             $summary['total']++;
 
-            switch ($row['Status']) {
+            switch (strtoupper((string) $row['Status'])) {
                 case 'PENDING':
                     $summary['pending']++;
                     break;
@@ -147,18 +147,16 @@ try {
                 COALESCE(elb.UsedCredits, 0) AS UsedCredits,
                 COALESCE(elb.RemainingCredits, 0) AS RemainingCredits
             FROM leave_requests lr
+            INNER JOIN employmentinformation ei
+                ON ei.EmployeeID = lr.EmployeeID
             INNER JOIN leave_types lt
                 ON lt.LeaveTypeID = lr.LeaveTypeID
-            INNER JOIN supervisor_employees se
-                ON se.EmployeeID = lr.EmployeeID
-               AND se.SupervisorAccountID = ?
-               AND se.IsActive = 1
             LEFT JOIN employee_leave_balances elb
                 ON elb.EmployeeID = lr.EmployeeID
                AND elb.LeaveTypeID = lr.LeaveTypeID
                AND elb.Year = YEAR(lr.StartDate)
             WHERE lr.LeaveRequestID = ?
-              AND se.DepartmentID = ?
+              AND ei.DepartmentID = ?
             LIMIT 1
         ";
 
@@ -167,23 +165,23 @@ try {
             throw new Exception("Prepare failed: " . $conn->error);
         }
 
-        $stmt->bind_param("iii", $accountId, $leaveRequestId, $departmentId);
+        $stmt->bind_param("ii", $leaveRequestId, $departmentId);
         $stmt->execute();
         $result = $stmt->get_result();
         $leave = $result->fetch_assoc();
         $stmt->close();
 
         if (!$leave) {
-            throw new Exception("Leave request not found or not assigned to you.");
+            throw new Exception("Leave request not found or not under your department.");
         }
 
-        if ($leave['Status'] !== 'PENDING') {
+        if (strtoupper((string) $leave['Status']) !== 'PENDING') {
             throw new Exception("Only pending leave requests can be updated.");
         }
 
-        if ($action === 'approve' && (int)$leave['IsPaid'] === 1) {
-            $remaining = (float)$leave['RemainingCredits'];
-            $requested = (float)$leave['TotalDays'];
+        if ($action === 'approve' && (int) $leave['IsPaid'] === 1) {
+            $remaining = (float) $leave['RemainingCredits'];
+            $requested = (float) $leave['TotalDays'];
 
             if ($remaining < $requested) {
                 throw new Exception(
@@ -237,7 +235,7 @@ try {
     respond(false, ['message' => 'Method not allowed.'], 405);
 
 } catch (Throwable $e) {
-    if (method_exists($conn, 'rollback')) {
+    if (isset($conn) && $conn instanceof mysqli) {
         $conn->rollback();
     }
     respond(false, ['message' => $e->getMessage()], 500);

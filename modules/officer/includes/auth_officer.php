@@ -1,5 +1,7 @@
 <?php
-// modules/officer/auth_officer.php
+// modules/officer/includes/auth_officer.php
+
+require_once __DIR__ . '/../../../config/config.php';
 
 // -----------------------------
 // Secure session bootstrap
@@ -7,16 +9,16 @@
 if (session_status() === PHP_SESSION_NONE) {
     $isHttps = (
         (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
-        (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
+        (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443)
     );
 
     session_set_cookie_params([
         'lifetime' => 0,
         'path'     => '/',
         'domain'   => '',
-        'secure'   => $isHttps,   // true only on HTTPS
-        'httponly' => true,       // JS cannot read session cookie
-        'samesite' => 'Lax'       // helps reduce CSRF risk
+        'secure'   => $isHttps,
+        'httponly' => true,
+        'samesite' => 'Lax'
     ]);
 
     session_start();
@@ -25,98 +27,233 @@ if (session_status() === PHP_SESSION_NONE) {
 // -----------------------------
 // Security headers
 // -----------------------------
-header('X-Frame-Options: DENY');
-header('X-Content-Type-Options: nosniff');
-header('Referrer-Policy: strict-origin-when-cross-origin');
-header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-header('Pragma: no-cache');
-header('Expires: 0');
+if (!headers_sent()) {
+    header('X-Frame-Options: DENY');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+}
+
+// -----------------------------
+// Helper functions
+// -----------------------------
+if (!function_exists('officer_force_logout')) {
+    function officer_force_logout(string $redirect = '../../login.php?expired=1'): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            $_SESSION = [];
+
+            if (ini_get('session.use_cookies')) {
+                $params = session_get_cookie_params();
+                setcookie(
+                    session_name(),
+                    '',
+                    time() - 42000,
+                    $params['path'],
+                    $params['domain'],
+                    $params['secure'],
+                    $params['httponly']
+                );
+            }
+
+            session_destroy();
+        }
+
+        if (!headers_sent()) {
+            header("Location: {$redirect}");
+        }
+        exit;
+    }
+}
+
+if (!function_exists('officer_deny')) {
+    function officer_deny(string $message = 'Forbidden: Officer access only.'): void
+    {
+        http_response_code(403);
+        exit($message);
+    }
+}
+
+// -----------------------------
+// DB check
+// -----------------------------
+if (!isset($conn) || !($conn instanceof mysqli)) {
+    http_response_code(500);
+    exit('Database connection not available.');
+}
+
+$conn->set_charset('utf8mb4');
 
 // -----------------------------
 // Session timeout settings
 // -----------------------------
-$inactiveLimit = 900;   // 15 minutes inactivity
-$absoluteLimit = 28800; // 8 hours total session lifetime
+$inactiveLimit = 900;    // 15 minutes inactivity
+$absoluteLimit = 28800;  // 8 hours total lifetime
 
-// inactivity timeout
 if (isset($_SESSION['last_activity']) && is_numeric($_SESSION['last_activity'])) {
-    if ((time() - (int)$_SESSION['last_activity']) > $inactiveLimit) {
-        session_unset();
-        session_destroy();
-        header("Location: ../../login.php?expired=1");
-        exit;
+    if ((time() - (int) $_SESSION['last_activity']) > $inactiveLimit) {
+        officer_force_logout('../../login.php?expired=1');
     }
 }
 $_SESSION['last_activity'] = time();
 
-// absolute session lifetime
-if (isset($_SESSION['login_time']) && is_numeric($_SESSION['login_time'])) {
-    if ((time() - (int)$_SESSION['login_time']) > $absoluteLimit) {
-        session_unset();
-        session_destroy();
-        header("Location: ../../login.php?expired=1");
-        exit;
+if (!isset($_SESSION['login_time']) || !is_numeric($_SESSION['login_time'])) {
+    $_SESSION['login_time'] = time();
+} elseif ((time() - (int) $_SESSION['login_time']) > $absoluteLimit) {
+    officer_force_logout('../../login.php?expired=1');
+}
+
+// -----------------------------
+// Basic user-agent binding
+// -----------------------------
+$currentUserAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+
+if (!isset($_SESSION['user_agent'])) {
+    $_SESSION['user_agent'] = $currentUserAgent;
+} elseif (!hash_equals((string) $_SESSION['user_agent'], (string) $currentUserAgent)) {
+    officer_force_logout('../../login.php?expired=1');
+}
+
+// -----------------------------
+// Must be logged in
+// -----------------------------
+if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id']) || (int) $_SESSION['user_id'] <= 0) {
+    officer_force_logout('../../login.php');
+}
+
+$accountId = (int) $_SESSION['user_id'];
+
+// -----------------------------
+// Allowed roles for officer pages
+// -----------------------------
+$allowedRoles = [
+    'Department Officer',
+    'Supervisor',
+    'Financial Officer',
+    'Finance Officer',
+    'Logistics Officer',
+    'HR Officer',
+    'HR Manager',
+    'HR Staff'
+];
+
+// -----------------------------
+// Get trusted account + employee + department + position + roles from DB
+// Source of truth:
+// useraccounts -> EmployeeID
+// employmentinformation -> DepartmentID, PositionID
+// useraccountroles + roles -> RoleName
+// -----------------------------
+$sql = "
+    SELECT
+        ua.AccountID,
+        ua.EmployeeID,
+        ua.AccountStatus,
+        ei.DepartmentID,
+        ei.PositionID,
+        GROUP_CONCAT(DISTINCT r.RoleName ORDER BY r.RoleName SEPARATOR '||') AS RoleNames
+    FROM useraccounts ua
+    INNER JOIN employmentinformation ei
+        ON ei.EmployeeID = ua.EmployeeID
+    LEFT JOIN useraccountroles uar
+        ON uar.AccountID = ua.AccountID
+    LEFT JOIN roles r
+        ON r.RoleID = uar.RoleID
+    WHERE ua.AccountID = ?
+    GROUP BY ua.AccountID, ua.EmployeeID, ua.AccountStatus, ei.DepartmentID, ei.PositionID
+    LIMIT 1
+";
+
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    http_response_code(500);
+    exit('Failed to prepare officer auth query.');
+}
+
+$stmt->bind_param('i', $accountId);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = ($result && $result->num_rows === 1) ? $result->fetch_assoc() : null;
+$stmt->close();
+
+if (!$row) {
+    officer_force_logout('../../login.php?error=account_not_linked');
+}
+
+if (($row['AccountStatus'] ?? '') !== 'Active') {
+    officer_force_logout('../../login.php?error=inactive_account');
+}
+
+$employeeId   = isset($row['EmployeeID']) ? (int) $row['EmployeeID'] : 0;
+$departmentId = isset($row['DepartmentID']) ? (int) $row['DepartmentID'] : 0;
+$positionId   = isset($row['PositionID']) ? (int) $row['PositionID'] : 0;
+$roleNamesRaw = $row['RoleNames'] ?? '';
+
+if ($employeeId <= 0 || $departmentId <= 0) {
+    officer_force_logout('../../login.php?error=employment_not_configured');
+}
+
+// -----------------------------
+// Parse roles
+// -----------------------------
+$userRoles = [];
+if ($roleNamesRaw !== '') {
+    $userRoles = array_values(array_filter(array_map('trim', explode('||', $roleNamesRaw))));
+}
+
+if (empty($userRoles)) {
+    officer_deny('Forbidden: No assigned role found.');
+}
+
+// -----------------------------
+// Check if user has any allowed officer role
+// -----------------------------
+$isAllowed   = false;
+$matchedRole = '';
+
+foreach ($userRoles as $roleName) {
+    foreach ($allowedRoles as $allowedRole) {
+        if (strcasecmp(trim($roleName), trim($allowedRole)) === 0) {
+            $isAllowed   = true;
+            $matchedRole = $roleName;
+            break 2;
+        }
     }
 }
 
-// basic user-agent binding
-$currentUserAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
-if (!isset($_SESSION['user_agent'])) {
-    $_SESSION['user_agent'] = $currentUserAgent;
-} elseif (!hash_equals((string)$_SESSION['user_agent'], (string)$currentUserAgent)) {
-    session_unset();
-    session_destroy();
-    header("Location: ../../login.php?expired=1");
-    exit;
+if (!$isAllowed) {
+    officer_deny();
 }
 
 // -----------------------------
-// ORIGINAL PROCESS STARTS HERE
+// Refresh trusted session values from DB
 // -----------------------------
-if (!isset($_SESSION['user_id'])) {
-  header("Location: ../../login.php");
-  exit;
+$_SESSION['user_id']       = $accountId;
+$_SESSION['account_id']    = $accountId;
+$_SESSION['employee_id']   = $employeeId;
+$_SESSION['department_id'] = $departmentId;
+$_SESSION['position_id']   = $positionId;
+$_SESSION['user_roles']    = $userRoles;
+$_SESSION['user_role']     = $matchedRole;
+
+// -----------------------------
+// Optional constants
+// -----------------------------
+if (!defined('OFFICER_ACCOUNT_ID')) {
+    define('OFFICER_ACCOUNT_ID', $accountId);
 }
-
-// extra validation for session values
-if (!is_numeric($_SESSION['user_id']) || (int)$_SESSION['user_id'] <= 0) {
-  session_unset();
-  session_destroy();
-  header("Location: ../../login.php");
-  exit;
+if (!defined('OFFICER_EMPLOYEE_ID')) {
+    define('OFFICER_EMPLOYEE_ID', $employeeId);
 }
-
-// department-based officer dashboard requires these
-if (!isset($_SESSION['department_id']) || !isset($_SESSION['employee_id'])) {
-  http_response_code(400);
-  exit("Missing department session. Please re-login.");
+if (!defined('OFFICER_DEPARTMENT_ID')) {
+    define('OFFICER_DEPARTMENT_ID', $departmentId);
 }
-
-// extra validation for department/employee ids
-if (
-    !is_numeric($_SESSION['department_id']) || (int)$_SESSION['department_id'] <= 0 ||
-    !is_numeric($_SESSION['employee_id']) || (int)$_SESSION['employee_id'] <= 0
-) {
-    session_unset();
-    session_destroy();
-    header("Location: ../../login.php");
-    exit;
+if (!defined('OFFICER_POSITION_ID')) {
+    define('OFFICER_POSITION_ID', $positionId);
 }
-
-// OPTIONAL role enforcement (safe)
-$primary = $_SESSION['user_role'] ?? '';
-$user_roles = $_SESSION['user_roles'] ?? [];
-
-$ok = false;
-if (is_string($primary) && strtolower(trim($primary)) === strtolower("Department Officer")) $ok = true;
-
-if (!$ok && is_array($user_roles)) {
-  foreach ($user_roles as $r) {
-    if (is_string($r) && strtolower(trim($r)) === strtolower("Department Officer")) { $ok = true; break; }
-  }
+if (!defined('OFFICER_ROLE')) {
+    define('OFFICER_ROLE', $matchedRole);
 }
-
-if (!$ok) {
-  http_response_code(403);
-  exit("Forbidden: Officer access only.");
-}
+?>

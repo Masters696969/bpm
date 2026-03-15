@@ -1,0 +1,1 @@
+<?php echo password_hash('Hrmanager@123', PASSWORD_DEFAULT); ?>

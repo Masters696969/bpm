@@ -41,7 +41,7 @@ register_shutdown_function(function () {
 | SESSION CHECK
 |--------------------------------------------------------------------------
 */
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id']) && !isset($_SESSION['account_id']) && !isset($_SESSION['AccountID'])) {
     echo json_encode([
         'success' => false,
         'message' => 'Session expired. Please login again.'
@@ -60,8 +60,6 @@ if (!isset($_SESSION['department_id']) || !isset($_SESSION['employee_id'])) {
 /*
 |--------------------------------------------------------------------------
 | CONFIG / DB
-|--------------------------------------------------------------------------
-| Ayusin mo lang ang path kung iba ang tunay mong structure.
 |--------------------------------------------------------------------------
 */
 require_once __DIR__ . '/../../../config/config.php';
@@ -101,7 +99,7 @@ function fmtPeriodLabel($start, $end)
 
 function getPeriodStatusBadgeClass($status)
 {
-    return match ($status) {
+    return match (strtoupper((string)$status)) {
         'DRAFT'      => 'draft',
         'FOR_REVIEW' => 'bg-pending',
         'RETURNED'   => 'bg-danger',
@@ -339,12 +337,7 @@ if ($action === 'get_period_data') {
             tes.Notes,
 
             COALESCE(lb.RemainingLeaveCredits, 0) AS RemainingLeaveCredits,
-            COALESCE(issueAgg.IssueCount, 0) AS IssueCount,
-
-            CASE
-                WHEN e.EmployeeID = ? THEN 0
-                ELSE 1
-            END AS SortPriority
+            COALESCE(issueAgg.IssueCount, 0) AS IssueCount
 
         FROM employmentinformation ei
         INNER JOIN employee e
@@ -368,36 +361,30 @@ if ($action === 'get_period_data') {
                 td.EmployeeID,
                 COUNT(*) AS IssueCount
             FROM timesheet_daily td
+            INNER JOIN employmentinformation ei2
+                ON ei2.EmployeeID = td.EmployeeID
             WHERE td.PeriodID = ?
+              AND ei2.DepartmentID = ?
               AND td.DayStatus IN ('FLAGGED','INCOMPLETE','NO_SCHEDULE')
             GROUP BY td.EmployeeID
         ) issueAgg
             ON issueAgg.EmployeeID = ei.EmployeeID
         WHERE ei.DepartmentID = ?
           AND COALESCE(ei.EmploymentStatus, 'Regular') <> 'Inactive'
-          AND (
-                e.EmployeeID = ?
-                OR e.EmployeeID IN (
-                    SELECT se.EmployeeID
-                    FROM supervisor_employees se
-                    WHERE se.SupervisorAccountID = ?
-                      AND se.DepartmentID = ?
-                      AND se.IsActive = 1
-                )
-          )
-        ORDER BY SortPriority ASC, e.FirstName ASC, e.LastName ASC
+        ORDER BY
+            CASE WHEN e.EmployeeID = ? THEN 0 ELSE 1 END,
+            e.FirstName ASC,
+            e.LastName ASC
     ";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "iiiiiii",
-        $myEmployeeId,
+        "iiiii",
         $periodId,
         $periodId,
         $deptId,
-        $myEmployeeId,
-        $accountId,
-        $deptId
+        $deptId,
+        $myEmployeeId
     );
     $stmt->execute();
     $res = $stmt->get_result();
@@ -450,11 +437,7 @@ if ($action === 'get_period_data') {
             CONCAT(e.FirstName, ' ', e.LastName) AS EmployeeName,
             td.WorkDate,
             td.DayStatus,
-            COALESCE(td.Remarks, '') AS Remarks,
-            CASE
-                WHEN td.EmployeeID = ? THEN 0
-                ELSE 1
-            END AS SortPriority
+            COALESCE(td.Remarks, '') AS Remarks
         FROM timesheet_daily td
         INNER JOIN employee e
             ON e.EmployeeID = td.EmployeeID
@@ -463,29 +446,19 @@ if ($action === 'get_period_data') {
         WHERE td.PeriodID = ?
           AND ei.DepartmentID = ?
           AND td.DayStatus IN ('FLAGGED','INCOMPLETE','NO_SCHEDULE')
-          AND (
-                td.EmployeeID = ?
-                OR td.EmployeeID IN (
-                    SELECT se.EmployeeID
-                    FROM supervisor_employees se
-                    WHERE se.SupervisorAccountID = ?
-                      AND se.DepartmentID = ?
-                      AND se.IsActive = 1
-                )
-          )
-        ORDER BY SortPriority ASC, td.WorkDate ASC, EmployeeName ASC
+        ORDER BY
+            CASE WHEN td.EmployeeID = ? THEN 0 ELSE 1 END,
+            td.WorkDate ASC,
+            EmployeeName ASC
         LIMIT 20
     ";
 
     $stmt = $conn->prepare($issueSql);
     $stmt->bind_param(
-        "iiiiii",
-        $myEmployeeId,
+        "iii",
         $periodId,
         $deptId,
-        $myEmployeeId,
-        $accountId,
-        $deptId
+        $myEmployeeId
     );
     $stmt->execute();
     $issueRes = $stmt->get_result();
@@ -552,6 +525,25 @@ if ($action === 'employee_logs') {
         ]);
     }
 
+    $checkSql = "
+        SELECT 1
+        FROM employmentinformation
+        WHERE EmployeeID = ?
+          AND DepartmentID = ?
+        LIMIT 1
+    ";
+    $stmt = $conn->prepare($checkSql);
+    $stmt->bind_param("ii", $employeeId, $deptId);
+    $stmt->execute();
+    $allowed = $stmt->get_result()->fetch_assoc();
+
+    if (!$allowed) {
+        respond([
+            'success' => false,
+            'message' => 'This employee is not under your department.'
+        ]);
+    }
+
     $sql = "
         SELECT
             td.WorkDate,
@@ -572,27 +564,14 @@ if ($action === 'employee_logs') {
         WHERE td.PeriodID = ?
           AND td.EmployeeID = ?
           AND ei.DepartmentID = ?
-          AND (
-                td.EmployeeID = ?
-                OR td.EmployeeID IN (
-                    SELECT se.EmployeeID
-                    FROM supervisor_employees se
-                    WHERE se.SupervisorAccountID = ?
-                      AND se.DepartmentID = ?
-                      AND se.IsActive = 1
-                )
-          )
         ORDER BY td.WorkDate ASC
     ";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param(
-        "iiiiii",
+        "iii",
         $periodId,
         $employeeId,
-        $deptId,
-        $myEmployeeId,
-        $accountId,
         $deptId
     );
     $stmt->execute();
@@ -756,27 +735,14 @@ if ($action === 'recompute_all') {
 
             WHERE td.PeriodID = ?
               AND ei.DepartmentID = ?
-              AND (
-                    td.EmployeeID = ?
-                    OR td.EmployeeID IN (
-                        SELECT se.EmployeeID
-                        FROM supervisor_employees se
-                        WHERE se.SupervisorAccountID = ?
-                          AND se.DepartmentID = ?
-                          AND se.IsActive = 1
-                    )
-              )
 
             GROUP BY td.PeriodID, td.EmployeeID, ei.DepartmentID, ei.PositionID
         ";
 
         $stmt = $conn->prepare($insertSql);
         $stmt->bind_param(
-            "iiiii",
+            "ii",
             $periodId,
-            $deptId,
-            $myEmployeeId,
-            $accountId,
             $deptId
         );
         $stmt->execute();
