@@ -13,7 +13,6 @@ if (!isset($_SESSION['username'])) {
   <title>Dashboard</title>
   <link rel="stylesheet" href="../../css/essdashboard.css?v=1.2">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
 <body>
@@ -56,7 +55,7 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="landmark"></i>
               <span>Apply Bank Account</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="leave_apply.php" class="nav-item">
               <i data-lucide="tickets-plane"></i>
               <span>Leave Management</span>
             </a>
@@ -64,7 +63,7 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="receipt-text"></i>
               <span>Claim Management</span>
             </a>
-            <a href="payslip.php" class="nav-item">
+            <a href="#" class="nav-item">
               <i data-lucide="ticket-check"></i>
               <span>View Payslip</span>
             </a>
@@ -91,8 +90,8 @@ if (!isset($_SESSION['username'])) {
           <img src="../../img/profile.png" alt="User">
         </div>
         <div class="user-info">
-          <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span>
-          <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'Employee'); ?></span>
+          <span class="user-name">John Doe</span>
+          <span class="user-role">Administrator</span>
         </div>
         <button class="user-menu-btn" id="userMenuBtn">
           <i data-lucide="more-vertical"></i>
@@ -124,12 +123,13 @@ if (!isset($_SESSION['username'])) {
         </button>
         <div class="header-title">
           <h1>Dashboard Overview</h1>
-          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
+          <p>Welcome back, John! Here's what's happening today.</p>
         </div>
       </div>
       <div class="header-right">
-                        <div class="header-clock">
-          <span id="realTimeClock"></span>
+        <div class="search-box">
+          <i data-lucide="search"></i>
+          <input type="search" placeholder="Search...">
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -149,12 +149,9 @@ if (!isset($_SESSION['username'])) {
   <script>
     lucide.createIcons();
   </script>
+  
+  <script src="../../js/user-menu.js"></script>
 </body>
 </html>
-
-
-
-
-
 
 

@@ -214,10 +214,3 @@ if (!isset($_SESSION['username'])) {
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
