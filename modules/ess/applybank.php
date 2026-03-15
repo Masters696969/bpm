@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -12,9 +12,7 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Apply Bank Account</title>
   <link rel="stylesheet" href="../../css/applybank.css?v=1.3">
-  <link rel="stylesheet" href="../../css/usermenu.css">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
 <body>
@@ -64,10 +62,10 @@ if (!isset($_SESSION['username'])) {
           <i data-lucide="receipt-text"></i>
           <span>Claim Management</span>
         </a>
-        <a href="payslip.php" class="nav-item">
-              <i data-lucide="ticket-check"></i>
-              <span>View Payslip</span>
-            </a>
+        <a href="#" class="nav-item">
+          <i data-lucide="ticket-check"></i>
+          <span>View Payslip</span>
+        </a>
       </div>
 
       <div class="nav-section">
@@ -105,7 +103,7 @@ if (!isset($_SESSION['username'])) {
             <span>Profile</span>
           </a>
           <div class="umd-divider"></div>
-          <a href="../../login.php" class="umd-item umd-item-danger umd-sign-out">
+          <a href="../../login.php" class="umd-item umd-item-danger">
             <i data-lucide="log-out"></i>
             <span>Sign Out</span>
           </a>
@@ -127,8 +125,9 @@ if (!isset($_SESSION['username'])) {
         </div>
       </div>
       <div class="header-right">
-                        <div class="header-clock">
-          <span id="realTimeClock"></span>
+        <div class="search-box">
+          <i data-lucide="search"></i>
+          <input type="search" placeholder="Search...">
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <i data-lucide="sun" class="sun-icon"></i>
@@ -181,7 +180,7 @@ if ($employeeId) {
         </div>
       </div>
 
-      <!-- â•â• Step 1: Download â•â• -->
+      <!-- ══ Step 1: Download ══ -->
       <div class="ab-section-title"><span class="ab-step-num">1</span> Download the Form</div>
 
       <?php if ($activeForm): ?>
@@ -210,7 +209,7 @@ if ($employeeId) {
       </div>
       <?php endif; ?>
 
-      <!-- â•â• Step 2: Upload â•â• -->
+      <!-- ══ Step 2: Upload ══ -->
       <div class="ab-section-title"><span class="ab-step-num">2</span> Upload Your Completed Form</div>
 
       <div class="ab-upload-card">
@@ -236,7 +235,7 @@ if ($employeeId) {
         </form>
       </div>
 
-      <!-- â•â• My Submissions â•â• -->
+      <!-- ══ My Submissions ══ -->
       <?php if (!empty($myApps)): ?>
       <div class="ab-section-title" style="margin-top:32px">
         <span class="ab-step-num"><i data-lucide="list-checks"></i></span> My Submissions
@@ -274,7 +273,7 @@ if ($employeeId) {
             </div>
             <div class="ab-sub-desc"><?php echo $statusDesc; ?></div>
             <div class="ab-sub-footer">
-              <span class="ab-sub-date"><?php echo date('M d, Y \a\t h:i A', strtotime($app['CreatedAt'])); ?></span>
+              <span class="ab-sub-date"><i data-lucide="calendar"></i> <?php echo date('M d, Y \a\t h:i A', strtotime($app['CreatedAt'])); ?></span>
               <a href="<?php echo htmlspecialchars($pdfUrl); ?>" target="_blank" class="ab-sub-view-btn">
                 <i data-lucide="file-down"></i> View PDF
               </a>
@@ -290,6 +289,7 @@ if ($employeeId) {
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../../js/user-menu.js"></script>
   <script src="../../js/applybank.js?v=<?php echo time(); ?>"></script>
   <script>
     lucide.createIcons();
@@ -309,7 +309,3 @@ if ($employeeId) {
   </script>
 </body>
 </html>
-
-
-
-

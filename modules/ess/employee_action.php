@@ -234,34 +234,13 @@ try {
     }
     
     elseif ($action === 'request_update') {
-        // Use $_POST because we switched to FormData
-        $input = $_POST;
+        $input = json_decode(file_get_contents('php://input'), true);
         
         // Filter out empty values
         $filteredInput = array_filter($input ?? [], function($v) { return $v !== '' && $v !== null; });
         
-        // Handle Proof Upload
-        $proofPath = null;
-        if (isset($_FILES['ProofFile']) && $_FILES['ProofFile']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = '../../uploads/proofs/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-            }
-            
-            $fileExtension = pathinfo($_FILES['ProofFile']['name'], PATHINFO_EXTENSION);
-            $fileName = 'proof_' . time() . '_' . uniqid() . '.' . $fileExtension;
-            $targetPath = $uploadDir . $fileName;
-            
-            if (move_uploaded_file($_FILES['ProofFile']['tmp_name'], $targetPath)) {
-                $proofPath = 'uploads/proofs/' . $fileName; // Relative path for storage
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Failed to save proof document.']);
-                exit;
-            }
-        }
-
-        if (empty($filteredInput) && !$proofPath) { 
-             echo json_encode(['success' => false, 'message' => 'Please fill in at least one field or upload a proof to request a change.']);
+        if (empty($filteredInput)) { 
+             echo json_encode(['success' => false, 'message' => 'Please fill in at least one field to request a change.']);
              exit;
         }
 
@@ -280,12 +259,12 @@ try {
         $employeeId = $empRow['EmployeeID'];
         $requestData = json_encode($filteredInput);
         
-        $stmt = $conn->prepare("INSERT INTO employee_update_requests (EmployeeID, RequestType, RequestData, ProofPath, Status, RequestDate) VALUES (?, 'Update Information', ?, ?, 'Pending Supervisor', NOW())");
+        $stmt = $conn->prepare("INSERT INTO employee_update_requests (EmployeeID, RequestType, RequestData, Status, RequestDate) VALUES (?, 'Update Information', ?, 'Pending', NOW())");
         if (!$stmt) {
             echo json_encode(['success' => false, 'message' => 'Database error: ' . $conn->error]);
             exit;
         }
-        $stmt->bind_param("iss", $employeeId, $requestData, $proofPath);
+        $stmt->bind_param("is", $employeeId, $requestData);
         
         if ($stmt->execute()) {
             echo json_encode(['success' => true, 'message' => 'Request submitted successfully']);
