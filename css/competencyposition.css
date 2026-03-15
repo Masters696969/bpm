@@ -1496,3 +1496,12 @@
     min-width: 80px;
     text-align: center;
 }
+
+/* Dept Specific Highlight */
+.dept-specific-row {
+    background: rgba(52, 152, 219, 0.03) !important;
+}
+
+.dept-specific-row:hover {
+    background: rgba(52, 152, 219, 0.08) !important;
+}

@@ -79,6 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 availableCompetencies = data.available_competencies;
                 batchPage = 1;
+                window._firstLoadBatch = true; // Mark that we just loaded new data
                 
                 // Initialize tempBatchAssignments from current mappings
                 tempBatchAssignments = {};
@@ -101,6 +102,29 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     };
+
+    function updateMainTableRow(posId, newCount) {
+        const row = document.getElementById(`row-pos-${posId}`);
+        if (!row) return;
+
+        const badge = row.querySelector('.count-badge-pos');
+        if (!badge) return;
+
+        const countLabel = newCount > 0 ? `${newCount} Competencies` : "No Mappings";
+        const countColor = newCount > 0 ? 'var(--brand-green)' : '#94a3b8';
+        const lucideIcon = newCount > 0 ? 'check-circle' : 'alert-circle';
+
+        badge.style.background = `${countColor}10`;
+        badge.style.color = countColor;
+        badge.style.border = `1px solid ${countColor}20`;
+        
+        badge.innerHTML = `
+            <i data-lucide="${lucideIcon}" style="width: 14px; height: 14px; margin-right: 6px;"></i>
+            ${countLabel}
+        `;
+        
+        if (window.lucide) window.lucide.createIcons();
+    }
 
     function renderManageTable() {
         const start = (managePage - 1) * itemsPerPage;
@@ -178,18 +202,32 @@ document.addEventListener("DOMContentLoaded", () => {
         pageData.forEach(c => {
             const isAssigned = !!tempBatchAssignments[c.id];
             const currentLevel = tempBatchAssignments[c.id] || "";
+            const isDeptComp = c.comp_dept_id && c.comp_dept_id != 0;
             
+            // Auto-check department competencies if they are not already in tempBatchAssignments
+            // Only do this when first loading availableCompetencies
+            if (isDeptComp && tempBatchAssignments[c.id] === undefined && window._firstLoadBatch) {
+                tempBatchAssignments[c.id] = "1"; // Default to Basic
+            }
+
             const tr = document.createElement('tr');
+            if (isDeptComp) tr.classList.add('dept-specific-row');
+            
             tr.innerHTML = `
                 <td style="text-align: center;">
-                    <input type="checkbox" class="batch-check row-check" data-comp-id="${c.id}" ${isAssigned ? 'checked' : ''}>
+                    <input type="checkbox" class="batch-check row-check" data-comp-id="${c.id}" ${tempBatchAssignments[c.id] !== undefined ? 'checked' : ''}>
                 </td>
-                <td>${c.name}</td>
                 <td>
-                    <select class="batch-level-select" data-comp-id="${c.id}" ${!isAssigned ? 'disabled' : ''}>
-                        <option value="" disabled ${!isAssigned ? 'selected' : ''}>Choose Level...</option>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        ${c.name}
+                        ${isDeptComp ? '<span style="font-size: 10px; background: rgba(52, 152, 219, 0.1); color: #3498db; padding: 2px 6px; border-radius: 4px; font-weight: 700;">DEPT</span>' : ''}
+                    </div>
+                </td>
+                <td>
+                    <select class="batch-level-select" data-comp-id="${c.id}" ${tempBatchAssignments[c.id] === undefined ? 'disabled' : ''}>
+                        <option value="" disabled ${tempBatchAssignments[c.id] === undefined ? 'selected' : ''}>Choose Level...</option>
                         ${competencyLevels.map(l => `
-                            <option value="${l.id}" ${currentLevel == l.id ? 'selected' : ''}>L${l.rank} - ${l.name}</option>
+                            <option value="${l.id}" ${tempBatchAssignments[c.id] == l.id ? 'selected' : ''}>L${l.rank} - ${l.name}</option>
                         `).join('')}
                     </select>
                 </td>
@@ -216,6 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             batchTableBody.appendChild(tr);
         });
+        window._firstLoadBatch = false; // Reset after first render
     }
 
     // Pagination Listeners
@@ -303,6 +342,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     });
                     toggleModal(inlineModal, false);
                     openManageModal(currentPositionId);
+                    if (data.new_count !== undefined) {
+                        updateMainTableRow(currentPositionId, data.new_count);
+                    }
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -348,6 +390,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         customClass: { container: 'swal-on-top' }
                     });
                     openManageModal(currentPositionId);
+                    if (data.new_count !== undefined) {
+                        updateMainTableRow(currentPositionId, data.new_count);
+                    }
                 }
             }
         });
@@ -390,6 +435,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         posSearch?.addEventListener('input', handleFilter);
         deptFilter?.addEventListener('change', handleFilter);
+    }
+
+    // 5. Automatic Modal Opening if target_pos_id is set
+    if (window.target_pos_id) {
+        window.openManageModal(window.target_pos_id);
     }
 });
 

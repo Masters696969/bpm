@@ -93,6 +93,8 @@ function initUserAccount() {
         if (shouldReset) {
             createUserForm.reset();
             document.getElementById("accountId").value = "";
+            const empRow = document.getElementById("employeeLinkRow");
+            if(empRow) empRow.style.display = "block";
         }
         modal.style.display = "flex";
         modal.classList.add("show");
@@ -141,6 +143,7 @@ function initUserAccount() {
             const confirmPassword = document.getElementById("confirmPassword").value;
             const rolesSelect = document.getElementById("roles");
             const accountStatus = document.getElementById("accountStatus").value;
+            const employeeId = document.getElementById("employeeId") ? document.getElementById("employeeId").value : "";
 
             const accountId = document.getElementById("accountId").value;
             const isEdit = !!accountId;
@@ -190,6 +193,9 @@ function initUserAccount() {
                     params.append("confirm_password", confirmPassword);
                 }
                 params.append("account_status", accountStatus);
+                if (employeeId) {
+                    params.append("employee_id", employeeId);
+                }
                 roles.forEach(roleId => {
                     params.append("roles[]", roleId);
                 });
@@ -286,6 +292,9 @@ function initUserAccount() {
 
                 document.getElementById("password").required = false;
                 document.getElementById("confirmPassword").required = false;
+
+                const empRow = document.getElementById("employeeLinkRow");
+                if(empRow) empRow.style.display = "none";
 
                 openModal(false);
             } else {

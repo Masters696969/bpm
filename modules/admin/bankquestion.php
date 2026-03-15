@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -11,13 +11,12 @@ if (!isset($_SESSION['username'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/competencycategory.css?v=1.2">
+  <link rel="stylesheet" href="../../css/bankquestion.css?v=1.2">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
 <body>
-
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -136,15 +135,15 @@ if (!isset($_SESSION['username'])) {
                 <i data-lucide="circle-gauge"></i>
                 <span>Competency Level</span>
               </a>
-                <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
+              <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
                 <i data-lucide="briefcase"></i>
                 <span>Competency Position</span>
               </a>
-               <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+              <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
                 <i data-lucide="square-user"></i>
                 <span>Competency Employee</span>
               </a>
-                <a href="bankquestion.php" class="submenu-item <?php echo ($page === 'bankquestion') ? 'active' : ''; ?>">
+              <a href="bankquestion.php" class="submenu-item <?php echo ($page === 'bankquestion') ? 'active' : ''; ?>">
                 <i data-lucide="book-open-check"></i>
                 <span>Bank Question</span>
               </a>
@@ -438,10 +437,10 @@ if (!isset($_SESSION['username'])) {
         <button class="mobile-menu-btn" id="mobileMenuBtn">
           <i data-lucide="menu"></i>
         </button>
-        <div class="header-title">
-          <h1>Dashboard Overview</h1>
-          <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?>! Here's what's happening today.</p>
-        </div>
+            <div class="header-title">
+              <h1>Question Bank</h1>
+              <p>Manage and organize assessment questions by competency.</p>
+            </div>
       </div>
       <div class="header-right">
                 <div class="header-clock">
@@ -458,142 +457,106 @@ if (!isset($_SESSION['username'])) {
     </header>
 
     <div class="content-wrapper">
-      <?php require_once __DIR__ . '/../../config/config.php'; ?>
-      
-      <div class="action-bar-cat">
-        <div class="ab-left-cat">
-          <h2>Category Management</h2>
-          <p>Define and organize the high-level groups for your competencies.</p>
+      <div class="bank-question-container">
+        <div class="action-bar">
+          <div class="ab-left">
+            <h2>Competency Question Bank</h2>
+            <p>Manage and organize assessment questions by competency.</p>
+          </div>
+          <div class="ab-right">
+            <button class="btn-primary" id="addQuestionBtn">
+              <i data-lucide="plus-circle"></i> Add New Question
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="text" id="questionSearch" placeholder="Search questions...">
+          </div>
+          <select id="categoryFilter" class="filter-select">
+            <option value="">All Categories</option>
+          </select>
+        </div>
+
+        <div class="questions-grid" id="questionsGrid">
+          <!-- Populated via JS -->
         </div>
       </div>
 
-      <div class="category-grid">
-        <table class="category-table-new">
-          <thead>
-            <tr>
-              <th style="width: 80px;">Icon</th>
-              <th>Category Name</th>
-              <th>Subtitle / focus</th>
-              <th style="width: 140px; text-align: center;">
-                <div class="th-actions-cat">
-                  <span>Actions</span>
-                  <button class="add-cat-btn-inline" id="addCategoryBtn" title="Add New Category">
-                    <i data-lucide="plus-circle"></i>
-                  </button>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-            $query = "SELECT * FROM competency_categories ORDER BY id ASC";
-            $result = $conn->query($query);
-            if ($result && $result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $catName = strtolower($row['name']);
-                    $displayIcon = 'folder'; // Default
-
-                    if (strpos($catName, 'common') !== false) $displayIcon = 'users';
-                    else if (strpos($catName, 'hr') !== false || strpos($catName, 'human') !== false) $displayIcon = 'user';
-                    else if (strpos($catName, 'finance') !== false || strpos($catName, 'accounting') !== false) $displayIcon = 'banknote';
-                    else if (strpos($catName, 'logistics') !== false) $displayIcon = 'truck';
-                    else if (strpos($catName, 'microfinance') !== false || strpos($catName, 'core') !== false) $displayIcon = 'landmark';
-                    else if (strpos($catName, 'admin') !== false) $displayIcon = 'briefcase';
-                    else if (strpos($catName, 'it') !== false || strpos($catName, 'tech') !== false) $displayIcon = 'monitor';
-                    else if (strpos($catName, 'leadership') !== false || strpos($catName, 'lead') !== false) $displayIcon = 'users';
-                    else if (strpos($catName, 'behavioral') !== false || strpos($catName, 'soft') !== false) $displayIcon = 'heart';
-            ?>
-            <tr data-category-id="<?php echo $row['id']; ?>">
-              <td>
-                <div class="cat-icon-display">
-                  <i data-lucide="<?php echo $displayIcon; ?>"></i>
-                </div>
-              </td>
-              <td><strong><?php echo htmlspecialchars($row['name']); ?></strong></td>
-              <td class="cat-subtitle-text"><?php echo htmlspecialchars($row['subtitle']); ?></td>
-              <td style="text-align: center;">
-                <div class="cat-actions">
-                  <button class="action-btn edit-btn-cat" title="Edit Category" 
-                          data-id="<?php echo $row['id']; ?>"
-                          data-name="<?php echo htmlspecialchars($row['name']); ?>"
-                          data-subtitle="<?php echo htmlspecialchars($row['subtitle']); ?>">
-                    <i data-lucide="settings"></i>
-                  </button>
-                  <button class="action-btn delete-btn-cat" title="Delete Category" 
-                          data-id="<?php echo $row['id']; ?>">
-                    <i data-lucide="trash-2"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <?php
-                }
-            } else {
-                echo '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-tertiary);">No competency categories found.</td></tr>';
-            }
-            ?>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Modals (Outside content-wrapper but inside main) -->
-    <div id="addCategoryModal" class="modal-overlay-cat">
-      <div class="modal-content-cat">
-        <div class="modal-header-cat">
-          <div class="mh-icon-cat"><i data-lucide="plus-circle"></i></div>
-          <div class="mh-info-cat">
-            <h3>Add Category</h3>
-            <span>Create a new department or skill group</span>
-          </div>
-          <button class="close-modal-cat" id="closeAddModal"><i data-lucide="x"></i></button>
+    <!-- Question Modal -->
+    <div id="questionModal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle">Add New Question</h3>
+          <button class="qc-btn" id="closeModal"><i data-lucide="x"></i></button>
         </div>
-        <form id="addCategoryForm" class="modal-form-cat">
-          <div class="form-group-cat">
-            <label>Category Name</label>
-            <input type="text" name="name" placeholder="e.g. Core Competencies" required>
-          </div>
-          <div class="form-group-cat">
-            <label>Subtitle / Description</label>
-            <input type="text" name="subtitle" placeholder="e.g. Fundamental skills for all staff" required>
-          </div>
-          <div class="modal-footer-cat">
-            <button type="button" class="btn-cancel-cat" id="cancelAdd">Cancel</button>
-            <button type="submit" class="btn-save-cat">Create Category</button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <form id="questionForm">
+          <div class="modal-body">
+            <input type="hidden" name="id" id="question_id">
+            
+            <div class="form-group">
+              <label>Target Competency</label>
+              <select name="competency_id" id="competency_id" class="form-control" required>
+                <option value="" disabled selected>Select Competency</option>
+                <!-- Populated via JS -->
+              </select>
+            </div>
 
-    <div id="editCategoryModal" class="modal-overlay-cat">
-      <div class="modal-content-cat">
-        <div class="modal-header-cat">
-          <div class="mh-icon-cat" style="background: rgba(52, 152, 219, 0.1); color: #3498db;"><i data-lucide="settings"></i></div>
-          <div class="mh-info-cat">
-            <h3>Edit Category</h3>
-            <span>Update group classification</span>
+            <div class="form-group">
+              <label>Question Text</label>
+              <textarea name="question_text" id="question_text" class="form-control" rows="3" required placeholder="Enter the assessment question here..."></textarea>
+            </div>
+
+            <!-- Multiple Choice Options -->
+            <div id="mc_options">
+              <div class="options-grid">
+                <div class="form-group">
+                  <label>Option A</label>
+                  <input type="text" name="option_a" id="opt_a" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>Option B</label>
+                  <input type="text" name="option_b" id="opt_b" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>Option C</label>
+                  <input type="text" name="option_c" id="opt_c" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>Option D</label>
+                  <input type="text" name="option_d" id="opt_d" class="form-control">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Correct Answer</label>
+                <select id="correct_mc" class="form-control" name="correct_answer">
+                  <option value="A">Option A</option>
+                  <option value="B">Option B</option>
+                  <option value="C">Option C</option>
+                  <option value="D">Option D</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Status</label>
+              <select name="is_active" id="is_active" class="form-control">
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </select>
+            </div>
           </div>
-          <button class="close-modal-cat" id="closeEditModal"><i data-lucide="x"></i></button>
-        </div>
-        <form id="editCategoryForm" class="modal-form-cat">
-          <input type="hidden" name="id" id="edit_cat_id">
-          <div class="form-group-cat">
-            <label>Category Name</label>
-            <input type="text" name="name" id="edit_cat_name" required>
-          </div>
-          <div class="form-group-cat">
-            <label>Subtitle / Description</label>
-            <input type="text" name="subtitle" id="edit_cat_subtitle" required>
-          </div>
-          <div class="modal-footer-cat">
-            <button type="button" class="btn-cancel-cat" id="cancelEdit">Cancel</button>
-            <button type="submit" class="btn-save-cat" style="background: #3498db;">Update Details</button>
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+            <button type="submit" class="btn-primary">Save Question</button>
           </div>
         </form>
       </div>
     </div>
   </main>
-  <script src="../../js/competencycategory.js"></script>
+  <script src="../../js/bankquestion.js"></script>
   <script>
     lucide.createIcons();
   </script>

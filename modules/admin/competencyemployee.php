@@ -11,7 +11,7 @@ if (!isset($_SESSION['username'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  <link rel="stylesheet" href="../../css/competencycategory.css?v=1.2">
+  <link rel="stylesheet" href="../../css/competencyemployee.css?v=1.2">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
@@ -136,7 +136,7 @@ if (!isset($_SESSION['username'])) {
                 <i data-lucide="circle-gauge"></i>
                 <span>Competency Level</span>
               </a>
-                <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
+              <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
                 <i data-lucide="briefcase"></i>
                 <span>Competency Position</span>
               </a>
@@ -460,76 +460,163 @@ if (!isset($_SESSION['username'])) {
     <div class="content-wrapper">
       <?php require_once __DIR__ . '/../../config/config.php'; ?>
       
-      <div class="action-bar-cat">
-        <div class="ab-left-cat">
-          <h2>Category Management</h2>
-          <p>Define and organize the high-level groups for your competencies.</p>
+      <!-- Stats Overview Section -->
+      <div class="stats-overview-emp">
+        <?php
+        // Fetch stats for cards with fallback logic
+        $total_employees = 0;
+        $total_assessments = 0;
+        $total_depts = 0;
+
+        // 1. Total Employees
+        $res = $conn->query("SELECT COUNT(*) FROM employee");
+        if($res) $total_employees = $res->fetch_row()[0];
+
+        // 2. Active Assessments
+        $res = $conn->query("SELECT COUNT(*) FROM employee_competencies");
+        if($res) $total_assessments = $res->fetch_row()[0];
+
+        // 3. Departments
+        $res = $conn->query("SELECT COUNT(DISTINCT DepartmentID) FROM department");
+        if($res) $total_depts = $res->fetch_row()[0];
+
+        $stats = [
+            'total_employees' => $total_employees,
+            'total_assessments' => $total_assessments,
+            'total_depts' => $total_depts
+        ];
+        ?>
+        <div class="stat-card-emp">
+          <div class="sc-icon-emp" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
+            <i data-lucide="users"></i>
+          </div>
+          <div class="sc-info-emp">
+            <span class="sc-label-emp">Total Employees</span>
+            <h3 class="sc-value-emp"><?php echo number_format($stats['total_employees'] ?? 0); ?></h3>
+          </div>
+        </div>
+
+        <div class="stat-card-emp">
+          <div class="sc-icon-emp" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">
+            <i data-lucide="award"></i>
+          </div>
+          <div class="sc-info-emp">
+            <span class="sc-label-emp">Active Assessments</span>
+            <h3 class="sc-value-emp" id="stat-active-assessments"><?php echo number_format($stats['total_assessments'] ?? 0); ?></h3>
+          </div>
+        </div>
+
+        <div class="stat-card-emp">
+          <div class="sc-icon-emp" style="background: rgba(155, 89, 182, 0.1); color: #9b59b6;">
+            <i data-lucide="building-2"></i>
+          </div>
+          <div class="sc-info-emp">
+            <span class="sc-label-emp">Departments</span>
+            <h3 class="sc-value-emp"><?php echo number_format($stats['total_depts'] ?? 0); ?></h3>
+          </div>
         </div>
       </div>
 
-      <div class="category-grid">
-        <table class="category-table-new">
+      <div class="action-bar-emp">
+        <div class="ab-left-emp">
+          <h2>Employee Competency Mapping</h2>
+          <p>Track and manage proficiency levels for organizational members.</p>
+        </div>
+        <div class="ab-right-emp">
+           <div class="search-filter-group">
+              <div class="search-box-emp">
+                <i data-lucide="search"></i>
+                <input type="text" id="employeeSearch" placeholder="Search employees...">
+              </div>
+              <select id="deptFilter" class="filter-select-emp">
+                <option value="">All Departments</option>
+                <?php
+                $depts = $conn->query("SELECT * FROM department ORDER BY DepartmentName ASC");
+                while($d = $depts->fetch_assoc()) {
+                    echo "<option value='".htmlspecialchars($d['DepartmentName'])."'>".htmlspecialchars($d['DepartmentName'])."</option>";
+                }
+                ?>
+              </select>
+           </div>
+        </div>
+      </div>
+
+      <div class="employee-grid">
+        <table class="employee-table" id="mainEmployeeTable">
           <thead>
             <tr>
-              <th style="width: 80px;">Icon</th>
-              <th>Category Name</th>
-              <th>Subtitle / focus</th>
-              <th style="width: 140px; text-align: center;">
-                <div class="th-actions-cat">
-                  <span>Actions</span>
-                  <button class="add-cat-btn-inline" id="addCategoryBtn" title="Add New Category">
-                    <i data-lucide="plus-circle"></i>
-                  </button>
-                </div>
-              </th>
+              <th>Employee</th>
+              <th>Department</th>
+              <th>Position</th>
+              <th style="width: 220px; text-align: center;">Assessment Status</th>
+              <th style="width: 140px; text-align: center;">Action</th>
             </tr>
           </thead>
           <tbody>
             <?php
-            $query = "SELECT * FROM competency_categories ORDER BY id ASC";
+            $query = "SELECT e.EmployeeID, e.FirstName, e.LastName, e.EmployeeCode, d.DepartmentName, p.PositionName, ei.DepartmentID,
+                             (SELECT COUNT(*) FROM employee_competencies ec WHERE ec.employee_id = e.EmployeeID) as total_comp
+                       FROM employee e
+                       LEFT JOIN employmentinformation ei ON e.EmployeeID = ei.EmployeeID
+                       LEFT JOIN department d ON ei.DepartmentID = d.DepartmentID
+                       LEFT JOIN positions p ON ei.PositionID = p.PositionID
+                       ORDER BY e.LastName ASC";
             $result = $conn->query($query);
             if ($result && $result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    $catName = strtolower($row['name']);
-                    $displayIcon = 'folder'; // Default
+                    $count = $row['total_comp'];
+                    $count_label = ($count > 0) ? "$count Competencies" : "No Assessments";
+                    $count_color = ($count > 0) ? 'var(--brand-green)' : '#94a3b8';
+                    
+                    $full_name = htmlspecialchars($row['LastName'] . ', ' . $row['FirstName']);
+                    $dept_name = htmlspecialchars($row['DepartmentName'] ?? 'No Dept');
+                    $pos_name = htmlspecialchars($row['PositionName'] ?? 'No Position');
+                    $dept_id = $row['DepartmentID'] ?? 0;
 
-                    if (strpos($catName, 'common') !== false) $displayIcon = 'users';
-                    else if (strpos($catName, 'hr') !== false || strpos($catName, 'human') !== false) $displayIcon = 'user';
-                    else if (strpos($catName, 'finance') !== false || strpos($catName, 'accounting') !== false) $displayIcon = 'banknote';
-                    else if (strpos($catName, 'logistics') !== false) $displayIcon = 'truck';
-                    else if (strpos($catName, 'microfinance') !== false || strpos($catName, 'core') !== false) $displayIcon = 'landmark';
-                    else if (strpos($catName, 'admin') !== false) $displayIcon = 'briefcase';
-                    else if (strpos($catName, 'it') !== false || strpos($catName, 'tech') !== false) $displayIcon = 'monitor';
-                    else if (strpos($catName, 'leadership') !== false || strpos($catName, 'lead') !== false) $displayIcon = 'users';
-                    else if (strpos($catName, 'behavioral') !== false || strpos($catName, 'soft') !== false) $displayIcon = 'heart';
+                    // Department Badge Colors (Modern Palette)
+                    $dept_clean = strtolower(trim($dept_name));
+                    $dept_color = '#64748b'; // Default gray
+                    if (strpos($dept_clean, 'finance') !== false) $dept_color = '#3498db';
+                    else if (strpos($dept_clean, 'hr') !== false || strpos($dept_clean, 'human') !== false) $dept_color = '#9b59b6';
+                    else if (strpos($dept_clean, 'microfinance') !== false || strpos($dept_clean, 'loan') !== false) $dept_color = '#2ecc71';
+                    else if (strpos($dept_clean, 'admin') !== false) $dept_color = '#f39c12';
             ?>
-            <tr data-category-id="<?php echo $row['id']; ?>">
-              <td>
-                <div class="cat-icon-display">
-                  <i data-lucide="<?php echo $displayIcon; ?>"></i>
+            <tr data-emp-name="<?php echo strtolower($full_name); ?>" 
+                data-dept-name="<?php echo $dept_name; ?>"
+                data-dept-id="<?php echo $dept_id; ?>">
+              <td class="emp-name-cell">
+                <div class="emp-icon-mini">
+                  <i data-lucide="user"></i>
+                </div>
+                <div class="emp-info-cell">
+                    <strong><?php echo $full_name; ?></strong>
+                    <span><?php echo htmlspecialchars($row['EmployeeCode']); ?></span>
                 </div>
               </td>
-              <td><strong><?php echo htmlspecialchars($row['name']); ?></strong></td>
-              <td class="cat-subtitle-text"><?php echo htmlspecialchars($row['subtitle']); ?></td>
+              <td>
+                <span class="dept-pill-emp" style="border-left: 3px solid <?php echo $dept_color; ?>;">
+                  <?php echo $dept_name; ?>
+                </span>
+              </td>
+              <td>
+                <span class="pos-label-emp"><?php echo $pos_name; ?></span>
+              </td>
               <td style="text-align: center;">
-                <div class="cat-actions">
-                  <button class="action-btn edit-btn-cat" title="Edit Category" 
-                          data-id="<?php echo $row['id']; ?>"
-                          data-name="<?php echo htmlspecialchars($row['name']); ?>"
-                          data-subtitle="<?php echo htmlspecialchars($row['subtitle']); ?>">
-                    <i data-lucide="settings"></i>
-                  </button>
-                  <button class="action-btn delete-btn-cat" title="Delete Category" 
-                          data-id="<?php echo $row['id']; ?>">
-                    <i data-lucide="trash-2"></i>
-                  </button>
-                </div>
+                <span id="status-badge-<?php echo $row['EmployeeID']; ?>" class="count-badge-emp v2" style="background: <?php echo $count_color; ?>10; color: <?php echo $count_color; ?>; border: 1px solid <?php echo $count_color; ?>20;">
+                  <i data-lucide="<?php echo ($count > 0) ? 'check-circle' : 'alert-circle'; ?>" style="width: 14px; height: 14px; margin-right: 6px;"></i>
+                  <span class="badge-text"><?php echo $count_label; ?></span>
+                </span>
+              </td>
+              <td style="text-align: center;">
+                <button class="view-manage-btn" onclick="openManageModal(<?php echo $row['EmployeeID']; ?>, '<?php echo addslashes($full_name); ?>', '<?php echo addslashes($dept_name); ?>', <?php echo $dept_id; ?>)">
+                  Manage
+                </button>
               </td>
             </tr>
             <?php
                 }
             } else {
-                echo '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-tertiary);">No competency categories found.</td></tr>';
+                echo '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-tertiary);">No employees found.</td></tr>';
             }
             ?>
           </tbody>
@@ -537,63 +624,108 @@ if (!isset($_SESSION['username'])) {
       </div>
     </div>
 
-    <!-- Modals (Outside content-wrapper but inside main) -->
-    <div id="addCategoryModal" class="modal-overlay-cat">
-      <div class="modal-content-cat">
-        <div class="modal-header-cat">
-          <div class="mh-icon-cat"><i data-lucide="plus-circle"></i></div>
-          <div class="mh-info-cat">
-            <h3>Add Category</h3>
-            <span>Create a new department or skill group</span>
+    <!-- Management Modal (Shows list of competencies for an employee) -->
+    <div id="manageCompetenciesModal" class="modal-overlay-emp">
+      <div class="modal-content-emp" style="max-width: 850px;">
+        <div class="modal-header-emp">
+          <div class="mh-icon-emp"><i data-lucide="user"></i></div>
+          <div class="mh-info-emp">
+            <h3 id="manageTitle">Employee Name</h3>
+            <span id="manageSubTitle">Department Name</span>
           </div>
-          <button class="close-modal-cat" id="closeAddModal"><i data-lucide="x"></i></button>
+          <button class="close-modal-emp" id="closeManageModal"><i data-lucide="x"></i></button>
         </div>
-        <form id="addCategoryForm" class="modal-form-cat">
-          <div class="form-group-cat">
-            <label>Category Name</label>
-            <input type="text" name="name" placeholder="e.g. Core Competencies" required>
+        
+        <div class="manage-body-emp">
+          <div class="manage-actions-emp">
+             <h4>Assigned Competencies</h4>
+             <button class="add-comp-inline-btn" id="openAddInlineBtn">
+               <i data-lucide="plus"></i> Assign New
+             </button>
           </div>
-          <div class="form-group-cat">
-            <label>Subtitle / Description</label>
-            <input type="text" name="subtitle" placeholder="e.g. Fundamental skills for all staff" required>
+
+          <table class="manage-details-table">
+            <thead>
+              <tr>
+                <th>Competency</th>
+                <th style="width: 180px; text-align: center;">Proficiency Level</th>
+                <th style="width: 150px; text-align: center;">Assessed At</th>
+                <th style="width: 100px; text-align: center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="manageTableBody">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+          <div class="pagination-container" id="managePagination">
+            <button type="button" class="btn-page" id="prevManagePage"><i data-lucide="chevron-left"></i></button>
+            <span class="page-info" id="managePageInfo">Page 1 of 1</span>
+            <button type="button" class="btn-page" id="nextManagePage"><i data-lucide="chevron-right"></i></button>
           </div>
-          <div class="modal-footer-cat">
-            <button type="button" class="btn-cancel-cat" id="cancelAdd">Cancel</button>
-            <button type="submit" class="btn-save-cat">Create Category</button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
 
-    <div id="editCategoryModal" class="modal-overlay-cat">
-      <div class="modal-content-cat">
-        <div class="modal-header-cat">
-          <div class="mh-icon-cat" style="background: rgba(52, 152, 219, 0.1); color: #3498db;"><i data-lucide="settings"></i></div>
-          <div class="mh-info-cat">
-            <h3>Edit Category</h3>
-            <span>Update group classification</span>
+    <!-- Add/Edit Inline Modal -->
+    <div id="inlineActionModal" class="modal-overlay-emp" style="z-index: 3000;">
+      <div class="modal-content-emp" style="max-width: 600px;">
+        <div class="modal-header-emp">
+          <div class="mh-icon-emp" id="inlineIcon"><i data-lucide="check-square"></i></div>
+          <div class="mh-info-emp">
+            <h3 id="inlineTitle">Assign Competency</h3>
+            <span>Select skill and proficiency level</span>
           </div>
-          <button class="close-modal-cat" id="closeEditModal"><i data-lucide="x"></i></button>
+          <button class="close-modal-emp" id="closeInlineModal"><i data-lucide="x"></i></button>
         </div>
-        <form id="editCategoryForm" class="modal-form-cat">
-          <input type="hidden" name="id" id="edit_cat_id">
-          <div class="form-group-cat">
-            <label>Category Name</label>
-            <input type="text" name="name" id="edit_cat_name" required>
+        <form id="inlineActionForm" class="modal-form-emp">
+          <input type="hidden" name="employee_id" id="inline_emp_id">
+          
+          <div class="form-group-emp">
+            <div class="checklist-table-wrapper">
+                <table class="checklist-table-emp">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px; text-align: center;">
+                                <div class="custom-chk-header" onclick="toggleSelectAllCompetencies()">
+                                    <i data-lucide="minus-square" id="selectAllIcon"></i>
+                                </div>
+                            </th>
+                            <th>Competency</th>
+                            <th style="width: 180px;">Required Level</th>
+                        </tr>
+                    </thead>
+                    <tbody id="checklistTableBody">
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="modal-pagination-emp">
+                <button type="button" class="btn-page-mini" id="prevCheckPage"><i data-lucide="chevron-left"></i></button>
+                <span id="checkPageInfo">Page 1 of 1</span>
+                <button type="button" class="btn-page-mini" id="nextCheckPage"><i data-lucide="chevron-right"></i></button>
+            </div>
           </div>
-          <div class="form-group-cat">
-            <label>Subtitle / Description</label>
-            <input type="text" name="subtitle" id="edit_cat_subtitle" required>
-          </div>
-          <div class="modal-footer-cat">
-            <button type="button" class="btn-cancel-cat" id="cancelEdit">Cancel</button>
-            <button type="submit" class="btn-save-cat" style="background: #3498db;">Update Details</button>
+
+          <!-- Proficiency levels data for JS -->
+          <script>
+            window.proficiencyLevels = <?php 
+                $levels_arr = [];
+                $all_levels = $conn->query("SELECT id, name FROM competency_levels ORDER BY id ASC");
+                while($l = $all_levels->fetch_assoc()) $levels_arr[] = $l;
+                echo json_encode($levels_arr);
+            ?>;
+          </script>
+
+          <div class="modal-footer-emp">
+            <button type="button" class="btn-cancel-emp" id="cancelInline">Cancel</button>
+            <button type="submit" class="btn-save-emp" id="inlineSubmitBtn">Save Assignment</button>
           </div>
         </form>
       </div>
     </div>
   </main>
-  <script src="../../js/competencycategory.js"></script>
+  <script src="../../js/competencyemployee.js"></script>
   <script>
     lucide.createIcons();
   </script>

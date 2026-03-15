@@ -30,7 +30,7 @@ try {
                 LEFT JOIN department d ON ei.DepartmentID = d.DepartmentID
                 LEFT JOIN positions p ON ei.PositionID = p.PositionID
                 LEFT JOIN salary_grades sg ON p.SalaryGradeID = sg.SalaryGradeID
-                ORDER BY e.LastName ASC";
+                ORDER BY e.EmployeeID DESC";
         
         $result = $conn->query($sql);
         

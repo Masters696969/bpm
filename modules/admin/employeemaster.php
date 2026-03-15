@@ -40,7 +40,7 @@ $module = 'corehumancapital';
  <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">ANALYTICS & REPORTING</span>
-        <a href="dashboard.php" class="nav-item active">
+        <a href="dashboard.php" class="nav-item <?php echo ($page === 'dashboard') ? 'active' : ''; ?>">
           <i data-lucide="layout-dashboard"></i>
           <span>HR ANALYTICS</span>
         </a>
@@ -364,7 +364,7 @@ $module = 'corehumancapital';
       </div>
 
   </main>
-  <script src="../../js/admin_employeemaster.js"></script>
+  <script src="../../js/employeemaster.js"></script>
   <script>
     lucide.createIcons();
     document.getElementById('empTableSearch')?.addEventListener('input', function() {

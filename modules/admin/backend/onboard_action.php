@@ -41,10 +41,11 @@ try {
     if (!$applicant) throw new Exception("Applicant not found");
 
     // 2. Fetch Position Code
-    $posStmt = $conn->prepare("SELECT PositionCode, DepartmentID FROM positions WHERE PositionID = ?");
+    $posStmt = $conn->prepare("SELECT PositionName, PositionCode, DepartmentID FROM positions WHERE PositionID = ?");
     $posStmt->bind_param("i", $positionId);
     $posStmt->execute();
     $posData = $posStmt->get_result()->fetch_assoc();
+    $rawPosName = $posData['PositionName'] ?? 'General Staff';
     $positionCode = $posData['PositionCode'] ?? 'EMP';
     $departmentId = $posData['DepartmentID'] ?? 1;
 
@@ -119,29 +120,28 @@ try {
     );
     $stmt->execute();
 
-    // 8. Insert into useraccounts (Insert 4: Automatic Account Activation with Patterned Password)
-    $username = strtolower($applicant['FirstName'] . '.' . $applicant['LastName']);
-    
-    // Generate Password Pattern: [PositionName]@12345
-    $rawPosName = $posData['PositionName'] ?? 'Employee';
-    $pClean = preg_replace('/[^A-Za-z0-9]/', '', ucwords(strtolower($rawPosName)));
-    $plainPassword = $pClean . "@12345";
-    $hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
-
-    $accountStmt = $conn->prepare("INSERT INTO useraccounts (EmployeeID, Username, Email, PasswordHash, IsVerified, AccountStatus) VALUES (?, ?, ?, ?, 1, 'Active')");
-    $accountStmt->bind_param("isss", 
-        $newEmployeeId, 
-        $username, 
-        $applicant['Email'], 
-        $hashedPassword
-    );
-    $accountStmt->execute();
-
-    // 9. Fetch Evaluation for Email
+    // 8. Fetch Evaluation for Email
     $evalStmt = $conn->prepare("SELECT AverageRating, Decision FROM interview_evaluations WHERE ApplicantID = ? ORDER BY CreatedAt DESC LIMIT 1");
     $evalStmt->bind_param("i", $applicantId);
     $evalStmt->execute();
     $evaluation = $evalStmt->get_result()->fetch_assoc();
+
+    // Calculate Performance Scores
+    $resumeScore = $applicant['ResumeScore'] ?? 0;
+    $interviewScore = $evaluation['AverageRating'] ?? 0;
+    $examScore = $applicant['ExamScore'] ?? 0;
+    
+    // Weighted Total Score (Formula from applicationmgt.php)
+    // Resume(20%) + Interview(40% scaled 0-5 -> 0-40) + Exam(40% scaled 0-15 -> 0-40)
+    $totalScore = ($resumeScore * 0.20) + ($interviewScore * 8) + ($examScore * 2.6667);
+    
+    $performanceData = [
+        'ResumeScore' => $resumeScore,
+        'InterviewScore' => $interviewScore,
+        'ExamScore' => $examScore,
+        'TotalScore' => round($totalScore, 2),
+        'Decision' => $evaluation['Decision'] ?? 'Approved'
+    ];
 
     // 10. Update Applicant Status to 'Hired'
     $statusStmt = $conn->prepare("UPDATE applicants SET Status = 'Accepted', ApprovalStatus = 'Hired' WHERE ApplicantID = ?");
@@ -154,15 +154,13 @@ try {
         $applicant['FirstName'] . ' ' . $applicant['LastName'],
         $rawPosName,
         $hiringDate,
-        $username,
-        $plainPassword,
-        $evaluation
+        $performanceData
     );
 
     $conn->commit();
     
     $emailMsg = $emailSent ? "\nHiring email sent to candidate." : "\nNote: Hiring email could not be sent (check mail config).";
-    echo json_encode(['success' => true, 'message' => "Onboarding successful!\nAccount: $username\nPassword: $plainPassword" . $emailMsg]);
+    echo json_encode(['success' => true, 'message' => "Onboarding successful! The employee record has been created.$emailMsg"]);
 
 } catch (Exception $e) {
     if ($conn) $conn->rollback();

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -28,7 +28,12 @@ $query = "
         jp.JobType AS PostType,
         jp.SalaryType AS PostSalaryType,
         jp.SalaryRange AS PostSalaryRange,
-        jp.Location AS PostLocation
+        jp.Location AS PostLocation,
+        p.JobDescription,
+        (SELECT GROUP_CONCAT(CONCAT(c.name, ': ', c.description) SEPARATOR '\n') 
+         FROM position_competencies pc 
+         JOIN competencies c ON pc.competency_id = c.id 
+         WHERE pc.position_id = p.PositionID) as Competencies
     FROM recruitment_requisitions r
     JOIN positions p ON r.PositionID = p.PositionID
     JOIN department d ON p.DepartmentID = d.DepartmentID
@@ -509,7 +514,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                             <span>View Live</span>
                                         </a>
                                     <?php else: ?>
-                                        <button class="btn-post" onclick="createJobPost(<?php echo $req['RequisitionID']; ?>, '<?php echo addslashes($req['PositionName']); ?>', '<?php echo addslashes($req['DepartmentName']); ?>', '<?php echo number_format($req['MinSalary'] / 1000, 0); ?>k - <?php echo number_format($req['MaxSalary'] / 1000, 0); ?>k')">
+                                      <button class="btn-post" onclick='createJobPost(<?php echo htmlspecialchars(json_encode([
+                                            "id" => $req["RequisitionID"],
+                                            "title" => $req["PositionName"],
+                                            "dept" => $req["DepartmentName"],
+                                            "salary" => number_format($req["MinSalary"] / 1000, 0) . "k - " . number_format($req["MaxSalary"] / 1000, 0) . "k",
+                                            "description" => $req["JobDescription"] ?? "",
+                                            "competencies" => $req["Competencies"] ?? ""
+                                        ]), ENT_QUOTES, "UTF-8"); ?>)'>
                                             <i data-lucide="megaphone" style="width: 16px; height: 16px;"></i>
                                             <span>Create Post</span>
                                         </button>
@@ -517,18 +529,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
                                     <?php if ($req['Status'] === 'Posted'): ?>
                                         <button class="btn-post" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2);" 
-                                            onclick="editJobPost({
-                                                id: <?php echo $req['RequisitionID']; ?>,
-                                                title: '<?php echo addslashes($req['PostTitle']); ?>',
-                                                dept: '<?php echo addslashes($req['DepartmentName']); ?>',
-                                                type: '<?php echo addslashes($req['PostType']); ?>',
-                                                salaryType: '<?php echo addslashes($req['PostSalaryType']); ?>',
-                                                salary: '<?php echo addslashes($req['PostSalaryRange']); ?>',
-                                                location: '<?php echo addslashes($req['PostLocation']); ?>',
-                                                desc: '<?php echo addslashes($req['PostDesc']); ?>',
-                                                resp: '<?php echo addslashes($req['PostResp']); ?>',
-                                                reqs: '<?php echo addslashes($req['PostReq']); ?>'
-                                            })">
+                                            onclick='editJobPost(<?php echo htmlspecialchars(json_encode([
+                                                "id" => $req["RequisitionID"],
+                                                "title" => $req["PostTitle"],
+                                                "dept" => $req["DepartmentName"],
+                                                "type" => $req["PostType"],
+                                                "salaryType" => $req["PostSalaryType"],
+                                                "salary" => $req["PostSalaryRange"],
+                                                "location" => $req["PostLocation"],
+                                                "desc" => $req["PostDesc"],
+                                                "resp" => $req["PostResp"],
+                                                "reqs" => $req["PostReq"]
+                                            ]), ENT_QUOTES, "UTF-8"); ?>)'>
                                             <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i>
                                             <span>Edit Post</span>
                                         </button>
@@ -608,12 +620,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
           </div>
 
           <div class="form-group" style="margin-bottom: 20px;">
-              <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Key Responsibilities (One per line)</label>
+              <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Skill Requirement (One per line)</label>
               <textarea id="modalResponsibilities" rows="4" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; resize: none;"></textarea>
           </div>
 
           <div class="form-group" style="margin-bottom: 30px;">
-              <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Requirements (One per line)</label>
+              <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Qualification</label>
               <textarea id="modalRequirements" rows="4" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; resize: none;"></textarea>
           </div>
 
@@ -631,23 +643,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     let currentReqId = null;
     let currentPosName = null;
 
-    function createJobPost(reqId, posName, deptName, salaryRange) {
-        currentReqId = reqId;
-        currentPosName = posName;
+    function createJobPost(data) {
+        currentReqId = data.id;
+        currentPosName = data.title;
         
         document.getElementById('postAction').value = 'save_job_post';
         document.getElementById('modalMainTitle').innerText = 'Create Official Job Posting';
         document.getElementById('modalSubmitBtn').innerText = 'Post Now';
 
-        document.getElementById('modalPosDisplay').value = posName;
-        document.getElementById('modalDeptDisplay').value = deptName;
-        document.getElementById('modalSalary').value = `₱${salaryRange}`;
+        document.getElementById('modalPosDisplay').value = data.title;
+        document.getElementById('modalDeptDisplay').value = data.dept;
+        document.getElementById('modalSalary').value = `₱${data.salary}`;
         document.getElementById('modalLocation').value = "Quezon City";
         
-        // Clear fields
-        document.getElementById('modalDescription').value = "";
-        document.getElementById('modalResponsibilities').value = "";
-        document.getElementById('modalRequirements').value = "";
+        // Pre-populate fields
+        document.getElementById('modalDescription').value = data.description || "";
+        document.getElementById('modalResponsibilities').value = data.competencies || ""; // Competencies moved to Skills
+        document.getElementById('modalRequirements').value = "Bachelor’s degree in a relevant field\nAt least 1–2 years of experience in a related field\nMinimum 3 years of work experience\nFresh graduates are welcome to apply\nRelevant professional certifications are an advantage but not required\nGood moral character and professional attitude"; // Default qualification
 
         document.getElementById('jobPostModal').style.display = 'flex';
         lucide.createIcons();
@@ -704,7 +716,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             Swal.fire({
                 icon: 'warning',
                 title: 'Missing Details',
-                text: 'Please fill in the description, responsibilities, and requirements.'
+                text: 'Please fill in the description, skills, and documentation requirements.'
             });
             return;
         }

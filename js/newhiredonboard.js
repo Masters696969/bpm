@@ -111,7 +111,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#2ca078',
-                confirmButtonText: 'Yes, Confirm'
+                confirmButtonText: 'Yes, Confirm',
+                customClass: { container: 'swal-z-index' }
             });
 
             if (result.isConfirmed) {
@@ -124,16 +125,56 @@ document.addEventListener("DOMContentLoaded", () => {
                     const data = await response.json();
 
                     if (data.success) {
-                        await Swal.fire('Success!', data.message, 'success');
+                        await Swal.fire({
+                            title: 'Success!',
+                            text: data.message,
+                            icon: 'success',
+                            customClass: { container: 'swal-z-index' }
+                        });
                         location.reload();
                     } else {
-                        Swal.fire('Error', data.message || 'Onboarding failed', 'error');
+                        Swal.fire({
+                            title: 'Error',
+                            text: data.message || 'Onboarding failed',
+                            icon: 'error',
+                            customClass: { container: 'swal-z-index' }
+                        });
                     }
                 } catch (error) {
-                    Swal.fire('Error', 'An unexpected error occurred.', 'error');
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'An unexpected error occurred.',
+                        icon: 'error',
+                        customClass: { container: 'swal-z-index' }
+                    });
                 }
             }
         });
+    }
+
+    // 5. Real-time Filtering Logic
+    const onboardSearch = document.getElementById("onboardSearch");
+    const onboardRows = document.querySelectorAll(".onboard-row");
+
+    if (onboardSearch) {
+        onboardSearch.addEventListener("input", () => {
+            const query = onboardSearch.value.toLowerCase();
+            onboardRows.forEach(row => {
+                const name = row.getAttribute("data-name").toLowerCase();
+                const email = row.getAttribute("data-email").toLowerCase();
+                const pos = row.getAttribute("data-pos").toLowerCase();
+                
+                if (name.includes(query) || email.includes(query) || pos.includes(query)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+
+        // Search Focus Effects
+        onboardSearch.addEventListener("focus", () => onboardSearch.style.borderColor = "var(--brand-green)");
+        onboardSearch.addEventListener("blur", () => onboardSearch.style.borderColor = "var(--border-color)");
     }
 
     if (typeof lucide !== "undefined") lucide.createIcons();

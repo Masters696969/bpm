@@ -50,30 +50,42 @@ function openModal(id) {
 
     const modalContent = document.getElementById('modalContent');
     modalContent.innerHTML = `
-                <div class="modal-header">
-                    <h2>${job.title}</h2>
-                    <div class="job-company">${job.company}</div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; color: var(--label-text-light); font-size: 0.9rem;">
-                        <span style="display: flex; align-items: center; gap: 0.3rem;"><i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> ${job.location}</span>
-                        <span style="display: flex; align-items: center; gap: 0.3rem;"><i data-lucide="banknote" style="width: 14px; height: 14px;"></i> ${job.salary} / ${job.salaryType}</span>
-                        <span style="display: flex; align-items: center; gap: 0.3rem;"><i data-lucide="file-text" style="width: 14px; height: 14px;"></i> ${job.type}</span>
+                <div class="minimal-modal-header">
+                    <div class="header-main-info">
+                        <h2>${job.title}</h2>
+                        <div class="company-badge-minimal">${job.company}</div>
+                    </div>
+                    <div class="header-meta-grid">
+                        <div class="meta-pill"><i data-lucide="map-pin"></i> ${job.location}</div>
+                        <div class="meta-pill"><i data-lucide="banknote"></i> ${job.salary} <small>/ ${job.salaryType}</small></div>
+                        <div class="meta-pill"><i data-lucide="briefcase"></i> ${job.type}</div>
                     </div>
                 </div>
-                <div class="modal-body">
-                    <h4>About the Role</h4>
-                    <p style="color: var(--label-text-light); line-height: 1.6;">${job.description}</p>
+                <div class="minimal-modal-body">
+                    <section class="modal-section-minimal">
+                        <h3>Overview</h3>
+                        <p>${job.description}</p>
+                    </section>
                     
-                    <h4>Responsibilities</h4>
-                    <ul>
-                        ${job.responsibilities.map(r => `<li>${r}</li>`).join('')}
-                    </ul>
+                    <div class="qual-grid-minimal">
+                        <section class="modal-section-minimal">
+                            <h3>Key Responsibilities</h3>
+                            <ul class="sleek-list">
+                                ${job.responsibilities.map(r => `<li>${r}</li>`).join('')}
+                            </ul>
+                        </section>
+                        
+                        <section class="modal-section-minimal">
+                            <h3>Qualifications</h3>
+                            <ul class="sleek-list">
+                                ${job.requirements.map(r => `<li>${r}</li>`).join('')}
+                            </ul>
+                        </section>
+                    </div>
                     
-                    <h4>Requirements</h4>
-                    <ul>
-                        ${job.requirements.map(r => `<li>${r}</li>`).join('')}
-                    </ul>
-                    
-                    <a href="apply.php?id=${job.id}" class="btn-apply" style="display: block; text-align: center; text-decoration: none;">Apply for this Position</a>
+                    <div class="modal-footer-minimal">
+                        <a href="apply.php?id=${job.id}" class="btn-apply-minimal">Proceed and Apply</a>
+                    </div>
                 </div>
             `;
     document.getElementById('jobModal').style.display = 'flex';

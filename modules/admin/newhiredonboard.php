@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once '../../config/config.php';
 session_start();
 if (!isset($_SESSION['username'])) {
@@ -11,8 +11,8 @@ $sql = "SELECT a.*, j.Title as PositionName, j.SalaryType, p.PositionID, p.Posit
         FROM applicants a 
         LEFT JOIN job_postings j ON a.PostID = j.PostID
         LEFT JOIN positions p ON j.Title = p.PositionName
-        WHERE a.Status = 'Accepted' AND a.ApprovalStatus = 'Approved'
-        ORDER BY a.AppliedAt DESC";
+        WHERE a.Status = 'Accepted' AND a.ApprovalStatus IN ('Approved', 'Hired')
+        ORDER BY FIELD(a.ApprovalStatus, 'Approved', 'Hired'), a.AppliedAt DESC";
 $applicants = $conn->query($sql);
 
 // Fetch Positions for Dropdown
@@ -298,25 +298,60 @@ $nextEmployeeCode = "ADM" . date('Y') . str_pad($nextId, 4, '0', STR_PAD_LEFT);
     <div class="content-wrapper">
       <div class="onboard-container">
 
-        <div class="onboard-grid">
-            <?php if (isset($applicants) && $applicants && $applicants->num_rows > 0): ?>
-                <?php while($row = $applicants->fetch_assoc()): 
-                    $initials = strtoupper(substr($row['FirstName'], 0, 1) . substr($row['LastName'], 0, 1));
-                ?>
-                    <div class="onboard-card">
-                        <div class="oc-header">
-                            <div class="oc-avatar"><?php echo $initials; ?></div>
-                            <div class="oc-info">
-                                <h3><?php echo htmlspecialchars($row['FirstName'] . ' ' . $row['LastName']); ?></h3>
-                                <div class="oc-badge"><i data-lucide="briefcase"></i> <?php echo htmlspecialchars($row['PositionName']); ?></div>
+        <div class="onboard-card">
+          <div class="card-header-table" style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h3 class="card-title">Pending Onboarding</h3>
+              <p class="card-subtitle">Candidates waiting for final profile setup and employee ID generation.</p>
+            </div>
+            <div class="header-search-container" style="position:relative; width:280px;">
+              <i data-lucide="search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; color:var(--text-tertiary);"></i>
+              <input type="text" id="onboardSearch" placeholder="Search candidate..." style="width:100%; padding:10px 12px 10px 38px; border-radius:10px; border:1px solid var(--border-color); background:var(--background); color:var(--text-primary); font-size:13px; outline:none; transition:all 0.2s ease;">
+            </div>
+          </div>
+          <div class="card-body-table" style="padding:0;">
+            <div class="table-responsive">
+              <table class="onboard-table">
+                <thead>
+                  <tr>
+                    <th>Candidate</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Position</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php if (isset($applicants) && $applicants && $applicants->num_rows > 0): ?>
+                    <?php while($row = $applicants->fetch_assoc()): 
+                        $initials = strtoupper(substr($row['FirstName'], 0, 1) . substr($row['LastName'], 0, 1));
+                    ?>
+                      <tr class="onboard-row" data-name="<?php echo htmlspecialchars($row['FirstName'] . ' ' . $row['LastName']); ?>" data-email="<?php echo htmlspecialchars($row['Email']); ?>" data-pos="<?php echo htmlspecialchars($row['PositionName']); ?>">
+                        <td>
+                          <div style="display:flex; align-items:center; gap:12px;">
+                            <div class="oc-avatar" style="width:32px; height:32px; font-size:11px;"><?php echo $initials; ?></div>
+                            <div>
+                                <div style="font-weight:600; color:var(--text-primary);"><?php echo htmlspecialchars($row['FirstName'] . ' ' . $row['LastName']); ?></div>
+                                <div style="font-size:11px; color:var(--text-tertiary);">Applied via Recruitment Portal</div>
                             </div>
-                        </div>
-                        <div class="oc-content">
-                            <div class="oc-item"><i data-lucide="mail"></i> <span><?php echo htmlspecialchars($row['Email']); ?></span></div>
-                            <div class="oc-item"><i data-lucide="phone"></i> <span><?php echo htmlspecialchars($row['Phone']); ?></span></div>
-                        </div>
-                        <div class="oc-actions">
-                            <button class="btn-finalize" data-id="<?php echo $row['ApplicantID']; ?>" 
+                          </div>
+                        </td>
+                        <td style="font-size:13px; color:var(--text-secondary);"><?php echo htmlspecialchars($row['Email']); ?></td>
+                        <td style="font-size:13px; color:var(--text-secondary);"><?php echo htmlspecialchars($row['Phone']); ?></td>
+                        <td>
+                          <div class="oc-badge" style="display:inline-flex; border-radius:6px; padding:4px 8px; font-size:11px;">
+                            <i data-lucide="briefcase" style="width:12px; margin-right:4px;"></i> 
+                            <?php echo htmlspecialchars($row['PositionName']); ?>
+                          </div>
+                        </td>
+                        <td>
+                          <?php if($row['ApprovalStatus'] === 'Hired'): ?>
+                            <div style="display:inline-flex; align-items:center; gap:6px; color:var(--brand-green); background:rgba(44, 160, 120, 0.05); padding:6px 14px; border-radius:10px; font-size:11px; font-weight:700; border:1px solid rgba(44, 160, 120, 0.1);">
+                                <i data-lucide="check-circle" style="width:14px;"></i>
+                                <span>Hired</span>
+                            </div>
+                          <?php else: ?>
+                            <button class="btn-finalize action-btn-table" data-id="<?php echo $row['ApplicantID']; ?>" 
                                     data-first="<?php echo htmlspecialchars($row['FirstName']); ?>" 
                                     data-last="<?php echo htmlspecialchars($row['LastName']); ?>"
                                     data-email="<?php echo htmlspecialchars($row['Email']); ?>"
@@ -328,20 +363,30 @@ $nextEmployeeCode = "ADM" . date('Y') . str_pad($nextId, 4, '0', STR_PAD_LEFT);
                                     data-pos_id="<?php echo $row['PositionID']; ?>"
                                     data-pos_code="<?php echo htmlspecialchars($row['PositionCode'] ?? ''); ?>"
                                     data-grade_id="<?php echo $row['DefaultGradeID']; ?>"
-                                    data-salary_type="<?php echo htmlspecialchars($row['SalaryType'] ?? 'Monthly'); ?>">
-                                <i data-lucide="user-plus"></i>
+                                    data-salary_type="<?php echo htmlspecialchars($row['SalaryType'] ?? 'Monthly'); ?>"
+                                    style="background:var(--brand-green); color:white; border:none; padding:6px 14px; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all 0.2s ease;">
+                                <i data-lucide="user-plus" style="width:14px;"></i>
                                 <span>Finalize Profile</span>
                             </button>
+                          <?php endif; ?>
+                        </td>
+                      </tr>
+                    <?php endwhile; ?>
+                  <?php else: ?>
+                    <tr>
+                      <td colspan="5" style="text-align:center; padding:60px;">
+                        <div class="empty-state">
+                            <div class="empty-icon"><i data-lucide="users"></i></div>
+                            <h3>No candidates waiting</h3>
+                            <p>All approved candidates have been processed for onboarding.</p>
                         </div>
-                    </div>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <div class="empty-state">
-                    <div class="empty-icon"><i data-lucide="users"></i></div>
-                    <h3>No candidates waiting</h3>
-                    <p>All approved candidates have been processed for onboarding.</p>
-                </div>
-            <?php endif; ?>
+                      </td>
+                    </tr>
+                  <?php endif; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
 

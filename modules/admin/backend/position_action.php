@@ -36,7 +36,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $conn->commit();
-            echo json_encode(['success' => true, 'message' => 'Competencies synced successfully!']);
+            
+            // Fetch new count for live update
+            $cntQuery = $conn->prepare("SELECT COUNT(*) as new_cnt FROM position_competencies WHERE position_id = ?");
+            $cntQuery->bind_param("i", $pos_id);
+            $cntQuery->execute();
+            $new_count = $cntQuery->get_result()->fetch_assoc()['new_cnt'];
+
+            echo json_encode(['success' => true, 'message' => 'Competencies synced successfully!', 'new_count' => $new_count]);
         } catch (Exception $e) {
             $conn->rollback();
             echo json_encode(['success' => false, 'message' => 'Error saving assignments: ' . $e->getMessage()]);
@@ -51,11 +58,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
+        // Get position_id before deleting
+        $posQuery = $conn->prepare("SELECT position_id FROM position_competencies WHERE id = ?");
+        $posQuery->bind_param("i", $id);
+        $posQuery->execute();
+        $pos_id = $posQuery->get_result()->fetch_assoc()['position_id'] ?? 0;
+
         $stmt = $conn->prepare("DELETE FROM position_competencies WHERE id = ?");
         $stmt->bind_param("i", $id);
 
         if ($stmt->execute()) {
-            echo json_encode(['success' => true, 'message' => 'Mapping removed successfully!']);
+            $new_count = 0;
+            if ($pos_id) {
+                $cntQuery = $conn->prepare("SELECT COUNT(*) as new_cnt FROM position_competencies WHERE position_id = ?");
+                $cntQuery->bind_param("i", $pos_id);
+                $cntQuery->execute();
+                $new_count = $cntQuery->get_result()->fetch_assoc()['new_cnt'];
+            }
+            echo json_encode(['success' => true, 'message' => 'Mapping removed successfully!', 'new_count' => $new_count]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Error removing mapping: ' . $conn->error]);
         }
@@ -101,12 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Fetch ALL Available Competencies for this Department (or Common)
-        // Link via categories.department_id
-        $availQuery = "SELECT c.id, c.name 
+        // Ordered by Dept-Specific first, then Common
+        $availQuery = "SELECT c.id, c.name, cat.department_id as comp_dept_id 
                        FROM competencies c
                        JOIN competency_categories cat ON c.category_id = cat.id
-                       WHERE cat.department_id = ? OR cat.department_id IS NULL
-                       ORDER BY c.name ASC";
+                       WHERE cat.department_id = ? OR cat.department_id IS NULL OR cat.department_id = 0
+                       ORDER BY (cat.department_id IS NOT NULL AND cat.department_id != 0) DESC, c.name ASC";
         $stmtA = $conn->prepare($availQuery);
         $stmtA->bind_param("i", $dept_id);
         $stmtA->execute();

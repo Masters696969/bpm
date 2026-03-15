@@ -19,11 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $authorized = $_POST['authorized_headcount'] ?? 1;
 
     if (!empty($posName) && !empty($deptId) && !empty($gradeId)) {
-        $stmt = $conn->prepare("INSERT INTO positions (PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssiii", $posName, $posCode, $deptId, $gradeId, $authorized);
+        $description = $_POST['job_description'] ?? '';
+        $stmt = $conn->prepare("INSERT INTO positions (PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount, JobDescription) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssiiis", $posName, $posCode, $deptId, $gradeId, $authorized, $description);
         
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Position Created! The new role '$posName' is now live in the catalog.";
+            $_SESSION['success_message'] = "Position Created successfully!";
+            header("Location: positioncatalog.php");
+            exit();
         } else {
             $_SESSION['error_message'] = "Error adding position: " . $conn->error;
         }
@@ -44,8 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $requestedBy = $_SESSION['username'] ?? 'System';
 
     if (!empty($posId) && !empty($posName)) {
-        $stmt = $conn->prepare("INSERT INTO position_requests (RequestType, TargetPositionID, PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount, RequestedBy, Status) VALUES ('Update', ?, ?, ?, ?, ?, ?, ?, 'Pending')");
-        $stmt->bind_param("issiiis", $posId, $posName, $posCode, $deptId, $gradeId, $authorized, $requestedBy);
+        $description = $_POST['job_description'] ?? '';
+        $stmt = $conn->prepare("INSERT INTO position_requests (RequestType, TargetPositionID, PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount, JobDescription, RequestedBy, Status) VALUES ('Update', ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')");
+        $stmt->bind_param("issiiiss", $posId, $posName, $posCode, $deptId, $gradeId, $authorized, $description, $requestedBy);
         
         if ($stmt->execute()) {
             $_SESSION['success_message'] = "Change request for '$posName' has been submitted for approval.";
@@ -64,11 +68,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $posName = $_POST['position_name'] ?? '';
 
     if (!empty($posId)) {
+        // First delete associated competencies to avoid foreign key constraint error
+        $stmt_comp = $conn->prepare("DELETE FROM position_competencies WHERE position_id = ?");
+        $stmt_comp->bind_param("i", $posId);
+        $stmt_comp->execute();
+        $stmt_comp->close();
+
         $stmt = $conn->prepare("DELETE FROM positions WHERE PositionID = ?");
         $stmt->bind_param("i", $posId);
         
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Position Deleted! '$posName' has been removed from the catalog.";
+            $_SESSION['success_message'] = "Position Deleted! '$posName' and its linked requirements have been removed.";
         } else {
             $_SESSION['error_message'] = "Error deleting position: " . $conn->error;
         }
@@ -155,7 +165,9 @@ while ($row = $gradesResult->fetch_assoc()) {
 // Fetch positions with vacancy priority and recruitment status
 $sql = "SELECT p.*, d.DepartmentName, sg.GradeName,
         (SELECT COUNT(*) FROM employmentinformation ei WHERE ei.PositionID = p.PositionID) as CurrentHeadcount,
-        (SELECT COUNT(*) FROM recruitment_requisitions rr WHERE rr.PositionID = p.PositionID AND rr.Status IN ('Pending', 'Active', 'Posted')) as HasRequisition
+        (SELECT COUNT(*) FROM recruitment_requisitions rr WHERE rr.PositionID = p.PositionID AND rr.Status IN ('Pending', 'Active', 'Posted')) as HasRequisition,
+        (SELECT COUNT(*) FROM position_competencies pc WHERE pc.position_id = p.PositionID) as CompCount,
+        p.JobDescription
         FROM positions p
         JOIN department d ON p.DepartmentID = d.DepartmentID
         JOIN salary_grades sg ON p.SalaryGradeID = sg.SalaryGradeID";
@@ -563,7 +575,7 @@ while ($row = $positionsResult->fetch_assoc()) {
                                                   code: '<?php echo addslashes($pos['PositionCode'] ?? ''); ?>',
                                                   deptId: <?php echo $pos['DepartmentID']; ?>,
                                                   gradeId: <?php echo $pos['SalaryGradeID']; ?>,
-                                                  auth: <?php echo $pos['AuthorizedHeadcount']; ?>
+                                                  auth: <?php echo $pos['AuthorizedHeadcount']; ?>, description: '<?php echo addslashes($pos['JobDescription'] ?? ''); ?>'
                                               })" title="Manage Position">
                                                   <i data-lucide="settings"></i>
                                               </button>
@@ -589,6 +601,7 @@ while ($row = $positionsResult->fetch_assoc()) {
           <input type="hidden" name="department_id" id="formDeptId">
           <input type="hidden" name="grade_id" id="formGradeId">
           <input type="hidden" name="authorized_headcount" id="formAuthHeadcount">
+          <input type="hidden" name="job_description" id="formJobDescription">
       </form>
 
       <!-- Hidden Form for Update Position -->
@@ -600,6 +613,7 @@ while ($row = $positionsResult->fetch_assoc()) {
           <input type="hidden" name="department_id" id="updateDeptId">
           <input type="hidden" name="grade_id" id="updateGradeId">
           <input type="hidden" name="authorized_headcount" id="updateAuthHeadcount">
+          <input type="hidden" name="job_description" id="updateJobDescription">
       </form>
 
     <form id="deletePositionForm" method="POST" style="display: none;">

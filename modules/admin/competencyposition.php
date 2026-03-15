@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -140,8 +140,21 @@ if (!isset($_SESSION['username'])) {
                 <i data-lucide="briefcase"></i>
                 <span>Competency Position</span>
               </a>
+               <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+                <i data-lucide="square-user"></i>
+                <span>Competency Employee</span>
+              </a>
+                <a href="bankquestion.php" class="submenu-item <?php echo ($page === 'bankquestion') ? 'active' : ''; ?>">
+                <i data-lucide="book-open-check"></i>
+                <span>Bank Question</span>
+              </a>
             </div>
         </div>
+
+        <!-- Automatic Modal Redirect Logic -->
+        <script>
+            window.target_pos_id = <?php echo isset($_GET['pos_id']) ? (int)$_GET['pos_id'] : 'null'; ?>;
+        </script>
          <div class="nav-item-group <?php echo ($module === 'training') ? 'active' : ''; ?>">
             <button class="nav-item has-submenu" data-module="training">
               <div class="nav-item-content">
@@ -534,7 +547,7 @@ if (!isset($_SESSION['username'])) {
                              (SELECT COUNT(*) FROM position_competencies pc WHERE pc.position_id = p.PositionID) as total_comp
                        FROM positions p
                        JOIN department d ON p.DepartmentID = d.DepartmentID
-                       ORDER BY p.PositionName ASC";
+                       ORDER BY p.PositionID DESC";
             $result = $conn->query($query);
             if ($result && $result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
@@ -550,7 +563,8 @@ if (!isset($_SESSION['username'])) {
                     else if (strpos($dept_clean, 'microfinance') !== false || strpos($dept_clean, 'loan') !== false) $dept_color = '#2ecc71';
                     else if (strpos($dept_clean, 'admin') !== false) $dept_color = '#f39c12';
             ?>
-            <tr data-pos-name="<?php echo strtolower(htmlspecialchars($row['PositionName'])); ?>" 
+            <tr id="row-pos-<?php echo $row['PositionID']; ?>"
+                data-pos-name="<?php echo strtolower(htmlspecialchars($row['PositionName'])); ?>" 
                 data-dept-name="<?php echo htmlspecialchars($row['DepartmentName']); ?>">
               <td class="pos-name-cell">
                 <div class="pos-icon-mini">
