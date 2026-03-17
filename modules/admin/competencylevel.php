@@ -4,6 +4,9 @@ if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
     exit();
 }
+
+$page = 'competencylevel';
+$module = 'competency';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -132,13 +135,21 @@ if (!isset($_SESSION['username'])) {
                 <i data-lucide="chart-bar-stacked"></i>
                 <span>Competency Category</span>
               </a>
-              <a href="competencylevel.php" class="submenu-item <?php echo ($page === 'competencylevel') ? 'active' : ''; ?>">
+               <a href="competencylevel.php" class="submenu-item <?php echo ($page === 'competencylevel') ? 'active' : ''; ?>">
                 <i data-lucide="circle-gauge"></i>
                 <span>Competency Level</span>
               </a>
-                <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
+              <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
                 <i data-lucide="briefcase"></i>
                 <span>Competency Position</span>
+              </a>
+              <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+                <i data-lucide="square-user"></i>
+                <span>Competency Employee</span>
+              </a>
+                <a href="bankquestion.php" class="submenu-item <?php echo ($page === 'bankquestion') ? 'active' : ''; ?>">
+                <i data-lucide="book-open-check"></i>
+                <span>Bank Question</span>
               </a>
             </div>
         </div>
@@ -309,6 +320,10 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
+           <a href="comintake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Master Data Intake</span>
+            </a>
             <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
@@ -318,8 +333,12 @@ if (!isset($_SESSION['username'])) {
               <span>Statutory Contributions</span>
             </a>
             <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
-              <i data-lucide="scale"></i>
+              <i data-lucide="percent"></i>
               <span>Merit Matrix Structure</span>
+            </a>
+            <a href="allowance.php" class="submenu-item <?php echo ($page === 'allowance') ? 'active' : ''; ?>">
+              <i data-lucide="gift"></i>
+              <span>Allowance Structure</span>
             </a>
             <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
               <i data-lucide="notebook-pen"></i>
@@ -355,10 +374,6 @@ if (!isset($_SESSION['username'])) {
           </div>
         </div>
         </div>
-       
-
-      
-
         <div class="nav-section">
         <span class="nav-section-title">FINANCE</span>
         
@@ -591,6 +606,21 @@ if (!isset($_SESSION['username'])) {
   </main>
   <script src="../../js/competencylevel.js"></script>
   <script>
+    // Fix table headers for dark mode
+    const style = document.createElement('style');
+    style.textContent = `
+      body.dark-mode .level-table-new th {
+        background: #374151 !important;
+        color: #f3f4f6 !important;
+        border-color: #4b5563 !important;
+      }
+      
+      body.dark-mode .level-table-new thead {
+        background: #374151 !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
     lucide.createIcons();
   </script>
 </body>

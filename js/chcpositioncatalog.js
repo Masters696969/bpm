@@ -90,6 +90,10 @@ function launchManagePositionModal(pos) {
                     <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-secondary);">Authorized Headcount</label>
                     <input id="swalManageAuth" type="number" class="swal2-input" value="${pos.auth}" min="1" style="margin: 0; width: 100%;">
                 </div>
+                <div class="swal-field" style="margin-top: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-secondary);">Job Description</label>
+                    <textarea id="swalManageDescription" class="swal2-textarea" style="margin: 0; width: 100%; height: 100px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--surface); color: var(--text-primary); font-family: inherit;">${pos.description || ''}</textarea>
+                </div>
                 <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                     <span style="font-size: 12px; color: var(--text-tertiary);">Dangerous Action:</span>
                     <button type="button" onclick="confirmDeletePosition(${pos.id}, '${pos.name.replace(/'/g, "\\'")}')" 
@@ -113,12 +117,13 @@ function launchManagePositionModal(pos) {
             const deptId = document.getElementById('swalManageDept').value;
             const gradeId = document.getElementById('swalManageGrade').value;
             const auth = document.getElementById('swalManageAuth').value;
+            const description = document.getElementById('swalManageDescription').value;
 
             if (!name) {
                 Swal.showValidationMessage('Please enter a position name');
                 return false;
             }
-            return { name, code, deptId, gradeId, auth };
+            return { name, code, deptId, gradeId, auth, description };
         }
     }).then((result) => {
         if (result.isConfirmed) {
@@ -136,6 +141,7 @@ function launchManagePositionModal(pos) {
             document.getElementById('updateDeptId').value = result.value.deptId;
             document.getElementById('updateGradeId').value = result.value.gradeId;
             document.getElementById('updateAuthHeadcount').value = result.value.auth;
+            document.getElementById('updateJobDescription').value = result.value.description;
             document.getElementById('updatePositionForm').submit();
         }
     });
@@ -204,6 +210,10 @@ function launchAddPositionModal() {
                     <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-secondary);">Authorized Headcount</label>
                     <input id="swalAuthHeadcount" type="number" class="swal2-input" value="1" min="1" style="margin: 0; width: 100%;">
                 </div>
+                <div class="swal-field" style="margin-top: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-secondary);">Job Description</label>
+                    <textarea id="swalJobDescription" class="swal2-textarea" placeholder="Describe the roles and responsibilities..." style="margin: 0; width: 100%; height: 100px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--surface); color: var(--text-primary); font-family: inherit;"></textarea>
+                </div>
             </div>
         `,
         showCancelButton: true,
@@ -216,12 +226,13 @@ function launchAddPositionModal() {
             const deptId = document.getElementById('swalDeptId').value;
             const gradeId = document.getElementById('swalGradeId').value;
             const auth = document.getElementById('swalAuthHeadcount').value;
+            const description = document.getElementById('swalJobDescription').value;
 
             if (!name) {
                 Swal.showValidationMessage('Please enter a position name');
                 return false;
             }
-            return { name, code, deptId, gradeId, auth };
+            return { name, code, deptId, gradeId, auth, description };
         }
     }).then((result) => {
         if (result.isConfirmed) {
@@ -238,6 +249,7 @@ function launchAddPositionModal() {
             document.getElementById('formDeptId').value = result.value.deptId;
             document.getElementById('formGradeId').value = result.value.gradeId;
             document.getElementById('formAuthHeadcount').value = result.value.auth;
+            document.getElementById('formJobDescription').value = result.value.description;
             document.getElementById('addPositionForm').submit();
         }
     });

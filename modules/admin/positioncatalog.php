@@ -17,13 +17,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $deptId = $_POST['department_id'] ?? '';
     $gradeId = $_POST['grade_id'] ?? '';
     $authorized = $_POST['authorized_headcount'] ?? 1;
+    $description = $_POST['job_description'] ?? '';
 
     if (!empty($posName) && !empty($deptId) && !empty($gradeId)) {
-        $stmt = $conn->prepare("INSERT INTO positions (PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssiii", $posName, $posCode, $deptId, $gradeId, $authorized);
+        $stmt = $conn->prepare("INSERT INTO positions (PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount, JobDescription) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssiiis", $posName, $posCode, $deptId, $gradeId, $authorized, $description);
         
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Position Created! The new role '$posName' is now live in the catalog.";
+            $_SESSION['success_message'] = "Position Created successfully!";
+            header("Location: positioncatalog.php");
+            exit();
         } else {
             $_SESSION['error_message'] = "Error adding position: " . $conn->error;
         }
@@ -33,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit();
 }
 
-// Handle Update Position (Redirect to Requests)
+// Handle Update Position (Direct Update)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_position') {
     $posId = $_POST['position_id'] ?? '';
     $posName = $_POST['position_name'] ?? '';
@@ -41,16 +44,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $deptId = $_POST['department_id'] ?? '';
     $gradeId = $_POST['grade_id'] ?? '';
     $authorized = $_POST['authorized_headcount'] ?? 1;
-    $requestedBy = $_SESSION['username'] ?? 'System';
+    $description = $_POST['job_description'] ?? '';
 
     if (!empty($posId) && !empty($posName)) {
-        $stmt = $conn->prepare("INSERT INTO position_requests (RequestType, TargetPositionID, PositionName, PositionCode, DepartmentID, SalaryGradeID, AuthorizedHeadcount, RequestedBy, Status) VALUES ('Update', ?, ?, ?, ?, ?, ?, ?, 'Pending')");
-        $stmt->bind_param("issiiis", $posId, $posName, $posCode, $deptId, $gradeId, $authorized, $requestedBy);
+        $stmt = $conn->prepare("UPDATE positions SET PositionName = ?, PositionCode = ?, DepartmentID = ?, SalaryGradeID = ?, AuthorizedHeadcount = ?, JobDescription = ? WHERE PositionID = ?");
+        $stmt->bind_param("ssiiiis", $posName, $posCode, $deptId, $gradeId, $authorized, $description, $posId);
         
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Change request for '$posName' has been submitted for approval.";
+            $_SESSION['success_message'] = "Position '$posName' updated successfully!";
         } else {
-            $_SESSION['error_message'] = "Error submitting update request: " . $conn->error;
+            $_SESSION['error_message'] = "Error updating position: " . $conn->error;
         }
         $stmt->close();
     }
@@ -64,11 +67,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $posName = $_POST['position_name'] ?? '';
 
     if (!empty($posId)) {
+        // First delete associated competencies to avoid foreign key constraint error
+        $stmt_comp = $conn->prepare("DELETE FROM position_competencies WHERE position_id = ?");
+        $stmt_comp->bind_param("i", $posId);
+        $stmt_comp->execute();
+        $stmt_comp->close();
+
         $stmt = $conn->prepare("DELETE FROM positions WHERE PositionID = ?");
         $stmt->bind_param("i", $posId);
         
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = "Position Deleted! '$posName' has been removed from the catalog.";
+            $_SESSION['success_message'] = "Position Deleted! '$posName' and its linked requirements have been removed.";
         } else {
             $_SESSION['error_message'] = "Error deleting position: " . $conn->error;
         }
@@ -138,7 +147,9 @@ while ($row = $gradesResult->fetch_assoc()) {
 // Fetch positions with vacancy priority and recruitment status
 $sql = "SELECT p.*, d.DepartmentName, sg.GradeName,
         (SELECT COUNT(*) FROM employmentinformation ei WHERE ei.PositionID = p.PositionID) as CurrentHeadcount,
-        (SELECT COUNT(*) FROM recruitment_requisitions rr WHERE rr.PositionID = p.PositionID AND rr.Status IN ('Pending', 'Active', 'Posted')) as HasRequisition
+        (SELECT COUNT(*) FROM recruitment_requisitions rr WHERE rr.PositionID = p.PositionID AND rr.Status IN ('Pending', 'Active', 'Posted')) as HasRequisition,
+        (SELECT COUNT(*) FROM position_competencies pc WHERE pc.position_id = p.PositionID) as CompCount,
+        p.JobDescription
         FROM positions p
         JOIN department d ON p.DepartmentID = d.DepartmentID
         JOIN salary_grades sg ON p.SalaryGradeID = sg.SalaryGradeID";
@@ -200,8 +211,7 @@ while ($row = $positionsResult->fetch_assoc()) {
         <i data-lucide="panel-left-close"></i>
       </button>
     </div>
-
-  <nav class="sidebar-nav">
+<nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">ANALYTICS & REPORTING</span>
         <a href="dashboard.php" class="nav-item active">
@@ -209,7 +219,52 @@ while ($row = $positionsResult->fetch_assoc()) {
           <span>HR ANALYTICS</span>
         </a>
       <div class="nav-section">
-        <span class="nav-section-title">ADMINISTRATION</span>
+        <span class="nav-section-title">HUMAN RESOURCES I</span>
+        <div class="nav-item-group active">
+          <button class="nav-item has-submenu" data-module="recruitment">
+            <div class="nav-item-content">
+              <i data-lucide="layers-plus"></i>
+              <span>Recruitment</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-recruitment">
+           <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
+              <i data-lucide="layers-plus"></i>
+              <span>Recruitment</span>
+            </a>
+          </div>
+          <div class="nav-item-group active">
+          <button class="nav-item has-submenu" data-module="applicationmgt">
+            <div class="nav-item-content">
+              <i data-lucide="contact-round"></i>
+              <span>Applicant Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-applicationmgt">
+            <a href="applicationmgt.php" class="nav-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
+              <i data-lucide="contact-round"></i>
+              <span>Applicant Management</span>
+            </a>
+          </div>
+          <div class="nav-item-group active">
+          <button class="nav-item has-submenu" data-module="newhiredonboard">
+            <div class="nav-item-content">
+              <i data-lucide="user-plus"></i>
+              <span>New Hired Onboard</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-newhiredonboard">
+            <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
+              <i data-lucide="user-plus"></i>
+              <span>New Hired Onboard</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-section">
+        <span class="nav-section-title">HUMAN RESOURCES II</span>
         <div class="nav-item-group active">
           <button class="nav-item has-submenu" data-module="accounts">
             <div class="nav-item-content">
@@ -236,9 +291,160 @@ while ($row = $positionsResult->fetch_assoc()) {
               <span>Audit Logs</span>
             </a>
           </div>
+           <div class="nav-item-group <?php echo ($module === 'competency') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="competency">
+              <div class="nav-item-content">
+                <i data-lucide="pickaxe"></i>
+                <span>Competency Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-competency">
+              <a href="competencylibrary.php" class="submenu-item <?php echo ($page === 'competency') ? 'active' : ''; ?>">
+                <i data-lucide="book-text"></i>
+                <span>Competency Library</span>
+              </a>
+              <a href="competencycategory.php" class="submenu-item <?php echo ($page === 'competencycategory') ? 'active' : ''; ?>">
+                <i data-lucide="chart-bar-stacked"></i>
+                <span>Competency Category</span>
+              </a>
+               <a href="competencylevel.php" class="submenu-item <?php echo ($page === 'competencylevel') ? 'active' : ''; ?>">
+                <i data-lucide="circle-gauge"></i>
+                <span>Competency Level</span>
+              </a>
+              <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
+                <i data-lucide="briefcase"></i>
+                <span>Competency Position</span>
+              </a>
+              <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+                <i data-lucide="square-user"></i>
+                <span>Competency Employee</span>
+              </a>
+                <a href="bankquestion.php" class="submenu-item <?php echo ($page === 'bankquestion') ? 'active' : ''; ?>">
+                <i data-lucide="book-open-check"></i>
+                <span>Bank Question</span>
+              </a>
+            </div>
         </div>
+         <div class="nav-item-group <?php echo ($module === 'training') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="training">
+              <div class="nav-item-content">
+                <i data-lucide="briefcase-business"></i>
+                <span>Training Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-training">
+              <a href="training.php" class="submenu-item <?php echo ($page === 'training') ? 'active' : ''; ?>">
+                <i data-lucide="briefcase-business"></i>
+                <span>Training Management</span>
+              </a>
+            </div>
+        </div>
+         <div class="nav-item-group <?php echo ($module === 'succession') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="succession">
+              <div class="nav-item-content">
+                <i data-lucide="notebook-pen"></i>
+                <span>Succession Planning</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-succession">
+              <a href="succession.php" class="submenu-item <?php echo ($page === 'succession') ? 'active' : ''; ?>">
+                <i data-lucide="notebook-pen"></i>
+                <span>Succession Planning</span>
+              </a>
+            </div>
+        </div>
+         <div class="nav-item-group <?php echo ($module === 'learning') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="learning">
+              <div class="nav-item-content">
+                <i data-lucide="notebook-text"></i>
+                <span>Learning Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-learning">
+              <a href="learning.php" class="submenu-item <?php echo ($page === 'learning') ? 'active' : ''; ?>">
+                <i data-lucide="notebook-text"></i>
+                <span>Learning Management</span>
+              </a>
+            </div>
+        </div>
+          <div class="nav-section">   
+            <span class="nav-section-title">HUMAN RESOURCES III</span>
+          <div class="nav-item-group <?php echo ($module === 'shift') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="shift">
+              <div class="nav-item-content">
+                <i data-lucide="calendar-check"></i>
+                <span>Shift & Scheduling</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-shift">
+              <a href="#" class="submenu-item <?php echo ($page === 'shift') ? 'active' : ''; ?>">
+                <i data-lucide="send-to-back"></i>
+                <span>Shift & Scheduling</span>
+              </a>
+            </div>
+            <div class="nav-item-group <?php echo ($module === 'claims') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="claims">
+              <div class="nav-item-content">
+                <i data-lucide="receipt-text"></i>
+                <span>Claims & Reimbursements</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-claims">
+              <a href="claims.php" class="submenu-item <?php echo ($page === 'claims') ? 'active' : ''; ?>">
+                <i data-lucide="receipt-text"></i>
+                <span>Claims & Reimbursements</span>
+              </a>
+            </div>
+            <div class="nav-item-group <?php echo ($module === 'time') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="time">
+              <div class="nav-item-content">
+                <i data-lucide="clock"></i>
+                <span>Time & Attendance</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-time">
+              <a href="time.php" class="submenu-item <?php echo ($page === 'time') ? 'active' : ''; ?>">
+                <i data-lucide="clock"></i>
+                <span>Time & Attendance</span>
+              </a>
+            </div>
+            <div class="nav-item-group <?php echo ($module === 'timesheet') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="timesheet">
+              <div class="nav-item-content">
+                <i data-lucide="calendar-days"></i>
+                <span>Timesheet</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-timesheet">
+              <a href="timesheet.php" class="submenu-item <?php echo ($page === 'timesheet') ? 'active' : ''; ?>">
+                <i data-lucide="calendar-days"></i>
+                <span>Timesheet</span>
+              </a>
+            </div>
+             <div class="nav-item-group <?php echo ($module === 'leave') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="leave">
+              <div class="nav-item-content">
+                <i data-lucide="tickets-plane"></i>
+                <span>Leave Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-leave">
+              <a href="leave.php" class="submenu-item <?php echo ($page === 'leave') ? 'active' : ''; ?>">
+                <i data-lucide="tickets-plane"></i>
+                <span>Leave Management</span>
+              </a>
+            </div>
        <div class="nav-section">
-        <span class="nav-section-title">Human Resources</span>
+        <span class="nav-section-title">HUMAN RESOURCES IV</span>
           <div class="nav-item-group <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="corehumancapital">
             <div class="nav-item-content">
@@ -287,6 +493,10 @@ while ($row = $positionsResult->fetch_assoc()) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
+           <a href="comintake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Master Data Intake</span>
+            </a>
             <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
@@ -296,8 +506,12 @@ while ($row = $positionsResult->fetch_assoc()) {
               <span>Statutory Contributions</span>
             </a>
             <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
-              <i data-lucide="scale"></i>
+              <i data-lucide="percent"></i>
               <span>Merit Matrix Structure</span>
+            </a>
+            <a href="allowance.php" class="submenu-item <?php echo ($page === 'allowance') ? 'active' : ''; ?>">
+              <i data-lucide="gift"></i>
+              <span>Allowance Structure</span>
             </a>
             <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
               <i data-lucide="notebook-pen"></i>
@@ -332,23 +546,7 @@ while ($row = $positionsResult->fetch_assoc()) {
             </a>
           </div>
         </div>
-            <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
-              <i data-lucide="layers-plus"></i>
-              <span>Recruitment</span>
-            </a>
-            <a href="applicationmgt.php" class="nav-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
-              <i data-lucide="contact-round"></i>
-              <span>Applicant Management</span>
-            </a>
-      <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
-              <i data-lucide="user-plus"></i>
-              <span>New Hired Onboard</span>
-            </a>
         </div>
-       
-
-      
-
         <div class="nav-section">
         <span class="nav-section-title">FINANCE</span>
         
@@ -364,10 +562,6 @@ while ($row = $positionsResult->fetch_assoc()) {
             <a href="positionrequest.php" class="submenu-item <?php echo ($page === 'positionrequest') ? 'active' : ''; ?>">
               <i data-lucide="badge-dollar-sign"></i>
               <span>Position Requests</span>
-            </a>
-            <a href="intake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
-              <i data-lucide="send-to-back"></i>
-              <span>Master Data Intake</span>
             </a>
           </div>
 
@@ -586,10 +780,16 @@ while ($row = $positionsResult->fetch_assoc()) {
                                                           <span class="default-text" style="color: #1d4ed8;">IN RECRUITMENT</span>
                                                           <span class="hover-text">View in Recruitment</span>
                                                       </button>
-                                                  <?php else: ?>
+                                                  <?php elseif ($pos['CompCount'] > 0): ?>
                                                       <button class="btn-recruit" onclick="event.stopPropagation(); sendRequisition(<?php echo $pos['PositionID']; ?>, '<?php echo addslashes($pos['PositionName']); ?>')">
                                                           <span class="default-text">VACANT</span>
                                                           <span class="hover-text">Send Requisition</span>
+                                                      </button>
+                                                  <?php else: ?>
+                                                      <button class="btn-recruit" style="opacity: 0.6; cursor: not-allowed; background: #f1f5f9; color: #64748b; border: 1px dashed #cbd5e1;" onclick="event.stopPropagation(); Swal.fire({title: 'Competencies Required', text: 'Please assign competencies to this position before sending a requisition.', icon: 'warning', confirmButtonText: 'Assign Skills'}).then((result) => { if(result.isConfirmed) window.location.href='competencyposition.php?pos_id=<?php echo $pos['PositionID']; ?>'; })">
+                                                          <i data-lucide="lock" style="width: 12px; height: 12px; margin-right: 4px;"></i>
+                                                          <span class="default-text">LOCKED</span>
+                                                          <span class="hover-text">Assign Skills First</span>
                                                       </button>
                                                   <?php endif; ?>
                                               <?php else: ?>
@@ -605,7 +805,7 @@ while ($row = $positionsResult->fetch_assoc()) {
                                                   code: '<?php echo addslashes($pos['PositionCode'] ?? ''); ?>',
                                                   deptId: <?php echo $pos['DepartmentID']; ?>,
                                                   gradeId: <?php echo $pos['SalaryGradeID']; ?>,
-                                                  auth: <?php echo $pos['AuthorizedHeadcount']; ?>
+                                                  auth: <?php echo $pos['AuthorizedHeadcount']; ?>, description: '<?php echo addslashes($pos['JobDescription'] ?? ''); ?>'
                                               })" title="Manage Position">
                                                   <i data-lucide="settings"></i>
                                               </button>
@@ -631,6 +831,7 @@ while ($row = $positionsResult->fetch_assoc()) {
           <input type="hidden" name="department_id" id="formDeptId">
           <input type="hidden" name="grade_id" id="formGradeId">
           <input type="hidden" name="authorized_headcount" id="formAuthHeadcount">
+          <input type="hidden" name="job_description" id="formJobDescription">
       </form>
 
       <!-- Hidden Form for Update Position -->
@@ -642,6 +843,7 @@ while ($row = $positionsResult->fetch_assoc()) {
           <input type="hidden" name="department_id" id="updateDeptId">
           <input type="hidden" name="grade_id" id="updateGradeId">
           <input type="hidden" name="authorized_headcount" id="updateAuthHeadcount">
+          <input type="hidden" name="job_description" id="updateJobDescription">
       </form>
 
     <form id="deletePositionForm" method="POST" style="display: none;">

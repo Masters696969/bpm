@@ -111,8 +111,7 @@ function sendOtpEmail($toEmail, $otp, $userName = '')
 }
 
 // Function to send official hiring email using PHPMailer
-function sendHiringEmail($toEmail, $employeeName, $position, $hiringDate, $username, $password, $evaluation)
-{
+function sendHiringEmail($toEmail, $employeeName, $position, $hiringDate, $scores) {
     global $mail_config;
     require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -130,9 +129,12 @@ function sendHiringEmail($toEmail, $employeeName, $position, $hiringDate, $usern
         $mail->addAddress($toEmail);
         $mail->isHTML(true);
         $mail->Subject = 'Official Hiring Notification - Microfinance System';
-
-        $rating = number_format($evaluation['AverageRating'] ?? 0, 1);
-        $decision = $evaluation['Decision'] ?? 'Approved';
+        
+        $interviewRating = number_format($scores['InterviewScore'] ?? 0, 1);
+        $examScore = $scores['ExamScore'] ?? 0;
+        $resumeScore = $scores['ResumeScore'] ?? 0;
+        $totalScore = number_format($scores['TotalScore'] ?? 0, 1);
+        $decision = $scores['Decision'] ?? 'Approved';
 
         $emailBody = "
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4;'>
@@ -147,10 +149,32 @@ function sendHiringEmail($toEmail, $employeeName, $position, $hiringDate, $usern
                     <h3 style='color: #333; margin: 0 0 10px 0;'>Congratulations, $employeeName!</h3>
                     <p style='color: #666; margin: 0 0 12px 0; font-size: 15px;'>You have been officially hired at <strong>Microfinance System</strong> as <strong style='color: #2ca078;'>$position</strong>.</p>
                     <p style='color: #555; margin: 0; font-size: 14px; line-height: 1.7;'>
-                        We are thrilled to welcome you to our team! After a thorough review of your application and interview performance, 
+                        We are thrilled to welcome you to our team! After a thorough review of your application and performance, 
                         we are confident that you will be a great addition to the organization. 
                         Your journey with us starts on <strong>$hiringDate</strong> &mdash; we look forward to working with you.
                     </p>
+                </div>
+
+                <div style='margin: 30px 0;'>
+                    <h4 style='color: #333; margin: 0 0 10px 0;'>Performance Summary:</h4>
+                    <table style='width: 100%; border-collapse: collapse; font-size: 14px;'>
+                        <tr style='border-bottom: 1px solid #eee;'>
+                            <td style='padding: 10px 0; color: #666;'>Resume Rating</td>
+                            <td style='padding: 10px 0; font-weight: bold; color: #333; text-align: right;'>$resumeScore%</td>
+                        </tr>
+                        <tr style='border-bottom: 1px solid #eee;'>
+                            <td style='padding: 10px 0; color: #666;'>Interview Score</td>
+                            <td style='padding: 10px 0; font-weight: bold; color: #333; text-align: right;'>$interviewRating / 5.0</td>
+                        </tr>
+                        <tr style='border-bottom: 1px solid #eee;'>
+                            <td style='padding: 10px 0; color: #666;'>Examination Result</td>
+                            <td style='padding: 10px 0; font-weight: bold; color: #333; text-align: right;'>$examScore Points</td>
+                        </tr>
+                        <tr style='border-bottom: 2px solid #2ca078;'>
+                            <td style='padding: 12px 0; color: #333; font-weight: bold;'>Final Weighted Result</td>
+                            <td style='padding: 12px 0; font-weight: bold; color: #2ca078; text-align: right; font-size: 16px;'>$totalScore%</td>
+                        </tr>
+                    </table>
                 </div>
 
                 <div style='margin: 30px 0;'>
@@ -164,39 +188,21 @@ function sendHiringEmail($toEmail, $employeeName, $position, $hiringDate, $usern
                             <td style='padding: 10px 0; color: #666;'>Hiring Date</td>
                             <td style='padding: 10px 0; font-weight: bold; color: #333; text-align: right;'>$hiringDate</td>
                         </tr>
-                        <tr>
-                            <td style='padding: 10px 0; color: #666;'>Evaluation Result</td>
-                            <td style='padding: 10px 0; font-weight: bold; color: #2ca078; text-align: right;'>$decision &mdash; $rating / 5.0</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div style='background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;'>
-                    <h4 style='color: #333; margin: 0 0 15px 0;'>Your Work Account Credentials:</h4>
-                    <table style='width: 100%; border-collapse: collapse; font-size: 14px;'>
-                        <tr style='border-bottom: 1px solid #eee;'>
-                            <td style='padding: 10px 0; color: #666;'>Username</td>
-                            <td style='padding: 10px 0; text-align: right;'><span style='font-family: monospace; font-size: 16px; font-weight: bold; color: #2ca078; letter-spacing: 1px;'>$username</span></td>
-                        </tr>
-                        <tr>
-                            <td style='padding: 10px 0; color: #666;'>Temporary Password</td>
-                            <td style='padding: 10px 0; text-align: right;'><span style='font-family: monospace; font-size: 16px; font-weight: bold; color: #2ca078; letter-spacing: 1px;'>$password</span></td>
-                        </tr>
                     </table>
                 </div>
 
                 <div style='margin: 30px 0;'>
-                    <h4 style='color: #333; margin: 0 0 10px 0;'>Instructions:</h4>
+                    <h4 style='color: #333; margin: 0 0 10px 0;'>Next Steps:</h4>
                     <ol style='color: #666; margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.8;'>
-                        <li>Use the credentials above to log in to the portal</li>
-                        <li>Change your password immediately after your first login</li>
-                        <li>Do not share your credentials with anyone</li>
-                        <li>Contact HR if you encounter any login issues</li>
+                        <li>Our administrative team will set up your work account shortly.</li>
+                        <li>You will receive a separate email with your login credentials.</li>
+                        <li>Please prepare your original documents for verification on your first day.</li>
+                        <li>Contact HR if you have any questions before your start date.</li>
                     </ol>
                 </div>
 
                 <div style='text-align: center; margin: 30px 0;'>
-                    <a href='http://localhost/microfinance/login.php' style='display: inline-block; padding: 14px 32px; background: #2ca078; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px;'>Access Your Portal &rarr;</a>
+                    <a href='http://localhost/microfinance/login.php' style='display: inline-block; padding: 14px 32px; background: #2ca078; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 15px;'>Access Training Portal &rarr;</a>
                 </div>
                 
                 <div style='border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px; text-align: center;'>

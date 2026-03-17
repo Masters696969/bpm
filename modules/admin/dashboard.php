@@ -140,6 +140,14 @@ if (!isset($_SESSION['username'])) {
                 <i data-lucide="briefcase"></i>
                 <span>Competency Position</span>
               </a>
+              <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+                <i data-lucide="square-user"></i>
+                <span>Competency Employee</span>
+              </a>
+                <a href="bankquestion.php" class="submenu-item <?php echo ($page === 'bankquestion') ? 'active' : ''; ?>">
+                <i data-lucide="book-open-check"></i>
+                <span>Bank Question</span>
+              </a>
             </div>
         </div>
          <div class="nav-item-group <?php echo ($module === 'training') ? 'active' : ''; ?>">
@@ -309,6 +317,10 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
+           <a href="comintake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Master Data Intake</span>
+            </a>
             <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
@@ -318,8 +330,12 @@ if (!isset($_SESSION['username'])) {
               <span>Statutory Contributions</span>
             </a>
             <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
-              <i data-lucide="scale"></i>
+              <i data-lucide="percent"></i>
               <span>Merit Matrix Structure</span>
+            </a>
+            <a href="allowance.php" class="submenu-item <?php echo ($page === 'allowance') ? 'active' : ''; ?>">
+              <i data-lucide="gift"></i>
+              <span>Allowance Structure</span>
             </a>
             <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
               <i data-lucide="notebook-pen"></i>
@@ -355,10 +371,6 @@ if (!isset($_SESSION['username'])) {
           </div>
         </div>
         </div>
-       
-
-      
-
         <div class="nav-section">
         <span class="nav-section-title">FINANCE</span>
         

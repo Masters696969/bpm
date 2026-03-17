@@ -48,14 +48,16 @@ if ($action === 'add_account') {
         exit;
     }
 
+    $employee_id = !empty($_POST['employee_id']) ? intval($_POST['employee_id']) : null;
+
     // Hash password
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
     // Insert user account
-    $insertSql = "INSERT INTO useraccounts (Username, Email, PasswordHash, AccountStatus, IsVerified) 
-                  VALUES (?, ?, ?, ?, 1)";
+    $insertSql = "INSERT INTO useraccounts (Username, Email, PasswordHash, AccountStatus, IsVerified, EmployeeID) 
+                  VALUES (?, ?, ?, ?, 1, ?)";
     $insertStmt = $conn->prepare($insertSql);
-    $insertStmt->bind_param("ssss", $username, $email, $passwordHash, $account_status);
+    $insertStmt->bind_param("ssssi", $username, $email, $passwordHash, $account_status, $employee_id);
 
     if (!$insertStmt->execute()) {
         echo json_encode(['success' => false, 'message' => 'Failed to create account: ' . $insertStmt->error]);

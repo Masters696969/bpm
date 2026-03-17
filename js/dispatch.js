@@ -2,8 +2,69 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableBody = document.getElementById('dispatchTableBody');
     const viewModal = document.getElementById('viewEmployeeModal');
     const modalEmployeeList = document.getElementById('modalEmployeeList');
+    const body = document.body;
+    const themeToggle = document.getElementById("themeToggle");
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const sidebar = document.getElementById("sidebar");
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
 
     let currentPendingEmployees = [];
+
+    // Theme Logic
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") body.classList.add("dark-mode");
+
+    themeToggle.addEventListener("click", () => {
+        body.classList.toggle("dark-mode");
+        localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
+    });
+
+    // Sidebar & Mobile Logic
+    sidebarToggle.addEventListener("click", () => {
+        sidebar.classList.toggle("collapsed");
+        localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+    });
+
+    if (localStorage.getItem("sidebarCollapsed") === "true") sidebar.classList.add("collapsed");
+
+    mobileMenuBtn.addEventListener("click", () => sidebar.classList.toggle("mobile-open"));
+
+    // Submenu Logic
+    document.querySelectorAll(".nav-item.has-submenu").forEach((item) => {
+        item.addEventListener("click", (e) => {
+            const module = item.getAttribute("data-module");
+            const submenu = document.getElementById(`submenu-${module}`);
+            submenu.classList.toggle("active");
+            item.classList.toggle("active");
+        });
+    });
+
+    // Active Page Highlighting
+    (function () {
+        const path = window.location.pathname;
+        const page = path.split('/').pop() || 'dashboard.php';
+        const current = page.split('?')[0];
+
+        document.querySelectorAll('.sidebar .nav-item, .sidebar .submenu-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.sidebar .nav-item-group').forEach(group => group.classList.remove('active'));
+
+        const submenuMatch = document.querySelector(`.sidebar a.submenu-item[href$="${current}"]`);
+        if (submenuMatch) {
+            submenuMatch.classList.add('active');
+            const parentGroup = submenuMatch.closest('.nav-item-group');
+            if (parentGroup) {
+                parentGroup.classList.add('active');
+                const submenu = parentGroup.querySelector('.submenu');
+                if (submenu) submenu.style.maxHeight = '500px';
+                const btn = parentGroup.querySelector('.nav-item.has-submenu');
+                if (btn) btn.classList.add('active');
+            }
+            return;
+        }
+
+        const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
+        if (navMatch) navMatch.classList.add('active');
+    })();
 
     // 1. Fetch Dispatcher Summary and Pending Employees
     async function initDispatchView() {
@@ -145,3 +206,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial load
     initDispatchView();
 });
+// Redundant UI logic removed (none was found, but ensuring cleanliness)

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
@@ -7,7 +7,7 @@ if (!isset($_SESSION['username'])) {
 require_once '../../config/config.php';
 
 $page = 'applicationmgt';
-$module = 'recruitment';
+$module = 'applicationmgt';
 
 // Fetch Statistics
 $stats = [
@@ -38,7 +38,7 @@ if (!$interviews) {
 }
 
 // Fetch Evaluated Candidates for Hiring Approval
-$evalQuery = "SELECT e.*, a.FirstName, a.LastName, a.ApprovalStatus, j.Title as JobTitle 
+$evalQuery = "SELECT e.*, a.FirstName, a.LastName, a.ApprovalStatus, a.ExamScore, a.ExamStatus, j.Title as JobTitle 
               FROM interview_evaluations e
               JOIN applicants a ON e.ApplicantID = a.ApplicantID
               JOIN job_postings j ON a.PostID = j.PostID
@@ -47,6 +47,22 @@ $evalList = $conn->query($evalQuery);
 if (!$evalList) {
     error_log("Evaluation Query Error: " . $conn->error);
     $evalList = $conn->query("SELECT 1 FROM applicants LIMIT 0");
+}
+
+// Fetch Selection Rankings (Top 10) - Candidates MUST have completed Exam and Evaluation
+$selectionQuery = "SELECT a.*, j.Title as JobTitle, e.AverageRating,
+       (COALESCE(a.ResumeScore, 0) * 0.20) + 
+       (COALESCE(e.AverageRating, 0) * 8) + 
+       (COALESCE(a.ExamScore, 0) * 2.6667) as TotalScore
+FROM interview_evaluations e
+JOIN applicants a ON e.ApplicantID = a.ApplicantID
+JOIN job_postings j ON a.PostID = j.PostID
+ORDER BY TotalScore DESC
+LIMIT 10";
+$selectionList = $conn->query($selectionQuery);
+if (!$selectionList) {
+    error_log("Selection Query Error: " . $conn->error);
+    $selectionList = $conn->query("SELECT 1 FROM applicants LIMIT 0");
 }
 ?>
 <!DOCTYPE html>
@@ -135,25 +151,74 @@ if (!$evalList) {
       </button>
     </div>
 
-    <nav class="sidebar-nav">
+     <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">ANALYTICS & REPORTING</span>
         <a href="dashboard.php" class="nav-item">
           <i data-lucide="layout-dashboard"></i>
           <span>HR ANALYTICS</span>
         </a>
+      </div>
       <div class="nav-section">
-        <span class="nav-section-title">ADMINISTRATION</span>
+        <span class="nav-section-title">HUMAN RESOURCES I</span>
+        <div class="nav-item-group <?php echo ($module === 'recruitment') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="recruitment">
+            <div class="nav-item-content">
+              <i data-lucide="layers-plus"></i>
+              <span>Recruitment</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-recruitment">
+           <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
+              <i data-lucide="layers-plus"></i>
+              <span>Recruitment</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'applicationmgt') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'applicationmgt') ? 'active' : ''; ?>" data-module="applicationmgt">
+            <div class="nav-item-content">
+              <i data-lucide="contact-round"></i>
+              <span>Applicant Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-applicationmgt">
+            <a href="applicationmgt.php" class="submenu-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
+              <i data-lucide="contact-round"></i>
+              <span>Applicant Management</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'newhiredonboard') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="newhiredonboard">
+            <div class="nav-item-content">
+              <i data-lucide="user-plus"></i>
+              <span>New Hired Onboard</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-newhiredonboard">
+            <a href="newhiredonboard.php" class="submenu-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
+              <i data-lucide="user-plus"></i>
+              <span>New Hired Onboard</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">HUMAN RESOURCES II</span>
         <div class="nav-item-group <?php echo ($module === 'accounts') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="accounts">
+          <button class="nav-item has-submenu <?php echo ($module === 'accounts') ? 'active' : ''; ?>" data-module="accounts">
             <div class="nav-item-content">
               <i data-lucide="users"></i>
               <span>Account Management</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-accounts">
-            <a href="useraccount.php" class="submenu-item">
+          <div class="submenu <?php echo ($module === 'accounts') ? 'active' : ''; ?>" id="submenu-accounts">
+            <a href="useraccount.php" class="submenu-item <?php echo ($page === 'useraccount') ? 'active' : ''; ?>">
               <i data-lucide="user-plus"></i>
               <span>User Accounts</span>
             </a>
@@ -171,10 +236,168 @@ if (!$evalList) {
             </a>
           </div>
         </div>
-       <div class="nav-section">
-        <span class="nav-section-title">Human Resources</span>
+        <div class="nav-item-group <?php echo ($module === 'competency') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'competency') ? 'active' : ''; ?>" data-module="competency">
+              <div class="nav-item-content">
+                <i data-lucide="pickaxe"></i>
+                <span>Competency Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-competency">
+              <a href="competencylibrary.php" class="submenu-item <?php echo ($page === 'competency') ? 'active' : ''; ?>">
+                <i data-lucide="book-text"></i>
+                <span>Competency Library</span>
+              </a>
+              <a href="competencycategory.php" class="submenu-item <?php echo ($page === 'competencycategory') ? 'active' : ''; ?>">
+                <i data-lucide="chart-bar-stacked"></i>
+                <span>Competency Category</span>
+              </a>
+               <a href="competencylevel.php" class="submenu-item <?php echo ($page === 'competencylevel') ? 'active' : ''; ?>">
+                <i data-lucide="circle-gauge"></i>
+                <span>Competency Level</span>
+              </a>
+              <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
+                <i data-lucide="briefcase"></i>
+                <span>Competency Position</span>
+              </a>
+              <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+                <i data-lucide="square-user"></i>
+                <span>Competency Employee</span>
+              </a>
+                <a href="bankquestion.php" class="submenu-item <?php echo ($page === 'bankquestion') ? 'active' : ''; ?>">
+                  <i data-lucide="book-open-check"></i>
+                  <span>Bank Question</span>
+                </a>
+              </div>
+            </div>
+        <div class="nav-item-group <?php echo ($module === 'training') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'training') ? 'active' : ''; ?>" data-module="training">
+              <div class="nav-item-content">
+                <i data-lucide="briefcase-business"></i>
+                <span>Training Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-training">
+              <a href="training.php" class="submenu-item <?php echo ($page === 'training') ? 'active' : ''; ?>">
+                <i data-lucide="briefcase-business"></i>
+                <span>Training Management</span>
+              </a>
+            </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'succession') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'succession') ? 'active' : ''; ?>" data-module="succession">
+              <div class="nav-item-content">
+                <i data-lucide="notebook-pen"></i>
+                <span>Succession Planning</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-succession">
+              <a href="succession.php" class="submenu-item <?php echo ($page === 'succession') ? 'active' : ''; ?>">
+                <i data-lucide="notebook-pen"></i>
+                <span>Succession Planning</span>
+              </a>
+            </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'learning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'learning') ? 'active' : ''; ?>" data-module="learning">
+              <div class="nav-item-content">
+                <i data-lucide="notebook-text"></i>
+                <span>Learning Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-learning">
+              <a href="learning.php" class="submenu-item <?php echo ($page === 'learning') ? 'active' : ''; ?>">
+                <i data-lucide="notebook-text"></i>
+                <span>Learning Management</span>
+              </a>
+            </div>
+        </div>
+      </div>
+      <div class="nav-section">   
+            <span class="nav-section-title">HUMAN RESOURCES III</span>
+          <div class="nav-item-group <?php echo ($module === 'shift') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu <?php echo ($module === 'shift') ? 'active' : ''; ?>" data-module="shift">
+              <div class="nav-item-content">
+                <i data-lucide="calendar-check"></i>
+                <span>Shift & Scheduling</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-shift">
+              <a href="#" class="submenu-item <?php echo ($page === 'shift') ? 'active' : ''; ?>">
+                <i data-lucide="send-to-back"></i>
+                <span>Shift & Scheduling</span>
+              </a>
+            </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'claims') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'claims') ? 'active' : ''; ?>" data-module="claims">
+              <div class="nav-item-content">
+                <i data-lucide="receipt-text"></i>
+                <span>Claims & Reimbursements</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-claims">
+              <a href="claims.php" class="submenu-item <?php echo ($page === 'claims') ? 'active' : ''; ?>">
+                <i data-lucide="receipt-text"></i>
+                <span>Claims & Reimbursements</span>
+              </a>
+            </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'time') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'time') ? 'active' : ''; ?>" data-module="time">
+              <div class="nav-item-content">
+                <i data-lucide="clock"></i>
+                <span>Time & Attendance</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-time">
+              <a href="time.php" class="submenu-item <?php echo ($page === 'time') ? 'active' : ''; ?>">
+                <i data-lucide="clock"></i>
+                <span>Time & Attendance</span>
+              </a>
+            </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'timesheet') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'timesheet') ? 'active' : ''; ?>" data-module="timesheet">
+              <div class="nav-item-content">
+                <i data-lucide="calendar-days"></i>
+                <span>Timesheet</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-timesheet">
+              <a href="timesheet.php" class="submenu-item <?php echo ($page === 'timesheet') ? 'active' : ''; ?>">
+                <i data-lucide="calendar-days"></i>
+                <span>Timesheet</span>
+              </a>
+            </div>
+             <div class="nav-item-group <?php echo ($module === 'leave') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu <?php echo ($module === 'leave') ? 'active' : ''; ?>" data-module="leave">
+              <div class="nav-item-content">
+                <i data-lucide="tickets-plane"></i>
+                <span>Leave Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-leave">
+              <a href="leave.php" class="submenu-item <?php echo ($page === 'leave') ? 'active' : ''; ?>">
+                <i data-lucide="tickets-plane"></i>
+                <span>Leave Management</span>
+              </a>
+            </div>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">HUMAN RESOURCES IV</span>
           <div class="nav-item-group <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="corehumancapital">
+            <button class="nav-item has-submenu <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>" data-module="corehumancapital">
             <div class="nav-item-content">
               <i data-lucide="book-user"></i>
               <span>Core Human Capital</span>
@@ -211,10 +434,9 @@ if (!$evalList) {
               <span>Audit Logs</span>
             </a>
           </div>
-
         </div>
-          <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="planning">
+        <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'planning') ? 'active' : ''; ?>" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
               <span>Compensation Planning</span>
@@ -222,6 +444,10 @@ if (!$evalList) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
+           <a href="comintake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Master Data Intake</span>
+            </a>
             <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
@@ -231,8 +457,12 @@ if (!$evalList) {
               <span>Statutory Contributions</span>
             </a>
             <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
-              <i data-lucide="scale"></i>
+              <i data-lucide="percent"></i>
               <span>Merit Matrix Structure</span>
+            </a>
+            <a href="allowance.php" class="submenu-item <?php echo ($page === 'allowance') ? 'active' : ''; ?>">
+              <i data-lucide="gift"></i>
+              <span>Allowance Structure</span>
             </a>
             <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
               <i data-lucide="notebook-pen"></i>
@@ -241,7 +471,7 @@ if (!$evalList) {
           </div>
         </div>
         <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="payroll">
+          <button class="nav-item has-submenu <?php echo ($module === 'payroll') ? 'active' : ''; ?>" data-module="payroll">
             <div class="nav-item-content">
               <i data-lucide="banknote"></i>
               <span>Payroll Management</span>
@@ -267,28 +497,12 @@ if (!$evalList) {
             </a>
           </div>
         </div>
-            <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
-              <i data-lucide="layers-plus"></i>
-              <span>Recruitment</span>
-            </a>
-            <a href="applicationmgt.php" class="nav-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
-              <i data-lucide="contact-round"></i>
-              <span>Applicant Management</span>
-            </a>
-      <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
-              <i data-lucide="user-plus"></i>
-              <span>New Hired Onboard</span>
-            </a>
-        </div>
-       
-
-      
-
-        <div class="nav-section">
+      </div>
+      <div class="nav-section">
         <span class="nav-section-title">FINANCE</span>
         
         <div class="nav-item-group <?php echo ($module === 'budget') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="budget">
+          <button class="nav-item has-submenu <?php echo ($module === 'budget') ? 'active' : ''; ?>" data-module="budget">
             <div class="nav-item-content">
               <i data-lucide="hand-coins"></i>
               <span>Budget Management</span>
@@ -300,11 +514,9 @@ if (!$evalList) {
               <i data-lucide="badge-dollar-sign"></i>
               <span>Position Requests</span>
             </a>
-            <a href="intake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
-              <i data-lucide="send-to-back"></i>
-              <span>Master Data Intake</span>
-            </a>
           </div>
+        </div>
+      </div>
 
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
@@ -392,7 +604,11 @@ if (!$evalList) {
         </button>
         <button class="tab-btn" data-tab="hiring">
           <i data-lucide="check-square"></i>
-          <span>Hiring Approval</span>
+          <span>Examination Center</span>
+        </button>
+        <button class="tab-btn" data-tab="selection">
+          <i data-lucide="award"></i>
+          <span>Applicant Selection</span>
         </button>
       </div>
 
@@ -564,16 +780,16 @@ if (!$evalList) {
       </div>
     </div> <!-- End Interviews Tab -->
 
-    <!-- Tab: Hiring Approval -->
+    <!-- Tab: Examination Center -->
     <div id="hiringTab" class="tab-content">
       <div class="table-container">
         <table class="applicant-table">
           <thead>
             <tr>
               <th>Candidate</th>
-              <th>Final Score</th>
-              <th>Recommendation</th>
-              <th>Approval Status</th>
+              <th>Avg Rating</th>
+              <th>Exam Status</th>
+              <th>Score</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -590,30 +806,26 @@ if (!$evalList) {
                   </td>
                   <td>
                     <?php 
-                      $recColor = '#f59e0b';
-                      if($e['Decision'] === 'Strong Hire') $recColor = '#10b981';
-                      if($e['Decision'] === 'Do Not Hire') $recColor = '#ef4444';
+                      $statusColor = '#6b7280';
+                      if($e['ExamStatus'] === 'Completed') $statusColor = '#10b981';
+                      if($e['ExamStatus'] === 'Pending') $statusColor = '#f59e0b';
                     ?>
-                    <span class="badge" style="background:<?php echo $recColor; ?>15; color:<?php echo $recColor; ?>;"><?php echo $e['Decision']; ?></span>
+                    <span class="badge" style="background:<?php echo $statusColor; ?>15; color:<?php echo $statusColor; ?>;"><?php echo $e['ExamStatus'] ?? 'Pending'; ?></span>
                   </td>
                   <td>
-                    <?php 
-                      $appColor = '#6b7280';
-                      if($e['ApprovalStatus'] === 'Approved') $appColor = '#10b981';
-                      if($e['ApprovalStatus'] === 'Declined') $appColor = '#ef4444';
-                    ?>
-                    <span class="badge" style="background:<?php echo $appColor; ?>15; color:<?php echo $appColor; ?>;"><?php echo $e['ApprovalStatus']; ?></span>
+                    <div style="font-weight:700; color:var(--brand-green);"><?php echo $e['ExamScore'] !== null ? $e['ExamScore'] . ' / 15' : '-'; ?></div>
                   </td>
                   <td>
                     <div style="display:flex; gap:8px;">
-                        <button class="action-btn view-eval" data-id="<?php echo $e['EvaluationID']; ?>" style="background:rgba(59,130,246,0.1); color:#3b82f6; border:none; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
-                           <i data-lucide="eye" style="width:14px;"></i>
-                           <span>Review</span>
+                        <?php if($e['ExamStatus'] === 'Completed'): ?>
+                        <button type="button" disabled style="background:var(--border-color); color:var(--text-secondary); border:none; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:not-allowed; display:flex; align-items:center; gap:6px;">
+                           <i data-lucide="check-circle" style="width:14px;"></i>
+                           <span>Exam Taken</span>
                         </button>
-                        <?php if($e['ApprovalStatus'] === 'Pending Manager Approval'): ?>
-                        <button class="action-btn approve-hire" data-id="<?php echo $e['ApplicantID']; ?>" style="background:var(--brand-green); color:white; border:none; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
-                           <i data-lucide="check" style="width:14px;"></i>
-                           <span>Approve</span>
+                        <?php else: ?>
+                        <button type="button" class="action-btn start-exam" data-id="<?php echo $e['ApplicantID']; ?>" style="background:var(--brand-green); color:white; border:none; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                           <i data-lucide="play" style="width:14px;"></i>
+                           <span>Start Exam</span>
                         </button>
                         <?php endif; ?>
                     </div>
@@ -632,6 +844,83 @@ if (!$evalList) {
         </table>
       </div>
     </div> <!-- End Hiring Approval Tab -->
+
+    <!-- Tab: Applicant Selection -->
+    <div id="selectionTab" class="tab-content">
+      <div class="table-container">
+        <table class="applicant-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Candidate</th>
+              <th>Resume (20%)</th>
+              <th>Interview (40%)</th>
+              <th>Exam (40%)</th>
+              <th>Total Score</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php if($selectionList && $selectionList->num_rows > 0): ?>
+                <?php $rank = 1; while($s = $selectionList->fetch_assoc()): ?>
+                <tr>
+                   <td>
+                     <div style="width:30px; height:30px; background:<?php echo ($rank <= 3) ? 'var(--brand-green)' : 'rgba(0,0,0,0.05)'; ?>; color:<?php echo ($rank <= 3) ? 'white' : 'var(--text-secondary)'; ?>; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px;">
+                        <?php echo $rank++; ?>
+                     </div>
+                   </td>
+                   <td>
+                     <div style="font-weight:600; color:var(--text-primary);"><?php echo htmlspecialchars($s['FirstName'] . ' ' . $s['LastName']); ?></div>
+                     <div style="font-size:12px; color:var(--text-secondary);"><?php echo htmlspecialchars($s['JobTitle']); ?></div>
+                   </td>
+                   <td>
+                     <div style="font-weight:500;"><?php echo $s['ResumeScore'] ?? 0; ?> / 100</div>
+                   </td>
+                   <td>
+                     <div style="font-weight:500;"><?php echo number_format(($s['AverageRating'] ?? 0) * 20, 1); ?>% (<?php echo number_format($s['AverageRating'] ?? 0, 1); ?>/5.0)</div>
+                   </td>
+                   <td>
+                     <div style="font-weight:500;"><?php echo number_format((($s['ExamScore'] ?? 0) / 15) * 100, 1); ?>% (<?php echo $s['ExamScore'] ?? 0; ?>/15)</div>
+                   </td>
+                   <td>
+                     <div style="font-weight:800; color:<?php echo ($s['TotalScore'] >= 75) ? 'var(--brand-green)' : '#ef4444'; ?>; font-size:16px;"><?php echo number_format($s['TotalScore'], 1); ?> / 100</div>
+                   </td>
+                   <td>
+                     <?php if($s['ApprovalStatus'] === 'Hired'): ?>
+                       <div style="display:flex; align-items:center; gap:6px; color:var(--brand-green); background:rgba(44, 160, 120, 0.05); padding:8px 16px; border-radius:10px; font-size:12px; font-weight:700; border:1px solid rgba(44, 160, 120, 0.1);">
+                           <i data-lucide="check-circle" style="width:16px;"></i>
+                           <span>Hired</span>
+                       </div>
+                     <?php elseif($s['ApprovalStatus'] === 'Approved'): ?>
+                        <div style="display:flex; align-items:center; gap:6px; color:#3b82f6; background:rgba(59, 130, 246, 0.05); padding:8px 16px; border-radius:10px; font-size:12px; font-weight:700; border:1px solid rgba(59, 130, 246, 0.1);">
+                            <i data-lucide="clock" style="width:16px;"></i>
+                            <span>In Onboarding</span>
+                        </div>
+                     <?php elseif($s['TotalScore'] >= 75): ?>
+                        <button class="action-btn approve-hire" data-id="<?php echo $s['ApplicantID']; ?>" style="background:var(--brand-green); color:white; border:none; padding:8px 16px; border-radius:10px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px; transition:all 0.2s ease;">
+                            <i data-lucide="user-plus" style="width:16px;"></i>
+                            <span>Hire Now</span>
+                        </button>
+                     <?php else: ?>
+                        <div style="display:flex; align-items:center; gap:6px; color:#ef4444; background:rgba(239, 68, 68, 0.05); padding:6px 12px; border-radius:8px; font-size:11px; font-weight:600; border:1px solid rgba(239, 68, 68, 0.1);">
+                            <i data-lucide="x-circle" style="width:14px;"></i>
+                            <span>Not Eligible</span>
+                        </div>
+                     <?php endif; ?>
+                   </td>
+                </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="6" style="text-align:center; padding:40px; color:var(--text-tertiary);">
+                        <p>No candidates qualified for selection ranking yet.</p>
+                    </td>
+                </tr>
+            <?php endif; ?>
+          </tbody>
+        </table>
+      </div>
+    </div> <!-- End Selection Tab -->
     </div> <!-- End Content Wrapper -->
   </main>
 
@@ -690,6 +979,32 @@ if (!$evalList) {
                           <div class="info-item full">
                               <label style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); display: block; margin-bottom: 4px; text-transform: uppercase;">Point of Contact</label>
                               <span id="modalEmergency" style="font-size: 14px; font-weight: 600; color: var(--text-primary);">-</span>
+                          </div>
+                      </div>
+
+                      <div style="background: var(--surface); padding: 24px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+                          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                              <div style="color: var(--brand-green);"><i data-lucide="award" style="width: 20px;"></i></div>
+                              <h3 style="font-size: 15px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Candidate Assessment</h3>
+                          </div>
+                          <div style="display: flex; flex-direction: column; gap: 15px;">
+                              <div class="info-item">
+                                  <label style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); display: block; margin-bottom: 8px; text-transform: uppercase;">Resume Score (20% Weight)</label>
+                                  <div style="display: flex; gap: 10px; align-items: center;">
+                                      <input type="number" id="resumeScoreInput" min="0" max="100" placeholder="Score 0-100" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 14px;">
+                                      <button id="saveResumeScoreBtn" style="background: var(--brand-green); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px;">Save</button>
+                                  </div>
+                              </div>
+                              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
+                                  <div>
+                                      <label style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); display: block; margin-bottom: 4px; text-transform: uppercase;">Interview Rating</label>
+                                      <span id="modalRatingText" style="font-size: 14px; font-weight: 700; color: var(--brand-green);">- / 5.0</span>
+                                  </div>
+                                  <div>
+                                      <label style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); display: block; margin-bottom: 4px; text-transform: uppercase;">Exam Score</label>
+                                      <span id="modalExamText" style="font-size: 14px; font-weight: 700; color: var(--brand-green);">- / 15</span>
+                                  </div>
+                              </div>
                           </div>
                       </div>
                   </div>
@@ -989,10 +1304,17 @@ if (!$evalList) {
 
   <script src="../../js/applicationmgt.js?v=<?php echo time(); ?>"></script>
   <script>
+    // New handler for Start Exam to open in new tab
+    document.addEventListener('click', function(e) {
+        const startBtn = e.target.closest('.start-exam');
+        if (startBtn) {
+            const id = startBtn.dataset.id;
+            window.open(`take_exam.php?id=${id}`, '_blank');
+        }
+    });
+
     if (window.lucide) {
         lucide.createIcons();
-    } else {
-        console.warn("Lucide not loaded globally.");
     }
   </script>
 </body>

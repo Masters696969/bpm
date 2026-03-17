@@ -12,31 +12,6 @@ if (!isset($_SESSION['user_id']) && !isset($_SESSION['username'])) {
     exit;
 }
 
-// Function to ensure the master_data_dispatches table exists
-function initializeMasterDataDispatchesTable($conn) {
-    $tableCheck = $conn->query("SHOW TABLES LIKE 'master_data_dispatches'");
-    if ($tableCheck->num_rows == 0) {
-        $createTableQuery = "
-            CREATE TABLE `master_data_dispatches` (
-              `DispatchID` int(11) NOT NULL AUTO_INCREMENT,
-              `EmployeeID` int(11) NOT NULL,
-              `DispatchedBy` varchar(255) NOT NULL,
-              `DispatchDate` datetime DEFAULT current_timestamp(),
-              `Status` enum('Pending','Received','Rejected') DEFAULT 'Pending',
-              `Remarks` text DEFAULT NULL,
-              PRIMARY KEY (`DispatchID`),
-              KEY `EmployeeID` (`EmployeeID`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-        ";
-        if (!$conn->query($createTableQuery)) {
-            error_log("Failed to create master_data_dispatches table: " . $conn->error);
-        }
-    }
-}
-
-// Initialize the table
-initializeMasterDataDispatchesTable($conn);
-
 $input = json_decode(file_get_contents('php://input'), true);
 $action = $input['action'] ?? $_POST['action'] ?? $_GET['action'] ?? '';
 
