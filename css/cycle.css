@@ -241,10 +241,6 @@ body {
   border-radius: 10px;
 }
 
-.nav-section {
-  margin-bottom: 24px;
-}
-
 .nav-section-title {
   font-size: 11px;
   font-weight: 600;
@@ -2228,5 +2224,3 @@ textarea.input-premium {
   background: rgba(107, 114, 128, 0.1);
   color: #4b5563;
 }
-
-

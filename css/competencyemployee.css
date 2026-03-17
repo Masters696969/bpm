@@ -890,52 +890,86 @@ body {
 
 .search-filter-group {
     display: flex;
-    gap: 12px;
+    gap: 16px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .search-box-emp {
-    position: relative;
-    width: 300px;
+    width: 320px;
 }
 
-.search-box-emp i {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-tertiary);
-    width: 16px;
-    height: 16px;
-    pointer-events: none;
+.search-input-wrapper {
+    width: 100%;
 }
 
 .search-box-emp input {
     width: 100%;
-    padding: 10px 14px 10px 40px;
-    background: var(--background);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
+    padding: 12px 16px;
+    background: var(--input-bg, #ffffff);
+    border: 2px solid var(--input-border, #e5e7eb);
+    border-radius: 14px;
     color: var(--text-primary);
     font-size: 14px;
-    transition: all 0.2s ease;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    height: 48px;
+    box-sizing: border-box;
 }
 
 .search-box-emp input:focus {
     border-color: var(--brand-green);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(44, 160, 120, 0.1);
+    box-shadow: 0 0 0 4px rgba(44, 160, 120, 0.1), 0 4px 12px rgba(44, 160, 120, 0.15);
+    background: var(--surface, #ffffff);
+}
+
+.search-box-emp input::placeholder {
+    color: var(--text-tertiary);
+    font-weight: 400;
 }
 
 .filter-select-emp {
-    padding: 10px 14px;
-    background: var(--background);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
+    padding: 12px 20px;
+    background: var(--input-bg, #ffffff);
+    border: 2px solid var(--input-border, #e5e7eb);
+    border-radius: 14px;
     color: var(--text-primary);
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    min-width: 160px;
+    min-width: 180px;
+    height: 48px;
+    box-sizing: border-box;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%232ca078' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 16px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 52px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.filter-select-emp:focus {
+    border-color: var(--brand-green);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(44, 160, 120, 0.1), 0 4px 12px rgba(44, 160, 120, 0.15);
+}
+
+.filter-select-emp:hover {
+    border-color: var(--brand-green);
+    box-shadow: 0 4px 12px rgba(44, 160, 120, 0.15);
+    transform: translateY(-1px);
+}
+
+.filter-select-emp option {
+    padding: 12px 16px;
+    background: var(--surface, #ffffff);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 400;
 }
 
 /* Employee Table */

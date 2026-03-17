@@ -1,2 +1,0 @@
-[2026-03-15 16:39:29] REQUISITION REQUEST: posId=27, user=Red Gin Baldon
-SUCCESS: Requisition inserted for posId=27

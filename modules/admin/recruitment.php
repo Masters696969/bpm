@@ -44,6 +44,21 @@ $query = "
 ";
 $requisitions = $conn->query($query);
 
+// Fetch Stats for Premium Cards
+$stats_query = "
+    SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN Status = 'Posted' THEN 1 ELSE 0 END) as posted,
+        SUM(CASE WHEN Status NOT IN ('Closed', 'Cancelled', 'Posted') THEN 1 ELSE 0 END) as available
+    FROM recruitment_requisitions 
+    WHERE Status NOT IN ('Closed', 'Cancelled')
+";
+$stats_result = $conn->query($stats_query);
+$stats = $stats_result->fetch_assoc();
+$total_active = $stats['total'] ?? 0;
+$already_posted = $stats['posted'] ?? 0;
+$available_to_post = $stats['available'] ?? 0;
+
 // Handle Actions (Create Job Post - Save to Database)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'save_job_post') {
     $reqId = $_POST['requisition_id'] ?? '';
@@ -178,6 +193,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         .btn-post:hover {
             box-shadow: 0 4px 12px rgba(44, 160, 120, 0.2);
         }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--surface);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition);
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .icon-available { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .icon-posted { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .icon-total { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
     </style>
 </head>
 <body>
@@ -199,25 +266,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
       </button>
     </div>
 
-   <nav class="sidebar-nav">
+    <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">ANALYTICS & REPORTING</span>
-        <a href="dashboard.php" class="nav-item active">
+        <a href="dashboard.php" class="nav-item <?php echo ($page === 'dashboard') ? 'active' : ''; ?>">
           <i data-lucide="layout-dashboard"></i>
           <span>HR ANALYTICS</span>
         </a>
+      </div>
       <div class="nav-section">
-        <span class="nav-section-title">ADMINISTRATION</span>
-        <div class="nav-item-group active">
-          <button class="nav-item has-submenu" data-module="accounts">
+        <span class="nav-section-title">HUMAN RESOURCES I</span>
+        <div class="nav-item-group <?php echo ($module === 'recruitment') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="recruitment">
+            <div class="nav-item-content">
+              <i data-lucide="layers-plus"></i>
+              <span>Recruitment</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu <?php echo ($module === 'recruitment') ? 'active' : ''; ?>" id="submenu-recruitment">
+            <a href="recruitment.php" class="submenu-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
+              <i data-lucide="layers-plus"></i>
+              <span>Recruitment</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'applicationmgt') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'applicationmgt') ? 'active' : ''; ?>" data-module="applicationmgt">
+            <div class="nav-item-content">
+              <i data-lucide="contact-round"></i>
+              <span>Applicant Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu <?php echo ($module === 'applicationmgt') ? 'active' : ''; ?>" id="submenu-applicationmgt">
+            <a href="applicationmgt.php" class="submenu-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
+              <i data-lucide="contact-round"></i>
+              <span>Applicant Management</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'newhiredonboard') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'newhiredonboard') ? 'active' : ''; ?>" data-module="newhiredonboard">
+            <div class="nav-item-content">
+              <i data-lucide="user-plus"></i>
+              <span>New Hired Onboard</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu <?php echo ($module === 'newhiredonboard') ? 'active' : ''; ?>" id="submenu-newhiredonboard">
+            <a href="newhiredonboard.php" class="submenu-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
+              <i data-lucide="user-plus"></i>
+              <span>New Hired Onboard</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-title">HUMAN RESOURCES II</span>
+        <div class="nav-item-group <?php echo ($module === 'accounts') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'accounts') ? 'active' : ''; ?>" data-module="accounts">
             <div class="nav-item-content">
               <i data-lucide="users"></i>
               <span>Account Management</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-accounts">
-            <a href="useraccount.php" class="submenu-item active">
+          <div class="submenu <?php echo ($module === 'accounts') ? 'active' : ''; ?>" id="submenu-accounts">
+            <a href="useraccount.php" class="submenu-item <?php echo ($page === 'useraccount') ? 'active' : ''; ?>">
               <i data-lucide="user-plus"></i>
               <span>User Accounts</span>
             </a>
@@ -235,22 +351,187 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </a>
           </div>
         </div>
-       <div class="nav-section">
-        <span class="nav-section-title">Human Resources</span>
-          <div class="nav-item-group <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="corehumancapital">
+        <div class="nav-item-group <?php echo ($module === 'competency') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'competency') ? 'active' : ''; ?>" data-module="competency">
+            <div class="nav-item-content">
+              <i data-lucide="pickaxe"></i>
+              <span>Competency Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu <?php echo ($module === 'competency') ? 'active' : ''; ?>" id="submenu-competency">
+            <a href="competencylibrary.php" class="submenu-item <?php echo ($page === 'competency') ? 'active' : ''; ?>">
+              <i data-lucide="book-text"></i>
+              <span>Competency Library</span>
+            </a>
+            <a href="competencycategory.php" class="submenu-item <?php echo ($page === 'competencycategory') ? 'active' : ''; ?>">
+              <i data-lucide="chart-bar-stacked"></i>
+              <span>Competency Category</span>
+            </a>
+            <a href="competencylevel.php" class="submenu-item <?php echo ($page === 'competencylevel') ? 'active' : ''; ?>">
+              <i data-lucide="circle-gauge"></i>
+              <span>Competency Level</span>
+            </a>
+            <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
+              <i data-lucide="briefcase"></i>
+              <span>Competency Position</span>
+            </a>
+            <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+              <i data-lucide="square-user"></i>
+              <span>Competency Employee</span>
+            </a>
+            <a href="bankquestion.php" class="submenu-item <?php echo ($page === 'bankquestion') ? 'active' : ''; ?>">
+              <i data-lucide="book-open-check"></i>
+              <span>Bank Question</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'training') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'training') ? 'active' : ''; ?>" data-module="training">
+            <div class="nav-item-content">
+              <i data-lucide="briefcase-business"></i>
+              <span>Training Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu <?php echo ($module === 'training') ? 'active' : ''; ?>" id="submenu-training">
+            <a href="training.php" class="submenu-item <?php echo ($page === 'training') ? 'active' : ''; ?>">
+              <i data-lucide="briefcase-business"></i>
+              <span>Training Management</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item-group <?php echo ($module === 'succession') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'succession') ? 'active' : ''; ?>" data-module="succession">
+            <div class="nav-item-content">
+              <i data-lucide="notebook-pen"></i>
+              <span>Succession Planning</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu <?php echo ($module === 'succession') ? 'active' : ''; ?>" id="submenu-succession">
+            <a href="succession.php" class="submenu-item <?php echo ($page === 'succession') ? 'active' : ''; ?>">
+              <i data-lucide="notebook-pen"></i>
+              <span>Succession Planning</span>
+            </a>
+          </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'learning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'learning') ? 'active' : ''; ?>" data-module="learning">
+            <div class="nav-item-content">
+              <i data-lucide="notebook-text"></i>
+              <span>Learning Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu <?php echo ($module === 'learning') ? 'active' : ''; ?>" id="submenu-learning">
+            <a href="learning.php" class="submenu-item <?php echo ($page === 'learning') ? 'active' : ''; ?>">
+              <i data-lucide="notebook-text"></i>
+              <span>Learning Management</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-section-title">HUMAN RESOURCES III</span>
+        <div class="nav-item-group <?php echo ($module === 'shift') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'shift') ? 'active' : ''; ?>" data-module="shift">
+            <div class="nav-item-content">
+              <i data-lucide="calendar-check"></i>
+              <span>Shift & Scheduling</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu <?php echo ($module === 'shift') ? 'active' : ''; ?>" id="submenu-shift">
+              <a href="#" class="submenu-item <?php echo ($page === 'shift') ? 'active' : ''; ?>">
+                <i data-lucide="send-to-back"></i>
+                <span>Shift & Scheduling</span>
+              </a>
+            </div>
+        </div>
+        <div class="nav-item-group <?php echo ($module === 'claims') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'claims') ? 'active' : ''; ?>" data-module="claims">
+            <div class="nav-item-content">
+              <i data-lucide="receipt-text"></i>
+              <span>Claims & Reimbursements</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu <?php echo ($module === 'claims') ? 'active' : ''; ?>" id="submenu-claims">
+            <a href="claims.php" class="submenu-item <?php echo ($page === 'claims') ? 'active' : ''; ?>">
+              <i data-lucide="receipt-text"></i>
+              <span>Claims & Reimbursements</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item-group <?php echo ($module === 'time') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'time') ? 'active' : ''; ?>" data-module="time">
+            <div class="nav-item-content">
+              <i data-lucide="clock"></i>
+              <span>Time & Attendance</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu <?php echo ($module === 'time') ? 'active' : ''; ?>" id="submenu-time">
+            <a href="time.php" class="submenu-item <?php echo ($page === 'time') ? 'active' : ''; ?>">
+              <i data-lucide="clock"></i>
+              <span>Time & Attendance</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item-group <?php echo ($module === 'timesheet') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'timesheet') ? 'active' : ''; ?>" data-module="timesheet">
+            <div class="nav-item-content">
+              <i data-lucide="calendar-days"></i>
+              <span>Timesheet</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu <?php echo ($module === 'timesheet') ? 'active' : ''; ?>" id="submenu-timesheet">
+            <a href="timesheet.php" class="submenu-item <?php echo ($page === 'timesheet') ? 'active' : ''; ?>">
+              <i data-lucide="calendar-days"></i>
+              <span>Timesheet</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item-group <?php echo ($module === 'leave') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'leave') ? 'active' : ''; ?>" data-module="leave">
+            <div class="nav-item-content">
+              <i data-lucide="tickets-plane"></i>
+              <span>Leave Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu <?php echo ($module === 'leave') ? 'active' : ''; ?>" id="submenu-leave">
+            <a href="leave.php" class="submenu-item <?php echo ($page === 'leave') ? 'active' : ''; ?>">
+              <i data-lucide="tickets-plane"></i>
+              <span>Leave Management</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-section-title">HUMAN RESOURCES IV</span>
+        <div class="nav-item-group <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>" data-module="corehumancapital">
             <div class="nav-item-content">
               <i data-lucide="book-user"></i>
               <span>Core Human Capital</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-corehumancapital">
+          <div class="submenu <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>" id="submenu-corehumancapital">
             <a href="dispatch.php" class="submenu-item <?php echo ($page === 'dispatch') ? 'active' : ''; ?>">
               <i data-lucide="send"></i>
               <span>Master Data Dispatch</span>
             </a>
-             <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
+            <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
               <i data-lucide="building-2"></i>
               <span>Organization Profile</span>
             </a>
@@ -276,15 +557,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </a>
           </div>
         </div>
-          <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="planning">
+        <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'planning') ? 'active' : ''; ?>" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
               <span>Compensation Planning</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-planning">
+          <div class="submenu <?php echo ($module === 'planning') ? 'active' : ''; ?>" id="submenu-planning">
+            <a href="comintake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Master Data Intake</span>
+            </a>
             <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
@@ -294,8 +579,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
               <span>Statutory Contributions</span>
             </a>
             <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
-              <i data-lucide="scale"></i>
+              <i data-lucide="percent"></i>
               <span>Merit Matrix Structure</span>
+            </a>
+            <a href="allowance.php" class="submenu-item <?php echo ($page === 'allowance') ? 'active' : ''; ?>">
+              <i data-lucide="gift"></i>
+              <span>Allowance Structure</span>
             </a>
             <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
               <i data-lucide="notebook-pen"></i>
@@ -303,20 +592,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </a>
           </div>
         </div>
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="payroll">
+        <div class="nav-item-group <?php echo ($module === 'payroll') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu <?php echo ($module === 'payroll') ? 'active' : ''; ?>" data-module="payroll">
             <div class="nav-item-content">
               <i data-lucide="banknote"></i>
               <span>Payroll Management</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-payroll">
-            <a href="comperules.php" class="submenu-item">
+          <div class="submenu <?php echo ($module === 'payroll') ? 'active' : ''; ?>" id="submenu-payroll">
+            <a href="comperules.php" class="submenu-item <?php echo ($page === 'comperules') ? 'active' : ''; ?>">
               <i data-lucide="boxes"></i>
               <span>Compensation Rules</span>
             </a>
-            <a href="payroll.php" class="submenu-item active">
+            <a href="payroll.php" class="submenu-item <?php echo ($page === 'payroll') ? 'active' : ''; ?>">
               <i data-lucide="play-circle"></i>
               <span>Payroll Processing</span>
             </a>
@@ -330,58 +619,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </a>
           </div>
         </div>
-            <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
-              <i data-lucide="layers-plus"></i>
-              <span>Recruitment</span>
-            </a>
-            <a href="applicationmgt.php" class="nav-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
-              <i data-lucide="contact-round"></i>
-              <span>Applicant Management</span>
-            </a>
-      <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
-              <i data-lucide="user-plus"></i>
-              <span>New Hired Onboard</span>
-            </a>
-        </div>
-       
-
-      
-
+      </div>
         <div class="nav-section">
         <span class="nav-section-title">FINANCE</span>
         
         <div class="nav-item-group <?php echo ($module === 'budget') ? 'active' : ''; ?>">
-          <button class="nav-item has-submenu" data-module="budget">
+          <button class="nav-item has-submenu <?php echo ($module === 'budget') ? 'active' : ''; ?>" data-module="budget">
             <div class="nav-item-content">
               <i data-lucide="hand-coins"></i>
               <span>Budget Management</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-budget">
+          <div class="submenu <?php echo ($module === 'budget') ? 'active' : ''; ?>" id="submenu-budget">
             <a href="positionrequest.php" class="submenu-item <?php echo ($page === 'positionrequest') ? 'active' : ''; ?>">
               <i data-lucide="badge-dollar-sign"></i>
               <span>Position Requests</span>
             </a>
-            <a href="intake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
-              <i data-lucide="send-to-back"></i>
-              <span>Master Data Intake</span>
-            </a>
           </div>
+        </div>
+      </div>
 
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
-        
         <a href="#" class="nav-item">
           <i data-lucide="settings"></i>
           <span>Configuration</span>
         </a>
-
         <a href="#" class="nav-item">
           <i data-lucide="shield"></i>
           <span>Security</span>
         </a>
-        
       </div>
     </nav>
     
@@ -456,6 +724,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
               });
           </script>
           <?php unset($_SESSION['error_message']); endif; ?>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon icon-available">
+                <i data-lucide="megaphone"></i>
+            </div>
+            <div class="stat-info">
+                <span class="stat-value"><?php echo $available_to_post; ?></span>
+                <span class="stat-label">Available to Post</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-posted">
+                <i data-lucide="check-circle-2"></i>
+            </div>
+            <div class="stat-info">
+                <span class="stat-value"><?php echo $already_posted; ?></span>
+                <span class="stat-label">Already Posted</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-total">
+                <i data-lucide="layers"></i>
+            </div>
+            <div class="stat-info">
+                <span class="stat-value"><?php echo $total_active; ?></span>
+                <span class="stat-label">Total Active Reqs</span>
+            </div>
+        </div>
+      </div>
 
       <div class="management-card" style="background: var(--surface); border-radius: 16px; padding: 24px; border: 1px solid var(--border-color);">
         <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">

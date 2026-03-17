@@ -4,6 +4,9 @@ if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
     exit();
 }
+
+$page = 'competencycategory';
+$module = 'competency';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,7 +38,7 @@ if (!isset($_SESSION['username'])) {
       </button>
     </div>
 
-     <nav class="sidebar-nav">
+    <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">ANALYTICS & REPORTING</span>
         <a href="dashboard.php" class="nav-item active">
@@ -136,11 +139,11 @@ if (!isset($_SESSION['username'])) {
                 <i data-lucide="circle-gauge"></i>
                 <span>Competency Level</span>
               </a>
-                <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
+              <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
                 <i data-lucide="briefcase"></i>
                 <span>Competency Position</span>
               </a>
-               <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+              <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
                 <i data-lucide="square-user"></i>
                 <span>Competency Employee</span>
               </a>
@@ -317,6 +320,10 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
+           <a href="comintake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Master Data Intake</span>
+            </a>
             <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
@@ -326,8 +333,12 @@ if (!isset($_SESSION['username'])) {
               <span>Statutory Contributions</span>
             </a>
             <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
-              <i data-lucide="scale"></i>
+              <i data-lucide="percent"></i>
               <span>Merit Matrix Structure</span>
+            </a>
+            <a href="allowance.php" class="submenu-item <?php echo ($page === 'allowance') ? 'active' : ''; ?>">
+              <i data-lucide="gift"></i>
+              <span>Allowance Structure</span>
             </a>
             <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
               <i data-lucide="notebook-pen"></i>
@@ -363,10 +374,6 @@ if (!isset($_SESSION['username'])) {
           </div>
         </div>
         </div>
-       
-
-      
-
         <div class="nav-section">
         <span class="nav-section-title">FINANCE</span>
         
@@ -465,6 +472,10 @@ if (!isset($_SESSION['username'])) {
           <h2>Category Management</h2>
           <p>Define and organize the high-level groups for your competencies.</p>
         </div>
+        <button class="add-category-btn-main" id="addCategoryBtnMain">
+          <i data-lucide="plus"></i>
+          <span>Add Category</span>
+        </button>
       </div>
 
       <div class="category-grid">
@@ -477,9 +488,6 @@ if (!isset($_SESSION['username'])) {
               <th style="width: 140px; text-align: center;">
                 <div class="th-actions-cat">
                   <span>Actions</span>
-                  <button class="add-cat-btn-inline" id="addCategoryBtn" title="Add New Category">
-                    <i data-lucide="plus-circle"></i>
-                  </button>
                 </div>
               </th>
             </tr>
@@ -595,7 +603,101 @@ if (!isset($_SESSION['username'])) {
   </main>
   <script src="../../js/competencycategory.js"></script>
   <script>
-    lucide.createIcons();
+    // Simple design for add category button
+    const style = document.createElement('style');
+    style.textContent = `
+      .add-category-btn-main {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--brand-green, #2ea04f);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(46, 160, 79, 0.2);
+      }
+      
+      .add-category-btn-main:hover {
+        background: #238636;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(46, 160, 79, 0.3);
+      }
+      
+      .add-category-btn-main i {
+        width: 16px;
+        height: 16px;
+      }
+      
+      .action-bar-cat {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Make both add buttons work the same
+    document.addEventListener('DOMContentLoaded', function() {
+      // Main add button
+      const mainAddBtn = document.getElementById('addCategoryBtnMain');
+      // Modal
+      const addModal = document.getElementById('addCategoryModal');
+      // Close buttons
+      const closeAddModal = document.getElementById('closeAddModal');
+      const cancelAdd = document.getElementById('cancelAdd');
+      
+      // Function to open modal
+      function openAddModal() {
+        if (addModal) {
+          addModal.style.display = 'flex';
+          addModal.classList.add('show');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+      
+      // Function to close modal
+      function closeAddModalFunc() {
+        if (addModal) {
+          addModal.style.display = 'none';
+          addModal.classList.remove('show');
+          document.body.style.overflow = '';
+          // Reset form
+          const form = document.getElementById('addCategoryForm');
+          if (form) form.reset();
+        }
+      }
+      
+      // Add event listener to main button
+      if (mainAddBtn) {
+        mainAddBtn.addEventListener('click', openAddModal);
+      }
+      
+      if (closeAddModal) {
+        closeAddModal.addEventListener('click', closeAddModalFunc);
+      }
+      
+      if (cancelAdd) {
+        cancelAdd.addEventListener('click', closeAddModalFunc);
+      }
+      
+      // Close modal when clicking outside
+      if (addModal) {
+        addModal.addEventListener('click', function(e) {
+          if (e.target === addModal) {
+            closeAddModalFunc();
+          }
+        });
+      }
+      
+      // Initialize Lucide icons
+      lucide.createIcons();
+    });
   </script>
 </body>
 </html>
