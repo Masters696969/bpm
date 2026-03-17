@@ -12,178 +12,181 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$action = $_POST['action'] ?? $_GET['action'] ?? '';
+if (!isset($conn) || !($conn instanceof mysqli)) {
+    echo json_encode(['success' => false, 'message' => 'Database connection not found.']);
+    exit;
+}
+
+$action = '';
+if (isset($_POST['action']) && $_POST['action'] !== '') {
+    $action = trim((string)$_POST['action']);
+}
+elseif (isset($_GET['action']) && $_GET['action'] !== '') {
+    $action = trim((string)$_GET['action']);
+}
+
+function normalizeDateOrNull($value)
+{
+    $value = trim((string)$value);
+    return $value !== '' ? $value : null;
+}
+
+function resolveCurrentAccountId(mysqli $conn): int
+{
+    if (!empty($_SESSION['account_id'])) {
+        return (int)$_SESSION['account_id'];
+    }
+
+    $sessionUserId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
+    $sessionUsername = trim($_SESSION['username'] ?? '');
+
+    if ($sessionUserId > 0) {
+        $sql = "SELECT AccountID FROM useraccounts WHERE AccountID = ? OR EmployeeID = ? LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        if ($stmt) {
+            $stmt->bind_param("ii", $sessionUserId, $sessionUserId);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+            if ($row)
+                return (int)$row['AccountID'];
+        }
+    }
+
+    if ($sessionUsername !== '') {
+        $sql = "SELECT AccountID FROM useraccounts WHERE Username = ? LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        if ($stmt) {
+            $stmt->bind_param("s", $sessionUsername);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+            if ($row)
+                return (int)$row['AccountID'];
+        }
+    }
+    return 0;
+}
 
 try {
     if ($action === 'fetch_employees') {
-        $sql = "SELECT 
-                    e.EmployeeID, 
-                    e.EmployeeCode,
-                    e.FirstName, 
-                    e.LastName, 
-                    ei.EmploymentStatus, 
-                    d.DepartmentName, 
-                    p.PositionName,
-                    sg.GradeLevel
-                FROM employee e
-                LEFT JOIN employmentinformation ei ON e.EmployeeID = ei.EmployeeID
-                LEFT JOIN department d ON ei.DepartmentID = d.DepartmentID
-                LEFT JOIN positions p ON ei.PositionID = p.PositionID
-                LEFT JOIN salary_grades sg ON p.SalaryGradeID = sg.SalaryGradeID
-                ORDER BY e.EmployeeID DESC";
-        
+        $sql = "
+            SELECT 
+                e.EmployeeID, e.EmployeeCode, e.FirstName, e.LastName,
+                ei.EmploymentStatus, d.DepartmentName, p.PositionName, sg.GradeLevel,
+                COALESCE(mdd_latest.Status, 'Ready') AS DispatchStatus
+            FROM employee e
+            LEFT JOIN (
+                SELECT ei1.* FROM employmentinformation ei1
+                INNER JOIN (
+                    SELECT EmployeeID, MAX(EmploymentID) AS LatestEmploymentID
+                    FROM employmentinformation GROUP BY EmployeeID
+                ) latest_ei ON latest_ei.EmployeeID = ei1.EmployeeID AND latest_ei.LatestEmploymentID = ei1.EmploymentID
+            ) ei ON ei.EmployeeID = e.EmployeeID
+            LEFT JOIN department d ON ei.DepartmentID = d.DepartmentID
+            LEFT JOIN positions p ON ei.PositionID = p.PositionID
+            LEFT JOIN salary_grades sg ON sg.SalaryGradeID = COALESCE(ei.SalaryGradeID, p.SalaryGradeID)
+            LEFT JOIN (
+                SELECT m1.EmployeeID, m1.Status
+                FROM master_data_dispatches m1
+                INNER JOIN (
+                    SELECT EmployeeID, MAX(DispatchID) AS LatestDispatchID
+                    FROM master_data_dispatches GROUP BY EmployeeID
+                ) latest ON latest.EmployeeID = m1.EmployeeID AND latest.LatestDispatchID = m1.DispatchID
+            ) mdd_latest ON mdd_latest.EmployeeID = e.EmployeeID
+            ORDER BY e.EmployeeID DESC";
+
         $result = $conn->query($sql);
-        
         $employees = [];
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $employees[] = $row;
-            }
+        while ($row = $result->fetch_assoc()) {
+            $employees[] = $row;
         }
-        
         echo json_encode(['success' => true, 'data' => $employees]);
         exit;
-    } elseif ($action === 'get_employee_details') {
-        $employeeId = $_GET['id'] ?? 0;
-        
-        if (!$employeeId) {
-            echo json_encode(['success' => false, 'message' => 'Invalid Employee ID']);
-            exit;
-        }
+    }
 
-        $sql = "SELECT 
-                    e.*,
-                    e.EmployeeCode,
-                    ei.*,
-                    ei.BaseSalary as BaseSalary,
-                    d.DepartmentName,
-                    p.PositionName,
-                    sg.GradeLevel, sg.MinSalary, sg.MaxSalary,
-                    bd.BankName, bd.AccountNumber as BankAccountNumber, bd.AccountType,
-                    tb.TINNumber, tb.SSSNumber, tb.PhilHealthNumber, tb.PagIBIGNumber, tb.TaxStatus,
-                    ec.ContactName, ec.Relationship, ec.PhoneNumber as EmergencyPhone
-                FROM employee e
-                LEFT JOIN employmentinformation ei ON e.EmployeeID = ei.EmployeeID
-                LEFT JOIN department d ON ei.DepartmentID = d.DepartmentID
-                LEFT JOIN positions p ON ei.PositionID = p.PositionID
-                LEFT JOIN salary_grades sg ON p.SalaryGradeID = sg.SalaryGradeID
-                LEFT JOIN bankdetails bd ON e.EmployeeID = bd.EmployeeID
-                LEFT JOIN taxbenefits tb ON e.EmployeeID = tb.EmployeeID
-                LEFT JOIN emergency_contacts ec ON e.EmployeeID = ec.EmployeeID AND ec.IsPrimary = 1
-                WHERE e.EmployeeID = ?";
-        
+    if ($action === 'get_employee_details') {
+        $employeeId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        $sql = "
+            SELECT 
+                e.*, ei.BaseSalary, ei.HiringDate, ei.WorkEmail, ei.EmploymentStatus,
+                d.DepartmentName, p.PositionName, sg.GradeLevel, sg.MinSalary, sg.MaxSalary,
+                bd.BankName, bd.AccountNumber AS BankAccountNumber, bd.AccountType,
+                tb.TINNumber, tb.SSSNumber, tb.PhilHealthNumber, tb.PagIBIGNumber, tb.TaxStatus,
+                ec.ContactName, ec.Relationship, ec.PhoneNumber AS EmergencyPhone
+            FROM employee e
+            LEFT JOIN (
+                SELECT ei1.* FROM employmentinformation ei1
+                INNER JOIN (SELECT EmployeeID, MAX(EmploymentID) AS LatestEmploymentID FROM employmentinformation GROUP BY EmployeeID) le ON le.EmployeeID = ei1.EmployeeID AND le.LatestEmploymentID = ei1.EmploymentID
+            ) ei ON ei.EmployeeID = e.EmployeeID
+            LEFT JOIN department d ON ei.DepartmentID = d.DepartmentID
+            LEFT JOIN positions p ON ei.PositionID = p.PositionID
+            LEFT JOIN salary_grades sg ON sg.SalaryGradeID = COALESCE(ei.SalaryGradeID, p.SalaryGradeID)
+            LEFT JOIN bankdetails bd ON bd.EmployeeID = e.EmployeeID
+            LEFT JOIN taxbenefits tb ON tb.EmployeeID = e.EmployeeID
+            LEFT JOIN emergency_contacts ec ON ec.EmployeeID = e.EmployeeID AND ec.IsPrimary = 1
+            WHERE e.EmployeeID = ? LIMIT 1";
+
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $employeeId);
         $stmt->execute();
-        $result = $stmt->get_result();
-        $data = $result->fetch_assoc();
-        
-        if ($data) {
-            echo json_encode(['success' => true, 'data' => $data]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Employee not found']);
-        }
+        $data = $stmt->get_result()->fetch_assoc();
+        echo json_encode(['success' => true, 'data' => $data]);
         exit;
-    } elseif ($action === 'update_employee') {
-        $employeeId = $_POST['EmployeeID'] ?? 0;
-        $firstName = $_POST['FirstName'] ?? '';
-        $lastName = $_POST['LastName'] ?? '';
-        $middleName = $_POST['MiddleName'] ?? '';
-        $dob = $_POST['DateOfBirth'] ?? null;
-        $gender = $_POST['Gender'] ?? '';
-        $phone = $_POST['PhoneNumber'] ?? '';
-        $personalEmail = $_POST['PersonalEmail'] ?? '';
-        $address = $_POST['PermanentAddress'] ?? '';
-        
-        $hiringDate = $_POST['HiringDate'] ?? null;
-        $workEmail = $_POST['WorkEmail'] ?? '';
-        $empStatus = $_POST['EmploymentStatus'] ?? '';
-        $baseSalary = $_POST['BaseSalary'] ?? 0;
-        
-        $tin = $_POST['TINNumber'] ?? '';
-        $sss = $_POST['SSSNumber'] ?? '';
-        $philhealth = $_POST['PhilHealthNumber'] ?? '';
-        $pagibig = $_POST['PagIBIGNumber'] ?? '';
-        $taxStatus = $_POST['TaxStatus'] ?? 'S'; 
-
-        $bankName = 'BDO'; 
-        $accountNumber = $_POST['BankAccountNumber'] ?? '';
-        $accountType = 'Payroll'; 
-
-        $contactName = $_POST['ContactName'] ?? '';
-        $relationship = $_POST['Relationship'] ?? '';
-        $emergencyPhone = $_POST['EmergencyPhone'] ?? '';
-
-        $conn->begin_transaction();
-
-        try {
-            $sqlEmp = "UPDATE employee SET FirstName=?, LastName=?, MiddleName=?, DateOfBirth=?, Gender=?, PhoneNumber=?, PersonalEmail=?, PermanentAddress=? WHERE EmployeeID=?";
-            $stmtEmp = $conn->prepare($sqlEmp);
-            $stmtEmp->bind_param("ssssssssi", $firstName, $lastName, $middleName, $dob, $gender, $phone, $personalEmail, $address, $employeeId);
-            $stmtEmp->execute();
-
-            $sqlInfo = "UPDATE employmentinformation SET HiringDate=?, WorkEmail=?, EmploymentStatus=?, BaseSalary=? WHERE EmployeeID=?";
-            $stmtInfo = $conn->prepare($sqlInfo);
-            $stmtInfo->bind_param("sssdi", $hiringDate, $workEmail, $empStatus, $baseSalary, $employeeId);
-            $stmtInfo->execute();
-
-            $sqlCheckTax = "SELECT BenefitID FROM taxbenefits WHERE EmployeeID = ?";
-            $stmtCheckTax = $conn->prepare($sqlCheckTax);
-            $stmtCheckTax->bind_param("i", $employeeId);
-            $stmtCheckTax->execute();
-            if ($stmtCheckTax->get_result()->num_rows > 0) {
-                $sqlTax = "UPDATE taxbenefits SET TINNumber=?, SSSNumber=?, PhilHealthNumber=?, PagIBIGNumber=?, TaxStatus=? WHERE EmployeeID=?";
-                $stmtTax = $conn->prepare($sqlTax);
-                $stmtTax->bind_param("sssssi", $tin, $sss, $philhealth, $pagibig, $taxStatus, $employeeId);
-            } else {
-                $sqlTax = "INSERT INTO taxbenefits (TINNumber, SSSNumber, PhilHealthNumber, PagIBIGNumber, TaxStatus, EmployeeID) VALUES (?, ?, ?, ?, ?, ?)";
-                $stmtTax = $conn->prepare($sqlTax);
-                $stmtTax->bind_param("sssssi", $tin, $sss, $philhealth, $pagibig, $taxStatus, $employeeId);
-            }
-            $stmtTax->execute();
-
-            $sqlCheckBank = "SELECT BankDetailID FROM bankdetails WHERE EmployeeID = ?";
-            $stmtCheckBank = $conn->prepare($sqlCheckBank);
-            $stmtCheckBank->bind_param("i", $employeeId);
-            $stmtCheckBank->execute();
-            if ($stmtCheckBank->get_result()->num_rows > 0) {
-                $sqlBank = "UPDATE bankdetails SET BankName=?, AccountNumber=?, AccountType=? WHERE EmployeeID=?";
-                $stmtBank = $conn->prepare($sqlBank);
-                $stmtBank->bind_param("sssi", $bankName, $accountNumber, $accountType, $employeeId);
-            } else {
-                $sqlBank = "INSERT INTO bankdetails (BankName, AccountNumber, AccountType, EmployeeID) VALUES (?, ?, ?, ?)";
-                $stmtBank = $conn->prepare($sqlBank);
-                $stmtBank->bind_param("sssi", $bankName, $accountNumber, $accountType, $employeeId);
-            }
-            $stmtBank->execute();
-
-            $sqlCheckEC = "SELECT ContactID FROM emergency_contacts WHERE EmployeeID = ? AND IsPrimary = 1";
-            $stmtCheckEC = $conn->prepare($sqlCheckEC);
-            $stmtCheckEC->bind_param("i", $employeeId);
-            $stmtCheckEC->execute();
-            if ($stmtCheckEC->get_result()->num_rows > 0) {
-                $sqlEC = "UPDATE emergency_contacts SET ContactName=?, Relationship=?, PhoneNumber=? WHERE EmployeeID=? AND IsPrimary = 1";
-                $stmtEC = $conn->prepare($sqlEC);
-                $stmtEC->bind_param("sssi", $contactName, $relationship, $emergencyPhone, $employeeId);
-            } else {
-                $sqlEC = "INSERT INTO emergency_contacts (ContactName, Relationship, PhoneNumber, EmployeeID, IsPrimary) VALUES (?, ?, ?, ?, 1)";
-                $stmtEC = $conn->prepare($sqlEC);
-                $stmtEC->bind_param("sssi", $contactName, $relationship, $emergencyPhone, $employeeId);
-            }
-            $stmtEC->execute();
-
-            $conn->commit();
-            echo json_encode(['success' => true, 'message' => 'Employee updated successfully']);
-        } catch (Exception $e) {
-            $conn->rollback();
-            echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
-        }
-        exit;
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid action']);
     }
 
-} catch (Exception $e) {
+    if ($action === 'dispatch_employees') {
+        $decoded = json_decode($_POST['employee_ids'] ?? '[]', true);
+        $dispatchedBy = resolveCurrentAccountId($conn);
+
+        if (empty($decoded) || $dispatchedBy <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Invalid request or session expired.']);
+            exit;
+        }
+
+        $conn->begin_transaction();
+        try {
+            $inserted = 0;
+            $updated = 0;
+            $ignored = 0;
+
+            foreach ($decoded as $empId) {
+                $check = $conn->prepare("SELECT DispatchID, Status FROM master_data_dispatches WHERE EmployeeID = ? ORDER BY DispatchID DESC LIMIT 1");
+                $check->bind_param("i", $empId);
+                $check->execute();
+                $res = $check->get_result()->fetch_assoc();
+
+                if (!$res) {
+                    $ins = $conn->prepare("INSERT INTO master_data_dispatches (EmployeeID, DispatchedByAccountID, Status) VALUES (?, ?, 'Pending')");
+                    $ins->bind_param("ii", $empId, $dispatchedBy);
+                    $ins->execute();
+                    $inserted++;
+                }
+                else {
+                    $status = strtolower($res['Status']);
+                    if ($status === 'pending') {
+                        $ignored++;
+                    }
+                    else {
+                        $upd = $conn->prepare("UPDATE master_data_dispatches SET Status = 'Pending', DispatchedByAccountID = ?, DispatchedAt = CURRENT_TIMESTAMP WHERE DispatchID = ?");
+                        $upd->bind_param("ii", $dispatchedBy, $res['DispatchID']);
+                        $upd->execute();
+                        $updated++;
+                    }
+                }
+            }
+            $conn->commit();
+            echo json_encode(['success' => true, 'inserted_count' => $inserted, 'updated_count' => $updated, 'already_pending_count' => $ignored]);
+        }
+        catch (Exception $e) {
+            $conn->rollback();
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+        exit;
+    }
+
+}
+catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
 ?>

@@ -8,12 +8,13 @@ $userName = $_SESSION['user_name'] ?? $_SESSION['username'] ?? 'Employee';
 $userRole = $_SESSION['user_role'] ?? 'Staff';
 $deptName = $_SESSION['department_name'] ?? 'General';
 
-function isActive($page, $current) {
+function isActive($page, $current)
+{
     return ($page === $current) ? 'active' : '';
 }
 
-$isAttendanceOpen = in_array($current_page, ['attendance.php', 'face_enrollment.php', 'my_schedule.php']);
-$isLeaveOpen  = in_array($current_page, ['leave_apply.php', 'leave_history.php']);
+$isAttendanceOpen = in_array($current_page, ['attendance.php', 'face_enrollment.php', 'my_schedule.php', 'timesheet.php']);
+$isLeaveOpen = in_array($current_page, ['leave_apply.php', 'leave_history.php']);
 $isClaimsOpen = in_array($current_page, ['claims_apply.php', 'claims_history.php']);
 ?>
 
@@ -76,6 +77,11 @@ $isClaimsOpen = in_array($current_page, ['claims_apply.php', 'claims_history.php
                     <a href="my_schedule.php" class="submenu-item <?php echo isActive('my_schedule.php', $current_page); ?>">
                         <i data-lucide="calendar-days"></i>
                         <span>My Schedule</span>
+                    </a>
+
+                    <a href="timesheet.php" class="submenu-item <?php echo isActive('timesheet.php', $current_page); ?>">
+                        <i data-lucide="clock-3"></i>
+                        <span>My Work Hours</span>
                     </a>
                 </div>
             </div>
@@ -143,7 +149,15 @@ $isClaimsOpen = in_array($current_page, ['claims_apply.php', 'claims_history.php
     <div class="sidebar-footer">
         <div class="user-profile">
             <div class="user-avatar">
-                <img src="../../img/profile.png" alt="User">
+                <?php if (!empty($_SESSION['ProfilePhoto'])): ?>
+                  <img src="<?php echo htmlspecialchars($_SESSION['ProfilePhoto']); ?>" alt="User">
+                <?php
+else: ?>
+                  <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#4f46e5; color:#fff; font-weight:bold; font-size:16px;">
+                    <?php echo strtoupper(substr($userName, 0, 1)); ?>
+                  </div>
+                <?php
+endif; ?>
             </div>
 
             <div class="user-info">
@@ -156,28 +170,26 @@ $isClaimsOpen = in_array($current_page, ['claims_apply.php', 'claims_history.php
             </button>
 
             <div class="user-menu-dropdown" id="userMenuDropdown">
-                <div class="umd-header">
-                    <div class="umd-avatar" id="umdAvatar"></div>
-                    <div class="umd-info">
-                        <span class="umd-signed">Signed in as</span>
-                        <span class="umd-name" id="umdName"><?php echo htmlspecialchars($userName); ?></span>
-                        <span class="umd-role" id="umdRole"><?php echo htmlspecialchars($userRole); ?></span>
-                    </div>
+              <div class="umd-header">
+                <div class="umd-avatar" id="umdAvatar">
+                  <?php if (!empty($_SESSION['ProfilePhoto'])): ?>
+                    <img src="<?php echo htmlspecialchars($_SESSION['ProfilePhoto']); ?>" alt="User">
+                  <?php
+else: ?>
+                    <span><?php echo strtoupper(substr($userName, 0, 1)); ?></span>
+                  <?php
+endif; ?>
                 </div>
-
-                <div class="umd-divider"></div>
-
-                <a href="information_management.php" class="umd-item">
-                    <i data-lucide="user-round"></i>
-                    <span>Profile</span>
-                </a>
-
-                <div class="umd-divider"></div>
-
-                <a href="../../logout.php" class="umd-item umd-item-danger umd-sign-out">
-                    <i data-lucide="log-out"></i>
-                    <span>Sign Out</span>
-                </a>
+                <div class="umd-info">
+                  <span class="umd-signed">Signed in as</span>
+                  <span class="umd-name" id="umdName"><?php echo htmlspecialchars($userName); ?></span>
+                  <span class="umd-role" id="umdRole"><?php echo htmlspecialchars($userRole); ?></span>
+                </div>
+              </div>
+              <div class="umd-divider"></div>
+              <a href="profile.php" class="umd-item"><i data-lucide="user-round"></i><span>Profile</span></a>
+              <div class="umd-divider"></div>
+              <a href="../../login.php" class="umd-item umd-item-danger umd-sign-out"><i data-lucide="log-out"></i><span>Sign Out</span></a>
             </div>
         </div>
     </div>

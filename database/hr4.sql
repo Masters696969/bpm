@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 11, 2026 at 08:47 AM
+-- Generation Time: Mar 17, 2026 at 02:11 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -51,7 +51,31 @@ INSERT INTO `accounts_payable` (`id`, `batch_id`, `payee_name`, `category`, `des
 (5, 18, 'Social Security System', 'SSS', 'Payroll Deductions & Benefits for Batch PR-2026-943', 24375.00, 'Pending', '2026-03-10 17:02:37', '2026-03-10 17:02:37'),
 (6, 18, 'PhilHealth Corporation', 'PhilHealth', 'Payroll Deductions & Benefits for Batch PR-2026-943', 11550.00, 'Pending', '2026-03-10 17:02:37', '2026-03-10 17:02:37'),
 (7, 18, 'Pag-IBIG Fund', 'PagIBIG', 'Payroll Deductions & Benefits for Batch PR-2026-943', 2200.00, 'Pending', '2026-03-10 17:02:37', '2026-03-10 17:02:37'),
-(8, 18, 'Bureau of Internal Revenue', 'BIR', 'Payroll Deductions & Benefits for Batch PR-2026-943', 38063.63, 'Pending', '2026-03-10 17:02:37', '2026-03-10 17:02:37');
+(8, 18, 'Bureau of Internal Revenue', 'BIR', 'Payroll Deductions & Benefits for Batch PR-2026-943', 38063.63, 'Pending', '2026-03-10 17:02:37', '2026-03-10 17:02:37'),
+(9, 19, 'Social Security System', 'SSS', 'Payroll Deductions & Benefits for Batch PR-2026-393', 24375.00, 'Pending', '2026-03-11 07:55:42', '2026-03-11 07:55:42'),
+(10, 19, 'PhilHealth Corporation', 'PhilHealth', 'Payroll Deductions & Benefits for Batch PR-2026-393', 11550.00, 'Pending', '2026-03-11 07:55:42', '2026-03-11 07:55:42'),
+(11, 19, 'Pag-IBIG Fund', 'PagIBIG', 'Payroll Deductions & Benefits for Batch PR-2026-393', 2200.00, 'Paid', '2026-03-11 07:55:42', '2026-03-11 08:17:13'),
+(12, 19, 'Bureau of Internal Revenue', 'BIR', 'Payroll Deductions & Benefits for Batch PR-2026-393', 38063.63, 'Paid', '2026-03-11 07:55:42', '2026-03-11 08:14:38'),
+(13, 17, 'Social Security System', 'SSS', 'Payroll Deductions & Benefits for Batch PR-2026-524', 24375.00, 'Pending', '2026-03-11 13:25:36', '2026-03-11 13:25:36'),
+(14, 17, 'PhilHealth Corporation', 'PhilHealth', 'Payroll Deductions & Benefits for Batch PR-2026-524', 11550.00, 'Pending', '2026-03-11 13:25:36', '2026-03-11 13:25:36'),
+(15, 17, 'Pag-IBIG Fund', 'PagIBIG', 'Payroll Deductions & Benefits for Batch PR-2026-524', 2200.00, 'Pending', '2026-03-11 13:25:36', '2026-03-11 13:25:36'),
+(16, 17, 'Bureau of Internal Revenue', 'BIR', 'Payroll Deductions & Benefits for Batch PR-2026-524', 38063.63, 'Pending', '2026-03-11 13:25:36', '2026-03-11 13:25:36'),
+(17, 19, 'Social Security System', 'SSS', 'Payroll Deductions & Benefits for Batch PR-2026-393', 24375.00, 'Pending', '2026-03-11 13:34:37', '2026-03-11 13:34:37'),
+(18, 19, 'PhilHealth Corporation', 'PhilHealth', 'Payroll Deductions & Benefits for Batch PR-2026-393', 11550.00, 'Pending', '2026-03-11 13:34:37', '2026-03-11 13:34:37'),
+(19, 19, 'Pag-IBIG Fund', 'PagIBIG', 'Payroll Deductions & Benefits for Batch PR-2026-393', 2200.00, 'Pending', '2026-03-11 13:34:37', '2026-03-11 13:34:37'),
+(20, 19, 'Bureau of Internal Revenue', 'BIR', 'Payroll Deductions & Benefits for Batch PR-2026-393', 38063.63, 'Pending', '2026-03-11 13:34:37', '2026-03-11 13:34:37'),
+(21, 20, 'Social Security System', 'SSS', 'Payroll Deductions & Benefits for Batch PR-2026-638', 24375.00, 'Pending', '2026-03-11 16:43:59', '2026-03-11 16:43:59'),
+(22, 20, 'PhilHealth Corporation', 'PhilHealth', 'Payroll Deductions & Benefits for Batch PR-2026-638', 11550.00, 'Pending', '2026-03-11 16:43:59', '2026-03-11 16:43:59'),
+(23, 20, 'Pag-IBIG Fund', 'PagIBIG', 'Payroll Deductions & Benefits for Batch PR-2026-638', 2200.00, 'Pending', '2026-03-11 16:43:59', '2026-03-11 16:43:59'),
+(24, 20, 'Bureau of Internal Revenue', 'BIR', 'Payroll Deductions & Benefits for Batch PR-2026-638', 38063.63, 'Pending', '2026-03-11 16:43:59', '2026-03-11 16:43:59'),
+(25, 21, 'Social Security System', 'SSS', 'Payroll Deductions & Benefits for Batch PR-2026-083', 24375.00, 'Pending', '2026-03-11 18:35:11', '2026-03-11 18:35:11'),
+(26, 21, 'PhilHealth Corporation', 'PhilHealth', 'Payroll Deductions & Benefits for Batch PR-2026-083', 11550.00, 'Pending', '2026-03-11 18:35:11', '2026-03-11 18:35:11'),
+(27, 21, 'Pag-IBIG Fund', 'PagIBIG', 'Payroll Deductions & Benefits for Batch PR-2026-083', 2200.00, 'Pending', '2026-03-11 18:35:11', '2026-03-11 18:35:11'),
+(28, 21, 'Bureau of Internal Revenue', 'BIR', 'Payroll Deductions & Benefits for Batch PR-2026-083', 38063.63, 'Pending', '2026-03-11 18:35:11', '2026-03-11 18:35:11'),
+(29, 22, 'Social Security System', 'SSS', 'Payroll Deductions & Benefits for Batch PR-2026-199', 26550.00, 'Pending', '2026-03-12 00:42:51', '2026-03-12 00:42:51'),
+(30, 22, 'PhilHealth Corporation', 'PhilHealth', 'Payroll Deductions & Benefits for Batch PR-2026-199', 12275.00, 'Paid', '2026-03-12 00:42:51', '2026-03-12 02:51:54'),
+(31, 22, 'Pag-IBIG Fund', 'PagIBIG', 'Payroll Deductions & Benefits for Batch PR-2026-199', 2400.00, 'Paid', '2026-03-12 00:42:51', '2026-03-12 02:51:42'),
+(32, 22, 'Bureau of Internal Revenue', 'BIR', 'Payroll Deductions & Benefits for Batch PR-2026-199', 39290.33, 'Paid', '2026-03-12 00:42:51', '2026-03-12 02:51:28');
 
 -- --------------------------------------------------------
 
@@ -137,20 +161,32 @@ CREATE TABLE `applicants` (
   `IDPicturePath` varchar(255) DEFAULT NULL,
   `Status` enum('New','Reviewed','Shortlisted','Interview','Rejected','Accepted') DEFAULT 'New',
   `AppliedAt` timestamp NOT NULL DEFAULT current_timestamp(),
-  `ApprovalStatus` varchar(50) DEFAULT 'Pending Manager Approval'
+  `ApprovalStatus` varchar(50) DEFAULT 'Pending Manager Approval',
+  `ExamScore` int(11) DEFAULT NULL,
+  `ExamStatus` varchar(50) DEFAULT 'Pending',
+  `ResumeScore` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `applicants`
 --
 
-INSERT INTO `applicants` (`ApplicantID`, `PostID`, `FirstName`, `MiddleName`, `LastName`, `Email`, `Phone`, `Gender`, `DateOfBirth`, `PermanentAddress`, `EmergencyContactName`, `EmergencyRelationship`, `EmergencyPhone`, `ResumePath`, `GovIDPath`, `ClearancePath`, `TORPath`, `IDPicturePath`, `Status`, `AppliedAt`, `ApprovalStatus`) VALUES
-(1, 1, 'Joshua', 'Rivero', 'Suruiz', 'suruizjoshuaandrierivero@gmail.com', '09223311333', 'Male', '2004-04-06', 'congressional', 'joshua', 'Father', '09334455667', 'uploads/applications/Resume_Suruiz_1772957354.pdf', 'uploads/applications/GovID_Suruiz_1772957354.jpg', 'uploads/applications/Clearance_Suruiz_1772957354.jpg', 'uploads/applications/TOR_Suruiz_1772957354.jpg', 'uploads/applications/IDPic_Suruiz_1772957354.jpg', 'Accepted', '2026-03-08 08:09:14', 'Hired'),
-(2, 1, 'Joshua', 'Rivero', 'Suruiz', 'suruizjoshua72@gmail.com', '09223311333', 'Male', '2004-04-06', 'Quezon City', 'joshua', 'Father', '09334455667', 'uploads/applications/Resume_Suruiz_1772968966.pdf', 'uploads/applications/GovID_Suruiz_1772968966.jpg', 'uploads/applications/Clearance_Suruiz_1772968966.jpg', 'uploads/applications/TOR_Suruiz_1772968966.jpg', 'uploads/applications/IDPic_Suruiz_1772968966.jpg', 'Accepted', '2026-03-08 11:22:46', 'Hired'),
-(6, 1, 'Upgrade', NULL, 'Test', 'v2@test.com', '09123456789', 'Female', '1995-05-15', '456 Upgrade Ave', 'John Doe', 'Father', '09887776665', NULL, NULL, NULL, NULL, NULL, 'Accepted', '2026-03-08 16:14:02', 'Approved'),
-(9, 2, 'test', 'lang', 'three', 'suruizjoshua72@gmail.com', '092211333444', 'Male', '2004-04-06', 'dyan lang', 'Suruiz Joshua Andrie Rivero', 'father', '09103840798', 'uploads/applications/Resume_three_1773035846.pdf', 'uploads/applications/GovID_three_1773035846.png', 'uploads/applications/Clearance_three_1773035846.png', 'uploads/applications/TOR_three_1773035846.png', 'uploads/applications/IDPic_three_1773035846.jpg', 'Accepted', '2026-03-09 05:57:26', 'Hired'),
-(10, 3, 'Johnmar', 'S.', 'Solis', 'Solis@gmail.com', '09111240798', 'Male', '1996-01-09', 'FAIRVIEW', 'SOLIS', 'FATHER', '0922113344', 'uploads/applications/Resume_Solis_1773069431.pdf', 'uploads/applications/GovID_Solis_1773069431.jpg', 'uploads/applications/Clearance_Solis_1773069431.jpg', 'uploads/applications/TOR_Solis_1773069431.jpg', 'uploads/applications/IDPic_Solis_1773069431.jpg', 'Accepted', '2026-03-09 15:17:11', 'Hired'),
-(11, 5, 'EARL', '', 'ALARCON', 'lawrence@gmail.com', '0921111333', 'Male', '2004-04-06', 'bcp', 'joshua', 'Father', '09334455667', 'uploads/applications/Resume_ALARCON_1773160934.pdf', NULL, NULL, NULL, NULL, 'New', '2026-03-10 16:42:14', 'Pending Manager Approval');
+INSERT INTO `applicants` (`ApplicantID`, `PostID`, `FirstName`, `MiddleName`, `LastName`, `Email`, `Phone`, `Gender`, `DateOfBirth`, `PermanentAddress`, `EmergencyContactName`, `EmergencyRelationship`, `EmergencyPhone`, `ResumePath`, `GovIDPath`, `ClearancePath`, `TORPath`, `IDPicturePath`, `Status`, `AppliedAt`, `ApprovalStatus`, `ExamScore`, `ExamStatus`, `ResumeScore`) VALUES
+(1, 1, 'Joshua', 'Rivero', 'Suruiz', 'suruizjoshuaandrierivero@gmail.com', '09223311333', 'Male', '2004-04-06', 'congressional', 'joshua', 'Father', '09334455667', 'uploads/applications/Resume_Suruiz_1772957354.pdf', 'uploads/applications/GovID_Suruiz_1772957354.jpg', 'uploads/applications/Clearance_Suruiz_1772957354.jpg', 'uploads/applications/TOR_Suruiz_1772957354.jpg', 'uploads/applications/IDPic_Suruiz_1772957354.jpg', 'Accepted', '2026-03-08 08:09:14', 'Hired', 15, 'Completed', 100),
+(2, 1, 'Joshua', 'Rivero', 'Suruiz', 'suruizjoshua72@gmail.com', '09223311333', 'Male', '2004-04-06', 'Quezon City', 'joshua', 'Father', '09334455667', 'uploads/applications/Resume_Suruiz_1772968966.pdf', 'uploads/applications/GovID_Suruiz_1772968966.jpg', 'uploads/applications/Clearance_Suruiz_1772968966.jpg', 'uploads/applications/TOR_Suruiz_1772968966.jpg', 'uploads/applications/IDPic_Suruiz_1772968966.jpg', 'Accepted', '2026-03-08 11:22:46', 'Hired', 15, 'Completed', 100),
+(6, 1, 'Upgrade', NULL, 'Test', 'v2@test.com', '09123456789', 'Female', '1995-05-15', '456 Upgrade Ave', 'John Doe', 'Father', '09887776665', NULL, NULL, NULL, NULL, NULL, 'Accepted', '2026-03-08 16:14:02', 'Approved', 15, 'Completed', 0),
+(9, 2, 'test', 'lang', 'three', 'suruizjoshua72@gmail.com', '092211333444', 'Male', '2004-04-06', 'dyan lang', 'Suruiz Joshua Andrie Rivero', 'father', '09103840798', 'uploads/applications/Resume_three_1773035846.pdf', 'uploads/applications/GovID_three_1773035846.png', 'uploads/applications/Clearance_three_1773035846.png', 'uploads/applications/TOR_three_1773035846.png', 'uploads/applications/IDPic_three_1773035846.jpg', 'Accepted', '2026-03-09 05:57:26', 'Hired', 15, 'Completed', 100),
+(10, 3, 'Jonnar', 'S.', 'Solis', 'Solis@gmail.com', '09111240798', 'Male', '1996-01-09', 'FAIRVIEW', 'SOLIS', 'FATHER', '0922113344', 'uploads/applications/Resume_Solis_1773069431.pdf', 'uploads/applications/GovID_Solis_1773069431.jpg', 'uploads/applications/Clearance_Solis_1773069431.jpg', 'uploads/applications/TOR_Solis_1773069431.jpg', 'uploads/applications/IDPic_Solis_1773069431.jpg', 'Accepted', '2026-03-09 15:17:11', 'Hired', 15, 'Completed', 100),
+(11, 5, 'EARL', '', 'ALARCON', 'lawrence@gmail.com', '0921111333', 'Male', '2004-04-06', 'bcp', 'joshua', 'Father', '09334455667', 'uploads/applications/Resume_ALARCON_1773160934.pdf', NULL, NULL, NULL, NULL, 'Accepted', '2026-03-10 16:42:14', 'Hired', 15, 'Completed', 100),
+(12, 6, 'Joshua', '', 'Garcia', 'joshua@gmail.com', '09103840798', 'Male', '2026-03-11', 'B2 L5 APRIL EXT. CONGRESS. AVENUE BRGY. BAHAY TORO', 'Suruiz Joshua Andrie Rivero', 'Father', '09103840798', 'uploads/applications/Resume_Garcia_1773225411.docx', NULL, NULL, NULL, NULL, 'New', '2026-03-11 10:36:51', 'Pending Manager Approval', 15, 'Completed', 100),
+(13, 6, 'John', '', 'Vibar', 'john@gmail.com', '09103840798', 'Male', '2026-03-11', 'B2 L5 APRIL EXT. CONGRESS. AVENUE BRGY. BAHAY TORO', 'Suruiz Joshua Andrie Rivero', 'Father', '09103840798', 'uploads/applications/Resume_Vibar_1773226642.docx', NULL, NULL, NULL, NULL, 'New', '2026-03-11 10:57:22', 'Pending Manager Approval', 15, 'Completed', 100),
+(14, 7, 'example', 'S.', 'Rivero', 'suruizjoshuaandrierivero@gmail.com', '09103840798', 'Female', '2026-03-12', 'B2 L5 APRIL EXT. CONGRESS. AVENUE BRGY. BAHAY TORO', 'Suruiz Joshua Andrie Rivero', 'FATHER', '09103840798', 'uploads/applications/Resume_Rivero_1773275635.pdf', NULL, NULL, NULL, NULL, 'New', '2026-03-12 00:33:55', 'Pending Manager Approval', 15, 'Completed', 100),
+(15, 7, 'Earl', '', 'Alarcon', 'earllaurencealarcon@gmail.com', '12346789111', 'Male', '2026-03-12', '12345 brgy', 'earl', 'Father', '12345678911', 'uploads/applications/Resume_Alarcon_1773275721.pdf', NULL, NULL, NULL, NULL, 'Accepted', '2026-03-12 00:35:21', 'Hired', 15, 'Completed', 100),
+(16, 8, 'EARL', '', 'ALARCON', 'lunlunny407@gmail.com', '09123245498', 'Male', '2026-03-12', 'brgy 123', 'Earl', 'Uncle', '1209308445', 'uploads/applications/Resume_ALARCON_1773285156.pdf', NULL, NULL, NULL, NULL, 'Interview', '2026-03-12 03:12:36', 'Pending Manager Approval', 15, 'Completed', 100),
+(17, 11, 'buya', 'b', 'buya', 'buya@gmail.com', '09123456678', 'Male', '2004-04-15', 'testing', 'GLORY JEAN JOB', 'example', '09127381825', 'uploads/applications/Resume_buya_1773557679.docx', NULL, NULL, NULL, NULL, 'Accepted', '2026-03-15 06:54:39', 'Hired', 15, 'Completed', 100),
+(18, 12, 'buyaaaa', 'b', 'buya', 'buya@gmail.com', '09123456678', 'Female', '2004-04-15', 'testing', 'GLORY JEAN JOB', 'example', '09127381825', 'uploads/applications/Resume_buya_1773589319.docx', NULL, NULL, NULL, NULL, 'Accepted', '2026-03-15 15:41:59', 'Hired', 14, 'Completed', 100),
+(19, 12, 'denzel', 'g', 'Ortiz', 'Ortiz@gmail.com', '09123456678', 'Male', '2026-03-16', 'testing', 'GLORY JEAN JOB', 'example', '09127381825', 'uploads/applications/Resume_Ortiz_1773592385.pdf', NULL, NULL, NULL, NULL, 'Accepted', '2026-03-15 16:33:05', 'Hired', 15, 'Completed', 100),
+(20, 11, 'Miguel', 'b', 'Padre', 'juanmiguelerdap69@gmail.com', '0920502123', 'Male', '2004-03-03', 'testing', 'GLORY JEAN JOB', 'example', '09127381825', 'uploads/applications/Resume_Padre_1773593370.pdf', NULL, NULL, NULL, NULL, 'Accepted', '2026-03-15 16:49:30', 'Hired', 15, 'Completed', 100);
 
 -- --------------------------------------------------------
 
@@ -177,7 +213,13 @@ INSERT INTO `bankdetails` (`BankDetailID`, `EmployeeID`, `BankName`, `AccountNum
 (4, 4, 'BDO', '323235566', 'Payroll'),
 (5, 7, 'BDO', '321-313-321', 'Payroll'),
 (6, 6, 'BDO', '230-31125-2026', 'Payroll'),
-(7, 2, 'BDO', '229-411-332-222', 'Payroll');
+(7, 2, 'BDO', '229-411-332-222', 'Payroll'),
+(8, 8, 'BDO', '888-444-555-111', 'Payroll'),
+(9, 10, 'BDO', '101-010-202-303', 'Payroll'),
+(10, 14, 'BDO', '141-414-141-414', 'Payroll'),
+(11, 15, 'BDO', '151-515-151-515', 'Payroll'),
+(12, 16, 'BDO', '161-616-161-616', 'Payroll'),
+(13, 18, 'BDO', '001234567890', 'payroll');
 
 -- --------------------------------------------------------
 
@@ -259,15 +301,201 @@ CREATE TABLE `compensation_period` (
   `end_date` date NOT NULL DEFAULT '2026-02-15',
   `effective_date` date NOT NULL,
   `status` enum('Active','Inactive','Draft') DEFAULT 'Draft',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `budget_requested_amount` decimal(15,2) DEFAULT 0.00,
+  `budget_approved_amount` decimal(15,2) DEFAULT 0.00,
+  `budget_status` varchar(20) DEFAULT 'Draft',
+  `finance_ref` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `compensation_period`
 --
 
-INSERT INTO `compensation_period` (`period_id`, `period_name`, `start_date`, `end_date`, `effective_date`, `status`, `created_at`) VALUES
-(1, 'FY2026', '2026-01-01', '2026-02-15', '2026-03-01', 'Active', '2026-02-23 17:21:48');
+INSERT INTO `compensation_period` (`period_id`, `period_name`, `start_date`, `end_date`, `effective_date`, `status`, `created_at`, `budget_requested_amount`, `budget_approved_amount`, `budget_status`, `finance_ref`) VALUES
+(1, 'FY2026', '2026-01-01', '2026-02-15', '2026-03-01', 'Active', '2026-02-23 17:21:48', 5000000.00, 0.00, 'Pending', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `competencies`
+--
+
+CREATE TABLE `competencies` (
+  `id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `competencies`
+--
+
+INSERT INTO `competencies` (`id`, `category_id`, `name`, `description`) VALUES
+(1, 1, 'Communication Skills', 'Ability to communicate clearly with colleagues and clients'),
+(2, 1, 'Teamwork', 'Ability to work cooperatively with others'),
+(3, 1, 'Integrity', 'Honesty and ethical behavior in work'),
+(4, 1, 'Professionalism', 'Maintaining professional conduct and attitude'),
+(5, 1, 'Time Management', 'Ability to organize and manage work efficiently'),
+(6, 1, 'Problem Solving', 'Identifying issues and providing solutions'),
+(7, 1, 'Adaptability', 'Adjusting to new processes or changes'),
+(8, 1, 'Customer Service Orientation', 'Providing quality service to clients'),
+(9, 1, 'Accountability', 'Taking responsibility for tasks and outcomes'),
+(10, 1, 'Attention to Detail', 'Ensuring accuracy in work and documentation'),
+(11, 1, 'Compliance / Policy Adherence', 'Following company rules and procedures'),
+(12, 1, 'Digital Literacy', 'Ability to use company systems and software'),
+(13, 2, 'Recruitment Management', 'Managing hiring processes'),
+(14, 2, 'Interviewing Skills', 'Conducting applicant interviews'),
+(15, 2, 'Employee Relations', 'Handling employee concerns and disputes'),
+(16, 2, 'HR Policy Management', 'Implementing HR policies'),
+(17, 2, 'Performance Evaluation', 'Assessing employee performance'),
+(18, 2, 'Training and Development', 'Managing employee training programs'),
+(19, 2, 'HR Documentation', 'Maintaining employee records'),
+(20, 3, 'Financial Reporting', 'Preparing financial reports'),
+(21, 3, 'Budget Management', 'Managing department or company budgets'),
+(22, 3, 'Accounting Principles', 'Knowledge of accounting standards'),
+(23, 3, 'Cash Management', 'Handling company cash flow'),
+(24, 3, 'Financial Analysis', 'Analyzing financial information'),
+(25, 3, 'Audit Compliance', 'Ensuring financial records follow regulations'),
+(26, 3, 'Loan Accounting', 'Recording loan transactions properly'),
+(27, 4, 'Inventory Management', 'Managing supplies and inventory'),
+(28, 4, 'Procurement', 'Purchasing goods and services'),
+(29, 4, 'Supplier Coordination', 'Working with vendors and suppliers'),
+(30, 4, 'Asset Management', 'Tracking company assets'),
+(31, 4, 'Warehouse Operations', 'Managing storage and distribution'),
+(32, 4, 'Logistics Planning', 'Planning supply movement and delivery'),
+(33, 5, 'Loan Evaluation', 'Assessing loan applications'),
+(34, 5, 'Credit Investigation', 'Verifying borrower information'),
+(35, 5, 'Risk Assessment', 'Identifying financial risks'),
+(36, 5, 'Client Interviewing', 'Interviewing loan applicants'),
+(37, 5, 'Loan Processing', 'Processing loan documents'),
+(38, 5, 'Loan Monitoring', 'Monitoring loan repayment'),
+(39, 5, 'Debt Collection', 'Handling overdue payments'),
+(40, 5, 'Field Investigation', 'Verifying client businesses in the field'),
+(41, 6, 'Office Administration', 'Managing daily office operations'),
+(42, 6, 'Document Management', 'Handling company documents'),
+(43, 6, 'Scheduling', 'Organizing meetings and activities'),
+(44, 6, 'Records Management', 'Maintaining company records'),
+(45, 6, 'Internal Coordination', 'Communicating between departments');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `competency_categories`
+--
+
+CREATE TABLE `competency_categories` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `subtitle` varchar(100) DEFAULT NULL,
+  `department_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `competency_categories`
+--
+
+INSERT INTO `competency_categories` (`id`, `name`, `subtitle`, `department_id`) VALUES
+(1, 'Common Competencies', 'All Employees', NULL),
+(2, 'HR Department Competencies', 'Human Resources', 2),
+(3, 'Finance Department Competencies', 'Accounting & Finance', 3),
+(4, 'Logistics Department Competencies', 'Supply Chain & Operations', 4),
+(5, 'Microfinance / CORE TRANSACTION', 'Core Lending Operations', 5),
+(6, 'Administration Competencies', 'Office Management', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `competency_levels`
+--
+
+CREATE TABLE `competency_levels` (
+  `id` int(11) NOT NULL,
+  `rank_level` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `competency_levels`
+--
+
+INSERT INTO `competency_levels` (`id`, `rank_level`, `name`, `description`, `created_at`) VALUES
+(1, 1, 'Basic', 'Has limited knowledge and requires close supervision', '2026-03-13 16:18:50'),
+(2, 2, 'Intermediate', 'Can perform standard tasks with occasional guidance', '2026-03-13 16:18:50'),
+(3, 3, 'Advanced', 'Can perform tasks independently and accurately', '2026-03-13 16:18:50'),
+(4, 4, 'Expert', 'Can lead others, solve complex issues, and train staff', '2026-03-13 16:18:50');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `competency_questions`
+--
+
+CREATE TABLE `competency_questions` (
+  `id` int(11) NOT NULL,
+  `competency_id` int(11) NOT NULL,
+  `question_text` text NOT NULL,
+  `question_type` enum('multiple_choice','true_false') NOT NULL DEFAULT 'multiple_choice',
+  `option_a` varchar(255) DEFAULT NULL,
+  `option_b` varchar(255) DEFAULT NULL,
+  `option_c` varchar(255) DEFAULT NULL,
+  `option_d` varchar(255) DEFAULT NULL,
+  `correct_answer` varchar(10) NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `competency_questions`
+--
+
+INSERT INTO `competency_questions` (`id`, `competency_id`, `question_text`, `question_type`, `option_a`, `option_b`, `option_c`, `option_d`, `correct_answer`, `is_active`, `created_at`) VALUES
+(1, 1, 'What is the most effective way to communicate instructions to coworkers?', 'multiple_choice', 'Ignore questions', 'Provide clear and direct explanations', 'Send incomplete messages', 'Avoid discussion', 'B', 1, '2026-03-15 10:47:53'),
+(2, 1, 'Which behavior demonstrates good workplace communication?', 'multiple_choice', 'Interrupting others', 'Active listening', 'Ignoring feedback', 'Avoiding meetings', 'B', 1, '2026-03-15 10:47:53'),
+(3, 2, 'What is an important part of teamwork?', 'multiple_choice', 'Working alone', 'Cooperation among members', 'Avoiding responsibility', 'Ignoring team goals', 'B', 1, '2026-03-15 10:47:53'),
+(4, 2, 'Which action supports teamwork?', 'multiple_choice', 'Sharing ideas with teammates', 'Ignoring others', 'Refusing help', 'Working separately', 'A', 1, '2026-03-15 10:47:53'),
+(5, 3, 'Integrity in the workplace means:', 'multiple_choice', 'Being dishonest', 'Being ethical and honest', 'Ignoring company rules', 'Blaming coworkers', 'B', 1, '2026-03-15 10:47:53'),
+(6, 3, 'Which situation shows integrity?', 'multiple_choice', 'Hiding mistakes', 'Admitting errors honestly', 'Blaming colleagues', 'Ignoring problems', 'B', 1, '2026-03-15 10:47:53'),
+(7, 5, 'Which practice improves time management?', 'multiple_choice', 'Delaying tasks', 'Prioritizing tasks', 'Ignoring deadlines', 'Working without planning', 'B', 1, '2026-03-15 10:47:53'),
+(8, 5, 'What tool helps manage work schedules?', 'multiple_choice', 'Task planner', 'Random guessing', 'Ignoring tasks', 'Avoiding planning', 'A', 1, '2026-03-15 10:47:53'),
+(9, 6, 'What is the first step in solving a workplace problem?', 'multiple_choice', 'Blaming coworkers', 'Identifying the problem', 'Ignoring the issue', 'Making random decisions', 'B', 1, '2026-03-15 10:47:53'),
+(10, 6, 'Good problem solving requires:', 'multiple_choice', 'Careful analysis', 'Ignoring information', 'Avoiding responsibility', 'Guessing solutions', 'A', 1, '2026-03-15 10:47:53'),
+(11, 1, 'What is the most effective way to communicate instructions at work?', 'multiple_choice', 'Ignore feedback', 'Use clear and direct language', 'Avoid discussion', 'Send incomplete messages', 'B', 1, '2026-03-15 11:29:25'),
+(12, 2, 'Which behavior supports teamwork?', 'multiple_choice', 'Working alone', 'Helping colleagues finish tasks', 'Ignoring others', 'Refusing help', 'B', 1, '2026-03-15 11:29:25'),
+(13, 3, 'Integrity in the workplace means:', 'multiple_choice', 'Honesty and ethical conduct', 'Blaming others', 'Ignoring rules', 'Taking credit for others work', 'A', 1, '2026-03-15 11:29:25'),
+(14, 4, 'Professionalism means:', 'multiple_choice', 'Arriving late', 'Maintaining respectful conduct', 'Ignoring policies', 'Arguing with coworkers', 'B', 1, '2026-03-15 11:29:25'),
+(15, 5, 'What improves time management?', 'multiple_choice', 'Delaying tasks', 'Prioritizing work tasks', 'Ignoring deadlines', 'Working without planning', 'B', 1, '2026-03-15 11:29:25'),
+(16, 6, 'Problem solving begins with:', 'multiple_choice', 'Identifying the problem', 'Ignoring the issue', 'Blaming coworkers', 'Guessing solutions', 'A', 1, '2026-03-15 11:29:25'),
+(17, 7, 'Adaptability means:', 'multiple_choice', 'Resisting change', 'Adjusting to new situations', 'Avoiding tasks', 'Ignoring instructions', 'B', 1, '2026-03-15 11:29:25'),
+(18, 8, 'Customer service orientation means:', 'multiple_choice', 'Ignoring customers', 'Providing helpful service', 'Avoiding interaction', 'Refusing assistance', 'B', 1, '2026-03-15 11:29:25'),
+(19, 9, 'Accountability means:', 'multiple_choice', 'Avoiding responsibility', 'Taking responsibility for actions', 'Blaming others', 'Ignoring tasks', 'B', 1, '2026-03-15 11:29:25'),
+(20, 10, 'Attention to detail ensures:', 'multiple_choice', 'Accurate work', 'More mistakes', 'Ignoring information', 'Rushed results', 'A', 1, '2026-03-15 11:29:25'),
+(21, 13, 'Recruitment management mainly involves:', 'multiple_choice', 'Hiring employees', 'Ignoring applicants', 'Avoiding interviews', 'Deleting resumes', 'A', 1, '2026-03-15 11:29:53'),
+(22, 14, 'What is the purpose of an interview?', 'multiple_choice', 'Assess applicant suitability', 'Delay hiring', 'Ignore candidate skills', 'Cancel recruitment', 'A', 1, '2026-03-15 11:29:53'),
+(23, 15, 'Employee relations focuses on:', 'multiple_choice', 'Managing employee concerns', 'Ignoring complaints', 'Avoiding communication', 'Reducing teamwork', 'A', 1, '2026-03-15 11:29:53'),
+(24, 16, 'HR policy management ensures:', 'multiple_choice', 'Employees follow company rules', 'Ignoring procedures', 'Avoiding compliance', 'Changing policies randomly', 'A', 1, '2026-03-15 11:29:53'),
+(25, 17, 'Performance evaluation helps:', 'multiple_choice', 'Measure employee performance', 'Ignore productivity', 'Avoid feedback', 'Reduce training', 'A', 1, '2026-03-15 11:29:53'),
+(26, 20, 'Financial reporting involves:', 'multiple_choice', 'Preparing financial statements', 'Ignoring finances', 'Avoiding accounting', 'Deleting records', 'A', 1, '2026-03-15 11:30:05'),
+(27, 21, 'Budget management means:', 'multiple_choice', 'Tracking expenses and income', 'Ignoring spending', 'Avoiding financial planning', 'Deleting transactions', 'A', 1, '2026-03-15 11:30:05'),
+(28, 22, 'Accounting principles ensure:', 'multiple_choice', 'Accurate financial records', 'Random accounting', 'Ignoring standards', 'Deleting reports', 'A', 1, '2026-03-15 11:30:05'),
+(29, 23, 'Cash management refers to:', 'multiple_choice', 'Managing cash flow', 'Ignoring funds', 'Avoiding transactions', 'Deleting cash records', 'A', 1, '2026-03-15 11:30:05'),
+(30, 24, 'Financial analysis mean:', 'multiple_choice', 'Evaluating financial data', 'Ignoring reports', 'Deleting budgets', 'Avoiding calculations', 'A', 1, '2026-03-15 11:30:05'),
+(31, 27, 'Inventory management ensures:', 'multiple_choice', 'Tracking stock levels', 'Ignoring supplies', 'Deleting inventory', 'Avoiding stock control', 'A', 1, '2026-03-15 11:30:17'),
+(32, 28, 'Procurement involves:', 'multiple_choice', 'Purchasing goods and services', 'Ignoring suppliers', 'Deleting orders', 'Avoiding purchasing', 'A', 1, '2026-03-15 11:30:17'),
+(33, 29, 'Supplier coordination means:', 'multiple_choice', 'Working with vendors', 'Ignoring suppliers', 'Deleting contracts', 'Avoiding communication', 'A', 1, '2026-03-15 11:30:17'),
+(34, 30, 'Asset management focuses on:', 'multiple_choice', 'Tracking company assets', 'Ignoring equipment', 'Deleting records', 'Avoiding maintenance', 'A', 1, '2026-03-15 11:30:17'),
+(35, 33, 'Loan evaluation involves:', 'multiple_choice', 'Assessing borrower eligibility', 'Ignoring applications', 'Deleting records', 'Avoiding investigation', 'A', 1, '2026-03-15 11:30:31'),
+(36, 34, 'Credit investigation means:', 'multiple_choice', 'Verifying borrower information', 'Ignoring clients', 'Deleting files', 'Avoiding interviews', 'A', 1, '2026-03-15 11:30:31'),
+(37, 35, 'Risk assessment means:', 'multiple_choice', 'Identifying potential financial risk', 'Ignoring danger', 'Avoiding analysis', 'Deleting reports', 'A', 1, '2026-03-15 11:30:31'),
+(38, 36, 'Client interviewing helps:', 'multiple_choice', 'Understand borrower information', 'Ignore applicants', 'Avoid communication', 'Cancel loan process', 'A', 1, '2026-03-15 11:30:31'),
+(39, 41, 'Office administration mainly involves:', 'multiple_choice', 'Managing office operations', 'Ignoring workflows', 'Avoiding meetings', 'Deleting schedules', 'A', 1, '2026-03-15 11:30:48'),
+(40, 42, 'Document management ensures:', 'multiple_choice', 'Organized file storage', 'Deleting documents', 'Ignoring records', 'Random storage', 'A', 1, '2026-03-15 11:30:48'),
+(41, 43, 'Scheduling meetings helps:', 'multiple_choice', 'Organize activities efficiently', 'Delay tasks', 'Avoid coordination', 'Ignore deadlines', 'A', 1, '2026-03-15 11:30:49'),
+(42, 44, 'Records management ensures:', 'multiple_choice', 'Accurate record keeping', 'Deleting files', 'Ignoring records', 'Avoiding documentation', 'A', 1, '2026-03-15 11:30:49'),
+(43, 45, 'Internal coordination means:', 'multiple_choice', 'Communication between departments', 'Ignoring coworkers', 'Avoiding meetings', 'Working separately', 'A', 1, '2026-03-15 11:30:49');
 
 -- --------------------------------------------------------
 
@@ -319,7 +547,12 @@ INSERT INTO `emergency_contacts` (`ContactID`, `EmployeeID`, `ContactName`, `Rel
 (6, 6, 'Jean', 'Mother', '09204132131', 1),
 (10, 14, 'joshua', 'Father', '09334455667', 1),
 (11, 15, 'Suruiz Joshua Andrie Rivero', 'father', '09103840798', 1),
-(12, 16, 'SOLIS', 'FATHER', '0922113344', 1);
+(12, 16, 'SOLIS', 'FATHER', '0922113344', 1),
+(14, 18, 'earl', 'Father', '12345678911', 1),
+(15, 19, 'joshua', 'Father', '09334455667', 1),
+(16, 20, 'GLORY JEAN JOB', 'example', '09127381825', 1),
+(19, 23, 'GLORY JEAN JOB', 'example', '09127381825', 1),
+(20, 24, 'GLORY JEAN JOB', 'example', '09127381825', 1);
 
 -- --------------------------------------------------------
 
@@ -356,7 +589,156 @@ INSERT INTO `employee` (`EmployeeID`, `EmployeeCode`, `FirstName`, `MiddleName`,
 (10, 'SV20261009', 'Mike', NULL, 'Dabu', '0000-00-00', NULL, NULL, NULL, NULL, NULL),
 (14, 'L-OFF20260009', 'Joshua', 'Rivero', 'Suruiz', '2004-04-06', 'Male', 'suruizjoshuaandrierivero@gmail.com', '09223311333', 'congressional', 'uploads/applications/IDPic_Suruiz_1772957354.jpg'),
 (15, 'LM20260010', 'test', 'lang', 'three', '2004-04-06', 'Male', 'suruizjoshua72@gmail.com', '092211333444', 'dyan lang', 'uploads/applications/IDPic_three_1773035846.jpg'),
-(16, 'HRO20260011', 'Johnmar', 'S.', 'Solis', '1996-01-09', 'Male', 'Solis@gmail.com', '09111240798', 'FAIRVIEW', 'uploads/applications/IDPic_Solis_1773069431.jpg');
+(16, 'HRO20260011', 'Johnmar', 'S.', 'Solis', '1996-01-09', 'Male', 'Solis@gmail.com', '09111240798', 'FAIRVIEW', 'uploads/applications/IDPic_Solis_1773069431.jpg'),
+(18, 'LOG-OFF20260012', 'Earl', '', 'Alarcon', '2026-03-12', 'Male', 'earllaurencealarcon@gmail.com', '12346789111', '12345 brgy', NULL),
+(19, 'LSA20260013', 'EARL', '', 'ALARCON', '2004-04-06', 'Male', 'lawrence@gmail.com', '0921111333', 'bcp', NULL),
+(20, 'FACT20260014', 'buya', 'b', 'buya', '2004-04-15', 'Male', 'buya@gmail.com', '09123456678', 'testing', NULL),
+(23, 'example20260015', 'denzel', 'g', 'Ortiz', '2026-03-16', 'Male', 'Ortiz@gmail.com', '09123456678', 'testing', NULL),
+(24, 'FACT20260016', 'Miguel', 'b', 'Padre', '2004-03-03', 'Male', 'juanmiguelerdap69@gmail.com', '0920502123', 'testing', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employee_competencies`
+--
+
+CREATE TABLE `employee_competencies` (
+  `id` int(11) NOT NULL,
+  `employee_id` int(11) NOT NULL,
+  `competency_id` int(11) NOT NULL,
+  `level_id` int(11) NOT NULL,
+  `assessed_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `employee_competencies`
+--
+
+INSERT INTO `employee_competencies` (`id`, `employee_id`, `competency_id`, `level_id`, `assessed_at`) VALUES
+(1, 18, 7, 1, '2026-03-14 16:57:23'),
+(2, 18, 27, 1, '2026-03-14 16:57:24'),
+(3, 18, 32, 1, '2026-03-14 16:57:24'),
+(4, 18, 28, 1, '2026-03-14 16:57:24'),
+(5, 18, 29, 2, '2026-03-14 16:57:24'),
+(6, 18, 31, 2, '2026-03-14 16:57:24'),
+(7, 18, 9, 1, '2026-03-14 16:57:23'),
+(8, 18, 10, 1, '2026-03-14 16:57:24'),
+(9, 18, 1, 1, '2026-03-14 16:57:24'),
+(10, 18, 11, 1, '2026-03-14 16:57:24'),
+(11, 18, 8, 2, '2026-03-14 16:57:24'),
+(12, 18, 12, 1, '2026-03-14 16:57:24'),
+(13, 18, 3, 3, '2026-03-14 16:57:24'),
+(14, 18, 6, 2, '2026-03-14 16:57:24'),
+(15, 18, 4, 1, '2026-03-14 16:57:24'),
+(16, 18, 2, 3, '2026-03-14 16:57:24'),
+(17, 18, 5, 2, '2026-03-14 16:57:24'),
+(18, 18, 30, 2, '2026-03-14 16:57:24'),
+(19, 19, 9, 1, '2026-03-14 17:00:17'),
+(20, 2, 42, 4, '2026-03-15 16:05:13');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employee_leave_balances`
+--
+
+CREATE TABLE `employee_leave_balances` (
+  `BalanceID` int(11) NOT NULL,
+  `EmployeeID` int(11) NOT NULL,
+  `LeaveTypeID` int(11) NOT NULL,
+  `Year` year(4) NOT NULL,
+  `TotalCredits` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `UsedCredits` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `RemainingCredits` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `UpdatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `employee_leave_balances`
+--
+
+INSERT INTO `employee_leave_balances` (`BalanceID`, `EmployeeID`, `LeaveTypeID`, `Year`, `TotalCredits`, `UsedCredits`, `RemainingCredits`, `CreatedAt`, `UpdatedAt`) VALUES
+(1, 10, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(2, 10, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(3, 10, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(4, 10, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(5, 10, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(6, 20, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(7, 20, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(8, 20, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(9, 20, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(10, 20, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(11, 8, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(12, 8, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(13, 8, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(14, 8, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(15, 8, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(16, 4, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(17, 4, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(18, 4, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(19, 4, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(20, 4, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(21, 18, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(22, 18, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(23, 18, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(24, 18, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(25, 18, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(26, 6, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(27, 6, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(28, 6, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(29, 6, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(30, 6, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(31, 24, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(32, 24, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(33, 24, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(34, 24, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(35, 24, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(36, 19, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(37, 19, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(38, 19, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(39, 19, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(40, 19, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(41, 23, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(42, 23, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(43, 23, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(44, 23, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(45, 23, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(46, 7, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(47, 7, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(48, 7, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(49, 7, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(50, 7, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(51, 2, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(52, 2, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(53, 2, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(54, 2, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(55, 2, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(56, 3, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(57, 3, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(58, 3, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(59, 3, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(60, 3, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(61, 16, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(62, 16, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(63, 16, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(64, 16, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(65, 16, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(66, 1, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(67, 1, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(68, 1, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(69, 1, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(70, 1, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(71, 15, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(72, 15, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(73, 15, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(74, 15, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(75, 15, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(76, 14, 1, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(77, 14, 2, '2026', 15.00, 0.00, 15.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(78, 14, 3, '2026', 3.00, 0.00, 3.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(79, 14, 4, '2026', 105.00, 0.00, 105.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34'),
+(80, 14, 5, '2026', 0.00, 0.00, 0.00, '2026-03-15 17:14:34', '2026-03-15 17:14:34');
 
 -- --------------------------------------------------------
 
@@ -415,17 +797,22 @@ CREATE TABLE `employmentinformation` (
 --
 
 INSERT INTO `employmentinformation` (`EmploymentID`, `EmployeeID`, `DepartmentID`, `PositionID`, `SalaryGradeID`, `BaseSalary`, `SalaryType`, `HiringDate`, `WorkEmail`, `EmploymentStatus`, `DigitalResume`, `IDPicture`) VALUES
-(1, 1, 1, 1, 6, 80000.00, 'Monthly', '2026-02-08', 'suruiz.joshuabcp@gmail.com', 'Regular', NULL, NULL),
-(2, 2, 1, 1, 6, 80000.00, 'Monthly', '2026-02-09', 'suruizandrie@gmail.com', 'Regular', NULL, NULL),
-(3, 3, 2, 2, 2, 21000.00, 'Hourly', '2026-02-09', 'riverojosh19@gmail.com', 'Regular', NULL, NULL),
-(4, 4, 2, 4, 1, 15000.00, 'Hourly', '2026-02-08', 'earl@gmail.com', 'Regular', NULL, NULL),
-(5, 6, 2, 3, 5, 53000.00, 'Monthly', '2026-02-09', 'glory@gmail.com', 'Regular', NULL, NULL),
-(6, 7, 2, 5, 4, 40000.00, 'Monthly', '2026-02-09', 'padre@gmail.com', 'Regular', NULL, NULL),
-(7, 8, 2, 6, 3, 21000.00, 'Hourly', '2026-02-09', 'Daniella@gmail.com', 'Regular', NULL, NULL),
-(8, 10, 2, 7, 4, 40000.00, 'Monthly', '2026-02-09', 'mike@gmail.com', 'Regular', NULL, NULL),
+(1, 1, 1, 1, 6, 92882.00, 'Monthly', '2026-02-08', 'suruiz.joshuabcp@gmail.com', 'Regular', NULL, NULL),
+(2, 2, 1, 1, 6, 94694.00, 'Monthly', '2026-02-09', 'suruizandrie@gmail.com', 'Regular', NULL, NULL),
+(3, 3, 2, 2, 2, 25500.00, 'Hourly', '2026-02-09', 'riverojosh19@gmail.com', 'Regular', NULL, NULL),
+(4, 4, 2, 4, 1, 17146.00, 'Hourly', '2026-02-08', 'earl@gmail.com', 'Regular', NULL, NULL),
+(5, 6, 2, 3, 5, 60158.00, 'Monthly', '2026-02-09', 'glory@gmail.com', 'Regular', NULL, NULL),
+(6, 7, 2, 5, 4, 45676.00, 'Monthly', '2026-02-09', 'padre@gmail.com', 'Regular', NULL, NULL),
+(7, 8, 2, 6, 3, 29000.00, 'Hourly', '2026-02-09', 'Daniella@gmail.com', 'Regular', NULL, NULL),
+(8, 10, 2, 7, 4, 41000.00, 'Monthly', '2026-02-09', 'mike@gmail.com', 'Regular', NULL, NULL),
 (12, 14, 5, 13, 3, 29000.00, 'Monthly', '2026-03-09', NULL, 'Probationary', 'uploads/applications/Resume_Suruiz_1772957354.pdf', 'uploads/applications/IDPic_Suruiz_1772957354.jpg'),
 (13, 15, 4, 15, 5, 54000.00, 'Monthly', '2026-03-09', NULL, 'Probationary', 'uploads/applications/Resume_three_1773035846.pdf,uploads/applications/GovID_three_1773035846.png,uploads/applications/Clearance_three_1773035846.png,uploads/applications/TOR_three_1773035846.png', 'uploads/applications/IDPic_three_1773035846.jpg'),
-(14, 16, 2, 16, 3, 29000.00, 'Monthly', '2026-03-09', NULL, 'Probationary', 'uploads/applications/Resume_Solis_1773069431.pdf,uploads/applications/GovID_Solis_1773069431.jpg,uploads/applications/Clearance_Solis_1773069431.jpg,uploads/applications/TOR_Solis_1773069431.jpg', 'uploads/applications/IDPic_Solis_1773069431.jpg');
+(14, 16, 2, 16, 3, 29000.00, 'Monthly', '2026-03-09', NULL, 'Probationary', 'uploads/applications/Resume_Solis_1773069431.pdf,uploads/applications/GovID_Solis_1773069431.jpg,uploads/applications/Clearance_Solis_1773069431.jpg,uploads/applications/TOR_Solis_1773069431.jpg', 'uploads/applications/IDPic_Solis_1773069431.jpg'),
+(16, 18, 4, 10, 3, 29000.00, 'Monthly', '2026-03-12', NULL, 'Probationary', 'uploads/applications/Resume_Alarcon_1773275721.pdf', NULL),
+(17, 19, 5, 12, 6, 85000.00, 'Monthly', '2026-03-12', NULL, 'Probationary', 'uploads/applications/Resume_ALARCON_1773160934.pdf', NULL),
+(18, 20, 1, 26, 1, 16000.00, 'Monthly', '2026-03-15', NULL, 'Probationary', 'uploads/applications/Resume_buya_1773557679.docx', NULL),
+(21, 23, 1, 27, 6, 85000.00, 'Monthly', '2026-03-15', NULL, 'Probationary', 'uploads/applications/Resume_Ortiz_1773592385.pdf', NULL),
+(22, 24, 1, 26, 1, 16000.00, 'Monthly', '2026-03-15', NULL, 'Probationary', 'uploads/applications/Resume_Padre_1773593370.pdf', NULL);
 
 -- --------------------------------------------------------
 
@@ -480,7 +867,13 @@ CREATE TABLE `general_ledger` (
 --
 
 INSERT INTO `general_ledger` (`id`, `transaction_date`, `reference_id`, `account_name`, `description`, `debit`, `credit`, `balance`, `status`, `created_at`) VALUES
-(1, '2026-03-11 01:02:37', 'PAY-PR-2026-943', 'Salaries & Wages Payable', 'Payroll Disbursement for Batch PR-2026-943', 275615.74, 0.00, 0.00, 'Posted', '2026-03-10 17:02:37');
+(1, '2026-03-11 01:02:37', 'PAY-PR-2026-943', 'Salaries & Wages Payable', 'Payroll Disbursement for Batch PR-2026-943', 275615.74, 0.00, 0.00, 'Posted', '2026-03-10 17:02:37'),
+(2, '2026-03-11 15:55:42', 'PAY-PR-2026-393', 'Salaries & Wages Payable', 'Payroll Disbursement for Batch PR-2026-393', 275615.74, 0.00, 0.00, 'Posted', '2026-03-11 07:55:42'),
+(3, '2026-03-11 21:25:36', 'PAY-PR-2026-524', 'Salaries & Wages Payable', 'Payroll Disbursement for Batch PR-2026-524', 275615.74, 0.00, 0.00, 'Posted', '2026-03-11 13:25:36'),
+(4, '2026-03-11 21:34:37', 'PAY-PR-2026-393', 'Salaries & Wages Payable', 'Payroll Disbursement for Batch PR-2026-393', 275615.74, 0.00, 0.00, 'Posted', '2026-03-11 13:34:37'),
+(5, '2026-03-12 00:43:59', 'PAY-PR-2026-638', 'Salaries & Wages Payable', 'Payroll Disbursement for Batch PR-2026-638', 275615.74, 0.00, 0.00, 'Posted', '2026-03-11 16:43:59'),
+(6, '2026-03-12 02:35:11', 'PAY-PR-2026-083', 'Salaries & Wages Payable', 'Payroll Disbursement for Batch PR-2026-083', 275615.74, 0.00, 0.00, 'Posted', '2026-03-11 18:35:11'),
+(7, '2026-03-12 08:42:51', 'PAY-PR-2026-199', 'Salaries & Wages Payable', 'Payroll Disbursement for Batch PR-2026-199', 292501.54, 0.00, 0.00, 'Posted', '2026-03-12 00:42:51');
 
 -- --------------------------------------------------------
 
@@ -537,6 +930,47 @@ INSERT INTO `grade_allowances` (`GradeAllowanceID`, `period_id`, `SalaryGradeID`
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `holidays`
+--
+
+CREATE TABLE `holidays` (
+  `HolidayID` int(11) NOT NULL,
+  `HolidayDate` date NOT NULL,
+  `HolidayName` varchar(150) NOT NULL,
+  `HolidayTypeID` int(11) NOT NULL,
+  `IsActive` tinyint(1) NOT NULL DEFAULT 1,
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `holiday_type`
+--
+
+CREATE TABLE `holiday_type` (
+  `HolidayTypeID` int(11) NOT NULL,
+  `TypeCode` varchar(20) NOT NULL,
+  `TypeName` varchar(100) NOT NULL,
+  `PayMultiplier` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `IsPaid` tinyint(1) NOT NULL DEFAULT 0,
+  `Description` text DEFAULT NULL,
+  `IsActive` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `holiday_type`
+--
+
+INSERT INTO `holiday_type` (`HolidayTypeID`, `TypeCode`, `TypeName`, `PayMultiplier`, `IsPaid`, `Description`, `IsActive`) VALUES
+(1, 'REG', 'Regular Holiday', 2.00, 1, 'Legal regular holiday', 1),
+(2, 'SPEC', 'Special Non-Working', 1.30, 1, 'Special non-working holiday', 1),
+(3, 'UNWRK', 'Unworked Regular Holiday', 1.00, 1, 'Paid holiday not worked', 1),
+(4, 'FORCE', 'Force No Work', 0.00, 0, 'No work due to declaration', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `interview_evaluations`
 --
 
@@ -564,7 +998,13 @@ INSERT INTO `interview_evaluations` (`EvaluationID`, `ApplicantID`, `Interviewer
 (2, 9, 2, 4, 4, 5, 3, 4.00, 0, 'tst', 'Strong Hire', '2026-03-09 06:01:03'),
 (3, 10, 2, 4, 3, 4, 3, 3.50, 0, 'NICE', 'Potential Hire', '2026-03-09 15:19:26'),
 (4, 2, 2, 3, 3, 3, 5, 3.50, 0, 'Test', 'Potential Hire', '2026-03-10 03:29:47'),
-(5, 2, 2, 3, 3, 3, 5, 3.50, 0, 'Test', 'Potential Hire', '2026-03-10 03:29:51');
+(5, 2, 2, 3, 3, 3, 5, 3.50, 0, 'Test', 'Potential Hire', '2026-03-10 03:29:51'),
+(6, 15, 4, 5, 3, 5, 4, 4.25, 0, 'good enough.', 'Strong Hire', '2026-03-12 00:37:02'),
+(7, 11, 4, 5, 4, 5, 4, 4.50, 0, 'Good', 'Strong Hire', '2026-03-12 03:14:37'),
+(8, 17, 2, 3, 5, 4, 5, 4.25, 0, 'GOOD', 'Strong Hire', '2026-03-15 13:11:44'),
+(9, 18, 2, 4, 5, 5, 5, 4.75, 0, 'good', 'Strong Hire', '2026-03-15 15:43:42'),
+(10, 19, 2, 5, 5, 5, 5, 5.00, 0, 'good', 'Strong Hire', '2026-03-15 16:34:50'),
+(11, 20, 2, 5, 5, 5, 5, 5.00, 0, 'test', 'Strong Hire', '2026-03-15 16:52:27');
 
 -- --------------------------------------------------------
 
@@ -592,7 +1032,14 @@ INSERT INTO `interview_schedules` (`ScheduleID`, `ApplicantID`, `InterviewerID`,
 (1, 1, 2, '2026-03-09', '19:00:00', 'Online', 'https://meet.google.com/kjy-bfsv-uhx', 'link', '2026-03-08 10:32:54'),
 (2, 9, 11, '2026-03-09', '14:01:00', 'Online', 'https://meet.google.com/exq-ndjb-jmz', '', '2026-03-09 05:59:30'),
 (9, 10, 1, '2026-03-10', '09:00:00', 'Face-to-Face', 'https://meet.google.com/exq-ndjb-jmz', '', '2026-03-09 15:18:22'),
-(10, 2, 4, '2026-03-11', '09:00:00', 'Online', 'Https', '', '2026-03-10 03:29:14');
+(10, 2, 4, '2026-03-11', '09:00:00', 'Online', 'Https', '', '2026-03-10 03:29:14'),
+(11, 11, 1, '2026-03-12', '09:00:00', 'Online', 'https://meet.google.com/kjy-bfsv-uhx', '', '2026-03-11 11:06:29'),
+(12, 15, 4, '2026-03-13', '09:00:00', 'Face-to-Face', '090913', '', '2026-03-12 00:36:08'),
+(13, 16, 4, '2026-03-13', '09:00:00', 'Face-to-Face', '123445', '', '2026-03-12 03:13:40'),
+(14, 17, 10, '2026-03-16', '09:00:00', 'Face-to-Face', 'https://meet.google.com/kjy-bfsv-uhx', '', '2026-03-15 13:11:06'),
+(15, 18, 10, '2026-03-16', '09:00:00', 'Online', 'https://meet.google.com/kjy-bfsv-uhx', '', '2026-03-15 15:42:58'),
+(16, 19, 20, '2026-03-16', '09:00:00', 'Face-to-Face', '11', '', '2026-03-15 16:33:46'),
+(17, 20, 10, '2026-03-16', '09:00:00', 'Face-to-Face', 'https://meet.google.com/kjy-bfsv-uhx', '', '2026-03-15 16:50:10');
 
 -- --------------------------------------------------------
 
@@ -626,7 +1073,68 @@ INSERT INTO `job_postings` (`PostID`, `RequisitionID`, `Title`, `Department`, `L
 (2, 2, 'Logistic Manager', 'Logistics Department', 'Quezon City', 'Full-time', 'Monthly', '₱54k - 75k', '', 'TEST', 'TEST', 'TEST', 'Live', '2026-03-09 05:49:47'),
 (3, 4, 'HR Officer', 'HR Department', 'Quezon City', 'Full-time', 'Monthly', '₱29k - 42k', '', 'TEST', 'TEST', 'TEST', 'Live', '2026-03-09 15:05:25'),
 (4, 10, 'Logistics Officer', 'Logistics Department', 'Quezon City', 'Full-time', 'Monthly', '₱29k - 42k', '', 'Example', 'Example ', 'Example ', 'Live', '2026-03-10 03:11:20'),
-(5, 11, 'Loan Service Associates', 'Core Transaction Department', 'Quezon City', 'Full-time', 'Monthly', '₱81k - 120k', '', 'Example', 'Exampld', 'Example', 'Live', '2026-03-10 03:19:34');
+(5, 11, 'Loan Service Associates', 'Core Transaction Department', 'Quezon City', 'Full-time', 'Monthly', '₱81k - 120k', '', 'Example', 'Exampld', 'Example', 'Live', '2026-03-10 03:19:34'),
+(6, 8, 'Finance Manager', 'Finance Department', 'Quezon City', 'Full-time', 'Monthly', '₱54k - 75k', '', 'test', 'test', 'test', 'Live', '2026-03-11 10:04:02'),
+(7, 13, 'Logistics Officer', 'Logistics Department', 'Quezon City', 'Full-time', 'Monthly', '₱29k - 42k', '', 'Hiring', 'Approval', 'Documents', 'Live', '2026-03-12 00:30:42'),
+(8, 14, 'Finance Manager', 'Finance Department', 'Quezon City', 'Full-time', 'Monthly', '₱54k - 75k', '', 'Hiring', 'Example', 'Resume', 'Live', '2026-03-12 03:11:22'),
+(11, 20, 'SYSTEM ADMINISTRATOR', 'Administration', 'Quezon City', 'Full-time', 'Monthly', '₱16k - 20k', '', 'Manages an organization\'s IT infrastructure, including servers, networks, and software, ensuring they run securely, efficiently, and with high uptime.', 'Office Administration: Managing daily office operations\r\nDocument Management: Handling company documents\r\nScheduling: Organizing meetings and activities\r\nRecords Management: Maintaining company records\r\nInternal Coordination: Communicating between departments', 'Bachelor’s degree in a relevant field\r\nAt least 1–2 years of experience in a related field\r\nMinimum 3 years of work experience\r\nFresh graduates are welcome to apply\r\nRelevant professional certifications are an advantage but not required\r\nGood moral character and professional attitude', 'Live', '2026-03-15 06:42:33'),
+(12, 21, 'example', 'Administration', 'Quezon City', 'Full-time', 'Monthly', '₱81k - 120k', '', 'testing', 'Office Administration: Managing daily office operations\r\nDocument Management: Handling company documents\r\nScheduling: Organizing meetings and activities\r\nRecords Management: Maintaining company records\r\nInternal Coordination: Communicating between departments', 'Bachelor’s degree in a relevant field\r\nAt least 1–2 years of experience in a related field\r\nMinimum 3 years of work experience\r\nFresh graduates are welcome to apply\r\nRelevant professional certifications are an advantage but not required\r\nGood moral character and professional attitude', 'Live', '2026-03-15 15:40:48');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `leave_requests`
+--
+
+CREATE TABLE `leave_requests` (
+  `LeaveRequestID` int(11) NOT NULL,
+  `EmployeeID` int(11) NOT NULL,
+  `LeaveTypeID` int(11) NOT NULL,
+  `StartDate` date NOT NULL,
+  `EndDate` date NOT NULL,
+  `TotalDays` decimal(5,2) NOT NULL,
+  `Reason` text DEFAULT NULL,
+  `Status` enum('PENDING','APPROVED_BY_OFFICER','APPROVED_BY_HR','REJECTED','CANCELLED') NOT NULL DEFAULT 'PENDING',
+  `OfficerApprovedBy` int(11) DEFAULT NULL,
+  `HRApprovedBy` int(11) DEFAULT NULL,
+  `OfficerNotes` text DEFAULT NULL,
+  `HRNotes` text DEFAULT NULL,
+  `AttachmentPath` varchar(500) DEFAULT NULL,
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `UpdatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `leave_requests`
+--
+
+INSERT INTO `leave_requests` (`LeaveRequestID`, `EmployeeID`, `LeaveTypeID`, `StartDate`, `EndDate`, `TotalDays`, `Reason`, `Status`, `OfficerApprovedBy`, `HRApprovedBy`, `OfficerNotes`, `HRNotes`, `AttachmentPath`, `CreatedAt`, `UpdatedAt`) VALUES
+(1, 2, 1, '2026-03-19', '2026-03-23', 5.00, 'test', 'PENDING', NULL, NULL, NULL, NULL, 'uploads/leaves/leave_1773595102_2.jpg', '2026-03-15 17:18:22', '2026-03-15 17:18:22');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `leave_types`
+--
+
+CREATE TABLE `leave_types` (
+  `LeaveTypeID` int(11) NOT NULL,
+  `LeaveName` varchar(50) NOT NULL,
+  `IsPaid` tinyint(1) NOT NULL DEFAULT 1,
+  `DefaultCredits` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `leave_types`
+--
+
+INSERT INTO `leave_types` (`LeaveTypeID`, `LeaveName`, `IsPaid`, `DefaultCredits`, `CreatedAt`) VALUES
+(1, 'Vacation Leave', 1, 15.00, '2026-03-15 17:14:34'),
+(2, 'Sick Leave', 1, 15.00, '2026-03-15 17:14:34'),
+(3, 'Emergency Leave', 1, 3.00, '2026-03-15 17:14:34'),
+(4, 'Maternity/Paternity Leave', 1, 105.00, '2026-03-15 17:14:34'),
+(5, 'Leave Without Pay', 0, 0.00, '2026-03-15 17:14:34');
 
 -- --------------------------------------------------------
 
@@ -750,6 +1258,38 @@ INSERT INTO `pagibig_settings` (`period_id`, `employee_rate_pct`, `monthly_cap_e
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `payout_history`
+--
+
+CREATE TABLE `payout_history` (
+  `id` int(11) NOT NULL,
+  `reference_id` varchar(100) NOT NULL,
+  `employee_id` int(11) NOT NULL,
+  `employee_name` varchar(200) DEFAULT NULL,
+  `amount` decimal(15,2) DEFAULT NULL,
+  `bank_name` varchar(100) DEFAULT NULL,
+  `account_number` varchar(100) DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL,
+  `xendit_id` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payout_history`
+--
+
+INSERT INTO `payout_history` (`id`, `reference_id`, `employee_id`, `employee_name`, `amount`, `bank_name`, `account_number`, `status`, `xendit_id`, `created_at`) VALUES
+(1, 'TEST-1773243330', 1, 'Test User', 100.00, 'PH_BDO', '123456789', 'TEST', 'X-123', '2026-03-11 15:35:30'),
+(2, 'MIG-114', 1, 'Joshua Suruiz', 42106.22, 'BDO', '001234567890', 'SUCCESS', 'PRE-HISTORY', '2026-03-11 15:36:41'),
+(3, 'MIG-115', 2, 'Red Gin Baldon', 41028.10, 'BDO', '229-411-332-222', 'SUCCESS', 'PRE-HISTORY', '2026-03-11 15:36:41'),
+(4, 'MIG-116', 3, 'Noriel Dimailig', 19933.53, 'BDO', '222-444-332-222', 'SUCCESS', 'PRE-HISTORY', '2026-03-11 15:36:41'),
+(5, 'MIG-117', 4, 'Earl Caber', 15486.23, 'BDO', '323235566', 'SUCCESS', 'PRE-HISTORY', '2026-03-11 15:36:41'),
+(6, 'MIG-118', 6, 'Glory Job', 28245.80, 'BDO', '230-31125-2026', 'SUCCESS', 'PRE-HISTORY', '2026-03-11 15:36:41'),
+(7, 'MIG-119', 7, 'Miguel Padre', 23400.80, 'BDO', '321-313-321', 'SUCCESS', 'PRE-HISTORY', '2026-03-11 15:36:41');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `payroll_batches`
 --
 
@@ -759,7 +1299,7 @@ CREATE TABLE `payroll_batches` (
   `period_start` date NOT NULL,
   `period_end` date NOT NULL,
   `pay_type` enum('Semi-Monthly','Monthly') NOT NULL DEFAULT 'Semi-Monthly',
-  `status` enum('Processing','Pending Approval','Approved','Rejected','Finalized','Disbursed','Archived') NOT NULL DEFAULT 'Processing',
+  `status` enum('Processing','Pending Approval','Approved','Finance Approved','Rejected','Finalized','Disbursed','Archived') NOT NULL DEFAULT 'Processing',
   `created_by` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -769,9 +1309,10 @@ CREATE TABLE `payroll_batches` (
 --
 
 INSERT INTO `payroll_batches` (`id`, `batch_code`, `period_start`, `period_end`, `pay_type`, `status`, `created_by`, `created_at`) VALUES
-(16, 'PR-2026-978', '2026-03-01', '2026-03-15', 'Semi-Monthly', 'Archived', 0, '2026-03-10 08:29:04'),
-(17, 'PR-2026-524', '2026-03-16', '2026-03-31', 'Semi-Monthly', 'Approved', 0, '2026-03-10 11:12:23'),
-(18, 'PR-2026-943', '2026-03-01', '2026-03-15', 'Semi-Monthly', 'Disbursed', 0, '2026-03-10 13:04:02');
+(17, 'PR-2026-524', '2026-03-16', '2026-03-31', 'Semi-Monthly', 'Disbursed', 0, '2026-03-10 11:12:23'),
+(20, 'PR-2026-638', '2026-03-01', '2026-03-15', 'Semi-Monthly', 'Disbursed', 0, '2026-03-11 16:42:37'),
+(21, 'PR-2026-083', '2026-03-01', '2026-03-15', 'Semi-Monthly', 'Disbursed', 0, '2026-03-11 18:29:01'),
+(22, 'PR-2026-199', '2026-03-01', '2026-03-15', 'Semi-Monthly', 'Disbursed', 0, '2026-03-12 00:42:32');
 
 -- --------------------------------------------------------
 
@@ -816,17 +1357,17 @@ INSERT INTO `payroll_batch_items` (`id`, `batch_id`, `employee_id`, `basic_pay`,
 (111, 16, 14, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Computed', '2026-03-10 08:29:04'),
 (112, 16, 15, 27000.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 675.00, 675.00, 100.00, 100.00, 5814.20, 4164.20, 28635.80, 'Computed', '2026-03-10 08:29:04'),
 (113, 16, 16, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Computed', '2026-03-10 08:29:04'),
-(114, 17, 1, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10718.78, 8618.78, 42106.22, 'Computed', '2026-03-10 11:12:23'),
-(115, 17, 2, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10234.40, 8259.40, 41028.10, 'Computed', '2026-03-10 11:12:23'),
-(116, 17, 3, 19090.91, 3850.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3007.38, 1988.63, 19933.53, 'Computed', '2026-03-10 11:12:23'),
-(117, 17, 4, 13636.36, 2950.00, 375.00, 750.00, 0.00, 0.00, 187.50, 187.50, 100.00, 100.00, 1568.88, 894.66, 15486.23, 'Computed', '2026-03-10 11:12:23'),
-(118, 17, 6, 26500.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 662.50, 662.50, 100.00, 100.00, 5704.20, 4066.70, 28245.80, 'Computed', '2026-03-10 11:12:23'),
-(119, 17, 7, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4424.20, 2855.45, 23400.80, 'Computed', '2026-03-10 11:12:23'),
-(120, 17, 8, 19090.91, 4800.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3092.38, 2204.88, 20798.53, 'Computed', '2026-03-10 11:12:23'),
-(121, 17, 10, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4053.37, 2557.53, 22209.13, 'Computed', '2026-03-10 11:12:23'),
-(122, 17, 14, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Computed', '2026-03-10 11:12:23'),
-(123, 17, 15, 27000.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 675.00, 675.00, 100.00, 100.00, 5814.20, 4164.20, 28635.80, 'Computed', '2026-03-10 11:12:23'),
-(124, 17, 16, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Computed', '2026-03-10 11:12:23'),
+(114, 17, 1, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10718.78, 8618.78, 42106.22, 'Paid', '2026-03-10 11:12:23'),
+(115, 17, 2, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10234.40, 8259.40, 41028.10, 'Paid', '2026-03-10 11:12:23'),
+(116, 17, 3, 19090.91, 3850.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3007.38, 1988.63, 19933.53, 'Paid', '2026-03-10 11:12:23'),
+(117, 17, 4, 13636.36, 2950.00, 375.00, 750.00, 0.00, 0.00, 187.50, 187.50, 100.00, 100.00, 1568.88, 894.66, 15486.23, 'Paid', '2026-03-10 11:12:23'),
+(118, 17, 6, 26500.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 662.50, 662.50, 100.00, 100.00, 5704.20, 4066.70, 28245.80, 'Paid', '2026-03-10 11:12:23'),
+(119, 17, 7, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4424.20, 2855.45, 23400.80, 'Paid', '2026-03-10 11:12:23'),
+(120, 17, 8, 19090.91, 4800.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3092.38, 2204.88, 20798.53, 'Paid', '2026-03-10 11:12:23'),
+(121, 17, 10, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4053.37, 2557.53, 22209.13, 'Paid', '2026-03-10 11:12:23'),
+(122, 17, 14, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Paid', '2026-03-10 11:12:23'),
+(123, 17, 15, 27000.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 675.00, 675.00, 100.00, 100.00, 5814.20, 4164.20, 28635.80, 'Paid', '2026-03-10 11:12:23'),
+(124, 17, 16, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Paid', '2026-03-10 11:12:23'),
 (125, 18, 1, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10718.78, 8618.78, 42106.22, 'Computed', '2026-03-10 13:04:02'),
 (126, 18, 2, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10234.40, 8259.40, 41028.10, 'Computed', '2026-03-10 13:04:03'),
 (127, 18, 3, 19090.91, 3850.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3007.38, 1988.63, 19933.53, 'Computed', '2026-03-10 13:04:03'),
@@ -837,7 +1378,52 @@ INSERT INTO `payroll_batch_items` (`id`, `batch_id`, `employee_id`, `basic_pay`,
 (132, 18, 10, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4053.37, 2557.53, 22209.13, 'Computed', '2026-03-10 13:04:03'),
 (133, 18, 14, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Computed', '2026-03-10 13:04:03'),
 (134, 18, 15, 27000.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 675.00, 675.00, 100.00, 100.00, 5814.20, 4164.20, 28635.80, 'Computed', '2026-03-10 13:04:03'),
-(135, 18, 16, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Computed', '2026-03-10 13:04:03');
+(135, 18, 16, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Computed', '2026-03-10 13:04:03'),
+(136, 19, 1, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10718.78, 8618.78, 42106.22, 'Computed', '2026-03-11 07:51:08'),
+(137, 19, 2, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10234.40, 8259.40, 41028.10, 'Computed', '2026-03-11 07:51:08'),
+(138, 19, 3, 19090.91, 3850.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3007.38, 1988.63, 19933.53, 'Computed', '2026-03-11 07:51:08'),
+(139, 19, 4, 13636.36, 2950.00, 375.00, 750.00, 0.00, 0.00, 187.50, 187.50, 100.00, 100.00, 1568.88, 894.66, 15486.23, 'Computed', '2026-03-11 07:51:08'),
+(140, 19, 6, 26500.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 662.50, 662.50, 100.00, 100.00, 5704.20, 4066.70, 28245.80, 'Computed', '2026-03-11 07:51:08'),
+(141, 19, 7, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4424.20, 2855.45, 23400.80, 'Computed', '2026-03-11 07:51:08'),
+(142, 19, 8, 19090.91, 4800.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3092.38, 2204.88, 20798.53, 'Computed', '2026-03-11 07:51:08'),
+(143, 19, 10, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4053.37, 2557.53, 22209.13, 'Computed', '2026-03-11 07:51:08'),
+(144, 19, 14, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Computed', '2026-03-11 07:51:08'),
+(145, 19, 15, 27000.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 675.00, 675.00, 100.00, 100.00, 5814.20, 4164.20, 28635.80, 'Computed', '2026-03-11 07:51:08'),
+(146, 19, 16, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Computed', '2026-03-11 07:51:08'),
+(147, 20, 1, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10718.78, 8618.78, 42106.22, 'Paid', '2026-03-11 16:42:37'),
+(148, 20, 2, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10234.40, 8259.40, 41028.10, 'Paid', '2026-03-11 16:42:37'),
+(149, 20, 3, 19090.91, 3850.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3007.38, 1988.63, 19933.53, 'Paid', '2026-03-11 16:42:37'),
+(150, 20, 4, 13636.36, 2950.00, 375.00, 750.00, 0.00, 0.00, 187.50, 187.50, 100.00, 100.00, 1568.88, 894.66, 15486.23, 'Paid', '2026-03-11 16:42:38'),
+(151, 20, 6, 26500.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 662.50, 662.50, 100.00, 100.00, 5704.20, 4066.70, 28245.80, 'Paid', '2026-03-11 16:42:38'),
+(152, 20, 7, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4424.20, 2855.45, 23400.80, 'Paid', '2026-03-11 16:42:38'),
+(153, 20, 8, 19090.91, 4800.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3092.38, 2204.88, 20798.53, 'Paid', '2026-03-11 16:42:38'),
+(154, 20, 10, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4053.37, 2557.53, 22209.13, 'Paid', '2026-03-11 16:42:38'),
+(155, 20, 14, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Paid', '2026-03-11 16:42:38'),
+(156, 20, 15, 27000.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 675.00, 675.00, 100.00, 100.00, 5814.20, 4164.20, 28635.80, 'Paid', '2026-03-11 16:42:38'),
+(157, 20, 16, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Paid', '2026-03-11 16:42:38'),
+(158, 21, 1, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10718.78, 8618.78, 42106.22, 'Paid', '2026-03-11 18:29:01'),
+(159, 21, 2, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10234.40, 8259.40, 41028.10, 'Paid', '2026-03-11 18:29:01'),
+(160, 21, 3, 19090.91, 3850.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3007.38, 1988.63, 19933.53, 'Paid', '2026-03-11 18:29:01'),
+(161, 21, 4, 13636.36, 2950.00, 375.00, 750.00, 0.00, 0.00, 187.50, 187.50, 100.00, 100.00, 1568.88, 894.66, 15486.23, 'Paid', '2026-03-11 18:29:01'),
+(162, 21, 6, 26500.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 662.50, 662.50, 100.00, 100.00, 5704.20, 4066.70, 28245.80, 'Paid', '2026-03-11 18:29:01'),
+(163, 21, 7, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4424.20, 2855.45, 23400.80, 'Paid', '2026-03-11 18:29:01'),
+(164, 21, 8, 19090.91, 4800.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3092.38, 2204.88, 20798.53, 'Paid', '2026-03-11 18:29:01'),
+(165, 21, 10, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4053.37, 2557.53, 22209.13, 'Paid', '2026-03-11 18:29:01'),
+(166, 21, 14, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Paid', '2026-03-11 18:29:01'),
+(167, 21, 15, 27000.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 675.00, 675.00, 100.00, 100.00, 5814.20, 4164.20, 28635.80, 'Paid', '2026-03-11 18:29:01'),
+(168, 21, 16, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Paid', '2026-03-11 18:29:01'),
+(169, 22, 1, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10718.78, 8618.78, 42106.22, 'Paid', '2026-03-12 00:42:32'),
+(170, 22, 2, 40000.00, 9700.00, 500.00, 1000.00, 375.00, 750.00, 1000.00, 1000.00, 100.00, 100.00, 10234.40, 8259.40, 41028.10, 'Paid', '2026-03-12 00:42:32'),
+(171, 22, 3, 19090.91, 3850.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3007.38, 1988.63, 19933.53, 'Paid', '2026-03-12 00:42:32'),
+(172, 22, 4, 13636.36, 2950.00, 375.00, 750.00, 0.00, 0.00, 187.50, 187.50, 100.00, 100.00, 1568.88, 894.66, 15486.23, 'Paid', '2026-03-12 00:42:32'),
+(173, 22, 6, 26500.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 662.50, 662.50, 100.00, 100.00, 5704.20, 4066.70, 28245.80, 'Paid', '2026-03-12 00:42:32'),
+(174, 22, 7, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4424.20, 2855.45, 23400.80, 'Paid', '2026-03-12 00:42:32'),
+(175, 22, 8, 19090.91, 4800.00, 500.00, 1000.00, 25.00, 50.00, 262.50, 262.50, 100.00, 100.00, 3092.38, 2204.88, 20798.53, 'Paid', '2026-03-12 00:42:32'),
+(176, 22, 10, 20000.00, 5950.00, 500.00, 1000.00, 375.00, 750.00, 500.00, 500.00, 100.00, 100.00, 4053.37, 2557.53, 22209.13, 'Paid', '2026-03-12 00:42:32'),
+(177, 22, 14, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Paid', '2026-03-12 00:42:32'),
+(178, 22, 15, 27000.00, 7450.00, 500.00, 1000.00, 375.00, 750.00, 675.00, 675.00, 100.00, 100.00, 5814.20, 4164.20, 28635.80, 'Paid', '2026-03-12 00:42:32'),
+(179, 22, 16, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Paid', '2026-03-12 00:42:32'),
+(180, 22, 18, 14500.00, 4800.00, 500.00, 1000.00, 225.00, 450.00, 362.50, 362.50, 100.00, 100.00, 2414.20, 1226.70, 16885.80, 'Paid', '2026-03-12 00:42:32');
 
 -- --------------------------------------------------------
 
@@ -2763,7 +3349,670 @@ INSERT INTO `payroll_item_components` (`id`, `item_id`, `component_type`, `compo
 (1917, 135, 'Deduction', 'PhilHealth (ER)', 362.50),
 (1918, 135, 'Deduction', 'Pag-IBIG (EE)', 100.00),
 (1919, 135, 'Deduction', 'Pag-IBIG (ER)', 100.00),
-(1920, 135, 'Deduction', 'Withholding Tax', 1226.70);
+(1920, 135, 'Deduction', 'Withholding Tax', 1226.70),
+(1921, 136, 'Allowance', 'Rice Subsidy', 2500.00),
+(1922, 136, 'Allowance', 'Meal Allowance', 3500.00),
+(1923, 136, 'Allowance', 'Laundry Allowance', 400.00),
+(1924, 136, 'Allowance', 'Travel Allowance', 10000.00),
+(1925, 136, 'Allowance', 'Communication Allowance', 3000.00),
+(1926, 136, 'Allowance', 'Overtime Pay', 3125.00),
+(1927, 136, 'Deduction', 'SSS Regular (EE)', 500.00),
+(1928, 136, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(1929, 136, 'Deduction', 'SSS WISP (EE)', 375.00),
+(1930, 136, 'Deduction', 'SSS WISP (ER)', 750.00),
+(1931, 136, 'Deduction', 'PhilHealth (EE)', 1000.00),
+(1932, 136, 'Deduction', 'PhilHealth (ER)', 1000.00),
+(1933, 136, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(1934, 136, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(1935, 136, 'Deduction', 'Late/Undertime', 125.00),
+(1936, 136, 'Deduction', 'Withholding Tax', 8618.78),
+(1937, 137, 'Allowance', 'Rice Subsidy', 2500.00),
+(1938, 137, 'Allowance', 'Meal Allowance', 3500.00),
+(1939, 137, 'Allowance', 'Laundry Allowance', 400.00),
+(1940, 137, 'Allowance', 'Travel Allowance', 10000.00),
+(1941, 137, 'Allowance', 'Communication Allowance', 3000.00),
+(1942, 137, 'Allowance', 'Overtime Pay', 1562.50),
+(1943, 137, 'Deduction', 'SSS Regular (EE)', 500.00),
+(1944, 137, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(1945, 137, 'Deduction', 'SSS WISP (EE)', 375.00),
+(1946, 137, 'Deduction', 'SSS WISP (ER)', 750.00),
+(1947, 137, 'Deduction', 'PhilHealth (EE)', 1000.00),
+(1948, 137, 'Deduction', 'PhilHealth (ER)', 1000.00),
+(1949, 137, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(1950, 137, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(1951, 137, 'Deduction', 'Withholding Tax', 8259.40),
+(1952, 138, 'Allowance', 'Rice Subsidy', 2500.00),
+(1953, 138, 'Allowance', 'Meal Allowance', 1500.00),
+(1954, 138, 'Allowance', 'Laundry Allowance', 400.00),
+(1955, 138, 'Allowance', 'Travel Allowance', 2500.00),
+(1956, 138, 'Allowance', 'Communication Allowance', 800.00),
+(1957, 138, 'Deduction', 'SSS Regular (EE)', 500.00),
+(1958, 138, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(1959, 138, 'Deduction', 'SSS WISP (EE)', 25.00),
+(1960, 138, 'Deduction', 'SSS WISP (ER)', 50.00),
+(1961, 138, 'Deduction', 'PhilHealth (EE)', 262.50),
+(1962, 138, 'Deduction', 'PhilHealth (ER)', 262.50),
+(1963, 138, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(1964, 138, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(1965, 138, 'Deduction', 'Late/Undertime', 131.25),
+(1966, 138, 'Deduction', 'Withholding Tax', 1988.63),
+(1967, 139, 'Allowance', 'Rice Subsidy', 2500.00),
+(1968, 139, 'Allowance', 'Meal Allowance', 1000.00),
+(1969, 139, 'Allowance', 'Laundry Allowance', 400.00),
+(1970, 139, 'Allowance', 'Travel Allowance', 1500.00),
+(1971, 139, 'Allowance', 'Communication Allowance', 500.00),
+(1972, 139, 'Allowance', 'Overtime Pay', 468.75),
+(1973, 139, 'Deduction', 'SSS Regular (EE)', 375.00),
+(1974, 139, 'Deduction', 'SSS Regular (ER)', 750.00),
+(1975, 139, 'Deduction', 'PhilHealth (EE)', 187.50),
+(1976, 139, 'Deduction', 'PhilHealth (ER)', 187.50),
+(1977, 139, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(1978, 139, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(1979, 139, 'Deduction', 'Late/Undertime', 11.72),
+(1980, 139, 'Deduction', 'Withholding Tax', 894.66),
+(1981, 140, 'Allowance', 'Rice Subsidy', 2500.00),
+(1982, 140, 'Allowance', 'Meal Allowance', 3000.00),
+(1983, 140, 'Allowance', 'Laundry Allowance', 400.00),
+(1984, 140, 'Allowance', 'Travel Allowance', 7000.00),
+(1985, 140, 'Allowance', 'Communication Allowance', 2000.00),
+(1986, 140, 'Deduction', 'SSS Regular (EE)', 500.00),
+(1987, 140, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(1988, 140, 'Deduction', 'SSS WISP (EE)', 375.00),
+(1989, 140, 'Deduction', 'SSS WISP (ER)', 750.00),
+(1990, 140, 'Deduction', 'PhilHealth (EE)', 662.50),
+(1991, 140, 'Deduction', 'PhilHealth (ER)', 662.50),
+(1992, 140, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(1993, 140, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(1994, 140, 'Deduction', 'Withholding Tax', 4066.70),
+(1995, 141, 'Allowance', 'Rice Subsidy', 2500.00),
+(1996, 141, 'Allowance', 'Meal Allowance', 2500.00),
+(1997, 141, 'Allowance', 'Laundry Allowance', 400.00),
+(1998, 141, 'Allowance', 'Travel Allowance', 5000.00),
+(1999, 141, 'Allowance', 'Communication Allowance', 1500.00),
+(2000, 141, 'Allowance', 'Overtime Pay', 1875.00),
+(2001, 141, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2002, 141, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2003, 141, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2004, 141, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2005, 141, 'Deduction', 'PhilHealth (EE)', 500.00),
+(2006, 141, 'Deduction', 'PhilHealth (ER)', 500.00);
+INSERT INTO `payroll_item_components` (`id`, `item_id`, `component_type`, `component_name`, `amount`) VALUES
+(2007, 141, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2008, 141, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2009, 141, 'Deduction', 'Late/Undertime', 93.75),
+(2010, 141, 'Deduction', 'Withholding Tax', 2855.45),
+(2011, 142, 'Allowance', 'Rice Subsidy', 2500.00),
+(2012, 142, 'Allowance', 'Meal Allowance', 2000.00),
+(2013, 142, 'Allowance', 'Laundry Allowance', 400.00),
+(2014, 142, 'Allowance', 'Travel Allowance', 3500.00),
+(2015, 142, 'Allowance', 'Communication Allowance', 1200.00),
+(2016, 142, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2017, 142, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2018, 142, 'Deduction', 'SSS WISP (EE)', 25.00),
+(2019, 142, 'Deduction', 'SSS WISP (ER)', 50.00),
+(2020, 142, 'Deduction', 'PhilHealth (EE)', 262.50),
+(2021, 142, 'Deduction', 'PhilHealth (ER)', 262.50),
+(2022, 142, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2023, 142, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2024, 142, 'Deduction', 'Withholding Tax', 2204.88),
+(2025, 143, 'Allowance', 'Rice Subsidy', 2500.00),
+(2026, 143, 'Allowance', 'Meal Allowance', 2500.00),
+(2027, 143, 'Allowance', 'Laundry Allowance', 400.00),
+(2028, 143, 'Allowance', 'Travel Allowance', 5000.00),
+(2029, 143, 'Allowance', 'Communication Allowance', 1500.00),
+(2030, 143, 'Allowance', 'Overtime Pay', 312.50),
+(2031, 143, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2032, 143, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2033, 143, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2034, 143, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2035, 143, 'Deduction', 'PhilHealth (EE)', 500.00),
+(2036, 143, 'Deduction', 'PhilHealth (ER)', 500.00),
+(2037, 143, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2038, 143, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2039, 143, 'Deduction', 'Late/Undertime', 20.84),
+(2040, 143, 'Deduction', 'Withholding Tax', 2557.53),
+(2041, 144, 'Allowance', 'Rice Subsidy', 2500.00),
+(2042, 144, 'Allowance', 'Meal Allowance', 2000.00),
+(2043, 144, 'Allowance', 'Laundry Allowance', 400.00),
+(2044, 144, 'Allowance', 'Travel Allowance', 3500.00),
+(2045, 144, 'Allowance', 'Communication Allowance', 1200.00),
+(2046, 144, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2047, 144, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2048, 144, 'Deduction', 'SSS WISP (EE)', 225.00),
+(2049, 144, 'Deduction', 'SSS WISP (ER)', 450.00),
+(2050, 144, 'Deduction', 'PhilHealth (EE)', 362.50),
+(2051, 144, 'Deduction', 'PhilHealth (ER)', 362.50),
+(2052, 144, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2053, 144, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2054, 144, 'Deduction', 'Withholding Tax', 1226.70),
+(2055, 145, 'Allowance', 'Rice Subsidy', 2500.00),
+(2056, 145, 'Allowance', 'Meal Allowance', 3000.00),
+(2057, 145, 'Allowance', 'Laundry Allowance', 400.00),
+(2058, 145, 'Allowance', 'Travel Allowance', 7000.00),
+(2059, 145, 'Allowance', 'Communication Allowance', 2000.00),
+(2060, 145, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2061, 145, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2062, 145, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2063, 145, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2064, 145, 'Deduction', 'PhilHealth (EE)', 675.00),
+(2065, 145, 'Deduction', 'PhilHealth (ER)', 675.00),
+(2066, 145, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2067, 145, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2068, 145, 'Deduction', 'Withholding Tax', 4164.20),
+(2069, 146, 'Allowance', 'Rice Subsidy', 2500.00),
+(2070, 146, 'Allowance', 'Meal Allowance', 2000.00),
+(2071, 146, 'Allowance', 'Laundry Allowance', 400.00),
+(2072, 146, 'Allowance', 'Travel Allowance', 3500.00),
+(2073, 146, 'Allowance', 'Communication Allowance', 1200.00),
+(2074, 146, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2075, 146, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2076, 146, 'Deduction', 'SSS WISP (EE)', 225.00),
+(2077, 146, 'Deduction', 'SSS WISP (ER)', 450.00),
+(2078, 146, 'Deduction', 'PhilHealth (EE)', 362.50),
+(2079, 146, 'Deduction', 'PhilHealth (ER)', 362.50),
+(2080, 146, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2081, 146, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2082, 146, 'Deduction', 'Withholding Tax', 1226.70),
+(2083, 147, 'Allowance', 'Rice Subsidy', 2500.00),
+(2084, 147, 'Allowance', 'Meal Allowance', 3500.00),
+(2085, 147, 'Allowance', 'Laundry Allowance', 400.00),
+(2086, 147, 'Allowance', 'Travel Allowance', 10000.00),
+(2087, 147, 'Allowance', 'Communication Allowance', 3000.00),
+(2088, 147, 'Allowance', 'Overtime Pay', 3125.00),
+(2089, 147, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2090, 147, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2091, 147, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2092, 147, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2093, 147, 'Deduction', 'PhilHealth (EE)', 1000.00),
+(2094, 147, 'Deduction', 'PhilHealth (ER)', 1000.00),
+(2095, 147, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2096, 147, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2097, 147, 'Deduction', 'Late/Undertime', 125.00),
+(2098, 147, 'Deduction', 'Withholding Tax', 8618.78),
+(2099, 148, 'Allowance', 'Rice Subsidy', 2500.00),
+(2100, 148, 'Allowance', 'Meal Allowance', 3500.00),
+(2101, 148, 'Allowance', 'Laundry Allowance', 400.00),
+(2102, 148, 'Allowance', 'Travel Allowance', 10000.00),
+(2103, 148, 'Allowance', 'Communication Allowance', 3000.00),
+(2104, 148, 'Allowance', 'Overtime Pay', 1562.50),
+(2105, 148, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2106, 148, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2107, 148, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2108, 148, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2109, 148, 'Deduction', 'PhilHealth (EE)', 1000.00),
+(2110, 148, 'Deduction', 'PhilHealth (ER)', 1000.00),
+(2111, 148, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2112, 148, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2113, 148, 'Deduction', 'Withholding Tax', 8259.40),
+(2114, 149, 'Allowance', 'Rice Subsidy', 2500.00),
+(2115, 149, 'Allowance', 'Meal Allowance', 1500.00),
+(2116, 149, 'Allowance', 'Laundry Allowance', 400.00),
+(2117, 149, 'Allowance', 'Travel Allowance', 2500.00),
+(2118, 149, 'Allowance', 'Communication Allowance', 800.00),
+(2119, 149, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2120, 149, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2121, 149, 'Deduction', 'SSS WISP (EE)', 25.00),
+(2122, 149, 'Deduction', 'SSS WISP (ER)', 50.00),
+(2123, 149, 'Deduction', 'PhilHealth (EE)', 262.50),
+(2124, 149, 'Deduction', 'PhilHealth (ER)', 262.50),
+(2125, 149, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2126, 149, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2127, 149, 'Deduction', 'Late/Undertime', 131.25),
+(2128, 149, 'Deduction', 'Withholding Tax', 1988.63),
+(2129, 150, 'Allowance', 'Rice Subsidy', 2500.00),
+(2130, 150, 'Allowance', 'Meal Allowance', 1000.00),
+(2131, 150, 'Allowance', 'Laundry Allowance', 400.00),
+(2132, 150, 'Allowance', 'Travel Allowance', 1500.00),
+(2133, 150, 'Allowance', 'Communication Allowance', 500.00),
+(2134, 150, 'Allowance', 'Overtime Pay', 468.75),
+(2135, 150, 'Deduction', 'SSS Regular (EE)', 375.00),
+(2136, 150, 'Deduction', 'SSS Regular (ER)', 750.00),
+(2137, 150, 'Deduction', 'PhilHealth (EE)', 187.50),
+(2138, 150, 'Deduction', 'PhilHealth (ER)', 187.50),
+(2139, 150, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2140, 150, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2141, 150, 'Deduction', 'Late/Undertime', 11.72),
+(2142, 150, 'Deduction', 'Withholding Tax', 894.66),
+(2143, 151, 'Allowance', 'Rice Subsidy', 2500.00),
+(2144, 151, 'Allowance', 'Meal Allowance', 3000.00),
+(2145, 151, 'Allowance', 'Laundry Allowance', 400.00),
+(2146, 151, 'Allowance', 'Travel Allowance', 7000.00),
+(2147, 151, 'Allowance', 'Communication Allowance', 2000.00),
+(2148, 151, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2149, 151, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2150, 151, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2151, 151, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2152, 151, 'Deduction', 'PhilHealth (EE)', 662.50),
+(2153, 151, 'Deduction', 'PhilHealth (ER)', 662.50),
+(2154, 151, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2155, 151, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2156, 151, 'Deduction', 'Withholding Tax', 4066.70),
+(2157, 152, 'Allowance', 'Rice Subsidy', 2500.00),
+(2158, 152, 'Allowance', 'Meal Allowance', 2500.00),
+(2159, 152, 'Allowance', 'Laundry Allowance', 400.00),
+(2160, 152, 'Allowance', 'Travel Allowance', 5000.00),
+(2161, 152, 'Allowance', 'Communication Allowance', 1500.00),
+(2162, 152, 'Allowance', 'Overtime Pay', 1875.00),
+(2163, 152, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2164, 152, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2165, 152, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2166, 152, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2167, 152, 'Deduction', 'PhilHealth (EE)', 500.00),
+(2168, 152, 'Deduction', 'PhilHealth (ER)', 500.00),
+(2169, 152, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2170, 152, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2171, 152, 'Deduction', 'Late/Undertime', 93.75),
+(2172, 152, 'Deduction', 'Withholding Tax', 2855.45),
+(2173, 153, 'Allowance', 'Rice Subsidy', 2500.00),
+(2174, 153, 'Allowance', 'Meal Allowance', 2000.00),
+(2175, 153, 'Allowance', 'Laundry Allowance', 400.00),
+(2176, 153, 'Allowance', 'Travel Allowance', 3500.00),
+(2177, 153, 'Allowance', 'Communication Allowance', 1200.00),
+(2178, 153, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2179, 153, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2180, 153, 'Deduction', 'SSS WISP (EE)', 25.00),
+(2181, 153, 'Deduction', 'SSS WISP (ER)', 50.00),
+(2182, 153, 'Deduction', 'PhilHealth (EE)', 262.50),
+(2183, 153, 'Deduction', 'PhilHealth (ER)', 262.50),
+(2184, 153, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2185, 153, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2186, 153, 'Deduction', 'Withholding Tax', 2204.88),
+(2187, 154, 'Allowance', 'Rice Subsidy', 2500.00),
+(2188, 154, 'Allowance', 'Meal Allowance', 2500.00),
+(2189, 154, 'Allowance', 'Laundry Allowance', 400.00),
+(2190, 154, 'Allowance', 'Travel Allowance', 5000.00),
+(2191, 154, 'Allowance', 'Communication Allowance', 1500.00),
+(2192, 154, 'Allowance', 'Overtime Pay', 312.50),
+(2193, 154, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2194, 154, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2195, 154, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2196, 154, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2197, 154, 'Deduction', 'PhilHealth (EE)', 500.00),
+(2198, 154, 'Deduction', 'PhilHealth (ER)', 500.00),
+(2199, 154, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2200, 154, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2201, 154, 'Deduction', 'Late/Undertime', 20.84),
+(2202, 154, 'Deduction', 'Withholding Tax', 2557.53),
+(2203, 155, 'Allowance', 'Rice Subsidy', 2500.00),
+(2204, 155, 'Allowance', 'Meal Allowance', 2000.00),
+(2205, 155, 'Allowance', 'Laundry Allowance', 400.00),
+(2206, 155, 'Allowance', 'Travel Allowance', 3500.00),
+(2207, 155, 'Allowance', 'Communication Allowance', 1200.00),
+(2208, 155, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2209, 155, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2210, 155, 'Deduction', 'SSS WISP (EE)', 225.00),
+(2211, 155, 'Deduction', 'SSS WISP (ER)', 450.00),
+(2212, 155, 'Deduction', 'PhilHealth (EE)', 362.50),
+(2213, 155, 'Deduction', 'PhilHealth (ER)', 362.50),
+(2214, 155, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2215, 155, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2216, 155, 'Deduction', 'Withholding Tax', 1226.70),
+(2217, 156, 'Allowance', 'Rice Subsidy', 2500.00),
+(2218, 156, 'Allowance', 'Meal Allowance', 3000.00),
+(2219, 156, 'Allowance', 'Laundry Allowance', 400.00),
+(2220, 156, 'Allowance', 'Travel Allowance', 7000.00),
+(2221, 156, 'Allowance', 'Communication Allowance', 2000.00),
+(2222, 156, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2223, 156, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2224, 156, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2225, 156, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2226, 156, 'Deduction', 'PhilHealth (EE)', 675.00),
+(2227, 156, 'Deduction', 'PhilHealth (ER)', 675.00),
+(2228, 156, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2229, 156, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2230, 156, 'Deduction', 'Withholding Tax', 4164.20),
+(2231, 157, 'Allowance', 'Rice Subsidy', 2500.00),
+(2232, 157, 'Allowance', 'Meal Allowance', 2000.00),
+(2233, 157, 'Allowance', 'Laundry Allowance', 400.00),
+(2234, 157, 'Allowance', 'Travel Allowance', 3500.00),
+(2235, 157, 'Allowance', 'Communication Allowance', 1200.00),
+(2236, 157, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2237, 157, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2238, 157, 'Deduction', 'SSS WISP (EE)', 225.00),
+(2239, 157, 'Deduction', 'SSS WISP (ER)', 450.00),
+(2240, 157, 'Deduction', 'PhilHealth (EE)', 362.50),
+(2241, 157, 'Deduction', 'PhilHealth (ER)', 362.50),
+(2242, 157, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2243, 157, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2244, 157, 'Deduction', 'Withholding Tax', 1226.70),
+(2245, 158, 'Allowance', 'Rice Subsidy', 2500.00),
+(2246, 158, 'Allowance', 'Meal Allowance', 3500.00),
+(2247, 158, 'Allowance', 'Laundry Allowance', 400.00),
+(2248, 158, 'Allowance', 'Travel Allowance', 10000.00),
+(2249, 158, 'Allowance', 'Communication Allowance', 3000.00),
+(2250, 158, 'Allowance', 'Overtime Pay', 3125.00),
+(2251, 158, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2252, 158, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2253, 158, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2254, 158, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2255, 158, 'Deduction', 'PhilHealth (EE)', 1000.00),
+(2256, 158, 'Deduction', 'PhilHealth (ER)', 1000.00),
+(2257, 158, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2258, 158, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2259, 158, 'Deduction', 'Late/Undertime', 125.00),
+(2260, 158, 'Deduction', 'Withholding Tax', 8618.78),
+(2261, 159, 'Allowance', 'Rice Subsidy', 2500.00),
+(2262, 159, 'Allowance', 'Meal Allowance', 3500.00),
+(2263, 159, 'Allowance', 'Laundry Allowance', 400.00),
+(2264, 159, 'Allowance', 'Travel Allowance', 10000.00),
+(2265, 159, 'Allowance', 'Communication Allowance', 3000.00),
+(2266, 159, 'Allowance', 'Overtime Pay', 1562.50),
+(2267, 159, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2268, 159, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2269, 159, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2270, 159, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2271, 159, 'Deduction', 'PhilHealth (EE)', 1000.00),
+(2272, 159, 'Deduction', 'PhilHealth (ER)', 1000.00),
+(2273, 159, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2274, 159, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2275, 159, 'Deduction', 'Withholding Tax', 8259.40),
+(2276, 160, 'Allowance', 'Rice Subsidy', 2500.00),
+(2277, 160, 'Allowance', 'Meal Allowance', 1500.00),
+(2278, 160, 'Allowance', 'Laundry Allowance', 400.00),
+(2279, 160, 'Allowance', 'Travel Allowance', 2500.00),
+(2280, 160, 'Allowance', 'Communication Allowance', 800.00),
+(2281, 160, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2282, 160, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2283, 160, 'Deduction', 'SSS WISP (EE)', 25.00),
+(2284, 160, 'Deduction', 'SSS WISP (ER)', 50.00),
+(2285, 160, 'Deduction', 'PhilHealth (EE)', 262.50),
+(2286, 160, 'Deduction', 'PhilHealth (ER)', 262.50),
+(2287, 160, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2288, 160, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2289, 160, 'Deduction', 'Late/Undertime', 131.25),
+(2290, 160, 'Deduction', 'Withholding Tax', 1988.63),
+(2291, 161, 'Allowance', 'Rice Subsidy', 2500.00),
+(2292, 161, 'Allowance', 'Meal Allowance', 1000.00),
+(2293, 161, 'Allowance', 'Laundry Allowance', 400.00),
+(2294, 161, 'Allowance', 'Travel Allowance', 1500.00),
+(2295, 161, 'Allowance', 'Communication Allowance', 500.00),
+(2296, 161, 'Allowance', 'Overtime Pay', 468.75),
+(2297, 161, 'Deduction', 'SSS Regular (EE)', 375.00),
+(2298, 161, 'Deduction', 'SSS Regular (ER)', 750.00),
+(2299, 161, 'Deduction', 'PhilHealth (EE)', 187.50),
+(2300, 161, 'Deduction', 'PhilHealth (ER)', 187.50),
+(2301, 161, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2302, 161, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2303, 161, 'Deduction', 'Late/Undertime', 11.72),
+(2304, 161, 'Deduction', 'Withholding Tax', 894.66),
+(2305, 162, 'Allowance', 'Rice Subsidy', 2500.00),
+(2306, 162, 'Allowance', 'Meal Allowance', 3000.00),
+(2307, 162, 'Allowance', 'Laundry Allowance', 400.00),
+(2308, 162, 'Allowance', 'Travel Allowance', 7000.00),
+(2309, 162, 'Allowance', 'Communication Allowance', 2000.00),
+(2310, 162, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2311, 162, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2312, 162, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2313, 162, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2314, 162, 'Deduction', 'PhilHealth (EE)', 662.50),
+(2315, 162, 'Deduction', 'PhilHealth (ER)', 662.50),
+(2316, 162, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2317, 162, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2318, 162, 'Deduction', 'Withholding Tax', 4066.70),
+(2319, 163, 'Allowance', 'Rice Subsidy', 2500.00),
+(2320, 163, 'Allowance', 'Meal Allowance', 2500.00),
+(2321, 163, 'Allowance', 'Laundry Allowance', 400.00),
+(2322, 163, 'Allowance', 'Travel Allowance', 5000.00),
+(2323, 163, 'Allowance', 'Communication Allowance', 1500.00),
+(2324, 163, 'Allowance', 'Overtime Pay', 1875.00),
+(2325, 163, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2326, 163, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2327, 163, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2328, 163, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2329, 163, 'Deduction', 'PhilHealth (EE)', 500.00),
+(2330, 163, 'Deduction', 'PhilHealth (ER)', 500.00),
+(2331, 163, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2332, 163, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2333, 163, 'Deduction', 'Late/Undertime', 93.75),
+(2334, 163, 'Deduction', 'Withholding Tax', 2855.45),
+(2335, 164, 'Allowance', 'Rice Subsidy', 2500.00),
+(2336, 164, 'Allowance', 'Meal Allowance', 2000.00),
+(2337, 164, 'Allowance', 'Laundry Allowance', 400.00),
+(2338, 164, 'Allowance', 'Travel Allowance', 3500.00),
+(2339, 164, 'Allowance', 'Communication Allowance', 1200.00),
+(2340, 164, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2341, 164, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2342, 164, 'Deduction', 'SSS WISP (EE)', 25.00),
+(2343, 164, 'Deduction', 'SSS WISP (ER)', 50.00),
+(2344, 164, 'Deduction', 'PhilHealth (EE)', 262.50),
+(2345, 164, 'Deduction', 'PhilHealth (ER)', 262.50),
+(2346, 164, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2347, 164, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2348, 164, 'Deduction', 'Withholding Tax', 2204.88),
+(2349, 165, 'Allowance', 'Rice Subsidy', 2500.00),
+(2350, 165, 'Allowance', 'Meal Allowance', 2500.00),
+(2351, 165, 'Allowance', 'Laundry Allowance', 400.00),
+(2352, 165, 'Allowance', 'Travel Allowance', 5000.00),
+(2353, 165, 'Allowance', 'Communication Allowance', 1500.00),
+(2354, 165, 'Allowance', 'Overtime Pay', 312.50),
+(2355, 165, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2356, 165, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2357, 165, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2358, 165, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2359, 165, 'Deduction', 'PhilHealth (EE)', 500.00),
+(2360, 165, 'Deduction', 'PhilHealth (ER)', 500.00),
+(2361, 165, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2362, 165, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2363, 165, 'Deduction', 'Late/Undertime', 20.84),
+(2364, 165, 'Deduction', 'Withholding Tax', 2557.53),
+(2365, 166, 'Allowance', 'Rice Subsidy', 2500.00),
+(2366, 166, 'Allowance', 'Meal Allowance', 2000.00),
+(2367, 166, 'Allowance', 'Laundry Allowance', 400.00),
+(2368, 166, 'Allowance', 'Travel Allowance', 3500.00),
+(2369, 166, 'Allowance', 'Communication Allowance', 1200.00),
+(2370, 166, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2371, 166, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2372, 166, 'Deduction', 'SSS WISP (EE)', 225.00),
+(2373, 166, 'Deduction', 'SSS WISP (ER)', 450.00),
+(2374, 166, 'Deduction', 'PhilHealth (EE)', 362.50),
+(2375, 166, 'Deduction', 'PhilHealth (ER)', 362.50),
+(2376, 166, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2377, 166, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2378, 166, 'Deduction', 'Withholding Tax', 1226.70),
+(2379, 167, 'Allowance', 'Rice Subsidy', 2500.00),
+(2380, 167, 'Allowance', 'Meal Allowance', 3000.00),
+(2381, 167, 'Allowance', 'Laundry Allowance', 400.00),
+(2382, 167, 'Allowance', 'Travel Allowance', 7000.00),
+(2383, 167, 'Allowance', 'Communication Allowance', 2000.00),
+(2384, 167, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2385, 167, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2386, 167, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2387, 167, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2388, 167, 'Deduction', 'PhilHealth (EE)', 675.00),
+(2389, 167, 'Deduction', 'PhilHealth (ER)', 675.00),
+(2390, 167, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2391, 167, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2392, 167, 'Deduction', 'Withholding Tax', 4164.20),
+(2393, 168, 'Allowance', 'Rice Subsidy', 2500.00),
+(2394, 168, 'Allowance', 'Meal Allowance', 2000.00),
+(2395, 168, 'Allowance', 'Laundry Allowance', 400.00),
+(2396, 168, 'Allowance', 'Travel Allowance', 3500.00),
+(2397, 168, 'Allowance', 'Communication Allowance', 1200.00),
+(2398, 168, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2399, 168, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2400, 168, 'Deduction', 'SSS WISP (EE)', 225.00),
+(2401, 168, 'Deduction', 'SSS WISP (ER)', 450.00),
+(2402, 168, 'Deduction', 'PhilHealth (EE)', 362.50),
+(2403, 168, 'Deduction', 'PhilHealth (ER)', 362.50),
+(2404, 168, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2405, 168, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2406, 168, 'Deduction', 'Withholding Tax', 1226.70),
+(2407, 169, 'Allowance', 'Rice Subsidy', 2500.00),
+(2408, 169, 'Allowance', 'Meal Allowance', 3500.00),
+(2409, 169, 'Allowance', 'Laundry Allowance', 400.00),
+(2410, 169, 'Allowance', 'Travel Allowance', 10000.00),
+(2411, 169, 'Allowance', 'Communication Allowance', 3000.00),
+(2412, 169, 'Allowance', 'Overtime Pay', 3125.00),
+(2413, 169, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2414, 169, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2415, 169, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2416, 169, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2417, 169, 'Deduction', 'PhilHealth (EE)', 1000.00),
+(2418, 169, 'Deduction', 'PhilHealth (ER)', 1000.00),
+(2419, 169, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2420, 169, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2421, 169, 'Deduction', 'Late/Undertime', 125.00),
+(2422, 169, 'Deduction', 'Withholding Tax', 8618.78),
+(2423, 170, 'Allowance', 'Rice Subsidy', 2500.00),
+(2424, 170, 'Allowance', 'Meal Allowance', 3500.00),
+(2425, 170, 'Allowance', 'Laundry Allowance', 400.00),
+(2426, 170, 'Allowance', 'Travel Allowance', 10000.00),
+(2427, 170, 'Allowance', 'Communication Allowance', 3000.00),
+(2428, 170, 'Allowance', 'Overtime Pay', 1562.50),
+(2429, 170, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2430, 170, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2431, 170, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2432, 170, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2433, 170, 'Deduction', 'PhilHealth (EE)', 1000.00),
+(2434, 170, 'Deduction', 'PhilHealth (ER)', 1000.00),
+(2435, 170, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2436, 170, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2437, 170, 'Deduction', 'Withholding Tax', 8259.40),
+(2438, 171, 'Allowance', 'Rice Subsidy', 2500.00),
+(2439, 171, 'Allowance', 'Meal Allowance', 1500.00),
+(2440, 171, 'Allowance', 'Laundry Allowance', 400.00),
+(2441, 171, 'Allowance', 'Travel Allowance', 2500.00),
+(2442, 171, 'Allowance', 'Communication Allowance', 800.00),
+(2443, 171, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2444, 171, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2445, 171, 'Deduction', 'SSS WISP (EE)', 25.00),
+(2446, 171, 'Deduction', 'SSS WISP (ER)', 50.00),
+(2447, 171, 'Deduction', 'PhilHealth (EE)', 262.50),
+(2448, 171, 'Deduction', 'PhilHealth (ER)', 262.50),
+(2449, 171, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2450, 171, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2451, 171, 'Deduction', 'Late/Undertime', 131.25),
+(2452, 171, 'Deduction', 'Withholding Tax', 1988.63),
+(2453, 172, 'Allowance', 'Rice Subsidy', 2500.00),
+(2454, 172, 'Allowance', 'Meal Allowance', 1000.00),
+(2455, 172, 'Allowance', 'Laundry Allowance', 400.00),
+(2456, 172, 'Allowance', 'Travel Allowance', 1500.00),
+(2457, 172, 'Allowance', 'Communication Allowance', 500.00),
+(2458, 172, 'Allowance', 'Overtime Pay', 468.75),
+(2459, 172, 'Deduction', 'SSS Regular (EE)', 375.00),
+(2460, 172, 'Deduction', 'SSS Regular (ER)', 750.00),
+(2461, 172, 'Deduction', 'PhilHealth (EE)', 187.50),
+(2462, 172, 'Deduction', 'PhilHealth (ER)', 187.50),
+(2463, 172, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2464, 172, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2465, 172, 'Deduction', 'Late/Undertime', 11.72),
+(2466, 172, 'Deduction', 'Withholding Tax', 894.66),
+(2467, 173, 'Allowance', 'Rice Subsidy', 2500.00),
+(2468, 173, 'Allowance', 'Meal Allowance', 3000.00),
+(2469, 173, 'Allowance', 'Laundry Allowance', 400.00),
+(2470, 173, 'Allowance', 'Travel Allowance', 7000.00),
+(2471, 173, 'Allowance', 'Communication Allowance', 2000.00),
+(2472, 173, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2473, 173, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2474, 173, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2475, 173, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2476, 173, 'Deduction', 'PhilHealth (EE)', 662.50),
+(2477, 173, 'Deduction', 'PhilHealth (ER)', 662.50),
+(2478, 173, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2479, 173, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2480, 173, 'Deduction', 'Withholding Tax', 4066.70),
+(2481, 174, 'Allowance', 'Rice Subsidy', 2500.00),
+(2482, 174, 'Allowance', 'Meal Allowance', 2500.00),
+(2483, 174, 'Allowance', 'Laundry Allowance', 400.00),
+(2484, 174, 'Allowance', 'Travel Allowance', 5000.00),
+(2485, 174, 'Allowance', 'Communication Allowance', 1500.00),
+(2486, 174, 'Allowance', 'Overtime Pay', 1875.00),
+(2487, 174, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2488, 174, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2489, 174, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2490, 174, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2491, 174, 'Deduction', 'PhilHealth (EE)', 500.00),
+(2492, 174, 'Deduction', 'PhilHealth (ER)', 500.00),
+(2493, 174, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2494, 174, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2495, 174, 'Deduction', 'Late/Undertime', 93.75),
+(2496, 174, 'Deduction', 'Withholding Tax', 2855.45),
+(2497, 175, 'Allowance', 'Rice Subsidy', 2500.00),
+(2498, 175, 'Allowance', 'Meal Allowance', 2000.00),
+(2499, 175, 'Allowance', 'Laundry Allowance', 400.00),
+(2500, 175, 'Allowance', 'Travel Allowance', 3500.00),
+(2501, 175, 'Allowance', 'Communication Allowance', 1200.00),
+(2502, 175, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2503, 175, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2504, 175, 'Deduction', 'SSS WISP (EE)', 25.00),
+(2505, 175, 'Deduction', 'SSS WISP (ER)', 50.00),
+(2506, 175, 'Deduction', 'PhilHealth (EE)', 262.50),
+(2507, 175, 'Deduction', 'PhilHealth (ER)', 262.50),
+(2508, 175, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2509, 175, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2510, 175, 'Deduction', 'Withholding Tax', 2204.88),
+(2511, 176, 'Allowance', 'Rice Subsidy', 2500.00),
+(2512, 176, 'Allowance', 'Meal Allowance', 2500.00),
+(2513, 176, 'Allowance', 'Laundry Allowance', 400.00),
+(2514, 176, 'Allowance', 'Travel Allowance', 5000.00),
+(2515, 176, 'Allowance', 'Communication Allowance', 1500.00),
+(2516, 176, 'Allowance', 'Overtime Pay', 312.50),
+(2517, 176, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2518, 176, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2519, 176, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2520, 176, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2521, 176, 'Deduction', 'PhilHealth (EE)', 500.00),
+(2522, 176, 'Deduction', 'PhilHealth (ER)', 500.00),
+(2523, 176, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2524, 176, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2525, 176, 'Deduction', 'Late/Undertime', 20.84),
+(2526, 176, 'Deduction', 'Withholding Tax', 2557.53),
+(2527, 177, 'Allowance', 'Rice Subsidy', 2500.00),
+(2528, 177, 'Allowance', 'Meal Allowance', 2000.00),
+(2529, 177, 'Allowance', 'Laundry Allowance', 400.00),
+(2530, 177, 'Allowance', 'Travel Allowance', 3500.00),
+(2531, 177, 'Allowance', 'Communication Allowance', 1200.00),
+(2532, 177, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2533, 177, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2534, 177, 'Deduction', 'SSS WISP (EE)', 225.00),
+(2535, 177, 'Deduction', 'SSS WISP (ER)', 450.00),
+(2536, 177, 'Deduction', 'PhilHealth (EE)', 362.50),
+(2537, 177, 'Deduction', 'PhilHealth (ER)', 362.50),
+(2538, 177, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2539, 177, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2540, 177, 'Deduction', 'Withholding Tax', 1226.70),
+(2541, 178, 'Allowance', 'Rice Subsidy', 2500.00),
+(2542, 178, 'Allowance', 'Meal Allowance', 3000.00),
+(2543, 178, 'Allowance', 'Laundry Allowance', 400.00),
+(2544, 178, 'Allowance', 'Travel Allowance', 7000.00),
+(2545, 178, 'Allowance', 'Communication Allowance', 2000.00),
+(2546, 178, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2547, 178, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2548, 178, 'Deduction', 'SSS WISP (EE)', 375.00),
+(2549, 178, 'Deduction', 'SSS WISP (ER)', 750.00),
+(2550, 178, 'Deduction', 'PhilHealth (EE)', 675.00),
+(2551, 178, 'Deduction', 'PhilHealth (ER)', 675.00),
+(2552, 178, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2553, 178, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2554, 178, 'Deduction', 'Withholding Tax', 4164.20),
+(2555, 179, 'Allowance', 'Rice Subsidy', 2500.00),
+(2556, 179, 'Allowance', 'Meal Allowance', 2000.00),
+(2557, 179, 'Allowance', 'Laundry Allowance', 400.00),
+(2558, 179, 'Allowance', 'Travel Allowance', 3500.00),
+(2559, 179, 'Allowance', 'Communication Allowance', 1200.00),
+(2560, 179, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2561, 179, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2562, 179, 'Deduction', 'SSS WISP (EE)', 225.00),
+(2563, 179, 'Deduction', 'SSS WISP (ER)', 450.00),
+(2564, 179, 'Deduction', 'PhilHealth (EE)', 362.50),
+(2565, 179, 'Deduction', 'PhilHealth (ER)', 362.50),
+(2566, 179, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2567, 179, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2568, 179, 'Deduction', 'Withholding Tax', 1226.70),
+(2569, 180, 'Allowance', 'Rice Subsidy', 2500.00),
+(2570, 180, 'Allowance', 'Meal Allowance', 2000.00),
+(2571, 180, 'Allowance', 'Laundry Allowance', 400.00),
+(2572, 180, 'Allowance', 'Travel Allowance', 3500.00),
+(2573, 180, 'Allowance', 'Communication Allowance', 1200.00),
+(2574, 180, 'Deduction', 'SSS Regular (EE)', 500.00),
+(2575, 180, 'Deduction', 'SSS Regular (ER)', 1000.00),
+(2576, 180, 'Deduction', 'SSS WISP (EE)', 225.00),
+(2577, 180, 'Deduction', 'SSS WISP (ER)', 450.00),
+(2578, 180, 'Deduction', 'PhilHealth (EE)', 362.50),
+(2579, 180, 'Deduction', 'PhilHealth (ER)', 362.50),
+(2580, 180, 'Deduction', 'Pag-IBIG (EE)', 100.00),
+(2581, 180, 'Deduction', 'Pag-IBIG (ER)', 100.00),
+(2582, 180, 'Deduction', 'Withholding Tax', 1226.70);
 
 -- --------------------------------------------------------
 
@@ -2807,6 +4056,7 @@ INSERT INTO `philhealth_settings` (`period_id`, `employee_share_pct`, `employer_
 CREATE TABLE `positions` (
   `PositionID` int(11) NOT NULL,
   `PositionName` varchar(100) NOT NULL,
+  `JobDescription` text DEFAULT NULL,
   `PositionCode` varchar(10) DEFAULT NULL,
   `DepartmentID` int(11) DEFAULT NULL,
   `SalaryGradeID` int(11) DEFAULT NULL,
@@ -2817,22 +4067,102 @@ CREATE TABLE `positions` (
 -- Dumping data for table `positions`
 --
 
-INSERT INTO `positions` (`PositionID`, `PositionName`, `PositionCode`, `DepartmentID`, `SalaryGradeID`, `AuthorizedHeadcount`) VALUES
-(1, 'Administrator', 'ADM', 1, 6, 2),
-(2, 'HR Data Specialist', 'HRDS', 2, 2, 1),
-(3, 'HR Manager', 'HRM', 2, 5, 1),
-(4, 'HR Staff', 'HRS', 2, 1, 1),
-(5, 'Compensation Analyst', 'CA', 2, 4, 1),
-(6, 'Payroll Processor', 'PAY', 2, 2, 1),
-(7, 'Supervisor', 'SV', 2, 4, 1),
-(8, 'Finance Manager', 'FIN-MGR', 3, 5, 1),
-(9, 'Accountant', 'ACC', 3, 4, 2),
-(10, 'Logistics Officer', 'LOG-OFF', 4, 3, 2),
-(11, 'Inventory Clerk', 'INV-CLK', 4, 2, 3),
-(12, 'Loan Service Associates', 'LSA', 5, 6, 1),
-(13, 'Loan Officers', 'L-OFF', 5, 3, 5),
-(15, 'Logistic Manager', 'LM', 4, 5, 1),
-(16, 'HR Officer', 'HRO', 2, 3, 1);
+INSERT INTO `positions` (`PositionID`, `PositionName`, `JobDescription`, `PositionCode`, `DepartmentID`, `SalaryGradeID`, `AuthorizedHeadcount`) VALUES
+(1, 'Administrator', 'Responsible for overall administrative operations, coordinating internal processes, and ensuring organizational policies are followed.', 'ADM', 1, 6, 2),
+(2, 'HR Data Specialist', 'Manages employee data, HR documentation, and supports HR operations including employee records, reports, and compliance tasks.', 'HRDS', 2, 2, 1),
+(3, 'HR Manager', 'Oversees HR department functions including recruitment, employee relations, policy implementation, and performance management.', 'HRM', 2, 5, 1),
+(4, 'HR Staff', 'Supports HR operations by assisting in recruitment activities, employee onboarding, documentation, and employee services.', 'HRS', 2, 1, 1),
+(5, 'Compensation Analyst', 'Analyzes employee compensation structures, salary adjustments, and benefits programs to ensure fair and competitive compensation practices.', 'CA', 2, 4, 1),
+(6, 'Payroll Processor', 'Processes payroll transactions, calculates employee salaries and deductions, and ensures payroll accuracy and compliance with financial policies.', 'PAY', 2, 2, 1),
+(7, 'Supervisor', 'Supervises operational staff, monitors workflow efficiency, and ensures departmental objectives and service standards are achieved.', 'SV', 2, 4, 1),
+(8, 'Finance Manager', 'Responsible for managing financial reporting, budgeting, and financial analysis to support business decision making.', 'FIN-MGR', 3, 5, 1),
+(10, 'Logistics Officer', 'Coordinates logistics activities including inventory management, transportation scheduling, and supply chain operations.', 'LOG-OFF', 4, 3, 2),
+(12, 'Loan Service Associates', 'Supports loan processing activities including documentation review, customer service assistance, and loan record management.', 'LSA', 5, 6, 1),
+(13, 'Loan Officers', 'Evaluates loan applications, performs credit assessments, and manages borrower relationships to ensure responsible lending.', 'L-OFF', 5, 3, 5),
+(15, 'Logistic Manager', 'Manages logistics operations, supervises logistics personnel, and ensures efficient movement of goods and materials.', 'LM', 4, 5, 1),
+(16, 'HR Officer', 'Handles HR operations including recruitment coordination, employee relations, and HR policy implementation.', 'HRO', 2, 3, 1),
+(26, 'SYSTEM ADMINISTRATOR', '0', 'FACT', 1, 1, 2),
+(27, 'example', 'testing', 'example', 1, 6, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `position_competencies`
+--
+
+CREATE TABLE `position_competencies` (
+  `id` int(11) NOT NULL,
+  `position_id` int(11) NOT NULL,
+  `competency_id` int(11) NOT NULL,
+  `level_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `position_competencies`
+--
+
+INSERT INTO `position_competencies` (`id`, `position_id`, `competency_id`, `level_id`, `created_at`) VALUES
+(1, 3, 1, 3, '2026-03-13 17:02:44'),
+(2, 3, 2, 3, '2026-03-13 17:02:44'),
+(3, 3, 13, 3, '2026-03-13 17:02:44'),
+(4, 3, 14, 2, '2026-03-13 17:02:44'),
+(5, 4, 1, 2, '2026-03-13 17:02:44'),
+(6, 4, 2, 2, '2026-03-13 17:02:44'),
+(7, 4, 15, 2, '2026-03-13 17:02:44'),
+(8, 8, 1, 3, '2026-03-13 17:02:44'),
+(9, 8, 20, 3, '2026-03-13 17:02:44'),
+(10, 8, 6, 2, '2026-03-13 17:02:44'),
+(11, 10, 1, 2, '2026-03-13 17:02:44'),
+(12, 10, 2, 2, '2026-03-13 17:02:44'),
+(13, 10, 6, 2, '2026-03-13 17:02:44'),
+(14, 13, 1, 2, '2026-03-13 17:02:44'),
+(15, 13, 2, 2, '2026-03-13 17:02:44'),
+(16, 13, 6, 3, '2026-03-13 17:02:44'),
+(18, 5, 9, 1, '2026-03-13 17:55:42'),
+(19, 5, 7, 1, '2026-03-13 17:55:42'),
+(20, 5, 10, 1, '2026-03-13 17:55:42'),
+(21, 5, 1, 1, '2026-03-13 17:55:42'),
+(22, 5, 11, 1, '2026-03-13 17:55:42'),
+(23, 5, 8, 1, '2026-03-13 17:55:42'),
+(24, 5, 12, 1, '2026-03-13 17:55:42'),
+(25, 5, 15, 1, '2026-03-13 17:55:42'),
+(26, 5, 19, 1, '2026-03-13 17:55:42'),
+(27, 5, 16, 1, '2026-03-13 17:55:42'),
+(28, 5, 3, 1, '2026-03-13 17:55:42'),
+(29, 5, 14, 1, '2026-03-13 17:55:42'),
+(30, 5, 17, 1, '2026-03-13 17:55:42'),
+(31, 5, 6, 1, '2026-03-13 17:55:42'),
+(32, 5, 4, 1, '2026-03-13 17:55:42'),
+(33, 5, 13, 1, '2026-03-13 17:55:42'),
+(34, 5, 2, 1, '2026-03-13 17:55:42'),
+(35, 5, 5, 1, '2026-03-13 17:55:42'),
+(36, 5, 18, 1, '2026-03-13 17:55:42'),
+(37, 1, 9, 1, '2026-03-13 18:10:15'),
+(38, 1, 42, 1, '2026-03-13 18:10:15'),
+(39, 2, 7, 2, '2026-03-14 00:49:44'),
+(40, 2, 9, 1, '2026-03-14 00:49:44'),
+(41, 2, 10, 3, '2026-03-14 00:49:44'),
+(42, 16, 7, 1, '2026-03-14 00:50:42'),
+(43, 16, 9, 1, '2026-03-14 00:50:42'),
+(44, 16, 10, 1, '2026-03-14 00:50:42'),
+(48, 12, 9, 1, '2026-03-14 00:51:24'),
+(49, 15, 7, 1, '2026-03-14 00:51:51'),
+(50, 15, 9, 1, '2026-03-14 00:51:51'),
+(51, 7, 7, 1, '2026-03-14 00:52:11'),
+(52, 7, 9, 1, '2026-03-14 00:52:11'),
+(53, 6, 7, 2, '2026-03-14 00:52:30'),
+(54, 6, 9, 1, '2026-03-14 00:52:30'),
+(76, 26, 41, 1, '2026-03-15 06:41:53'),
+(77, 26, 42, 1, '2026-03-15 06:41:53'),
+(78, 26, 43, 1, '2026-03-15 06:41:53'),
+(79, 26, 44, 1, '2026-03-15 06:41:53'),
+(80, 26, 45, 1, '2026-03-15 06:41:53'),
+(81, 27, 41, 1, '2026-03-15 15:38:50'),
+(82, 27, 42, 2, '2026-03-15 15:38:50'),
+(83, 27, 43, 1, '2026-03-15 15:38:50'),
+(84, 27, 44, 1, '2026-03-15 15:38:50'),
+(85, 27, 45, 1, '2026-03-15 15:38:50');
 
 -- --------------------------------------------------------
 
@@ -2845,6 +4175,7 @@ CREATE TABLE `position_requests` (
   `RequestType` enum('Add','Update','Delete') DEFAULT 'Add',
   `TargetPositionID` int(11) DEFAULT NULL,
   `PositionName` varchar(255) NOT NULL,
+  `JobDescription` text DEFAULT NULL,
   `PositionCode` varchar(50) DEFAULT NULL,
   `DepartmentID` int(11) NOT NULL,
   `SalaryGradeID` int(11) NOT NULL,
@@ -2858,12 +4189,20 @@ CREATE TABLE `position_requests` (
 -- Dumping data for table `position_requests`
 --
 
-INSERT INTO `position_requests` (`RequestID`, `RequestType`, `TargetPositionID`, `PositionName`, `PositionCode`, `DepartmentID`, `SalaryGradeID`, `AuthorizedHeadcount`, `Status`, `RequestedBy`, `DateRequested`) VALUES
-(1, 'Add', NULL, 'Logistic Manager', 'LM', 4, 5, 1, 'Approved', 'Red Gin Baldon', '2026-03-07 21:26:37'),
-(2, 'Delete', 14, 'HR Officer', 'HRO', 2, 3, 1, 'Approved', 'Red Gin Baldon', '2026-03-08 02:50:34'),
-(3, 'Update', 11, 'Inventory Clerk', 'INV-CLK', 4, 2, 4, 'Rejected', 'Red Gin Baldon', '2026-03-08 02:51:23'),
-(4, 'Add', NULL, 'HR Officer', 'HRO', 2, 3, 1, 'Rejected', 'Red Gin Baldon', '2026-03-09 14:58:36'),
-(5, 'Add', NULL, 'HR Officer', 'HRO', 2, 3, 1, 'Approved', 'Red Gin Baldon', '2026-03-09 14:59:18');
+INSERT INTO `position_requests` (`RequestID`, `RequestType`, `TargetPositionID`, `PositionName`, `JobDescription`, `PositionCode`, `DepartmentID`, `SalaryGradeID`, `AuthorizedHeadcount`, `Status`, `RequestedBy`, `DateRequested`) VALUES
+(1, 'Add', NULL, 'Logistic Manager', NULL, 'LM', 4, 5, 1, 'Approved', 'Red Gin Baldon', '2026-03-07 21:26:37'),
+(2, 'Delete', 14, 'HR Officer', NULL, 'HRO', 2, 3, 1, 'Approved', 'Red Gin Baldon', '2026-03-08 02:50:34'),
+(3, 'Update', 11, 'Inventory Clerk', NULL, 'INV-CLK', 4, 2, 4, 'Rejected', 'Red Gin Baldon', '2026-03-08 02:51:23'),
+(4, 'Add', NULL, 'HR Officer', NULL, 'HRO', 2, 3, 1, 'Rejected', 'Red Gin Baldon', '2026-03-09 14:58:36'),
+(5, 'Add', NULL, 'HR Officer', NULL, 'HRO', 2, 3, 1, 'Approved', 'Red Gin Baldon', '2026-03-09 14:59:18'),
+(6, 'Add', NULL, 'Faculty', NULL, 'F-1234', 2, 4, 1, 'Approved', 'Red Gin Baldon', '2026-03-12 03:03:00'),
+(7, 'Delete', 18, 'Senior Developer', NULL, 'SD', 1, 4, 1, 'Approved', 'Red Gin Baldon', '2026-03-12 18:06:56'),
+(8, 'Delete', 19, 'SENIOR DEVELOPER', NULL, 'SD', 1, 4, 1, 'Approved', 'Red Gin Baldon', '2026-03-12 18:07:54'),
+(9, 'Delete', 18, 'Senior Developer', NULL, 'SD', 1, 4, 1, 'Approved', 'Red Gin Baldon', '2026-03-12 18:07:59'),
+(10, 'Delete', 18, 'Senior Developer', NULL, 'SD', 1, 4, 1, 'Approved', 'Red Gin Baldon', '2026-03-12 18:14:06'),
+(11, 'Delete', 19, 'SENIOR DEVELOPER', NULL, 'SD', 1, 4, 1, 'Approved', 'Red Gin Baldon', '2026-03-12 18:14:13'),
+(12, 'Delete', 17, 'Faculty', NULL, 'F-1234', 2, 4, 1, 'Rejected', 'Red Gin Baldon', '2026-03-12 18:15:56'),
+(13, 'Update', 26, 'SYSTEM ADMINISTRATOR', 'Manages an organization\'s IT infrastructure, including servers, networks, and software, ensuring they run securely, efficiently, and with high uptime.', 'FACT', 1, 1, 2, 'Rejected', 'Red Gin Baldon', '2026-03-15 06:59:35');
 
 -- --------------------------------------------------------
 
@@ -2888,13 +4227,16 @@ INSERT INTO `recruitment_requisitions` (`RequisitionID`, `PositionID`, `Requeste
 (2, 15, 'Red Gin Baldon', 'Posted', '2026-03-09 05:49:26'),
 (3, 12, 'Red Gin Baldon', 'Cancelled', '2026-03-09 09:29:53'),
 (4, 16, 'Red Gin Baldon', 'Posted', '2026-03-09 15:04:57'),
-(5, 11, 'Red Gin Baldon', 'Pending', '2026-03-09 15:10:35'),
 (6, 10, 'Noriel Dimailig', 'Cancelled', '2026-03-10 00:57:06'),
-(7, 9, 'Noriel Dimailig', 'Pending', '2026-03-10 00:57:49'),
-(8, 8, 'Noriel Dimailig', 'Pending', '2026-03-10 01:03:33'),
+(8, 8, 'Noriel Dimailig', 'Cancelled', '2026-03-10 01:03:33'),
 (9, 10, 'Noriel Dimailig', 'Cancelled', '2026-03-10 01:21:05'),
-(10, 10, 'Noriel Dimailig', 'Posted', '2026-03-10 03:10:49'),
-(11, 12, 'Noriel Dimailig', 'Posted', '2026-03-10 03:18:45');
+(10, 10, 'Noriel Dimailig', 'Cancelled', '2026-03-10 03:10:49'),
+(11, 12, 'Noriel Dimailig', 'Posted', '2026-03-10 03:18:45'),
+(12, 10, 'Noriel Dimailig', 'Cancelled', '2026-03-11 11:04:49'),
+(13, 10, 'Red Gin Baldon', 'Posted', '2026-03-12 00:30:02'),
+(14, 8, 'Red Gin Baldon', 'Posted', '2026-03-12 03:01:59'),
+(20, 26, 'Red Gin Baldon', 'Posted', '2026-03-15 06:42:16'),
+(21, 27, 'Red Gin Baldon', 'Posted', '2026-03-15 15:39:29');
 
 -- --------------------------------------------------------
 
@@ -2957,11 +4299,11 @@ CREATE TABLE `salary_grades` (
 
 INSERT INTO `salary_grades` (`SalaryGradeID`, `period_id`, `GradeLevel`, `GradeName`, `MinSalary`, `MaxSalary`, `Currency`, `IsActive`, `CreatedAt`, `UpdatedAt`, `Description`) VALUES
 (1, 1, 'SG-1', 'Entry Level', 16000.00, 20000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-03-04 04:58:20', 'Entry Support (HR Staff, Finance Assistants)'),
-(2, 1, 'SG-2', 'Professional I', 21000.00, 30000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-03-04 04:58:20', 'Professional I (Payroll Processor, HR Data Specialist)'),
+(2, 1, 'SG-2', 'Professional I', 25000.00, 30000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-03-17 02:47:06', 'Professional I (Payroll Processor, HR Data Specialist)'),
 (3, 1, 'SG-3', 'Professional II', 29000.00, 42000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-03-04 04:58:20', 'Professional II (HR Analyst, Finance Officer)'),
 (4, 1, 'SG-4', 'Senior Associate\n', 41000.00, 55000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-03-04 04:58:20', 'Senior Specialist (Compensation Analyst, Senior Finance)'),
 (5, 1, 'SG-5', 'Manager', 54000.00, 75000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-03-04 04:58:20', 'Management (HR Manager, Finance Manager)'),
-(6, 1, 'SG-6', 'Executive', 81000.00, 120000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-03-04 04:58:20', 'Executive (Administrator, Director)');
+(6, 1, 'SG-6', 'Executive', 81000.00, 120000.00, 'PHP', 1, '2026-02-23 08:35:28', '2026-03-16 18:39:35', 'Executive (Administrator, Director)');
 
 -- --------------------------------------------------------
 
@@ -3032,17 +4374,556 @@ CREATE TABLE `simulation_drafts` (
   `EmployeeData` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`EmployeeData`)),
   `Status` varchar(50) DEFAULT 'Draft',
   `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UpdatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `UpdatedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `SalaryScaleData` longtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `simulation_drafts`
 --
 
-INSERT INTO `simulation_drafts` (`DraftID`, `CycleName`, `period_id`, `ProposedBy`, `BudgetUsedPct`, `TotalBudget`, `TotalCost`, `DateStarted`, `LastSaved`, `EmployeeData`, `Status`, `CreatedAt`, `UpdatedAt`) VALUES
-(1, 'FY2025 Cycle', 1, NULL, 0.00, 5000000.00, 0.00, '2026-03-04 22:34:08', '2026-03-04 23:37:07', '[{\"EmployeeID\":\"1\",\"PropPct\":3,\"PropAmt\":2400,\"GradeID\":\"6\"},{\"EmployeeID\":\"2\",\"PropPct\":4,\"PropAmt\":3200,\"GradeID\":\"6\"},{\"EmployeeID\":\"7\",\"PropPct\":4,\"PropAmt\":1600,\"GradeID\":\"4\"},{\"EmployeeID\":\"3\",\"PropPct\":2,\"PropAmt\":420,\"GradeID\":\"2\"},{\"EmployeeID\":\"6\",\"PropPct\":4,\"PropAmt\":2120,\"GradeID\":\"5\"},{\"EmployeeID\":\"4\",\"PropPct\":3,\"PropAmt\":450,\"GradeID\":\"1\"},{\"EmployeeID\":\"8\",\"PropPct\":2,\"PropAmt\":420,\"GradeID\":\"3\"},{\"EmployeeID\":\"10\",\"PropPct\":2,\"PropAmt\":800,\"GradeID\":\"4\"}]', 'Draft', '2026-03-04 16:48:52', '2026-03-04 16:48:52'),
-(2, 'FY2026', 1, 9, 1.00, 5000000.00, 10190.00, '2026-03-05 01:01:03', '2026-03-11 02:02:43', '[{\"EmployeeID\":\"1\",\"EmployeeCode\":\"ADM20261001\",\"Name\":\"Joshua Suruiz\",\"Position\":\"ADMINISTRATOR\",\"Rating\":\"4.00\",\"Status\":\"Submitted\",\"Salary\":\"80000\",\"GradeMidpoint\":\"100500\",\"CompaRatio\":\"82%\",\"Promote\":\"SG-SG-6\",\"PropPct\":3,\"PropInc\":2400,\"BasicNew\":82400,\"TotalAllowances\":19400,\"GrossSalary\":101800,\"SemiMonthly\":50900,\"Daily\":3745.455,\"Hourly\":468.182,\"EmployerShare\":6660,\"FullLoad\":108460,\"SSSRegular\":1750,\"SSSWISP\":900,\"PhilHealth\":2060,\"PagIBIG\":200,\"WTax\":11247.55,\"NetPay\":85642.45,\"Increase\":2400,\"GradeID\":\"6\"},{\"EmployeeID\":\"2\",\"EmployeeCode\":\"ADM20261002\",\"Name\":\"Red Gin Baldon\",\"Position\":\"ADMINISTRATOR\",\"Rating\":\"5.00\",\"Status\":\"Submitted\",\"Salary\":\"80000\",\"GradeMidpoint\":\"100500\",\"CompaRatio\":\"83%\",\"Promote\":\"SG-SG-6\",\"PropPct\":4,\"PropInc\":3200,\"BasicNew\":83200,\"TotalAllowances\":19400,\"GrossSalary\":102600,\"SemiMonthly\":51300,\"Daily\":3781.818,\"Hourly\":472.727,\"EmployerShare\":6680,\"FullLoad\":109280,\"SSSRegular\":1750,\"SSSWISP\":900,\"PhilHealth\":2080,\"PagIBIG\":200,\"WTax\":11442.55,\"NetPay\":86227.45,\"Increase\":3200,\"GradeID\":\"6\"},{\"EmployeeID\":\"7\",\"EmployeeCode\":\"CA20261007\",\"Name\":\"Miguel Padre\",\"Position\":\"COMPENSATION ANALYST\",\"Rating\":\"5.00\",\"Status\":\"Submitted\",\"Salary\":\"40000\",\"GradeMidpoint\":\"48000\",\"CompaRatio\":\"87%\",\"Promote\":\"SG-SG-4\",\"PropPct\":4,\"PropInc\":1600,\"BasicNew\":41600,\"TotalAllowances\":11900,\"GrossSalary\":53500,\"SemiMonthly\":26750,\"Daily\":1890.909,\"Hourly\":236.364,\"EmployerShare\":5640,\"FullLoad\":59140,\"SSSRegular\":1750,\"SSSWISP\":900,\"PhilHealth\":1040,\"PagIBIG\":200,\"WTax\":2750.4,\"NetPay\":46859.6,\"Increase\":1600,\"GradeID\":\"4\"},{\"EmployeeID\":\"3\",\"EmployeeCode\":\"HRDS20261003\",\"Name\":\"Noriel Dimailig\",\"Position\":\"HR DATA SPECIALIST\",\"Rating\":\"3.00\",\"Status\":\"Submitted\",\"Salary\":\"21000\",\"GradeMidpoint\":\"25500\",\"CompaRatio\":\"84%\",\"Promote\":\"SG-SG-2\",\"PropPct\":2,\"PropInc\":420,\"BasicNew\":21420,\"TotalAllowances\":7700,\"GrossSalary\":29120,\"SemiMonthly\":14560,\"Daily\":973.636,\"Hourly\":121.705,\"EmployerShare\":2905.9,\"FullLoad\":32025.9,\"SSSRegular\":1071,\"SSSWISP\":28.4,\"PhilHealth\":535.5,\"PagIBIG\":200,\"WTax\":0,\"NetPay\":27285.1,\"Increase\":420,\"GradeID\":\"2\"},{\"EmployeeID\":\"6\",\"EmployeeCode\":\"HRM20261006\",\"Name\":\"Glory Job\",\"Position\":\"HR MANAGER\",\"Rating\":\"5.00\",\"Status\":\"Submitted\",\"Salary\":\"53000\",\"GradeMidpoint\":\"64500\",\"CompaRatio\":\"85%\",\"Promote\":\"SG-SG-5\",\"PropPct\":4,\"PropInc\":2120,\"BasicNew\":55120,\"TotalAllowances\":14900,\"GrossSalary\":70020,\"SemiMonthly\":35010,\"Daily\":2505.455,\"Hourly\":313.182,\"EmployerShare\":5978,\"FullLoad\":75998,\"SSSRegular\":1750,\"SSSWISP\":900,\"PhilHealth\":1378,\"PagIBIG\":200,\"WTax\":5386.8,\"NetPay\":60405.2,\"Increase\":2120,\"GradeID\":\"5\"},{\"EmployeeID\":\"16\",\"EmployeeCode\":\"HRO20260011\",\"Name\":\"Johnmar Solis\",\"Position\":\"HR OFFICER\",\"Rating\":\"0\",\"Status\":\"Submitted\",\"Salary\":\"29000\",\"GradeMidpoint\":\"35500\",\"CompaRatio\":\"82%\",\"Promote\":\"SG-SG-3\",\"PropPct\":0,\"PropInc\":0,\"BasicNew\":29000,\"TotalAllowances\":9600,\"GrossSalary\":38600,\"SemiMonthly\":19300,\"Daily\":1318.182,\"Hourly\":164.773,\"EmployerShare\":4005,\"FullLoad\":42605,\"SSSRegular\":1450,\"SSSWISP\":180,\"PhilHealth\":725,\"PagIBIG\":200,\"WTax\":841.8,\"NetPay\":35203.2,\"Increase\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"4\",\"EmployeeCode\":\"HRS20261004\",\"Name\":\"Earl Caber\",\"Position\":\"HR STAFF\",\"Rating\":\"4.00\",\"Status\":\"Submitted\",\"Salary\":\"15000\",\"GradeMidpoint\":\"18000\",\"CompaRatio\":\"86%\",\"Promote\":\"SG-SG-1\",\"PropPct\":3,\"PropInc\":450,\"BasicNew\":15450,\"TotalAllowances\":5900,\"GrossSalary\":21350,\"SemiMonthly\":10675,\"Daily\":702.273,\"Hourly\":87.784,\"EmployerShare\":2131.25,\"FullLoad\":23481.25,\"SSSRegular\":772.5,\"SSSWISP\":0,\"PhilHealth\":386.25,\"PagIBIG\":200,\"WTax\":0,\"NetPay\":19991.25,\"Increase\":450,\"GradeID\":\"1\"},{\"EmployeeID\":\"14\",\"EmployeeCode\":\"L-OFF20260009\",\"Name\":\"Joshua Suruiz\",\"Position\":\"LOAN OFFICERS\",\"Rating\":\"0\",\"Status\":\"Submitted\",\"Salary\":\"29000\",\"GradeMidpoint\":\"35500\",\"CompaRatio\":\"82%\",\"Promote\":\"SG-SG-3\",\"PropPct\":0,\"PropInc\":0,\"BasicNew\":29000,\"TotalAllowances\":9600,\"GrossSalary\":38600,\"SemiMonthly\":19300,\"Daily\":1318.182,\"Hourly\":164.773,\"EmployerShare\":4005,\"FullLoad\":42605,\"SSSRegular\":1450,\"SSSWISP\":180,\"PhilHealth\":725,\"PagIBIG\":200,\"WTax\":841.8,\"NetPay\":35203.2,\"Increase\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"15\",\"EmployeeCode\":\"LM20260010\",\"Name\":\"test three\",\"Position\":\"LOGISTIC MANAGER\",\"Rating\":\"0\",\"Status\":\"Submitted\",\"Salary\":\"54000\",\"GradeMidpoint\":\"64500\",\"CompaRatio\":\"84%\",\"Promote\":\"SG-SG-5\",\"PropPct\":0,\"PropInc\":0,\"BasicNew\":54000,\"TotalAllowances\":14900,\"GrossSalary\":68900,\"SemiMonthly\":34450,\"Daily\":2454.545,\"Hourly\":306.818,\"EmployerShare\":5950,\"FullLoad\":74850,\"SSSRegular\":1750,\"SSSWISP\":900,\"PhilHealth\":1350,\"PagIBIG\":200,\"WTax\":5168.4,\"NetPay\":59531.6,\"Increase\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"8\",\"EmployeeCode\":\"PAY20261008\",\"Name\":\"Daniella Magtangob\",\"Position\":\"PAYROLL PROCESSOR\",\"Rating\":\"0\",\"Status\":\"Submitted\",\"Salary\":\"21000\",\"GradeMidpoint\":\"35500\",\"CompaRatio\":\"59%\",\"Promote\":\"SG-SG-3\",\"PropPct\":0,\"PropInc\":0,\"BasicNew\":21000,\"TotalAllowances\":9600,\"GrossSalary\":30600,\"SemiMonthly\":15300,\"Daily\":954.545,\"Hourly\":119.318,\"EmployerShare\":2845,\"FullLoad\":33445,\"SSSRegular\":1050,\"SSSWISP\":20,\"PhilHealth\":525,\"PagIBIG\":200,\"WTax\":0,\"NetPay\":28805,\"Increase\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"10\",\"EmployeeCode\":\"SV20261009\",\"Name\":\"Mike Dabu\",\"Position\":\"SUPERVISOR\",\"Rating\":\"0\",\"Status\":\"Submitted\",\"Salary\":\"40000\",\"GradeMidpoint\":\"48000\",\"CompaRatio\":\"83%\",\"Promote\":\"SG-SG-4\",\"PropPct\":0,\"PropInc\":0,\"BasicNew\":40000,\"TotalAllowances\":11900,\"GrossSalary\":51900,\"SemiMonthly\":25950,\"Daily\":1818.182,\"Hourly\":227.273,\"EmployerShare\":5600,\"FullLoad\":57500,\"SSSRegular\":1750,\"SSSWISP\":900,\"PhilHealth\":1000,\"PagIBIG\":200,\"WTax\":2438.4,\"NetPay\":45611.6,\"Increase\":0,\"GradeID\":\"4\"}]', 'Approved', '2026-03-04 17:01:03', '2026-03-10 18:02:43'),
-(3, 'Test Cycle 1773159792', 1, NULL, 10.50, 5000000.00, 500000.00, '2026-03-11 00:23:12', '2026-03-11 00:23:12', '[{\"EmployeeID\":1,\"PropPct\":5,\"PropAmt\":1000,\"GradeID\":1}]', 'Draft', '2026-03-10 16:23:12', '2026-03-10 16:23:12');
+INSERT INTO `simulation_drafts` (`DraftID`, `CycleName`, `period_id`, `ProposedBy`, `BudgetUsedPct`, `TotalBudget`, `TotalCost`, `DateStarted`, `LastSaved`, `EmployeeData`, `Status`, `CreatedAt`, `UpdatedAt`, `SalaryScaleData`) VALUES
+(1, 'FY2025 Cycle', 1, NULL, 0.00, 5000000.00, 0.00, '2026-03-04 22:34:08', '2026-03-04 23:37:07', '[{\"EmployeeID\":\"1\",\"PropPct\":3,\"PropAmt\":2400,\"GradeID\":\"6\"},{\"EmployeeID\":\"2\",\"PropPct\":4,\"PropAmt\":3200,\"GradeID\":\"6\"},{\"EmployeeID\":\"7\",\"PropPct\":4,\"PropAmt\":1600,\"GradeID\":\"4\"},{\"EmployeeID\":\"3\",\"PropPct\":2,\"PropAmt\":420,\"GradeID\":\"2\"},{\"EmployeeID\":\"6\",\"PropPct\":4,\"PropAmt\":2120,\"GradeID\":\"5\"},{\"EmployeeID\":\"4\",\"PropPct\":3,\"PropAmt\":450,\"GradeID\":\"1\"},{\"EmployeeID\":\"8\",\"PropPct\":2,\"PropAmt\":420,\"GradeID\":\"3\"},{\"EmployeeID\":\"10\",\"PropPct\":2,\"PropAmt\":800,\"GradeID\":\"4\"}]', 'Draft', '2026-03-04 16:48:52', '2026-03-04 16:48:52', NULL),
+(2, 'FY2026', 1, 2, 10.11, 5000000.00, 42140.00, '2026-03-05 01:01:03', '2026-03-17 20:59:06', '[{\"EmployeeID\":\"1\",\"FirstName\":\"Joshua\",\"LastName\":\"Suruiz\",\"EmployeeCode\":\"ADM20261001\",\"OldSalary\":92882,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":92882,\"GradeID\":\"6\",\"CompaRatio\":0},{\"EmployeeID\":\"2\",\"FirstName\":\"Red\",\"LastName\":\"Gin Baldon\",\"EmployeeCode\":\"ADM20261002\",\"OldSalary\":94694,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":94694,\"GradeID\":\"6\",\"CompaRatio\":0},{\"EmployeeID\":\"7\",\"FirstName\":\"Miguel\",\"LastName\":\"Padre\",\"EmployeeCode\":\"CA20261007\",\"OldSalary\":45676,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":45676,\"GradeID\":\"4\",\"CompaRatio\":0},{\"EmployeeID\":\"23\",\"FirstName\":\"denzel\",\"LastName\":\"Ortiz\",\"EmployeeCode\":\"example20260015\",\"OldSalary\":85000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":85000,\"GradeID\":\"6\",\"CompaRatio\":0},{\"EmployeeID\":\"20\",\"FirstName\":\"buya\",\"LastName\":\"buya\",\"EmployeeCode\":\"FACT20260014\",\"OldSalary\":16000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":16000,\"GradeID\":\"1\",\"CompaRatio\":0},{\"EmployeeID\":\"24\",\"FirstName\":\"Miguel\",\"LastName\":\"Padre\",\"EmployeeCode\":\"FACT20260016\",\"OldSalary\":16000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":16000,\"GradeID\":\"1\",\"CompaRatio\":0},{\"EmployeeID\":\"3\",\"FirstName\":\"Noriel\",\"LastName\":\"Dimailig\",\"EmployeeCode\":\"HRDS20261003\",\"OldSalary\":25500,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":25500,\"GradeID\":\"2\",\"CompaRatio\":0},{\"EmployeeID\":\"6\",\"FirstName\":\"Glory\",\"LastName\":\"Job\",\"EmployeeCode\":\"HRM20261006\",\"OldSalary\":60158,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":60158,\"GradeID\":\"5\",\"CompaRatio\":0},{\"EmployeeID\":\"16\",\"FirstName\":\"Johnmar\",\"LastName\":\"Solis\",\"EmployeeCode\":\"HRO20260011\",\"OldSalary\":29000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":29000,\"GradeID\":\"3\",\"CompaRatio\":0},{\"EmployeeID\":\"4\",\"FirstName\":\"Earl\",\"LastName\":\"Caber\",\"EmployeeCode\":\"HRS20261004\",\"OldSalary\":17146,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":17146,\"GradeID\":\"1\",\"CompaRatio\":0},{\"EmployeeID\":\"14\",\"FirstName\":\"Joshua\",\"LastName\":\"Suruiz\",\"EmployeeCode\":\"L-OFF20260009\",\"OldSalary\":29000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":29000,\"GradeID\":\"3\",\"CompaRatio\":0},{\"EmployeeID\":\"15\",\"FirstName\":\"test\",\"LastName\":\"three\",\"EmployeeCode\":\"LM20260010\",\"OldSalary\":54000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":54000,\"GradeID\":\"5\",\"CompaRatio\":0},{\"EmployeeID\":\"18\",\"FirstName\":\"Earl\",\"LastName\":\"Alarcon\",\"EmployeeCode\":\"LOG-OFF20260012\",\"OldSalary\":29000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":29000,\"GradeID\":\"3\",\"CompaRatio\":0},{\"EmployeeID\":\"19\",\"FirstName\":\"EARL\",\"LastName\":\"ALARCON\",\"EmployeeCode\":\"LSA20260013\",\"OldSalary\":85000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":85000,\"GradeID\":\"6\",\"CompaRatio\":0},{\"EmployeeID\":\"8\",\"FirstName\":\"Daniella\",\"LastName\":\"Magtangob\",\"EmployeeCode\":\"PAY20261008\",\"OldSalary\":29000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":29000,\"GradeID\":\"3\",\"CompaRatio\":0},{\"EmployeeID\":\"10\",\"FirstName\":\"Mike\",\"LastName\":\"Dabu\",\"EmployeeCode\":\"SV20261009\",\"OldSalary\":41000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":41000,\"GradeID\":\"4\",\"CompaRatio\":0}]', 'Sent to Finance', '2026-03-04 17:01:03', '2026-03-17 12:59:06', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":25000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]'),
+(3, 'Test Cycle 1773159792', 1, NULL, 10.50, 5000000.00, 500000.00, '2026-03-11 00:23:12', '2026-03-11 00:23:12', '[{\"EmployeeID\":1,\"PropPct\":5,\"PropAmt\":1000,\"GradeID\":1}]', 'Draft', '2026-03-10 16:23:12', '2026-03-10 16:23:12', NULL),
+(4, 'TESTING', 1, 2, 10.11, 5000000.00, 42140.00, '2026-03-16 19:27:26', '2026-03-17 01:57:26', '[{\"EmployeeID\":\"1\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"2\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"7\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"},{\"EmployeeID\":\"23\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"20\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"24\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"3\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"2\"},{\"EmployeeID\":\"6\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"16\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"4\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"14\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"15\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"18\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"19\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"8\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"10\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"}]', 'Draft', '2026-03-16 11:27:26', '2026-03-16 17:57:26', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]'),
+(5, 'SANAGUMANA', 1, 2, 10.11, 5000000.00, 42140.00, '2026-03-17 01:45:04', '2026-03-17 01:45:04', '[{\"EmployeeID\":\"1\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"2\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"7\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"},{\"EmployeeID\":\"23\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"20\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"24\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"3\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"2\"},{\"EmployeeID\":\"6\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"16\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"4\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"14\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"15\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"18\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"19\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"8\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"10\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"}]', 'Draft', '2026-03-16 17:45:04', '2026-03-16 17:45:04', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]'),
+(6, 'TESTINGEEEEEEEEE', 1, 2, 10.11, 5000000.00, 42140.00, '2026-03-17 02:17:34', '2026-03-17 02:18:02', '[{\"EmployeeID\":\"1\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"2\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"7\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"},{\"EmployeeID\":\"23\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"20\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"24\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"3\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"2\"},{\"EmployeeID\":\"6\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"16\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"4\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"14\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"15\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"18\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"19\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"8\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"10\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"}]', 'Sent to Finance', '2026-03-16 18:17:34', '2026-03-16 18:18:02', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]'),
+(7, 'TESTING2', 1, 2, 10.11, 5000000.00, 42140.00, '2026-03-17 02:31:46', '2026-03-17 02:32:09', '[{\"EmployeeID\":\"1\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"2\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"7\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"},{\"EmployeeID\":\"23\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"20\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"24\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"3\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"2\"},{\"EmployeeID\":\"6\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"16\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"4\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"14\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"15\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"18\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"19\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"8\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"10\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"}]', 'Sent to Finance', '2026-03-16 18:31:46', '2026-03-16 18:32:09', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]'),
+(8, 'TESTING3', 1, 2, 10.11, 5000000.00, 42140.00, '2026-03-17 02:34:06', '2026-03-17 02:34:27', '[{\"EmployeeID\":\"1\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"2\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"7\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"},{\"EmployeeID\":\"23\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"20\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"24\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"3\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"2\"},{\"EmployeeID\":\"6\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"16\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"4\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"14\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"15\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"18\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"19\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"8\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"10\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"}]', 'Sent to Finance', '2026-03-16 18:34:06', '2026-03-16 18:34:27', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]'),
+(9, 'TESTING4', 1, 2, 10.11, 5000000.00, 42140.00, '2026-03-17 02:36:35', '2026-03-17 02:38:47', '[{\"EmployeeID\":\"1\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"2\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"7\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"},{\"EmployeeID\":\"23\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"20\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"24\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"3\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"2\"},{\"EmployeeID\":\"6\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"16\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"4\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"14\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"15\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"18\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"19\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"8\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"10\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"}]', 'Approved', '2026-03-16 18:36:35', '2026-03-16 18:38:47', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]'),
+(10, 'testingggggggggg', 1, 2, 10.11, 5000000.00, 42140.00, '2026-03-17 10:41:45', '2026-03-17 10:42:17', '[{\"EmployeeID\":\"1\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"2\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"7\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"},{\"EmployeeID\":\"23\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"20\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"24\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"3\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"2\"},{\"EmployeeID\":\"6\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"16\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"4\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"14\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"15\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"18\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"19\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"8\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"10\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"}]', 'Sent to Finance', '2026-03-17 02:41:45', '2026-03-17 02:42:17', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]'),
+(11, 'testingssssssssss sanaaaa', 1, 2, 10.11, 5000000.00, 42140.00, '2026-03-17 10:46:20', '2026-03-17 10:47:06', '[{\"EmployeeID\":\"1\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"2\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"7\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"},{\"EmployeeID\":\"23\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"20\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"24\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"3\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"2\"},{\"EmployeeID\":\"6\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"16\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"4\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"1\"},{\"EmployeeID\":\"14\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"15\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"5\"},{\"EmployeeID\":\"18\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"19\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"6\"},{\"EmployeeID\":\"8\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"3\"},{\"EmployeeID\":\"10\",\"PropPct\":0,\"PropAmt\":0,\"GradeID\":\"4\"}]', 'Approved', '2026-03-17 02:46:20', '2026-03-17 02:47:06', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]'),
+(12, 'testingggg', 1, 2, 10.11, 5000000.00, 42140.00, '2026-03-17 18:07:23', '2026-03-17 18:07:23', '[{\"EmployeeID\":\"1\",\"FirstName\":\"Joshua\",\"LastName\":\"Suruiz\",\"EmployeeCode\":\"ADM20261001\",\"OldSalary\":92882,\"MarketAdjustment\":0,\"MeritPct\":2,\"IncreaseAmount\":0,\"NewSalary\":92882,\"GradeID\":\"6\",\"CompaRatio\":0},{\"EmployeeID\":\"2\",\"FirstName\":\"Red\",\"LastName\":\"Gin Baldon\",\"EmployeeCode\":\"ADM20261002\",\"OldSalary\":94694,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":94694,\"GradeID\":\"6\",\"CompaRatio\":0},{\"EmployeeID\":\"7\",\"FirstName\":\"Miguel\",\"LastName\":\"Padre\",\"EmployeeCode\":\"CA20261007\",\"OldSalary\":45676,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":45676,\"GradeID\":\"4\",\"CompaRatio\":0},{\"EmployeeID\":\"23\",\"FirstName\":\"denzel\",\"LastName\":\"Ortiz\",\"EmployeeCode\":\"example20260015\",\"OldSalary\":85000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":85000,\"GradeID\":\"6\",\"CompaRatio\":0},{\"EmployeeID\":\"20\",\"FirstName\":\"buya\",\"LastName\":\"buya\",\"EmployeeCode\":\"FACT20260014\",\"OldSalary\":16000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":16000,\"GradeID\":\"1\",\"CompaRatio\":0},{\"EmployeeID\":\"24\",\"FirstName\":\"Miguel\",\"LastName\":\"Padre\",\"EmployeeCode\":\"FACT20260016\",\"OldSalary\":16000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":16000,\"GradeID\":\"1\",\"CompaRatio\":0},{\"EmployeeID\":\"3\",\"FirstName\":\"Noriel\",\"LastName\":\"Dimailig\",\"EmployeeCode\":\"HRDS20261003\",\"OldSalary\":25500,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":25500,\"GradeID\":\"2\",\"CompaRatio\":0},{\"EmployeeID\":\"6\",\"FirstName\":\"Glory\",\"LastName\":\"Job\",\"EmployeeCode\":\"HRM20261006\",\"OldSalary\":60158,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":60158,\"GradeID\":\"5\",\"CompaRatio\":0},{\"EmployeeID\":\"16\",\"FirstName\":\"Johnmar\",\"LastName\":\"Solis\",\"EmployeeCode\":\"HRO20260011\",\"OldSalary\":29000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":29000,\"GradeID\":\"3\",\"CompaRatio\":0},{\"EmployeeID\":\"4\",\"FirstName\":\"Earl\",\"LastName\":\"Caber\",\"EmployeeCode\":\"HRS20261004\",\"OldSalary\":17146,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":17146,\"GradeID\":\"1\",\"CompaRatio\":0},{\"EmployeeID\":\"14\",\"FirstName\":\"Joshua\",\"LastName\":\"Suruiz\",\"EmployeeCode\":\"L-OFF20260009\",\"OldSalary\":29000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":29000,\"GradeID\":\"3\",\"CompaRatio\":0},{\"EmployeeID\":\"15\",\"FirstName\":\"test\",\"LastName\":\"three\",\"EmployeeCode\":\"LM20260010\",\"OldSalary\":54000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":54000,\"GradeID\":\"5\",\"CompaRatio\":0},{\"EmployeeID\":\"18\",\"FirstName\":\"Earl\",\"LastName\":\"Alarcon\",\"EmployeeCode\":\"LOG-OFF20260012\",\"OldSalary\":29000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":29000,\"GradeID\":\"3\",\"CompaRatio\":0},{\"EmployeeID\":\"19\",\"FirstName\":\"EARL\",\"LastName\":\"ALARCON\",\"EmployeeCode\":\"LSA20260013\",\"OldSalary\":85000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":85000,\"GradeID\":\"6\",\"CompaRatio\":0},{\"EmployeeID\":\"8\",\"FirstName\":\"Daniella\",\"LastName\":\"Magtangob\",\"EmployeeCode\":\"PAY20261008\",\"OldSalary\":29000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":29000,\"GradeID\":\"3\",\"CompaRatio\":0},{\"EmployeeID\":\"10\",\"FirstName\":\"Mike\",\"LastName\":\"Dabu\",\"EmployeeCode\":\"SV20261009\",\"OldSalary\":41000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":41000,\"GradeID\":\"4\",\"CompaRatio\":0}]', 'Draft', '2026-03-17 10:07:23', '2026-03-17 10:07:23', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":25000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]'),
+(13, 'testinggggggggggg', 1, 2, 10.11, 5000000.00, 42140.00, '2026-03-17 18:49:50', '2026-03-17 18:49:57', '[{\"EmployeeID\":\"1\",\"FirstName\":\"Joshua\",\"LastName\":\"Suruiz\",\"EmployeeCode\":\"ADM20261001\",\"OldSalary\":92882,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":92882,\"GradeID\":\"6\",\"CompaRatio\":0},{\"EmployeeID\":\"2\",\"FirstName\":\"Red\",\"LastName\":\"Gin Baldon\",\"EmployeeCode\":\"ADM20261002\",\"OldSalary\":94694,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":94694,\"GradeID\":\"6\",\"CompaRatio\":0},{\"EmployeeID\":\"7\",\"FirstName\":\"Miguel\",\"LastName\":\"Padre\",\"EmployeeCode\":\"CA20261007\",\"OldSalary\":45676,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":45676,\"GradeID\":\"4\",\"CompaRatio\":0},{\"EmployeeID\":\"23\",\"FirstName\":\"denzel\",\"LastName\":\"Ortiz\",\"EmployeeCode\":\"example20260015\",\"OldSalary\":85000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":85000,\"GradeID\":\"6\",\"CompaRatio\":0},{\"EmployeeID\":\"20\",\"FirstName\":\"buya\",\"LastName\":\"buya\",\"EmployeeCode\":\"FACT20260014\",\"OldSalary\":16000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":16000,\"GradeID\":\"1\",\"CompaRatio\":0},{\"EmployeeID\":\"24\",\"FirstName\":\"Miguel\",\"LastName\":\"Padre\",\"EmployeeCode\":\"FACT20260016\",\"OldSalary\":16000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":16000,\"GradeID\":\"1\",\"CompaRatio\":0},{\"EmployeeID\":\"3\",\"FirstName\":\"Noriel\",\"LastName\":\"Dimailig\",\"EmployeeCode\":\"HRDS20261003\",\"OldSalary\":25500,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":25500,\"GradeID\":\"2\",\"CompaRatio\":0},{\"EmployeeID\":\"6\",\"FirstName\":\"Glory\",\"LastName\":\"Job\",\"EmployeeCode\":\"HRM20261006\",\"OldSalary\":60158,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":60158,\"GradeID\":\"5\",\"CompaRatio\":0},{\"EmployeeID\":\"16\",\"FirstName\":\"Johnmar\",\"LastName\":\"Solis\",\"EmployeeCode\":\"HRO20260011\",\"OldSalary\":29000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":29000,\"GradeID\":\"3\",\"CompaRatio\":0},{\"EmployeeID\":\"4\",\"FirstName\":\"Earl\",\"LastName\":\"Caber\",\"EmployeeCode\":\"HRS20261004\",\"OldSalary\":17146,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":17146,\"GradeID\":\"1\",\"CompaRatio\":0},{\"EmployeeID\":\"14\",\"FirstName\":\"Joshua\",\"LastName\":\"Suruiz\",\"EmployeeCode\":\"L-OFF20260009\",\"OldSalary\":29000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":29000,\"GradeID\":\"3\",\"CompaRatio\":0},{\"EmployeeID\":\"15\",\"FirstName\":\"test\",\"LastName\":\"three\",\"EmployeeCode\":\"LM20260010\",\"OldSalary\":54000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":54000,\"GradeID\":\"5\",\"CompaRatio\":0},{\"EmployeeID\":\"18\",\"FirstName\":\"Earl\",\"LastName\":\"Alarcon\",\"EmployeeCode\":\"LOG-OFF20260012\",\"OldSalary\":29000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":29000,\"GradeID\":\"3\",\"CompaRatio\":0},{\"EmployeeID\":\"19\",\"FirstName\":\"EARL\",\"LastName\":\"ALARCON\",\"EmployeeCode\":\"LSA20260013\",\"OldSalary\":85000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":85000,\"GradeID\":\"6\",\"CompaRatio\":0},{\"EmployeeID\":\"8\",\"FirstName\":\"Daniella\",\"LastName\":\"Magtangob\",\"EmployeeCode\":\"PAY20261008\",\"OldSalary\":29000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":29000,\"GradeID\":\"3\",\"CompaRatio\":0},{\"EmployeeID\":\"10\",\"FirstName\":\"Mike\",\"LastName\":\"Dabu\",\"EmployeeCode\":\"SV20261009\",\"OldSalary\":41000,\"MarketAdjustment\":0,\"MeritPct\":0,\"IncreaseAmount\":0,\"NewSalary\":41000,\"GradeID\":\"4\",\"CompaRatio\":0}]', 'Sent to Finance', '2026-03-17 10:49:50', '2026-03-17 10:49:57', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":25000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `simulation_proposals`
+--
+
+CREATE TABLE `simulation_proposals` (
+  `ProposalID` int(11) NOT NULL,
+  `CycleName` varchar(255) NOT NULL,
+  `SalaryScaleData` longtext DEFAULT NULL,
+  `PeriodID` int(11) NOT NULL,
+  `DeptCode` varchar(50) DEFAULT NULL,
+  `TotalBudget` decimal(15,2) DEFAULT 0.00,
+  `TotalImpact` decimal(15,2) DEFAULT 0.00,
+  `RemainingBudget` decimal(15,2) DEFAULT 0.00,
+  `Status` varchar(50) DEFAULT 'Proposed',
+  `FinanceRef` varchar(100) DEFAULT NULL,
+  `ProposedBy` int(11) DEFAULT NULL,
+  `CreatedAt` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `simulation_proposals`
+--
+
+INSERT INTO `simulation_proposals` (`ProposalID`, `CycleName`, `SalaryScaleData`, `PeriodID`, `DeptCode`, `TotalBudget`, `TotalImpact`, `RemainingBudget`, `Status`, `FinanceRef`, `ProposedBy`, `CreatedAt`) VALUES
+(1, 'FY2026', NULL, 1, 'GLOBAL', 5000000.00, 28260.00, 4660880.00, 'Proposed', NULL, 2, '2026-03-17 00:27:40'),
+(2, 'FY2026', NULL, 1, 'GLOBAL', 5000000.00, 29070.00, 4651160.00, 'Proposed', NULL, 2, '2026-03-17 00:36:13'),
+(3, 'FY2026', NULL, 1, 'GLOBAL', 5000000.00, 24370.00, 4707560.00, 'Proposed', NULL, 2, '2026-03-17 00:43:21'),
+(4, 'FY2026', NULL, 1, 'GLOBAL', 5000000.00, 24370.00, 4707560.00, 'Proposed', NULL, 2, '2026-03-17 00:46:47'),
+(5, 'FY2026', NULL, 1, 'GLOBAL', 5000000.00, 24370.00, 4707560.00, 'Proposed', NULL, 2, '2026-03-17 00:49:00'),
+(6, 'FY2026', NULL, 1, 'GLOBAL', 5000000.00, 24370.00, 4707560.00, 'Proposed', NULL, 2, '2026-03-17 00:50:29'),
+(7, 'FY2026', NULL, 1, 'GLOBAL', 5000000.00, 24370.00, 4707560.00, 'Proposed', NULL, 2, '2026-03-17 00:54:52'),
+(8, 'FY2026', NULL, 1, 'GLOBAL', 5000000.00, 24370.00, 4707560.00, 'Proposed', NULL, 2, '2026-03-17 00:57:15'),
+(9, 'FY2026', NULL, 1, 'GLOBAL', 5000000.00, 14000.00, 4832000.00, 'Proposed', NULL, 2, '2026-03-17 00:58:56'),
+(10, 'FY2026', NULL, 1, 'GLOBAL', 5000000.00, 29070.00, 4651160.00, 'Proposed', NULL, 2, '2026-03-17 01:10:06'),
+(11, 'SANAGUMANA', NULL, 1, 'GLOBAL', 5000000.00, 29070.00, 4651160.00, 'Proposed', NULL, 2, '2026-03-17 01:45:35'),
+(12, 'FY2026', NULL, 1, 'GLOBAL', 5000000.00, 37289.00, 4552532.00, 'Proposed', NULL, 2, '2026-03-17 01:48:03'),
+(13, 'FY2026', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":18000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 30430.00, 4634840.00, 'Proposed', NULL, 2, '2026-03-17 02:08:29'),
+(14, 'TESTINGEEEEEEEEE', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":19000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 33460.00, 4598480.00, 'Proposed', NULL, 2, '2026-03-17 02:18:02'),
+(15, 'TESTING2', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":85000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 40650.00, 4512200.00, 'Proposed', NULL, 2, '2026-03-17 02:32:09'),
+(16, 'TESTING3', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":85000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 40650.00, 4512200.00, 'Proposed', NULL, 2, '2026-03-17 02:34:27'),
+(17, 'TESTING4', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":85000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 40650.00, 4512200.00, 'Approved', 'ALLOC-2026-HR17', 2, '2026-03-17 02:36:45'),
+(18, 'FY2026', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 10873.00, 4869524.00, 'Approved', 'ALLOC-2026-HR18', 2, '2026-03-17 02:39:15'),
+(19, 'testingggggggggg', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":21000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 16615.00, 4800620.00, 'Proposed', NULL, 2, '2026-03-17 10:42:17'),
+(20, 'testingssssssssss sanaaaa', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":25000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 12533.00, 4849604.00, 'Approved', 'ALLOC-2026-HR20', 2, '2026-03-17 10:46:43'),
+(21, 'FY2026', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":25000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 10329.00, 4876052.00, 'Proposed', NULL, 2, '2026-03-17 18:11:30'),
+(22, 'FY2026', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":25000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 8472.00, 4898336.00, 'Proposed', NULL, 2, '2026-03-17 18:26:17'),
+(23, 'FY2026', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":25000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 8472.00, 4898336.00, 'Proposed', NULL, 2, '2026-03-17 18:41:55'),
+(24, 'testinggggggggggg', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":25000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 8472.00, 4898336.00, 'Proposed', NULL, 2, '2026-03-17 18:49:57'),
+(25, 'FY2026', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":25000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 8472.00, 4898336.00, 'Proposed', NULL, 2, '2026-03-17 18:54:08'),
+(26, 'FY2026', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":25000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 8472.00, 4898336.00, 'Proposed', NULL, 2, '2026-03-17 20:42:16'),
+(27, 'FY2026', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":25000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 8472.00, 4898336.00, 'Proposed', NULL, 2, '2026-03-17 20:49:20'),
+(28, 'FY2026', '[{\"SalaryGradeID\":\"1\",\"MinSalary\":16000,\"MaxSalary\":20000},{\"SalaryGradeID\":\"2\",\"MinSalary\":25000,\"MaxSalary\":30000},{\"SalaryGradeID\":\"3\",\"MinSalary\":29000,\"MaxSalary\":42000},{\"SalaryGradeID\":\"4\",\"MinSalary\":41000,\"MaxSalary\":55000},{\"SalaryGradeID\":\"5\",\"MinSalary\":54000,\"MaxSalary\":75000},{\"SalaryGradeID\":\"6\",\"MinSalary\":81000,\"MaxSalary\":120000}]', 1, 'GLOBAL', 5000000.00, 8472.00, 4898336.00, 'Proposed', NULL, 2, '2026-03-17 20:59:06');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `simulation_proposal_items`
+--
+
+CREATE TABLE `simulation_proposal_items` (
+  `ItemID` int(11) NOT NULL,
+  `ProposalID` int(11) NOT NULL,
+  `EmployeeID` int(11) NOT NULL,
+  `OriginalSalary` decimal(15,2) DEFAULT 0.00,
+  `MarketAdjustment` decimal(15,2) DEFAULT 0.00,
+  `MeritPct` decimal(5,2) DEFAULT 0.00,
+  `MeritAmount` decimal(15,2) DEFAULT 0.00,
+  `NewSalary` decimal(15,2) DEFAULT 0.00,
+  `NewGradeID` int(11) DEFAULT NULL,
+  `CompaRatio` decimal(10,2) DEFAULT 0.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `simulation_proposal_items`
+--
+
+INSERT INTO `simulation_proposal_items` (`ItemID`, `ProposalID`, `EmployeeID`, `OriginalSalary`, `MarketAdjustment`, `MeritPct`, `MeritAmount`, `NewSalary`, `NewGradeID`, `CompaRatio`) VALUES
+(1, 1, 1, 80000.00, 1000.00, 3.00, 2430.00, 83430.00, 6, 80.60),
+(2, 1, 2, 80000.00, 1000.00, 6.00, 4860.00, 85860.00, 6, 80.60),
+(3, 1, 7, 40000.00, 1000.00, 6.00, 2460.00, 43460.00, 4, 85.40),
+(4, 1, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(5, 1, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(6, 1, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(7, 1, 3, 21000.00, 0.00, 3.00, 630.00, 21630.00, 2, 82.40),
+(8, 1, 6, 53000.00, 1000.00, 6.00, 3240.00, 57240.00, 5, 83.70),
+(9, 1, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(10, 1, 4, 15000.00, 1000.00, 4.00, 640.00, 16640.00, 1, 88.90),
+(11, 1, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(12, 1, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(13, 1, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(14, 1, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(15, 1, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(16, 1, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(17, 2, 1, 80000.00, 1000.00, 4.00, 3240.00, 84240.00, 6, 80.60),
+(18, 2, 2, 80000.00, 1000.00, 6.00, 4860.00, 85860.00, 6, 80.60),
+(19, 2, 7, 40000.00, 1000.00, 6.00, 2460.00, 43460.00, 4, 85.40),
+(20, 2, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(21, 2, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(22, 2, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(23, 2, 3, 21000.00, 0.00, 3.00, 630.00, 21630.00, 2, 82.40),
+(24, 2, 6, 53000.00, 1000.00, 6.00, 3240.00, 57240.00, 5, 83.70),
+(25, 2, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(26, 2, 4, 15000.00, 1000.00, 4.00, 640.00, 16640.00, 1, 88.90),
+(27, 2, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(28, 2, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(29, 2, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(30, 2, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(31, 2, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(32, 2, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(33, 3, 1, 80000.00, 1000.00, 3.00, 2430.00, 83430.00, 6, 80.60),
+(34, 3, 2, 80000.00, 1000.00, 4.00, 3240.00, 84240.00, 6, 80.60),
+(35, 3, 7, 40000.00, 1000.00, 4.00, 1640.00, 42640.00, 4, 85.40),
+(36, 3, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(37, 3, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(38, 3, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(39, 3, 3, 21000.00, 0.00, 2.00, 420.00, 21420.00, 2, 82.40),
+(40, 3, 6, 53000.00, 1000.00, 4.00, 2160.00, 56160.00, 5, 83.70),
+(41, 3, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(42, 3, 4, 15000.00, 1000.00, 3.00, 480.00, 16480.00, 1, 88.90),
+(43, 3, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(44, 3, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(45, 3, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(46, 3, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(47, 3, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(48, 3, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(49, 4, 1, 80000.00, 1000.00, 3.00, 2430.00, 83430.00, 6, 80.60),
+(50, 4, 2, 80000.00, 1000.00, 4.00, 3240.00, 84240.00, 6, 80.60),
+(51, 4, 7, 40000.00, 1000.00, 4.00, 1640.00, 42640.00, 4, 85.40),
+(52, 4, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(53, 4, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(54, 4, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(55, 4, 3, 21000.00, 0.00, 2.00, 420.00, 21420.00, 2, 82.40),
+(56, 4, 6, 53000.00, 1000.00, 4.00, 2160.00, 56160.00, 5, 83.70),
+(57, 4, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(58, 4, 4, 15000.00, 1000.00, 3.00, 480.00, 16480.00, 1, 88.90),
+(59, 4, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(60, 4, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(61, 4, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(62, 4, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(63, 4, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(64, 4, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(65, 5, 1, 80000.00, 1000.00, 3.00, 2430.00, 83430.00, 6, 80.60),
+(66, 5, 2, 80000.00, 1000.00, 4.00, 3240.00, 84240.00, 6, 80.60),
+(67, 5, 7, 40000.00, 1000.00, 4.00, 1640.00, 42640.00, 4, 85.40),
+(68, 5, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(69, 5, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(70, 5, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(71, 5, 3, 21000.00, 0.00, 2.00, 420.00, 21420.00, 2, 82.40),
+(72, 5, 6, 53000.00, 1000.00, 4.00, 2160.00, 56160.00, 5, 83.70),
+(73, 5, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(74, 5, 4, 15000.00, 1000.00, 3.00, 480.00, 16480.00, 1, 88.90),
+(75, 5, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(76, 5, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(77, 5, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(78, 5, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(79, 5, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(80, 5, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(81, 6, 1, 80000.00, 1000.00, 3.00, 2430.00, 83430.00, 6, 80.60),
+(82, 6, 2, 80000.00, 1000.00, 4.00, 3240.00, 84240.00, 6, 80.60),
+(83, 6, 7, 40000.00, 1000.00, 4.00, 1640.00, 42640.00, 4, 85.40),
+(84, 6, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(85, 6, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(86, 6, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(87, 6, 3, 21000.00, 0.00, 2.00, 420.00, 21420.00, 2, 82.40),
+(88, 6, 6, 53000.00, 1000.00, 4.00, 2160.00, 56160.00, 5, 83.70),
+(89, 6, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(90, 6, 4, 15000.00, 1000.00, 3.00, 480.00, 16480.00, 1, 88.90),
+(91, 6, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(92, 6, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(93, 6, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(94, 6, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(95, 6, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(96, 6, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(97, 7, 1, 80000.00, 1000.00, 3.00, 2430.00, 83430.00, 6, 80.60),
+(98, 7, 2, 80000.00, 1000.00, 4.00, 3240.00, 84240.00, 6, 80.60),
+(99, 7, 7, 40000.00, 1000.00, 4.00, 1640.00, 42640.00, 4, 85.40),
+(100, 7, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(101, 7, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(102, 7, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(103, 7, 3, 21000.00, 0.00, 2.00, 420.00, 21420.00, 2, 82.40),
+(104, 7, 6, 53000.00, 1000.00, 4.00, 2160.00, 56160.00, 5, 83.70),
+(105, 7, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(106, 7, 4, 15000.00, 1000.00, 3.00, 480.00, 16480.00, 1, 88.90),
+(107, 7, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(108, 7, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(109, 7, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(110, 7, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(111, 7, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(112, 7, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(113, 8, 1, 80000.00, 1000.00, 3.00, 2430.00, 83430.00, 6, 80.60),
+(114, 8, 2, 80000.00, 1000.00, 4.00, 3240.00, 84240.00, 6, 80.60),
+(115, 8, 7, 40000.00, 1000.00, 4.00, 1640.00, 42640.00, 4, 85.40),
+(116, 8, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(117, 8, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(118, 8, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(119, 8, 3, 21000.00, 0.00, 2.00, 420.00, 21420.00, 2, 82.40),
+(120, 8, 6, 53000.00, 1000.00, 4.00, 2160.00, 56160.00, 5, 83.70),
+(121, 8, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(122, 8, 4, 15000.00, 1000.00, 3.00, 480.00, 16480.00, 1, 88.90),
+(123, 8, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(124, 8, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(125, 8, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(126, 8, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(127, 8, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(128, 8, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(129, 9, 1, 80000.00, 1000.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(130, 9, 2, 80000.00, 1000.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(131, 9, 7, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(132, 9, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(133, 9, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(134, 9, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(135, 9, 3, 21000.00, 0.00, 0.00, 0.00, 21000.00, 2, 82.40),
+(136, 9, 6, 53000.00, 1000.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(137, 9, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(138, 9, 4, 15000.00, 1000.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(139, 9, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(140, 9, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(141, 9, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(142, 9, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(143, 9, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(144, 9, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(145, 10, 1, 80000.00, 1000.00, 4.00, 3240.00, 84240.00, 6, 80.60),
+(146, 10, 2, 80000.00, 1000.00, 6.00, 4860.00, 85860.00, 6, 80.60),
+(147, 10, 7, 40000.00, 1000.00, 6.00, 2460.00, 43460.00, 4, 85.40),
+(148, 10, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(149, 10, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(150, 10, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(151, 10, 3, 21000.00, 0.00, 3.00, 630.00, 21630.00, 2, 82.40),
+(152, 10, 6, 53000.00, 1000.00, 6.00, 3240.00, 57240.00, 5, 83.70),
+(153, 10, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(154, 10, 4, 15000.00, 1000.00, 4.00, 640.00, 16640.00, 1, 88.90),
+(155, 10, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(156, 10, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(157, 10, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(158, 10, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(159, 10, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(160, 10, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(161, 11, 1, 80000.00, 1000.00, 4.00, 3240.00, 84240.00, 6, 80.60),
+(162, 11, 2, 80000.00, 1000.00, 6.00, 4860.00, 85860.00, 6, 80.60),
+(163, 11, 7, 40000.00, 1000.00, 6.00, 2460.00, 43460.00, 4, 85.40),
+(164, 11, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(165, 11, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(166, 11, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(167, 11, 3, 21000.00, 0.00, 3.00, 630.00, 21630.00, 2, 82.40),
+(168, 11, 6, 53000.00, 1000.00, 6.00, 3240.00, 57240.00, 5, 83.70),
+(169, 11, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(170, 11, 4, 15000.00, 1000.00, 4.00, 640.00, 16640.00, 1, 88.90),
+(171, 11, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(172, 11, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(173, 11, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(174, 11, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(175, 11, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(176, 11, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(177, 12, 1, 80000.00, 1000.00, 4.00, 3240.00, 84240.00, 6, 80.60),
+(178, 12, 2, 80000.00, 1000.00, 5.90, 4779.00, 85779.00, 6, 80.60),
+(179, 12, 7, 40000.00, 1000.00, 4.00, 1640.00, 42640.00, 4, 85.40),
+(180, 12, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(181, 12, 20, 16000.00, 0.00, 0.00, 0.00, 19000.00, 1, 97.40),
+(182, 12, 24, 16000.00, 0.00, 0.00, 0.00, 19000.00, 1, 97.40),
+(183, 12, 3, 21000.00, 0.00, 3.00, 630.00, 21630.00, 2, 82.40),
+(184, 12, 6, 53000.00, 1000.00, 6.00, 3240.00, 57240.00, 5, 83.70),
+(185, 12, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(186, 12, 4, 15000.00, 0.00, 4.00, 760.00, 19760.00, 1, 97.40),
+(187, 12, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(188, 12, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(189, 12, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(190, 12, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(191, 12, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(192, 12, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(193, 13, 1, 80000.00, 1000.00, 3.00, 2430.00, 83430.00, 6, 80.60),
+(194, 13, 2, 80000.00, 1000.00, 4.00, 3240.00, 84240.00, 6, 80.60),
+(195, 13, 7, 40000.00, 1000.00, 4.00, 1640.00, 42640.00, 4, 85.40),
+(196, 13, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(197, 13, 20, 16000.00, 0.00, 0.00, 0.00, 18000.00, 1, 94.70),
+(198, 13, 24, 16000.00, 0.00, 0.00, 0.00, 18000.00, 1, 94.70),
+(199, 13, 3, 21000.00, 0.00, 2.00, 420.00, 21420.00, 2, 82.40),
+(200, 13, 6, 53000.00, 1000.00, 4.00, 2160.00, 56160.00, 5, 83.70),
+(201, 13, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(202, 13, 4, 15000.00, 0.00, 3.00, 540.00, 18540.00, 1, 94.70),
+(203, 13, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(204, 13, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(205, 13, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(206, 13, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(207, 13, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(208, 13, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(209, 14, 1, 80000.00, 1000.00, 3.00, 2430.00, 83430.00, 6, 80.60),
+(210, 14, 2, 80000.00, 1000.00, 4.00, 3240.00, 84240.00, 6, 80.60),
+(211, 14, 7, 40000.00, 1000.00, 4.00, 1640.00, 42640.00, 4, 85.40),
+(212, 14, 23, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(213, 14, 20, 16000.00, 0.00, 0.00, 0.00, 19000.00, 1, 97.40),
+(214, 14, 24, 16000.00, 0.00, 0.00, 0.00, 19000.00, 1, 97.40),
+(215, 14, 3, 21000.00, 0.00, 2.00, 420.00, 21420.00, 2, 82.40),
+(216, 14, 6, 53000.00, 1000.00, 4.00, 2160.00, 56160.00, 5, 83.70),
+(217, 14, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(218, 14, 4, 15000.00, 0.00, 3.00, 570.00, 19570.00, 1, 97.40),
+(219, 14, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(220, 14, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(221, 14, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(222, 14, 19, 81000.00, 0.00, 0.00, 0.00, 81000.00, 6, 80.60),
+(223, 14, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(224, 14, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(225, 15, 1, 80000.00, 0.00, 3.00, 2550.00, 87550.00, 6, 82.90),
+(226, 15, 2, 80000.00, 0.00, 4.00, 3400.00, 88400.00, 6, 82.90),
+(227, 15, 7, 40000.00, 1000.00, 4.00, 1640.00, 42640.00, 4, 85.40),
+(228, 15, 23, 81000.00, 0.00, 0.00, 0.00, 85000.00, 6, 82.90),
+(229, 15, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(230, 15, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(231, 15, 3, 21000.00, 0.00, 2.00, 420.00, 21420.00, 2, 82.40),
+(232, 15, 6, 53000.00, 1000.00, 4.00, 2160.00, 56160.00, 5, 83.70),
+(233, 15, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(234, 15, 4, 15000.00, 1000.00, 3.00, 480.00, 16480.00, 1, 88.90),
+(235, 15, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(236, 15, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(237, 15, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(238, 15, 19, 81000.00, 0.00, 0.00, 0.00, 85000.00, 6, 82.90),
+(239, 15, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(240, 15, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(241, 16, 1, 80000.00, 0.00, 3.00, 2550.00, 87550.00, 6, 82.90),
+(242, 16, 2, 80000.00, 0.00, 4.00, 3400.00, 88400.00, 6, 82.90),
+(243, 16, 7, 40000.00, 1000.00, 4.00, 1640.00, 42640.00, 4, 85.40),
+(244, 16, 23, 81000.00, 0.00, 0.00, 0.00, 85000.00, 6, 82.90),
+(245, 16, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(246, 16, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(247, 16, 3, 21000.00, 0.00, 2.00, 420.00, 21420.00, 2, 82.40),
+(248, 16, 6, 53000.00, 1000.00, 4.00, 2160.00, 56160.00, 5, 83.70),
+(249, 16, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(250, 16, 4, 15000.00, 1000.00, 3.00, 480.00, 16480.00, 1, 88.90),
+(251, 16, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(252, 16, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(253, 16, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(254, 16, 19, 81000.00, 0.00, 0.00, 0.00, 85000.00, 6, 82.90),
+(255, 16, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(256, 16, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(257, 17, 1, 80000.00, 0.00, 3.00, 2550.00, 87550.00, 6, 82.90),
+(258, 17, 2, 80000.00, 0.00, 4.00, 3400.00, 88400.00, 6, 82.90),
+(259, 17, 7, 40000.00, 1000.00, 4.00, 1640.00, 42640.00, 4, 85.40),
+(260, 17, 23, 81000.00, 0.00, 0.00, 0.00, 85000.00, 6, 82.90),
+(261, 17, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(262, 17, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(263, 17, 3, 21000.00, 0.00, 2.00, 420.00, 21420.00, 2, 82.40),
+(264, 17, 6, 53000.00, 1000.00, 4.00, 2160.00, 56160.00, 5, 83.70),
+(265, 17, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(266, 17, 4, 15000.00, 1000.00, 3.00, 480.00, 16480.00, 1, 88.90),
+(267, 17, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(268, 17, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(269, 17, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(270, 17, 19, 81000.00, 0.00, 0.00, 0.00, 85000.00, 6, 82.90),
+(271, 17, 8, 21000.00, 8000.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(272, 17, 10, 40000.00, 1000.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(273, 18, 1, 87550.00, 0.00, 3.00, 2627.00, 90177.00, 6, 87.10),
+(274, 18, 2, 88400.00, 0.00, 4.00, 3536.00, 91936.00, 6, 88.00),
+(275, 18, 7, 42640.00, 0.00, 4.00, 1706.00, 44346.00, 4, 88.80),
+(276, 18, 23, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(277, 18, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(278, 18, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(279, 18, 3, 21420.00, 0.00, 2.00, 428.00, 21848.00, 2, 84.00),
+(280, 18, 6, 56160.00, 0.00, 4.00, 2246.00, 58406.00, 5, 87.10),
+(281, 18, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(282, 18, 4, 16480.00, 0.00, 2.00, 330.00, 16810.00, 1, 91.60),
+(283, 18, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(284, 18, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(285, 18, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(286, 18, 19, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(287, 18, 8, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(288, 18, 10, 41000.00, 0.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(289, 19, 1, 90177.00, 0.00, 4.00, 3607.00, 93784.00, 6, 89.70),
+(290, 19, 2, 91936.00, 0.00, 6.00, 5516.00, 97452.00, 6, 91.50),
+(291, 19, 7, 44346.00, 0.00, 6.00, 2661.00, 47007.00, 4, 92.40),
+(292, 19, 23, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(293, 19, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(294, 19, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(295, 19, 3, 21848.00, 0.00, 3.00, 655.00, 22503.00, 2, 85.70),
+(296, 19, 6, 58406.00, 0.00, 6.00, 3504.00, 61910.00, 5, 90.60),
+(297, 19, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(298, 19, 4, 16810.00, 0.00, 4.00, 672.00, 17482.00, 1, 93.40),
+(299, 19, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(300, 19, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(301, 19, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(302, 19, 19, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(303, 19, 8, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(304, 19, 10, 41000.00, 0.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(305, 20, 1, 90177.00, 0.00, 3.00, 2705.00, 92882.00, 6, 89.70),
+(306, 20, 2, 91936.00, 0.00, 3.00, 2758.00, 94694.00, 6, 91.50),
+(307, 20, 7, 44346.00, 0.00, 3.00, 1330.00, 45676.00, 4, 92.40),
+(308, 20, 23, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(309, 20, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(310, 20, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(311, 20, 3, 21848.00, 0.00, 2.00, 500.00, 25500.00, 2, 90.90),
+(312, 20, 6, 58406.00, 0.00, 3.00, 1752.00, 60158.00, 5, 90.60),
+(313, 20, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(314, 20, 4, 16810.00, 0.00, 2.00, 336.00, 17146.00, 1, 93.40),
+(315, 20, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(316, 20, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(317, 20, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(318, 20, 19, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(319, 20, 8, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(320, 20, 10, 41000.00, 0.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(321, 21, 1, 92882.00, 0.00, 4.00, 3715.00, 96597.00, 6, 96.10),
+(322, 21, 2, 94694.00, 0.00, 3.00, 2841.00, 97535.00, 6, 97.00),
+(323, 21, 7, 45676.00, 0.00, 3.00, 1370.00, 47046.00, 4, 98.00),
+(324, 21, 23, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(325, 21, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(326, 21, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(327, 21, 3, 25500.00, 0.00, 1.00, 255.00, 25755.00, 2, 93.70),
+(328, 21, 6, 60158.00, 0.00, 3.00, 1805.00, 61963.00, 5, 96.10),
+(329, 21, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(330, 21, 4, 17146.00, 0.00, 2.00, 343.00, 17489.00, 1, 97.20),
+(331, 21, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(332, 21, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(333, 21, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(334, 21, 19, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(335, 21, 8, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(336, 21, 10, 41000.00, 0.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(337, 22, 1, 92882.00, 0.00, 2.00, 1858.00, 94740.00, 6, 94.30),
+(338, 22, 2, 94694.00, 0.00, 3.00, 2841.00, 97535.00, 6, 97.00),
+(339, 22, 7, 45676.00, 0.00, 3.00, 1370.00, 47046.00, 4, 98.00),
+(340, 22, 23, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(341, 22, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(342, 22, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(343, 22, 3, 25500.00, 0.00, 1.00, 255.00, 25755.00, 2, 93.70),
+(344, 22, 6, 60158.00, 0.00, 3.00, 1805.00, 61963.00, 5, 96.10),
+(345, 22, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(346, 22, 4, 17146.00, 0.00, 2.00, 343.00, 17489.00, 1, 97.20),
+(347, 22, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(348, 22, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(349, 22, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(350, 22, 19, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(351, 22, 8, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(352, 22, 10, 41000.00, 0.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(353, 23, 1, 92882.00, 0.00, 2.00, 1858.00, 94740.00, 6, 94.30),
+(354, 23, 2, 94694.00, 0.00, 3.00, 2841.00, 97535.00, 6, 97.00),
+(355, 23, 7, 45676.00, 0.00, 3.00, 1370.00, 47046.00, 4, 98.00),
+(356, 23, 23, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(357, 23, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(358, 23, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(359, 23, 3, 25500.00, 0.00, 1.00, 255.00, 25755.00, 2, 93.70),
+(360, 23, 6, 60158.00, 0.00, 3.00, 1805.00, 61963.00, 5, 96.10),
+(361, 23, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(362, 23, 4, 17146.00, 0.00, 2.00, 343.00, 17489.00, 1, 97.20),
+(363, 23, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(364, 23, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(365, 23, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(366, 23, 19, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(367, 23, 8, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(368, 23, 10, 41000.00, 0.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(369, 24, 1, 92882.00, 0.00, 2.00, 1858.00, 94740.00, 6, 94.30),
+(370, 24, 2, 94694.00, 0.00, 3.00, 2841.00, 97535.00, 6, 97.00),
+(371, 24, 7, 45676.00, 0.00, 3.00, 1370.00, 47046.00, 4, 98.00),
+(372, 24, 23, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(373, 24, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(374, 24, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(375, 24, 3, 25500.00, 0.00, 1.00, 255.00, 25755.00, 2, 93.70),
+(376, 24, 6, 60158.00, 0.00, 3.00, 1805.00, 61963.00, 5, 96.10),
+(377, 24, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(378, 24, 4, 17146.00, 0.00, 2.00, 343.00, 17489.00, 1, 97.20),
+(379, 24, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(380, 24, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(381, 24, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(382, 24, 19, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(383, 24, 8, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(384, 24, 10, 41000.00, 0.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(385, 25, 1, 92882.00, 0.00, 2.00, 1858.00, 94740.00, 6, 94.30),
+(386, 25, 2, 94694.00, 0.00, 3.00, 2841.00, 97535.00, 6, 97.00),
+(387, 25, 7, 45676.00, 0.00, 3.00, 1370.00, 47046.00, 4, 98.00),
+(388, 25, 23, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(389, 25, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(390, 25, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(391, 25, 3, 25500.00, 0.00, 1.00, 255.00, 25755.00, 2, 93.70),
+(392, 25, 6, 60158.00, 0.00, 3.00, 1805.00, 61963.00, 5, 96.10),
+(393, 25, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(394, 25, 4, 17146.00, 0.00, 2.00, 343.00, 17489.00, 1, 97.20),
+(395, 25, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(396, 25, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(397, 25, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(398, 25, 19, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(399, 25, 8, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(400, 25, 10, 41000.00, 0.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(401, 26, 1, 92882.00, 0.00, 2.00, 1858.00, 94740.00, 6, 94.30),
+(402, 26, 2, 94694.00, 0.00, 3.00, 2841.00, 97535.00, 6, 97.00),
+(403, 26, 7, 45676.00, 0.00, 3.00, 1370.00, 47046.00, 4, 98.00),
+(404, 26, 23, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(405, 26, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(406, 26, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(407, 26, 3, 25500.00, 0.00, 1.00, 255.00, 25755.00, 2, 93.70),
+(408, 26, 6, 60158.00, 0.00, 3.00, 1805.00, 61963.00, 5, 96.10),
+(409, 26, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(410, 26, 4, 17146.00, 0.00, 2.00, 343.00, 17489.00, 1, 97.20),
+(411, 26, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(412, 26, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(413, 26, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(414, 26, 19, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(415, 26, 8, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(416, 26, 10, 41000.00, 0.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(417, 27, 1, 92882.00, 0.00, 2.00, 1858.00, 94740.00, 6, 94.30),
+(418, 27, 2, 94694.00, 0.00, 3.00, 2841.00, 97535.00, 6, 97.00),
+(419, 27, 7, 45676.00, 0.00, 3.00, 1370.00, 47046.00, 4, 98.00),
+(420, 27, 23, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(421, 27, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(422, 27, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(423, 27, 3, 25500.00, 0.00, 1.00, 255.00, 25755.00, 2, 93.70),
+(424, 27, 6, 60158.00, 0.00, 3.00, 1805.00, 61963.00, 5, 96.10),
+(425, 27, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(426, 27, 4, 17146.00, 0.00, 2.00, 343.00, 17489.00, 1, 97.20),
+(427, 27, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(428, 27, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(429, 27, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(430, 27, 19, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(431, 27, 8, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(432, 27, 10, 41000.00, 0.00, 0.00, 0.00, 41000.00, 4, 85.40),
+(433, 28, 1, 92882.00, 0.00, 2.00, 1858.00, 94740.00, 6, 94.30),
+(434, 28, 2, 94694.00, 0.00, 3.00, 2841.00, 97535.00, 6, 97.00),
+(435, 28, 7, 45676.00, 0.00, 3.00, 1370.00, 47046.00, 4, 98.00),
+(436, 28, 23, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(437, 28, 20, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(438, 28, 24, 16000.00, 0.00, 0.00, 0.00, 16000.00, 1, 88.90),
+(439, 28, 3, 25500.00, 0.00, 1.00, 255.00, 25755.00, 2, 93.70),
+(440, 28, 6, 60158.00, 0.00, 3.00, 1805.00, 61963.00, 5, 96.10),
+(441, 28, 16, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(442, 28, 4, 17146.00, 0.00, 2.00, 343.00, 17489.00, 1, 97.20),
+(443, 28, 14, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(444, 28, 15, 54000.00, 0.00, 0.00, 0.00, 54000.00, 5, 83.70),
+(445, 28, 18, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(446, 28, 19, 85000.00, 0.00, 0.00, 0.00, 85000.00, 6, 84.60),
+(447, 28, 8, 29000.00, 0.00, 0.00, 0.00, 29000.00, 3, 81.70),
+(448, 28, 10, 41000.00, 0.00, 0.00, 0.00, 41000.00, 4, 85.40);
 
 -- --------------------------------------------------------
 
@@ -3306,7 +5187,8 @@ INSERT INTO `useraccountroles` (`UserRoleID`, `AccountID`, `RoleID`, `AssignedAt
 (16, 9, 7, '2026-03-01 08:39:36'),
 (17, 10, 8, '2026-03-03 16:47:52'),
 (18, 11, 6, '2026-03-04 18:18:39'),
-(19, 16, 16, '2026-03-09 15:21:43');
+(19, 16, 16, '2026-03-09 15:21:43'),
+(20, 20, 1, '2026-03-15 15:53:34');
 
 -- --------------------------------------------------------
 
@@ -3334,7 +5216,7 @@ INSERT INTO `useraccounts` (`AccountID`, `EmployeeID`, `Username`, `Email`, `Pas
 (1, 1, 'Joshua Suruiz', 'suruiz.joshuabcp@gmail.com', '$2y$10$MW7j07pxzC/nS6nNW2gt2efiw8hHy0OifrVMDTgnJ5PJVw/1i4uGa', NULL, NULL, 1, 'Active'),
 (2, 2, 'Red Gin Baldon', 'suruizandrie@gmail.com', '$2y$10$Xqmv8TP/YYiax3DseufwDOmKYC4CRdqmf4hd2ASgMcwttHL2HT4.K', NULL, NULL, 1, 'Active'),
 (3, 3, 'Noriel Dimailig', 'riverojosh19@gmail.com', '$2y$10$h7FqYl3dpl5lxi9M.1MROe7mKykN0xiBfZ5qtbLrnwczzqMQV.6dK', NULL, NULL, 1, 'Active'),
-(4, 4, 'Earl Caber', 'earl@gmail.com', '$2y$10$pNvPeIuYaJbrX1p6J.DC1uBfmkl.9LPpmpgEgLtvlH8n7Y.98Evqy', NULL, NULL, 1, 'Active'),
+(4, 4, 'Earl Alarcon', 'earl@gmail.com', '$2y$10$pNvPeIuYaJbrX1p6J.DC1uBfmkl.9LPpmpgEgLtvlH8n7Y.98Evqy', '725872', '2026-03-12 19:29:45', 1, 'Active'),
 (6, 6, 'Glory Job', 'glory@gmail.com', '$2y$10$YobyvYhmp2hYgDAfhc0jvOImU.ue3DEh5mL9.KGzMKQiZ08ouN9ma', NULL, NULL, 1, 'Active'),
 (7, 7, 'Miguel Padre', 'padre@gmail.com', '$2y$10$q5NZoXCW8I2ODBnbXyfaLek/7l1djFj.Xg7Co1WUTTmF/bTwYs8De', NULL, NULL, 1, 'Active'),
 (9, 10, 'Mike Dabu', 'mike@gmail.com', '$2y$10$8ahdIMWbQZsAKJOYB0B67.2NyW4GDGH1HSv3m5XDk9YJhEz7hyUcy', NULL, NULL, 1, 'Active'),
@@ -3342,7 +5224,9 @@ INSERT INTO `useraccounts` (`AccountID`, `EmployeeID`, `Username`, `Email`, `Pas
 (11, 8, 'Daniella Magtangob', 'daniella@gmail.com', '$2y$10$mGPP976yU7jexq.IBsGEe.D1sMCjK5ncsaCV8lGsNldI0v6GQw1Ki', NULL, NULL, 1, 'Active'),
 (14, 14, 'joshua.suruiz', 'suruizjoshuaandrierivero@gmail.com', '$2y$10$sR.DBW1TiSGXFc.VXYQ6muGk9AyKW.96EwX75ZkaPzWygTkzeetjy', NULL, NULL, 0, 'Inactive'),
 (15, 15, 'test.three', 'suruizjoshua72@gmail.com', '$2y$10$OTX4Q8EjqoZiV9a9n2F4LO.InCl4FqY2AT20CCp3e3QE7.5G97BjW', NULL, NULL, 1, 'Active'),
-(16, 16, 'Jonnar Solis', 'Solis@gmail.com', '$2y$10$pIZubHkzzaT4Ev/nR5FT1elc5240OaxWmIXhj88IWQNqsQUl71/OG', NULL, NULL, 1, 'Active');
+(16, 16, 'Jonnar Solis', 'Solis@gmail.com', '$2y$10$pIZubHkzzaT4Ev/nR5FT1elc5240OaxWmIXhj88IWQNqsQUl71/OG', NULL, NULL, 1, 'Active'),
+(18, 18, 'earl.alarcon', 'earllaurencealarcon@gmail.com', '$2y$10$MZWsRgUGRlz3beYiuhrx.uuxQh9ltBG4VfChiuGlc3Dmh/YGhlHEa', NULL, NULL, 1, 'Active'),
+(20, 20, 'buya', 'buya@gmail.com', '$2y$10$QEP7RjJqCEfSnuDszZZoVOfOcmS7i.o7fDYtthXIruxBhnPvJ0zTm', NULL, NULL, 1, 'Active');
 
 --
 -- Indexes for dumped tables
@@ -3408,6 +5292,32 @@ ALTER TABLE `compensation_period`
   ADD PRIMARY KEY (`period_id`);
 
 --
+-- Indexes for table `competencies`
+--
+ALTER TABLE `competencies`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `category_id` (`category_id`);
+
+--
+-- Indexes for table `competency_categories`
+--
+ALTER TABLE `competency_categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `competency_levels`
+--
+ALTER TABLE `competency_levels`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `competency_questions`
+--
+ALTER TABLE `competency_questions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_competency_questions_competency` (`competency_id`);
+
+--
 -- Indexes for table `department`
 --
 ALTER TABLE `department`
@@ -3426,6 +5336,24 @@ ALTER TABLE `emergency_contacts`
 ALTER TABLE `employee`
   ADD PRIMARY KEY (`EmployeeID`),
   ADD UNIQUE KEY `PersonalEmail` (`PersonalEmail`);
+
+--
+-- Indexes for table `employee_competencies`
+--
+ALTER TABLE `employee_competencies`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `employee_id` (`employee_id`),
+  ADD KEY `competency_id` (`competency_id`),
+  ADD KEY `level_id` (`level_id`);
+
+--
+-- Indexes for table `employee_leave_balances`
+--
+ALTER TABLE `employee_leave_balances`
+  ADD PRIMARY KEY (`BalanceID`),
+  ADD UNIQUE KEY `uq_employee_leave_year` (`EmployeeID`,`LeaveTypeID`,`Year`),
+  ADD KEY `idx_leavebalance_employee` (`EmployeeID`),
+  ADD KEY `idx_leavebalance_type` (`LeaveTypeID`);
 
 --
 -- Indexes for table `employee_update_requests`
@@ -3468,6 +5396,22 @@ ALTER TABLE `grade_allowances`
   ADD KEY `fk_grade_allowance_type` (`AllowanceTypeID`);
 
 --
+-- Indexes for table `holidays`
+--
+ALTER TABLE `holidays`
+  ADD PRIMARY KEY (`HolidayID`),
+  ADD UNIQUE KEY `uq_holiday_date` (`HolidayDate`),
+  ADD KEY `idx_holidays_type` (`HolidayTypeID`),
+  ADD KEY `idx_holidays_active_date` (`IsActive`,`HolidayDate`);
+
+--
+-- Indexes for table `holiday_type`
+--
+ALTER TABLE `holiday_type`
+  ADD PRIMARY KEY (`HolidayTypeID`),
+  ADD UNIQUE KEY `uq_ht_typecode` (`TypeCode`);
+
+--
 -- Indexes for table `interview_evaluations`
 --
 ALTER TABLE `interview_evaluations`
@@ -3487,6 +5431,23 @@ ALTER TABLE `interview_schedules`
 ALTER TABLE `job_postings`
   ADD PRIMARY KEY (`PostID`),
   ADD KEY `RequisitionID` (`RequisitionID`);
+
+--
+-- Indexes for table `leave_requests`
+--
+ALTER TABLE `leave_requests`
+  ADD PRIMARY KEY (`LeaveRequestID`),
+  ADD KEY `fk_lr_leavetype` (`LeaveTypeID`),
+  ADD KEY `fk_lr_officer` (`OfficerApprovedBy`),
+  ADD KEY `fk_lr_hr` (`HRApprovedBy`),
+  ADD KEY `idx_lr_employee_status` (`EmployeeID`,`Status`),
+  ADD KEY `idx_lr_dates` (`StartDate`,`EndDate`);
+
+--
+-- Indexes for table `leave_types`
+--
+ALTER TABLE `leave_types`
+  ADD PRIMARY KEY (`LeaveTypeID`);
 
 --
 -- Indexes for table `master_data_dispatches`
@@ -3514,6 +5475,12 @@ ALTER TABLE `merit_proposals`
 --
 ALTER TABLE `pagibig_settings`
   ADD PRIMARY KEY (`period_id`);
+
+--
+-- Indexes for table `payout_history`
+--
+ALTER TABLE `payout_history`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `payroll_batches`
@@ -3559,6 +5526,15 @@ ALTER TABLE `positions`
   ADD KEY `fk_position_salary_grade` (`SalaryGradeID`);
 
 --
+-- Indexes for table `position_competencies`
+--
+ALTER TABLE `position_competencies`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `position_id` (`position_id`),
+  ADD KEY `competency_id` (`competency_id`),
+  ADD KEY `level_id` (`level_id`);
+
+--
 -- Indexes for table `position_requests`
 --
 ALTER TABLE `position_requests`
@@ -3599,6 +5575,19 @@ ALTER TABLE `salary_grade_proposals`
 ALTER TABLE `simulation_drafts`
   ADD PRIMARY KEY (`DraftID`),
   ADD KEY `period_id` (`period_id`);
+
+--
+-- Indexes for table `simulation_proposals`
+--
+ALTER TABLE `simulation_proposals`
+  ADD PRIMARY KEY (`ProposalID`);
+
+--
+-- Indexes for table `simulation_proposal_items`
+--
+ALTER TABLE `simulation_proposal_items`
+  ADD PRIMARY KEY (`ItemID`),
+  ADD KEY `ProposalID` (`ProposalID`);
 
 --
 -- Indexes for table `sss_settings`
@@ -3651,7 +5640,7 @@ ALTER TABLE `useraccounts`
 -- AUTO_INCREMENT for table `accounts_payable`
 --
 ALTER TABLE `accounts_payable`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `allowance_proposals`
@@ -3669,13 +5658,13 @@ ALTER TABLE `allowance_types`
 -- AUTO_INCREMENT for table `applicants`
 --
 ALTER TABLE `applicants`
-  MODIFY `ApplicantID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `ApplicantID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `bankdetails`
 --
 ALTER TABLE `bankdetails`
-  MODIFY `BankDetailID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `BankDetailID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `bank_applications`
@@ -3696,22 +5685,58 @@ ALTER TABLE `compensation_period`
   MODIFY `period_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `competencies`
+--
+ALTER TABLE `competencies`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+
+--
+-- AUTO_INCREMENT for table `competency_categories`
+--
+ALTER TABLE `competency_categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `competency_levels`
+--
+ALTER TABLE `competency_levels`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `competency_questions`
+--
+ALTER TABLE `competency_questions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+
+--
 -- AUTO_INCREMENT for table `department`
 --
 ALTER TABLE `department`
-  MODIFY `DepartmentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `DepartmentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `emergency_contacts`
 --
 ALTER TABLE `emergency_contacts`
-  MODIFY `ContactID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `ContactID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `EmployeeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `EmployeeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+
+--
+-- AUTO_INCREMENT for table `employee_competencies`
+--
+ALTER TABLE `employee_competencies`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT for table `employee_leave_balances`
+--
+ALTER TABLE `employee_leave_balances`
+  MODIFY `BalanceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT for table `employee_update_requests`
@@ -3723,7 +5748,7 @@ ALTER TABLE `employee_update_requests`
 -- AUTO_INCREMENT for table `employmentinformation`
 --
 ALTER TABLE `employmentinformation`
-  MODIFY `EmploymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `EmploymentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `final_performance_rating`
@@ -3735,7 +5760,7 @@ ALTER TABLE `final_performance_rating`
 -- AUTO_INCREMENT for table `general_ledger`
 --
 ALTER TABLE `general_ledger`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `grade_allowances`
@@ -3744,22 +5769,46 @@ ALTER TABLE `grade_allowances`
   MODIFY `GradeAllowanceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
+-- AUTO_INCREMENT for table `holidays`
+--
+ALTER TABLE `holidays`
+  MODIFY `HolidayID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `holiday_type`
+--
+ALTER TABLE `holiday_type`
+  MODIFY `HolidayTypeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `interview_evaluations`
 --
 ALTER TABLE `interview_evaluations`
-  MODIFY `EvaluationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `EvaluationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `interview_schedules`
 --
 ALTER TABLE `interview_schedules`
-  MODIFY `ScheduleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `ScheduleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `job_postings`
 --
 ALTER TABLE `job_postings`
-  MODIFY `PostID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `PostID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `leave_requests`
+--
+ALTER TABLE `leave_requests`
+  MODIFY `LeaveRequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `leave_types`
+--
+ALTER TABLE `leave_types`
+  MODIFY `LeaveTypeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `master_data_dispatches`
@@ -3780,40 +5829,52 @@ ALTER TABLE `merit_proposals`
   MODIFY `ProposalID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
+-- AUTO_INCREMENT for table `payout_history`
+--
+ALTER TABLE `payout_history`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
 -- AUTO_INCREMENT for table `payroll_batches`
 --
 ALTER TABLE `payroll_batches`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `payroll_batch_items`
 --
 ALTER TABLE `payroll_batch_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=136;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=181;
 
 --
 -- AUTO_INCREMENT for table `payroll_item_components`
 --
 ALTER TABLE `payroll_item_components`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1921;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2583;
 
 --
 -- AUTO_INCREMENT for table `positions`
 --
 ALTER TABLE `positions`
-  MODIFY `PositionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `PositionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+
+--
+-- AUTO_INCREMENT for table `position_competencies`
+--
+ALTER TABLE `position_competencies`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
 
 --
 -- AUTO_INCREMENT for table `position_requests`
 --
 ALTER TABLE `position_requests`
-  MODIFY `RequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `RequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `recruitment_requisitions`
 --
 ALTER TABLE `recruitment_requisitions`
-  MODIFY `RequisitionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `RequisitionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -3837,7 +5898,19 @@ ALTER TABLE `salary_grade_proposals`
 -- AUTO_INCREMENT for table `simulation_drafts`
 --
 ALTER TABLE `simulation_drafts`
-  MODIFY `DraftID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `DraftID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT for table `simulation_proposals`
+--
+ALTER TABLE `simulation_proposals`
+  MODIFY `ProposalID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+
+--
+-- AUTO_INCREMENT for table `simulation_proposal_items`
+--
+ALTER TABLE `simulation_proposal_items`
+  MODIFY `ItemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=449;
 
 --
 -- AUTO_INCREMENT for table `statutory_proposals`
@@ -3861,13 +5934,13 @@ ALTER TABLE `taxbenefits`
 -- AUTO_INCREMENT for table `useraccountroles`
 --
 ALTER TABLE `useraccountroles`
-  MODIFY `UserRoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `UserRoleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `useraccounts`
 --
 ALTER TABLE `useraccounts`
-  MODIFY `AccountID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `AccountID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- Constraints for dumped tables
@@ -3899,10 +5972,37 @@ ALTER TABLE `bir_tax_settings`
   ADD CONSTRAINT `fk_bir_period` FOREIGN KEY (`period_id`) REFERENCES `compensation_period` (`period_id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `competencies`
+--
+ALTER TABLE `competencies`
+  ADD CONSTRAINT `competencies_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `competency_categories` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `competency_questions`
+--
+ALTER TABLE `competency_questions`
+  ADD CONSTRAINT `fk_competency_questions_competency` FOREIGN KEY (`competency_id`) REFERENCES `competencies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `emergency_contacts`
 --
 ALTER TABLE `emergency_contacts`
   ADD CONSTRAINT `emergency_contacts_ibfk_1` FOREIGN KEY (`EmployeeID`) REFERENCES `employee` (`EmployeeID`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `employee_competencies`
+--
+ALTER TABLE `employee_competencies`
+  ADD CONSTRAINT `employee_competencies_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`EmployeeID`),
+  ADD CONSTRAINT `employee_competencies_ibfk_2` FOREIGN KEY (`competency_id`) REFERENCES `competencies` (`id`),
+  ADD CONSTRAINT `employee_competencies_ibfk_3` FOREIGN KEY (`level_id`) REFERENCES `competency_levels` (`id`);
+
+--
+-- Constraints for table `employee_leave_balances`
+--
+ALTER TABLE `employee_leave_balances`
+  ADD CONSTRAINT `fk_lb_employee` FOREIGN KEY (`EmployeeID`) REFERENCES `employee` (`EmployeeID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_lb_leavetype` FOREIGN KEY (`LeaveTypeID`) REFERENCES `leave_types` (`LeaveTypeID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `employee_update_requests`
@@ -3934,6 +6034,12 @@ ALTER TABLE `grade_allowances`
   ADD CONSTRAINT `fk_grade_allowance_type` FOREIGN KEY (`AllowanceTypeID`) REFERENCES `allowance_types` (`AllowanceTypeID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `holidays`
+--
+ALTER TABLE `holidays`
+  ADD CONSTRAINT `fk_holidays_type` FOREIGN KEY (`HolidayTypeID`) REFERENCES `holiday_type` (`HolidayTypeID`) ON UPDATE CASCADE;
+
+--
 -- Constraints for table `interview_schedules`
 --
 ALTER TABLE `interview_schedules`
@@ -3945,6 +6051,15 @@ ALTER TABLE `interview_schedules`
 --
 ALTER TABLE `job_postings`
   ADD CONSTRAINT `job_postings_ibfk_1` FOREIGN KEY (`RequisitionID`) REFERENCES `recruitment_requisitions` (`RequisitionID`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `leave_requests`
+--
+ALTER TABLE `leave_requests`
+  ADD CONSTRAINT `fk_lr_employee` FOREIGN KEY (`EmployeeID`) REFERENCES `employee` (`EmployeeID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_lr_hr` FOREIGN KEY (`HRApprovedBy`) REFERENCES `useraccounts` (`AccountID`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_lr_leavetype` FOREIGN KEY (`LeaveTypeID`) REFERENCES `leave_types` (`LeaveTypeID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_lr_officer` FOREIGN KEY (`OfficerApprovedBy`) REFERENCES `useraccounts` (`AccountID`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `merit_matrix_settings`
@@ -3970,6 +6085,14 @@ ALTER TABLE `philhealth_settings`
 ALTER TABLE `positions`
   ADD CONSTRAINT `fk_position_salary_grade` FOREIGN KEY (`SalaryGradeID`) REFERENCES `salary_grades` (`SalaryGradeID`) ON DELETE SET NULL,
   ADD CONSTRAINT `positions_ibfk_1` FOREIGN KEY (`DepartmentID`) REFERENCES `department` (`DepartmentID`);
+
+--
+-- Constraints for table `position_competencies`
+--
+ALTER TABLE `position_competencies`
+  ADD CONSTRAINT `position_competencies_ibfk_1` FOREIGN KEY (`position_id`) REFERENCES `positions` (`PositionID`),
+  ADD CONSTRAINT `position_competencies_ibfk_2` FOREIGN KEY (`competency_id`) REFERENCES `competencies` (`id`),
+  ADD CONSTRAINT `position_competencies_ibfk_3` FOREIGN KEY (`level_id`) REFERENCES `competency_levels` (`id`);
 
 --
 -- Constraints for table `position_requests`
@@ -4001,6 +6124,12 @@ ALTER TABLE `salary_grade_proposals`
 --
 ALTER TABLE `simulation_drafts`
   ADD CONSTRAINT `simulation_drafts_ibfk_1` FOREIGN KEY (`period_id`) REFERENCES `compensation_period` (`period_id`);
+
+--
+-- Constraints for table `simulation_proposal_items`
+--
+ALTER TABLE `simulation_proposal_items`
+  ADD CONSTRAINT `fk_proposal_hr` FOREIGN KEY (`ProposalID`) REFERENCES `simulation_proposals` (`ProposalID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `sss_settings`

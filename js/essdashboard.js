@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     const lucide = window.lucide;
     const body = document.body;
     const themeToggle = document.getElementById("themeToggle");
