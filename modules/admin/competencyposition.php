@@ -4,6 +4,9 @@ if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
     exit();
 }
+
+$page = 'competencyposition';
+$module = 'competency';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,7 +38,7 @@ if (!isset($_SESSION['username'])) {
       </button>
     </div>
 
-    <nav class="sidebar-nav">
+   <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">ANALYTICS & REPORTING</span>
         <a href="dashboard.php" class="nav-item active">
@@ -140,7 +143,7 @@ if (!isset($_SESSION['username'])) {
                 <i data-lucide="briefcase"></i>
                 <span>Competency Position</span>
               </a>
-               <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+              <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
                 <i data-lucide="square-user"></i>
                 <span>Competency Employee</span>
               </a>
@@ -150,11 +153,6 @@ if (!isset($_SESSION['username'])) {
               </a>
             </div>
         </div>
-
-        <!-- Automatic Modal Redirect Logic -->
-        <script>
-            window.target_pos_id = <?php echo isset($_GET['pos_id']) ? (int)$_GET['pos_id'] : 'null'; ?>;
-        </script>
          <div class="nav-item-group <?php echo ($module === 'training') ? 'active' : ''; ?>">
             <button class="nav-item has-submenu" data-module="training">
               <div class="nav-item-content">
@@ -322,6 +320,10 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
+           <a href="comintake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Master Data Intake</span>
+            </a>
             <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
@@ -331,8 +333,12 @@ if (!isset($_SESSION['username'])) {
               <span>Statutory Contributions</span>
             </a>
             <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
-              <i data-lucide="scale"></i>
+              <i data-lucide="percent"></i>
               <span>Merit Matrix Structure</span>
+            </a>
+            <a href="allowance.php" class="submenu-item <?php echo ($page === 'allowance') ? 'active' : ''; ?>">
+              <i data-lucide="gift"></i>
+              <span>Allowance Structure</span>
             </a>
             <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
               <i data-lucide="notebook-pen"></i>
@@ -368,10 +374,6 @@ if (!isset($_SESSION['username'])) {
           </div>
         </div>
         </div>
-       
-
-      
-
         <div class="nav-section">
         <span class="nav-section-title">FINANCE</span>
         
@@ -509,13 +511,19 @@ if (!isset($_SESSION['username'])) {
 
       <div class="action-bar-pos">
         <div class="ab-left-pos">
-          <h2>Competency Position Mapping</h2>
-          <p>Align proficiency requirements with specific organizational roles.</p>
+          <div class="ab-header-pos">
+            <div class="ab-icon-pos">
+              <i data-lucide="briefcase"></i>
+            </div>
+            <div class="ab-text-pos">
+              <h2>Competency Position Mapping</h2>
+              <p>Align proficiency requirements with specific organizational roles.</p>
+            </div>
+          </div>
         </div>
         <div class="ab-right-pos">
            <div class="search-filter-group">
               <div class="search-box-pos">
-                <i data-lucide="search"></i>
                 <input type="text" id="positionSearch" placeholder="Search positions...">
               </div>
               <select id="deptFilter" class="filter-select-pos">
@@ -687,6 +695,298 @@ if (!isset($_SESSION['username'])) {
   </main>
   <script src="../../js/competencyposition.js"></script>
   <script>
+    // Improved search alignment using root CSS variables
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Enhanced Action Bar Styles */
+      .action-bar-pos {
+        display: flex;
+        justify-content: space-between;
+        align-items: stretch;
+        margin-bottom: 32px;
+        padding: 28px 32px;
+        background: var(--surface, #ffffff);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        gap: 32px;
+        transition: all 0.3s ease;
+      }
+      
+      .action-bar-pos:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+      }
+      
+      .ab-left-pos {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-width: 0;
+      }
+      
+      .ab-header-pos {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+      
+      .ab-icon-pos {
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(135deg, rgba(44, 160, 120, 0.1), rgba(44, 160, 120, 0.15));
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--brand-green, #2ca078);
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(44, 160, 120, 0.15);
+      }
+      
+      .ab-icon-pos svg {
+        width: 28px;
+        height: 28px;
+      }
+      
+      .ab-text-pos h2 {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text-primary, #111827);
+        margin: 0 0 6px 0;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+      }
+      
+      .ab-text-pos p {
+        font-size: 14px;
+        color: var(--text-secondary, #6b7280);
+        margin: 0;
+        line-height: 1.5;
+      }
+      
+      .ab-right-pos {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-shrink: 0;
+      }
+      
+      /* Search and Filter Container */
+      .search-filter-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      
+      /* Search Input */
+      .search-box-pos {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: var(--input-bg, #ffffff);
+        border: 2px solid var(--input-border, #e5e7eb);
+        border-radius: 16px;
+        padding: 0 20px;
+        height: 48px;
+        min-width: 320px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+      
+      .search-box-pos:hover {
+        border-color: var(--brand-green, #2ca078);
+        box-shadow: 0 4px 12px rgba(44, 160, 120, 0.15);
+        transform: translateY(-1px);
+      }
+      
+      .search-box-pos:focus-within {
+        border-color: var(--brand-green, #2ca078);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(44, 160, 120, 0.1), 0 4px 12px rgba(44, 160, 120, 0.15);
+        background: var(--surface, #ffffff);
+      }
+      
+      .search-box-pos input {
+        border: none;
+        outline: none;
+        flex: 1;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary, #111827);
+        background: transparent;
+        line-height: 1.4;
+        padding: 8px 0;
+        margin: 0;
+      }
+      
+      .search-box-pos input::placeholder {
+        color: var(--text-tertiary, #9ca3af);
+        font-weight: 400;
+      }
+      
+      /* Filter Dropdown */
+      .filter-select-pos {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        height: 48px;
+        background: var(--input-bg, #ffffff);
+        border: 2px solid var(--input-border, #e5e7eb);
+        border-radius: 16px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary, #111827);
+        min-width: 200px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%232ca078' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 16px center;
+        background-repeat: no-repeat;
+        background-size: 16px;
+        padding-right: 52px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+      
+      .filter-select-pos:hover {
+        border-color: var(--brand-green, #2ca078);
+        box-shadow: 0 4px 12px rgba(44, 160, 120, 0.15);
+        transform: translateY(-1px);
+      }
+      
+      .filter-select-pos:focus {
+        outline: none;
+        border-color: var(--brand-green, #2ca078);
+        box-shadow: 0 0 0 4px rgba(44, 160, 120, 0.1), 0 4px 12px rgba(44, 160, 120, 0.15);
+      }
+      
+      .filter-select-pos option {
+        padding: 12px 16px;
+        background: var(--surface, #ffffff);
+        color: var(--text-primary, #111827);
+        font-size: 14px;
+        font-weight: 400;
+      }
+      
+      /* Dark Mode Support */
+      body.dark-mode .action-bar-pos {
+        background: var(--surface, #1a1a1a);
+        border-color: var(--border-color, #2d2d2d);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+      
+      body.dark-mode .ab-icon-pos {
+        background: linear-gradient(135deg, rgba(44, 160, 120, 0.15), rgba(44, 160, 120, 0.2));
+      }
+      
+      body.dark-mode .search-box-pos {
+        background: var(--dark-input-bg, #1f2937);
+        border-color: var(--dark-input-border, #4b5563);
+      }
+      
+      body.dark-mode .search-box-pos:hover,
+      body.dark-mode .search-box-pos:focus-within {
+        border-color: var(--brand-green, #2ca078);
+        background: var(--surface, #1a1a1a);
+      }
+      
+      body.dark-mode .search-box-pos input {
+        color: var(--dark-text-primary, #f9fafb);
+      }
+      
+      body.dark-mode .search-box-pos input::placeholder {
+        color: var(--dark-text-tertiary, #9ca3af);
+      }
+      
+      body.dark-mode .filter-select-pos {
+        background: var(--dark-input-bg, #1f2937);
+        border-color: var(--dark-input-border, #4b5563);
+        color: var(--dark-text-primary, #f9fafb);
+      }
+      
+      body.dark-mode .filter-select-pos:hover,
+      body.dark-mode .filter-select-pos:focus {
+        border-color: var(--brand-green, #2ca078);
+        background: var(--surface, #1a1a1a);
+      }
+      
+      body.dark-mode .filter-select-pos option {
+        background: var(--surface, #1a1a1a);
+        color: var(--dark-text-primary, #f9fafb);
+      }
+      
+      /* Responsive Design */
+      @media (max-width: 1024px) {
+        .action-bar-pos {
+          flex-direction: column;
+          gap: 24px;
+          align-items: stretch;
+        }
+        
+        .ab-left-pos {
+          flex: none;
+        }
+        
+        .ab-right-pos {
+          justify-content: stretch;
+        }
+        
+        .search-filter-group {
+          justify-content: stretch;
+        }
+        
+        .search-box-pos {
+          flex: 1;
+          min-width: 200px;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .action-bar-pos {
+          padding: 20px;
+          margin-bottom: 24px;
+        }
+        
+        .ab-header-pos {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+          margin-bottom: 16px;
+        }
+        
+        .ab-icon-pos {
+          width: 48px;
+          height: 48px;
+        }
+        
+        .ab-icon-pos svg {
+          width: 24px;
+          height: 24px;
+        }
+        
+        .ab-text-pos h2 {
+          font-size: 20px;
+        }
+        
+        .search-filter-group {
+          flex-direction: column;
+        }
+        
+        .search-box-pos,
+        .filter-select-pos {
+          min-width: 100%;
+          height: 44px;
+        }
+        
+      }
+    `;
+    document.head.appendChild(style);
+    
     lucide.createIcons();
   </script>
 </body>

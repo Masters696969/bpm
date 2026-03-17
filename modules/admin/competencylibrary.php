@@ -4,6 +4,9 @@ if (!isset($_SESSION['username'])) {
     header("Location: ../../login.php");
     exit();
 }
+
+$page = 'competencylibrary';
+$module = 'competency';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,7 +38,7 @@ if (!isset($_SESSION['username'])) {
       </button>
     </div>
 
-     <nav class="sidebar-nav">
+    <nav class="sidebar-nav">
       <div class="nav-section">
         <span class="nav-section-title">ANALYTICS & REPORTING</span>
         <a href="dashboard.php" class="nav-item active">
@@ -136,11 +139,11 @@ if (!isset($_SESSION['username'])) {
                 <i data-lucide="circle-gauge"></i>
                 <span>Competency Level</span>
               </a>
-                <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
+              <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
                 <i data-lucide="briefcase"></i>
                 <span>Competency Position</span>
               </a>
-               <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+              <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
                 <i data-lucide="square-user"></i>
                 <span>Competency Employee</span>
               </a>
@@ -317,6 +320,10 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
+           <a href="comintake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Master Data Intake</span>
+            </a>
             <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
@@ -326,8 +333,12 @@ if (!isset($_SESSION['username'])) {
               <span>Statutory Contributions</span>
             </a>
             <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
-              <i data-lucide="scale"></i>
+              <i data-lucide="percent"></i>
               <span>Merit Matrix Structure</span>
+            </a>
+            <a href="allowance.php" class="submenu-item <?php echo ($page === 'allowance') ? 'active' : ''; ?>">
+              <i data-lucide="gift"></i>
+              <span>Allowance Structure</span>
             </a>
             <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
               <i data-lucide="notebook-pen"></i>
@@ -363,10 +374,6 @@ if (!isset($_SESSION['username'])) {
           </div>
         </div>
         </div>
-       
-
-      
-
         <div class="nav-section">
         <span class="nav-section-title">FINANCE</span>
         
@@ -457,14 +464,83 @@ if (!isset($_SESSION['username'])) {
       </div>
     </header>
 
+    <!-- Premium Cards Section -->
+    <div class="premium-cards-section" style="padding: 24px 0;">
+      <div class="premium-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 32px;">
+        <!-- Total Competencies Card -->
+        <div class="premium-card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05)); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 16px; padding: 24px; position: relative; overflow: hidden;">
+          <div class="premium-card-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div class="premium-icon" style="width: 48px; height: 48px; background: #3b82f6; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="book-text" style="width: 24px; height: 24px; color: white;"></i>
+            </div>
+            <div>
+              <h3 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin: 0;">Total Competencies</h3>
+              <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">All defined competencies</p>
+            </div>
+          </div>
+          <div class="premium-stats" style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div class="premium-number" id="totalCompetencies" style="font-size: 32px; font-weight: 700; color: #3b82f6;">0</div>
+              <div class="premium-label" style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Competencies</div>
+            </div>
+            <div class="premium-badge" style="background: #3b82f6; color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;">
+              <i data-lucide="database" style="width: 12px; margin-right: 4px;"></i>
+              LIBRARY
+            </div>
+          </div>
+        </div>
+
+        <!-- Categories Card -->
+        <div class="premium-card" style="background: linear-gradient(135deg, rgba(44, 160, 120, 0.1), rgba(44, 160, 120, 0.05)); border: 1px solid rgba(44, 160, 120, 0.2); border-radius: 16px; padding: 24px; position: relative; overflow: hidden;">
+          <div class="premium-card-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div class="premium-icon" style="width: 48px; height: 48px; background: var(--brand-green); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="folder-tree" style="width: 24px; height: 24px; color: white;"></i>
+            </div>
+            <div>
+              <h3 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin: 0;">Categories</h3>
+              <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Competency groups</p>
+            </div>
+          </div>
+          <div class="premium-stats" style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div class="premium-number" id="totalCategories" style="font-size: 32px; font-weight: 700; color: var(--brand-green);">0</div>
+              <div class="premium-label" style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Categories</div>
+            </div>
+            <div class="premium-badge" style="background: var(--brand-green); color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;">
+              <i data-lucide="layers" style="width: 12px; margin-right: 4px;"></i>
+              ORGANIZED
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
 <?php
 require_once __DIR__ . '/../../config/config.php';
 
 // Fetch competency categories
 $categories_query = "SELECT * FROM competency_categories ORDER BY id ASC";
 $categories_result = $conn->query($categories_query);
+
+// Fetch total competencies count
+$total_competencies_query = "SELECT COUNT(*) as total FROM competencies";
+$total_competencies_result = $conn->query($total_competencies_query);
+$total_competencies = 0;
+if ($total_competencies_result) {
+    $row = $total_competencies_result->fetch_assoc();
+    $total_competencies = $row['total'];
+}
+
+// Fetch total categories count
+$total_categories_query = "SELECT COUNT(*) as total FROM competency_categories";
+$total_categories_result = $conn->query($total_categories_query);
+$total_categories = 0;
+if ($total_categories_result) {
+    $row = $total_categories_result->fetch_assoc();
+    $total_categories = $row['total'];
+}
 ?>
-    <div class="content-wrapper">
+    <div class="content-wrapper" style="max-width: 1200px; margin: 0 auto; padding: 0 32px;">
       <div class="action-bar">
         <div class="ab-left">
           <h2>Competency Library</h2>
@@ -657,7 +733,37 @@ $categories_result = $conn->query($categories_query);
   </main>
   <script src="../../js/competencylibrary.js"></script>
   <script>
-    lucide.createIcons();
+    // Update Premium Card Counts with Real Data
+    document.addEventListener('DOMContentLoaded', function() {
+      // Update premium cards with actual data
+      const totalCompetenciesEl = document.getElementById('totalCompetencies');
+      const totalCategoriesEl = document.getElementById('totalCategories');
+      
+      if (totalCompetenciesEl) {
+        totalCompetenciesEl.textContent = <?php echo $total_competencies; ?>;
+      }
+      
+      if (totalCategoriesEl) {
+        totalCategoriesEl.textContent = <?php echo $total_categories; ?>;
+      }
+      
+      // Add hover effects to premium cards
+      const premiumCards = document.querySelectorAll('.premium-card');
+      premiumCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-4px)';
+          this.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.12)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+          this.style.boxShadow = 'none';
+        });
+      });
+      
+      // Initialize Lucide icons
+      lucide.createIcons();
+    });
   </script>
 </body>
 </html>

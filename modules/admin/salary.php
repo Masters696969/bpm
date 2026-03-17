@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 
 // Check if user is logged in and is admin
@@ -55,39 +55,76 @@ while ($row = $grades_query->fetch_assoc()) {
 
     <nav class="sidebar-nav">
       <div class="nav-section">
-        <span class="nav-section-title">MAIN MENU</span>
-        
-        <a href="dashboard.php" class="nav-item">
+        <span class="nav-section-title">ANALYTICS & REPORTING</span>
+        <a href="dashboard.php" class="nav-item active">
           <i data-lucide="layout-dashboard"></i>
-          <span>Dashboard</span>
+          <span>HR ANALYTICS</span>
         </a>
-
-        <div class="nav-item-group">
-          <button class="nav-item has-submenu" data-module="hr">
+      <div class="nav-section">
+        <span class="nav-section-title">HUMAN RESOURCES I</span>
+        <div class="nav-item-group active">
+          <button class="nav-item has-submenu" data-module="recruitment">
             <div class="nav-item-content">
-              <i data-lucide="book-user"></i>
-              <span>Core Human Capital</span>
+              <i data-lucide="layers-plus"></i>
+              <span>Recruitment</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-hr">
-            <a href="dispatch.php" class="submenu-item">
-              <i data-lucide="send"></i>
-              <span>Master Data Dispatch</span>
+          <div class="submenu" id="submenu-recruitment">
+           <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
+              <i data-lucide="layers-plus"></i>
+              <span>Recruitment</span>
             </a>
-            <a href="" class="submenu-item">
+          </div>
+          <div class="nav-item-group active">
+          <button class="nav-item has-submenu" data-module="applicationmgt">
+            <div class="nav-item-content">
+              <i data-lucide="contact-round"></i>
+              <span>Applicant Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-applicationmgt">
+            <a href="applicationmgt.php" class="nav-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
+              <i data-lucide="contact-round"></i>
+              <span>Applicant Management</span>
+            </a>
+          </div>
+          <div class="nav-item-group active">
+          <button class="nav-item has-submenu" data-module="newhiredonboard">
+            <div class="nav-item-content">
               <i data-lucide="user-plus"></i>
-              <span>New Hired Onboard Request</span>
+              <span>New Hired Onboard</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-newhiredonboard">
+            <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
+              <i data-lucide="user-plus"></i>
+              <span>New Hired Onboard</span>
             </a>
-            <a href="employeemaster.php" class="submenu-item">
-              <i data-lucide="file-user"></i>
-              <span>Employee Master Files</span>
+          </div>
+        </div>
+        <div class="nav-section">
+        <span class="nav-section-title">HUMAN RESOURCES II</span>
+        <div class="nav-item-group active">
+          <button class="nav-item has-submenu" data-module="accounts">
+            <div class="nav-item-content">
+              <i data-lucide="users"></i>
+              <span>Account Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-accounts">
+            <a href="useraccount.php" class="submenu-item active">
+              <i data-lucide="user-plus"></i>
+              <span>User Accounts</span>
             </a>
-            <a href="bankform.php" class="submenu-item">
-              <i data-lucide="file-text"></i>
-              <span>Bank Form Management</span>
+            <a href="rolespermission.php" class="submenu-item">
+              <i data-lucide="contact-round"></i>
+              <span>Roles & Permissions</span>
             </a>
-            <a href="" class="submenu-item">
+            <a href="securitysetting.php" class="submenu-item">
               <i data-lucide="user-cog"></i>
               <span>Security Settings</span>
             </a>
@@ -96,99 +133,279 @@ while ($row = $grades_query->fetch_assoc()) {
               <span>Audit Logs</span>
             </a>
           </div>
+           <div class="nav-item-group <?php echo ($module === 'competency') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="competency">
+              <div class="nav-item-content">
+                <i data-lucide="pickaxe"></i>
+                <span>Competency Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-competency">
+              <a href="competencylibrary.php" class="submenu-item <?php echo ($page === 'competency') ? 'active' : ''; ?>">
+                <i data-lucide="book-text"></i>
+                <span>Competency Library</span>
+              </a>
+              <a href="competencycategory.php" class="submenu-item <?php echo ($page === 'competencycategory') ? 'active' : ''; ?>">
+                <i data-lucide="chart-bar-stacked"></i>
+                <span>Competency Category</span>
+              </a>
+               <a href="competencylevel.php" class="submenu-item <?php echo ($page === 'competencylevel') ? 'active' : ''; ?>">
+                <i data-lucide="circle-gauge"></i>
+                <span>Competency Level</span>
+              </a>
+              <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
+                <i data-lucide="briefcase"></i>
+                <span>Competency Position</span>
+              </a>
+              <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+                <i data-lucide="square-user"></i>
+                <span>Competency Employee</span>
+              </a>
+                <a href="bankquestion.php" class="submenu-item <?php echo ($page === 'bankquestion') ? 'active' : ''; ?>">
+                <i data-lucide="book-open-check"></i>
+                <span>Bank Question</span>
+              </a>
+            </div>
         </div>
-
-        <div class="nav-item-group active">
-          <button class="nav-item has-submenu active" data-module="planning">
+         <div class="nav-item-group <?php echo ($module === 'training') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="training">
+              <div class="nav-item-content">
+                <i data-lucide="briefcase-business"></i>
+                <span>Training Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-training">
+              <a href="training.php" class="submenu-item <?php echo ($page === 'training') ? 'active' : ''; ?>">
+                <i data-lucide="briefcase-business"></i>
+                <span>Training Management</span>
+              </a>
+            </div>
+        </div>
+         <div class="nav-item-group <?php echo ($module === 'succession') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="succession">
+              <div class="nav-item-content">
+                <i data-lucide="notebook-pen"></i>
+                <span>Succession Planning</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-succession">
+              <a href="succession.php" class="submenu-item <?php echo ($page === 'succession') ? 'active' : ''; ?>">
+                <i data-lucide="notebook-pen"></i>
+                <span>Succession Planning</span>
+              </a>
+            </div>
+        </div>
+         <div class="nav-item-group <?php echo ($module === 'learning') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="learning">
+              <div class="nav-item-content">
+                <i data-lucide="notebook-text"></i>
+                <span>Learning Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-learning">
+              <a href="learning.php" class="submenu-item <?php echo ($page === 'learning') ? 'active' : ''; ?>">
+                <i data-lucide="notebook-text"></i>
+                <span>Learning Management</span>
+              </a>
+            </div>
+        </div>
+          <div class="nav-section">   
+            <span class="nav-section-title">HUMAN RESOURCES III</span>
+          <div class="nav-item-group <?php echo ($module === 'shift') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="shift">
+              <div class="nav-item-content">
+                <i data-lucide="calendar-check"></i>
+                <span>Shift & Scheduling</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-shift">
+              <a href="#" class="submenu-item <?php echo ($page === 'shift') ? 'active' : ''; ?>">
+                <i data-lucide="send-to-back"></i>
+                <span>Shift & Scheduling</span>
+              </a>
+            </div>
+            <div class="nav-item-group <?php echo ($module === 'claims') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="claims">
+              <div class="nav-item-content">
+                <i data-lucide="receipt-text"></i>
+                <span>Claims & Reimbursements</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-claims">
+              <a href="claims.php" class="submenu-item <?php echo ($page === 'claims') ? 'active' : ''; ?>">
+                <i data-lucide="receipt-text"></i>
+                <span>Claims & Reimbursements</span>
+              </a>
+            </div>
+            <div class="nav-item-group <?php echo ($module === 'time') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="time">
+              <div class="nav-item-content">
+                <i data-lucide="clock"></i>
+                <span>Time & Attendance</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-time">
+              <a href="time.php" class="submenu-item <?php echo ($page === 'time') ? 'active' : ''; ?>">
+                <i data-lucide="clock"></i>
+                <span>Time & Attendance</span>
+              </a>
+            </div>
+            <div class="nav-item-group <?php echo ($module === 'timesheet') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="timesheet">
+              <div class="nav-item-content">
+                <i data-lucide="calendar-days"></i>
+                <span>Timesheet</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-timesheet">
+              <a href="timesheet.php" class="submenu-item <?php echo ($page === 'timesheet') ? 'active' : ''; ?>">
+                <i data-lucide="calendar-days"></i>
+                <span>Timesheet</span>
+              </a>
+            </div>
+             <div class="nav-item-group <?php echo ($module === 'leave') ? 'active' : ''; ?>">
+            <button class="nav-item has-submenu" data-module="leave">
+              <div class="nav-item-content">
+                <i data-lucide="tickets-plane"></i>
+                <span>Leave Management</span>
+              </div>
+              <i data-lucide="chevron-down" class="submenu-icon"></i>
+            </button>
+            <div class="submenu" id="submenu-leave">
+              <a href="leave.php" class="submenu-item <?php echo ($page === 'leave') ? 'active' : ''; ?>">
+                <i data-lucide="tickets-plane"></i>
+                <span>Leave Management</span>
+              </a>
+            </div>
+       <div class="nav-section">
+        <span class="nav-section-title">HUMAN RESOURCES IV</span>
+          <div class="nav-item-group <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="corehumancapital">
+            <div class="nav-item-content">
+              <i data-lucide="book-user"></i>
+              <span>Core Human Capital</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-corehumancapital">
+            <a href="dispatch.php" class="submenu-item <?php echo ($page === 'dispatch') ? 'active' : ''; ?>">
+              <i data-lucide="send"></i>
+              <span>Master Data Dispatch</span>
+            </a>
+             <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
+              <i data-lucide="building-2"></i>
+              <span>Organization Profile</span>
+            </a>
+            <a href="positioncatalog.php" class="submenu-item <?php echo ($page === 'positioncatalog') ? 'active' : ''; ?>">
+              <i data-lucide="user-star"></i>
+              <span>Position Catalog</span>
+            </a>
+            <a href="employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
+              <i data-lucide="file-user"></i>
+              <span>Employee Master Files</span>
+            </a>
+            <a href="informationapproval.php" class="submenu-item <?php echo ($page === 'informationapproval') ? 'active' : ''; ?>">
+              <i data-lucide="file-check"></i>
+              <span>Information Approval</span>
+            </a>
+            <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
+              <i data-lucide="file-text"></i>
+              <span>Bank Form Management</span>
+            </a>
+            <a href="auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
+              <i data-lucide="book-user"></i>
+              <span>Audit Logs</span>
+            </a>
+          </div>
+        </div>
+          <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
               <span>Compensation Planning</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
-          <div class="submenu" id="submenu-planning" style="max-height: 500px;">
-            <a href="salary.php" class="submenu-item active">
+          <div class="submenu" id="submenu-planning">
+           <a href="comintake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Master Data Intake</span>
+            </a>
+            <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
             </a>
-            <a href="statutory.php" class="submenu-item">
+            <a href="statutory.php" class="submenu-item <?php echo ($page === 'statutory') ? 'active' : ''; ?>">
               <i data-lucide="scale"></i>
               <span>Statutory Contributions</span>
             </a>
-            <a href="matrix.php" class="submenu-item">
+            <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
               <i data-lucide="percent"></i>
               <span>Merit Matrix Structure</span>
             </a>
-            <a href="allowance.php" class="submenu-item">
+            <a href="allowance.php" class="submenu-item <?php echo ($page === 'allowance') ? 'active' : ''; ?>">
               <i data-lucide="gift"></i>
               <span>Allowance Structure</span>
             </a>
-            <a href="cycle.php" class="submenu-item">
+            <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
               <i data-lucide="notebook-pen"></i>
               <span>Compensation Structure Management</span>
             </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="calendar-clock"></i>
-              <span>Disbursements</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="coins"></i>
-              <span>Collections</span>
-            </a>
           </div>
         </div>
-
-           <div class="nav-item-group">
+        <div class="nav-item-group">
           <button class="nav-item has-submenu" data-module="payroll">
             <div class="nav-item-content">
-              <i data-lucide="banknote-arrow-down"></i>
-              <span>Payroll</span>
+              <i data-lucide="banknote"></i>
+              <span>Payroll Management</span>
             </div>
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-payroll">
-            <a href="#" class="submenu-item">
-              <i data-lucide="file-plus"></i>
-              <span>Applications</span>
+            <a href="comperules.php" class="submenu-item">
+              <i data-lucide="boxes"></i>
+              <span>Compensation Rules</span>
+            </a>
+            <a href="payroll.php" class="submenu-item active">
+              <i data-lucide="play-circle"></i>
+              <span>Payroll Processing</span>
             </a>
             <a href="#" class="submenu-item">
-              <i data-lucide="check-circle"></i>
+              <i data-lucide="history"></i>
+              <span>Payroll History</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-check"></i>
               <span>Approvals</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="calendar-clock"></i>
-              <span>Disbursements</span>
-            </a>
-            <a href="#" class="submenu-item">
-              <i data-lucide="coins"></i>
-              <span>Collections</span>
             </a>
           </div>
         </div>
-      </div>
- 
-       <div class="nav-section">
-         <span class="nav-section-title">FINANCE</span>
-         <div class="nav-item-group">
-           <button class="nav-item has-submenu" data-module="finance">
-             <div class="nav-item-content">
-               <i data-lucide="hand-coins"></i>
-               <span>Budget Management</span>
-             </div>
-             <i data-lucide="chevron-down" class="submenu-icon"></i>
-           </button>
-           <div class="submenu" id="submenu-finance">
-             <a href="intake.php" class="submenu-item">
-               <i data-lucide="send-to-back"></i>
-               <span>Master Data Intake</span>
-             </a>
-             <a href="positionrequest.php" class="submenu-item">
-               <i data-lucide="badge-dollar-sign"></i>
-               <span>Position Requests</span>
-             </a>
-           </div>
-         </div>
-       </div>
+        </div>
+        <div class="nav-section">
+        <span class="nav-section-title">FINANCE</span>
+        
+        <div class="nav-item-group <?php echo ($module === 'budget') ? 'active' : ''; ?>">
+          <button class="nav-item has-submenu" data-module="budget">
+            <div class="nav-item-content">
+              <i data-lucide="hand-coins"></i>
+              <span>Budget Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-budget">
+            <a href="positionrequest.php" class="submenu-item <?php echo ($page === 'positionrequest') ? 'active' : ''; ?>">
+              <i data-lucide="badge-dollar-sign"></i>
+              <span>Position Requests</span>
+            </a>
+          </div>
 
       <div class="nav-section">
         <span class="nav-section-title">SETTINGS</span>
@@ -273,14 +490,6 @@ while ($row = $grades_query->fetch_assoc()) {
             </div>
           </div>
           <div class="comp-panel-actions" style="display: flex; gap: 12px;">
-            <button class="btn btn-outline" id="btnTrackStatus" style="border: 1px solid var(--border-color); color: var(--text-secondary);">
-              <i data-lucide="eye"></i>
-              <span>Track Status</span>
-            </button>
-            <button class="btn btn-primary" id="btnProposeChange">
-              <i data-lucide="git-pull-request"></i>
-              <span>Propose Change</span>
-            </button>
           </div>
         </div>
 
@@ -383,154 +592,7 @@ while ($row = $grades_query->fetch_assoc()) {
       </div>
     </div>
 
-    <!-- Propose Change Modal -->
-    <div id="proposeChangeModal" class="modal" aria-hidden="true" style="display: none;">
-      <div class="modal-dialog" style="max-width: 800px;">
-        <div class="comp-modal-hero">
-          <div class="comp-modal-hero-inner">
-            <div class="comp-modal-hero-icon">
-              <i data-lucide="git-pull-request"></i>
-            </div>
-            <div class="comp-modal-hero-text">
-              <h3>Propose Salary Scale Changes</h3>
-              <p>Submit a proposal to update the minimum and maximum ranges for specific job grades.</p>
-            </div>
-            <button class="rp-close-modal" id="closeProposeModalBtn" title="Close">&times;</button>
-          </div>
-        </div>
-        <div class="modal-body modal-form-premium" style="max-height: 50vh; overflow-y: auto;">
-          <div class="table-responsive">
-            <table class="comp-table editable-table" id="proposeScaleTable">
-              <thead>
-                <tr>
-                  <th>Job Grade</th>
-                  <th>Level Name</th>
-                  <th>Current Min</th>
-                  <th>Proposed Min</th>
-                  <th>Current Max</th>
-                  <th>Proposed Max</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($salary_grades as $grade): ?>
-                <tr data-id="<?php echo $grade['SalaryGradeID']; ?>">
-                  <td><strong><?php echo htmlspecialchars($grade['GradeLevel']); ?></strong></td>
-                  <td><?php echo htmlspecialchars($grade['GradeName']); ?></td>
-                  <td class="text-muted">&#8369;<?php echo number_format($grade['MinSalary'], 2); ?></td>
-                  <td><div class="input-with-symbol"><span>&#8369;</span><input type="number" class="table-input-premium prop-min-input" data-original="<?php echo (int)$grade['MinSalary']; ?>" value="<?php echo (int)$grade['MinSalary']; ?>"></div></td>
-                  <td class="text-muted">&#8369;<?php echo number_format($grade['MaxSalary'], 2); ?></td>
-                  <td><div class="input-with-symbol"><span>&#8369;</span><input type="number" class="table-input-premium prop-max-input" data-original="<?php echo (int)$grade['MaxSalary']; ?>" value="<?php echo (int)$grade['MaxSalary']; ?>"></div></td>
-                </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-          <div class="form-group" style="margin-top: 20px;">
-            <label>Reason for Proposal <span class="required">*</span></label>
-            <textarea id="proposalReason" rows="3" class="input-premium no-icon" placeholder="Explain the rationale behind these proposed changes..."></textarea>
-          </div>
 
-          <!-- Proof upload section -->
-          <div class="form-group" style="margin-top: 16px;">
-            <label>Supporting Document <span style="font-weight:400; color:var(--text-tertiary);">(Optional — Government file, Salary Structure, etc.)</span></label>
-            <div class="proof-upload-area" id="proofUploadArea">
-              <input type="file" id="proofFileInput" accept=".pdf,.doc,.docx,image/*">
-              <div class="proof-upload-icon"><i data-lucide="upload-cloud"></i></div>
-              <span class="proof-upload-label">Click or drag to upload proof</span>
-              <span class="proof-upload-hint">PDF, Word, or Image (Max 5MB)</span>
-            </div>
-            <div class="proof-file-badge" id="proofFileBadge">
-              <i data-lucide="file-check"></i>
-              <span id="proofBadgeName">No file selected</span>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer-premium">
-          <button type="button" id="cancelProposeBtn" class="btn-cancel-premium">Cancel</button>
-          <button type="button" id="submitProposalScaleBtn" class="btn-comp-submit">Submit Proposal</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Track Status Modal -->
-    <div id="trackStatusModal" class="modal" aria-hidden="true" style="display: none;">
-      <div class="modal-dialog" style="max-width: 800px;">
-        <div class="comp-modal-hero">
-          <div class="comp-modal-hero-inner">
-            <div class="comp-modal-hero-icon" style="background: rgba(255, 255, 255, 0.2);">
-              <i data-lucide="activity"></i>
-            </div>
-            <div class="comp-modal-hero-text">
-              <h3>Track Proposal Status</h3>
-              <p>Monitor your submitted scale changes through the review process.</p>
-            </div>
-            <button class="rp-close-modal" id="closeTrackModalBtn" title="Close">&times;</button>
-          </div>
-        </div>
-        <div class="modal-body" style="padding: 24px; max-height: 70vh; overflow-y: auto;">
-          <div id="stageAList">
-              <div class="data-table-premium">
-                  <table style="width: 100%; border-collapse: separate; border-spacing: 0 8px;">
-                      <thead>
-                          <tr style="background: transparent;">
-                              <th style="padding: 12px; font-size: 11px; text-transform: uppercase; color: var(--text-tertiary); letter-spacing: 0.05em;">Reference</th>
-                              <th style="padding: 12px; font-size: 11px; text-transform: uppercase; color: var(--text-tertiary); letter-spacing: 0.05em;">Date Submitted</th>
-                              <th style="padding: 12px; font-size: 11px; text-transform: uppercase; color: var(--text-tertiary); letter-spacing: 0.05em;">Changes</th>
-                              <th style="padding: 12px; font-size: 11px; text-transform: uppercase; color: var(--text-tertiary); letter-spacing: 0.05em;">Status</th>
-                              <th style="padding: 12px; font-size: 11px; text-transform: uppercase; color: var(--text-tertiary); letter-spacing: 0.05em; text-align: right;">Action</th>
-                          </tr>
-                      </thead>
-                      <tbody id="trackingBatchesBody">
-                          <tr><td colspan="5" style="text-align:center; padding:60px; color: var(--text-tertiary);">
-                              <i data-lucide="inbox" style="width: 48px; height: 48px; opacity: 0.2; margin-bottom: 12px;"></i>
-                              <p>No tracking history available</p>
-                          </td></tr>
-                      </tbody>
-                  </table>
-              </div>
-              <div class="pagination-premium" style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding: 0 8px;">
-                  <div style="font-size: 13px; color: var(--text-secondary);">Showing <span id="salaryPageRange">0</span> of <span id="salaryTotalEntries">0</span></div>
-                  <div style="display: flex; gap: 8px;">
-                      <button id="prevSalaryPage" class="btn-pagination" disabled><i data-lucide="chevron-left"></i></button>
-                      <button id="nextSalaryPage" class="btn-pagination" disabled><i data-lucide="chevron-right"></i></button>
-                  </div>
-              </div>
-          </div>
-          <div id="stageBDetails" style="display: none;">
-              <button type="button" class="btn btn-outline" id="btnBackToTrackList" style="margin-bottom: 20px;">
-                  <i data-lucide="arrow-left"></i> Back to List
-              </button>
-              <h4 style="margin-bottom: 8px;" id="stepperBatchTitle">Batch Details</h4>
-              <p style="color: var(--text-secondary); margin-bottom: 24px;" id="stepperBatchReason"></p>
-
-
-
-
-              <div class="stepper-wrapper" style="background:var(--surface-hover); border-radius:12px; padding:32px 16px; display: flex; justify-content: center;">
-                  <div class="stepper-container">
-                      <div class="stepper-line"><div class="stepper-line-fill" id="stepperLineFill" style="width: 0%;"></div></div>
-                      <div class="stepper-step" id="step1">
-                          <div class="step-circle"><i data-lucide="check"></i></div>
-                          <div class="step-label">Step 1</div><div class="step-title">Submitted</div><div class="step-desc" id="step1Desc">Completed</div>
-                      </div>
-                      <div class="stepper-step" id="step2">
-                          <div class="step-circle"><i data-lucide="circle-dot"></i></div>
-                          <div class="step-label">Step 2</div><div class="step-title">Under Review</div><div class="step-desc" id="step2Desc">Pending</div>
-                      </div>
-                      <div class="stepper-step" id="step3">
-                          <div class="step-circle"></div>
-                          <div class="step-label">Step 3</div><div class="step-title">Endorsed</div><div class="step-desc" id="step3Desc">Pending</div>
-                      </div>
-                      <div class="stepper-step" id="step4">
-                          <div class="step-circle"></div>
-                          <div class="step-label">Step 4</div><div class="step-title" id="step4Title">Approved</div><div class="step-desc" id="step4Desc">Pending</div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </main>
   <script src="../../js/salary.js"></script>
   <script>
