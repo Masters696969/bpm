@@ -658,11 +658,35 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
                       <input type="text" value="<?php echo htmlspecialchars($period_data['period_name'] ?? 'FY2025 Annual Merit Review'); ?>" placeholder="Enter cycle name...">
                     </div>
                     <div class="form-group" style="grid-column: span 2;">
-                      <label>Total Budget Allocation</label>
-                      <div class="input-with-symbol">
-                        <span>&#8369;</span>
-                        <input type="number" id="budgetAllocation" value="<?php echo (int)($period_data['budget_approved_amount'] > 0 ? $period_data['budget_approved_amount'] : 5000000); ?>">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="mb-0">Total Budget Allocation</label>
+                        <div id="budgetStatusContainer">
+                          <?php 
+                          $budget_status = $period_data['budget_status'] ?? 'Open';
+                          $badge_type = 'status-badge-secondary';
+                          if ($budget_status == 'Pending') $badge_type = 'status-badge-warning';
+                          if ($budget_status == 'Approved') $badge_type = 'status-badge-success';
+                          ?>
+                          <span class="status-badge <?php echo $badge_type; ?>" id="budgetBadge" style="font-size: 10px; padding: 2px 8px; border-radius: 4px;"><?php echo strtoupper($budget_status); ?></span>
+                        </div>
                       </div>
+                      <div class="input-with-symbol" style="position: relative;">
+                        <span>&#8369;</span>
+                        <input type="number" id="budgetAllocation" 
+                               value="<?php echo (float)($period_data['budget_approved_amount'] > 0 ? $period_data['budget_approved_amount'] : 5000000); ?>"
+                               <?php echo ($budget_status == 'Approved') ? 'readonly' : ''; ?>
+                               style="padding-right: 140px;">
+                        <button id="btnRequestBudget" 
+                                style="position: absolute; right: 4px; top: 4px; bottom: 4px; border-radius: 4px; border: none; background: var(--primary); color: white; padding: 0 12px; font-size: 12px; font-weight: 500; cursor: pointer;"
+                                <?php echo ($budget_status == 'Approved') ? 'disabled' : ''; ?>>
+                          Request Finance
+                        </button>
+                      </div>
+                      <?php if (!empty($period_data['budget_requested_amount']) && $period_data['budget_requested_amount'] > 0): ?>
+                      <div class="mt-1" style="font-size: 11px; color: var(--text-secondary);">
+                        Last Requested: &#8369;<span id="requestedAmountText"><?php echo number_format($period_data['budget_requested_amount'], 2); ?></span>
+                      </div>
+                      <?php endif; ?>
                     </div>
                     <div class="form-group">
                       <label>Cycle Start Date</label>
@@ -674,7 +698,9 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
                     </div>
                   </div>
                   <div class="action-buttons" style="margin-top: 24px;">
-                    <button class="btn btn-primary" id="startCycleBtn" style="width: 100%; max-width: 300px; justify-content: center;">
+                    <button class="btn btn-primary" id="startCycleBtn" 
+                            style="width: 100%; max-width: 300px; justify-content: center; <?php echo ($budget_status != 'Approved') ? 'opacity: 0.6; cursor: not-allowed;' : ''; ?>"
+                            <?php echo ($budget_status != 'Approved') ? 'disabled title="Finance approval required"' : ''; ?>>
                       <span>Start Simulation Cycle</span>
                       <i data-lucide="arrow-right"></i>
                     </button>
