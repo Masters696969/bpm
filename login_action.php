@@ -8,13 +8,13 @@ if (session_status() === PHP_SESSION_NONE) {
     $isHttps = (
         (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
         (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
-    );
+        );
 
     session_set_cookie_params([
         'lifetime' => 0,
-        'path'     => '/',
-        'domain'   => '',
-        'secure'   => $isHttps,   // localhost usually false
+        'path' => '/',
+        'domain' => '',
+        'secure' => $isHttps, // localhost usually false
         'httponly' => true,
         'samesite' => 'Lax'
     ]);
@@ -25,115 +25,117 @@ if (session_status() === PHP_SESSION_NONE) {
 // Handle login form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-    
+
     if ($action === 'login') {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
-        
+
         if (empty($email) || empty($password)) {
             echo json_encode(['success' => false, 'message' => 'Please enter email and password']);
             exit;
         }
-        
+
         // Get user account by email
         $sql = "SELECT * FROM useraccounts WHERE Email = ? AND AccountStatus = 'Active' LIMIT 1";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
-            
+
             // Verify password
             if (password_verify($password, $user['PasswordHash'])) {
                 // Generate OTP
-                $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+                $otp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
                 $otpExpiry = date('Y-m-d H:i:s', strtotime('+10 minutes'));
-                
+
                 // Store OTP in database
                 $updateSql = "UPDATE useraccounts SET OTP_Code = ?, OTP_Expiry = ? WHERE AccountID = ?";
                 $updateStmt = $conn->prepare($updateSql);
                 $updateStmt->bind_param("ssi", $otp, $otpExpiry, $user['AccountID']);
                 $updateStmt->execute();
-                
+
                 // Store in session for verification
                 $_SESSION['pending_login'] = [
-                    'account_id'  => (int)$user['AccountID'],
-                    'email'       => $user['Email'],
-                    'created_at'  => time()
+                    'account_id' => (int)$user['AccountID'],
+                    'email' => $user['Email'],
+                    'created_at' => time()
                 ];
-                
+
                 // Store portal preference
                 if (isset($_POST['login_portal'])) {
                     $_SESSION['login_portal'] = trim((string)$_POST['login_portal']);
                 }
-                
+
                 // Send OTP email
                 $emailSent = sendOtpEmail($user['Email'], $otp, $user['Username']);
-                
+
                 echo json_encode([
-                    'success' => true, 
+                    'success' => true,
                     'message' => 'OTP sent to your email',
                     'requires_otp' => true
                 ]);
-            } else {
+            }
+            else {
                 echo json_encode(['success' => false, 'message' => 'Invalid password']);
             }
-        } else {
+        }
+        else {
             echo json_encode(['success' => false, 'message' => 'User not found or account inactive']);
         }
         exit;
     }
-    
+
     if ($action === 'verify_otp') {
         $otp = trim($_POST['otp'] ?? '');
-        
+
         if (empty($otp)) {
             echo json_encode(['success' => false, 'message' => 'Please enter OTP']);
             exit;
         }
-        
+
         if (!isset($_SESSION['pending_login']) || !is_array($_SESSION['pending_login'])) {
             echo json_encode(['success' => false, 'message' => 'Session expired. Please login again.']);
             exit;
         }
-        
+
         $pending = $_SESSION['pending_login'];
 
         if (
-            !isset($pending['account_id']) ||
-            !is_numeric($pending['account_id']) ||
-            (int)$pending['account_id'] <= 0
+        !isset($pending['account_id']) ||
+        !is_numeric($pending['account_id']) ||
+        (int)$pending['account_id'] <= 0
         ) {
             unset($_SESSION['pending_login']);
             echo json_encode(['success' => false, 'message' => 'Session expired. Please login again.']);
             exit;
         }
-        
+
         // Verify OTP - check matching code first, then check expiry in PHP
         $sql = "SELECT AccountID, Username, Email, OTP_Code, OTP_Expiry FROM useraccounts WHERE AccountID = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $pending['account_id']);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
-            
+
             // Check if OTP code matches (secure comparison)
             if (!empty($user['OTP_Code']) && hash_equals((string)$user['OTP_Code'], (string)$otp)) {
                 // Check if OTP is expired
                 $expiryTime = strtotime((string)$user['OTP_Expiry']);
                 $currentTime = time();
-                
+
                 if ($expiryTime !== false && $currentTime <= $expiryTime) {
                     // OTP is valid! Clear it and log in
                     $updateSql = "UPDATE useraccounts SET OTP_Code = NULL, OTP_Expiry = NULL WHERE AccountID = ?";
                     $updateStmt = $conn->prepare($updateSql);
                     $updateStmt->bind_param("i", $pending['account_id']);
                     $updateStmt->execute();
-                    
+
                     // Get user roles (ALL roles) - include RoleID for officer detection
                     $rolesSql = "SELECT r.RoleID, r.RoleName
                                 FROM roles r
@@ -216,7 +218,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if ($offRow) {
                             $deptId = $offRow['DepartmentID'];
                             $deptName = $offRow['DepartmentName'];
-                        } else {
+                        }
+                        else {
                             echo json_encode([
                                 'success' => false,
                                 'message' => 'Officer account has no department assignment. Please contact admin.'
@@ -262,26 +265,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if ($portalInfo === 'ess') {
                         $redirectUrl = 'modules/ess/dashboard.php';
-                    } else {
+                    }
+                    else {
                         if ($roleKey === 'administrator') {
                             $redirectUrl = 'modules/admin/dashboard.php';
 
-                        } elseif ($roleKey === 'hr manager') {
+                        }
+                        elseif ($roleKey === 'hr manager') {
                             $redirectUrl = 'modules/manager/dashboard.php';
 
-                        } elseif ($roleKey === 'general manager') {
+                        }
+                        elseif ($roleKey === 'general manager') {
                             $redirectUrl = 'modules/general_manager/dashboard.php';
 
-                        } elseif ($roleKey === 'department officer') {
+                        }
+                        elseif ($roleKey === 'department officer') {
                             $redirectUrl = 'modules/officer/dashboard.php';
 
-                        } elseif ($roleKey === 'hr data specialist') {
+                        }
+                        elseif ($roleKey === 'hr data specialist') {
                             $redirectUrl = 'modules/corehumancapital/dashboard.php';
 
-                        } elseif ($roleKey === 'hr staff') {
+                        }
+                        elseif ($roleKey === 'compensation analyst') {
+                            $redirectUrl = 'modules/compensation/dashboard.php';
+
+                        }
+                        elseif ($roleKey === 'hr staff') {
                             $redirectUrl = 'modules/hr1staff/dashboard.php';
 
-                        } else {
+                        }
+                        else {
                             $redirectUrl = 'dashboard.php';
                         }
                     }
@@ -297,51 +311,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'department' => $_SESSION['department_name']
                     ]);
                     exit;
-                } else {
+                }
+                else {
                     echo json_encode(['success' => false, 'message' => 'OTP has expired. Please login again.']);
                 }
-            } else {
+            }
+            else {
                 echo json_encode(['success' => false, 'message' => 'Invalid OTP code']);
             }
-        } else {
+        }
+        else {
             echo json_encode(['success' => false, 'message' => 'No OTP found. Please login again.']);
         }
         exit;
     }
-    
+
     if ($action === 'resend_otp') {
         if (!isset($_SESSION['pending_login']) || !is_array($_SESSION['pending_login'])) {
             echo json_encode(['success' => false, 'message' => 'Session expired. Please login again.']);
             exit;
         }
-        
+
         $pending = $_SESSION['pending_login'];
 
         if (
-            !isset($pending['account_id'], $pending['email']) ||
-            !is_numeric($pending['account_id']) ||
-            (int)$pending['account_id'] <= 0
+        !isset($pending['account_id'], $pending['email']) ||
+        !is_numeric($pending['account_id']) ||
+        (int)$pending['account_id'] <= 0
         ) {
             unset($_SESSION['pending_login']);
             echo json_encode(['success' => false, 'message' => 'Session expired. Please login again.']);
             exit;
         }
-        
+
         // Generate new OTP
-        $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $otp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         $otpExpiry = date('Y-m-d H:i:s', strtotime('+10 minutes'));
-        
+
         // Update OTP in database
         $updateSql = "UPDATE useraccounts SET OTP_Code = ?, OTP_Expiry = ? WHERE AccountID = ?";
         $updateStmt = $conn->prepare($updateSql);
         $updateStmt->bind_param("ssi", $otp, $otpExpiry, $pending['account_id']);
         $updateStmt->execute();
-        
+
         // Send new OTP email
         $emailSent = sendOtpEmail($pending['email'], $otp);
-        
+
         echo json_encode([
-            'success' => true, 
+            'success' => true,
             'message' => 'New OTP sent to your email',
             'email_sent' => $emailSent
         ]);

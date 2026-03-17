@@ -1,66 +1,300 @@
+let selectionMode = false;
+let currentEmployeeData = null;
+
 document.addEventListener('DOMContentLoaded', () => {
     fetchEmployees();
     lucide.createIcons();
+    bindTopButtons();
+    initClock();
 });
+
+function bindTopButtons() {
+    const toggleBtn = document.getElementById('toggleSelectionModeBtn');
+    const dispatchBtn = document.getElementById('dispatchSelectedBtn');
+    const selectAll = document.getElementById('selectAllEmployees');
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleSelectionMode);
+    }
+
+    if (dispatchBtn) {
+        dispatchBtn.addEventListener('click', dispatchSelectedEmployees);
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function () {
+            document.querySelectorAll('.emp-checkbox').forEach(cb => {
+                if (cb.disabled) return;
+                cb.checked = this.checked;
+                const row = cb.closest('tr');
+                if (row) row.classList.toggle('row-selected', cb.checked);
+            });
+            syncSelectAllState();
+        });
+    }
+}
 
 async function fetchEmployees() {
     try {
-        const response = await fetch('backend/be_employeemaster.php?action=fetch_employees');
+        const url = 'backend/be_employeemaster.php?action=fetch_employees';
+        console.log('Fetching employees from:', url);
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
         const result = await response.json();
+        console.log('fetch_employees response:', result);
 
-        if (result.success) {
-            renderTable(result.data);
-            // Update stat cards
-            const emps = result.data;
-            const el = id => document.getElementById(id);
-            if (el('statTotal')) el('statTotal').textContent = emps.length;
-            if (el('statRegular')) el('statRegular').textContent = emps.filter(e => e.EmploymentStatus === 'Regular').length;
-            if (el('statProbationary')) el('statProbationary').textContent = emps.filter(e => e.EmploymentStatus === 'Probationary').length;
-
-        } else {
-            console.error('Failed to fetch employees:', result.message);
+        if (!result.success) {
+            Swal.fire('Error', result.message || 'Failed to fetch employees.', 'error');
+            return;
         }
+
+        renderTable(result.data || []);
+
+        const emps = result.data || [];
+        const el = id => document.getElementById(id);
+
+        if (el('statTotal')) el('statTotal').textContent = emps.length;
+        if (el('statRegular')) {
+            el('statRegular').textContent = emps.filter(
+                e => (e.EmploymentStatus || '').toLowerCase() === 'regular'
+            ).length;
+        }
+        if (el('statProbationary')) {
+            el('statProbationary').textContent = emps.filter(
+                e => (e.EmploymentStatus || '').toLowerCase() === 'probationary'
+            ).length;
+        }
+
     } catch (error) {
-        console.error('Error fetching employees:', error);
+        console.error(error);
+        Swal.fire('Error', 'An error occurred while fetching employees.', 'error');
     }
 }
 
 function renderTable(employees) {
     const tbody = document.querySelector('#employeeTable tbody');
+    if (!tbody) return;
+
     tbody.innerHTML = '';
 
-    if (employees.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center">No employees found</td></tr>';
+    if (!employees.length) {
+        const colSpan = selectionMode ? 8 : 7;
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" class="text-center">No employees found</td></tr>`;
+        updateSelectionUI();
         return;
     }
 
     employees.forEach(emp => {
-        const initials = emp.FirstName.charAt(0) + emp.LastName.charAt(0);
+        const firstName = emp.FirstName || '';
+        const lastName = emp.LastName || '';
+        const initials = `${firstName.charAt(0) || ''}${lastName.charAt(0) || ''}`.toUpperCase() || '--';
+
+        const dispatchStatus = String(emp.DispatchStatus || '').trim().toLowerCase();
+        const alreadyPending = dispatchStatus === 'pending';
+        const hasReceived = dispatchStatus === 'received';
+        const isLockedDispatch = alreadyPending || hasReceived;
+        const hasDispatch = ['pending', 'received', 'rejected'].includes(dispatchStatus);
+
+        let dispatchBadge = '';
+        if (!hasDispatch) {
+            dispatchBadge = `<span style="display:inline-block;padding:6px 10px;border-radius:999px;background:#ecfeff;color:#155e75;font-size:12px;font-weight:700;">Ready</span>`;
+        } else if (dispatchStatus === 'pending') {
+            dispatchBadge = `<span style="display:inline-block;padding:6px 10px;border-radius:999px;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;">Pending</span>`;
+        } else if (dispatchStatus === 'received') {
+            dispatchBadge = `<span style="display:inline-block;padding:6px 10px;border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:700;">Received</span>`;
+        } else if (dispatchStatus === 'rejected') {
+            dispatchBadge = `<span style="display:inline-block;padding:6px 10px;border-radius:999px;background:#fee2e2;color:#991b1b;font-size:12px;font-weight:700;">Rejected</span>`;
+        } else {
+            dispatchBadge = `<span style="display:inline-block;padding:6px 10px;border-radius:999px;background:#ecfeff;color:#155e75;font-size:12px;font-weight:700;">Ready</span>`;
+        }
+
         const tr = document.createElement('tr');
         tr.className = 'emp-row';
+        tr.dataset.employeeId = emp.EmployeeID;
+
         tr.innerHTML = `
+            <td class="select-cell" style="text-align:center; display:${selectionMode ? '' : 'none'};">
+                <input type="checkbox" class="emp-checkbox" value="${emp.EmployeeID}" ${isLockedDispatch ? 'disabled' : ''}>
+            </td>
             <td>
                 <div class="emp-cell">
-                    <div class="emp-avatar">${initials.toUpperCase()}</div>
+                    <div class="emp-avatar">${escapeHtml(initials)}</div>
                     <div>
-                        <div class="emp-name">${emp.FirstName} ${emp.LastName}</div>
-                        <div class="emp-dept">${emp.EmployeeCode || emp.EmployeeID}</div>
+                        <div class="emp-name">${escapeHtml(firstName)} ${escapeHtml(lastName)}</div>
+                        <div class="emp-dept">${escapeHtml(emp.EmployeeCode || emp.EmployeeID)}</div>
                     </div>
                 </div>
             </td>
-            <td style="font-size:13px;color:var(--text-secondary)">${emp.PositionName || 'â€”'}</td>
-            <td style="font-size:13px;color:var(--text-secondary)">${emp.DepartmentName || 'â€”'}</td>
-            <td><span class="badge badge-${getStatusClass(emp.EmploymentStatus)}">${emp.EmploymentStatus || 'Unknown'}</span></td>
-            <td style="font-size:13px;color:var(--text-secondary)">${emp.GradeLevel || 'â€”'}</td>
+            <td style="font-size:13px;color:var(--text-secondary)">${escapeHtml(emp.PositionName || '—')}</td>
+            <td style="font-size:13px;color:var(--text-secondary)">${escapeHtml(emp.DepartmentName || '—')}</td>
+            <td><span class="badge badge-${getStatusClass(emp.EmploymentStatus)}">${escapeHtml(emp.EmploymentStatus || 'Unknown')}</span></td>
+            <td style="font-size:13px;color:var(--text-secondary)">${escapeHtml(emp.GradeLevel || '—')}</td>
+            <td class="dispatch-status-cell" style="display:${selectionMode ? '' : 'none'};">${dispatchBadge}</td>
             <td>
-                <button class="btn-review" onclick="viewProfile(${emp.EmployeeID})">
+                <button class="btn-review view-btn" onclick="event.stopPropagation(); viewProfile(${parseInt(emp.EmployeeID, 10)})">
                     <i data-lucide="file-user"></i> View File
                 </button>
             </td>
         `;
+
+        const checkbox = tr.querySelector('.emp-checkbox');
+
+        if (checkbox) {
+            checkbox.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (checkbox.disabled) return;
+                tr.classList.toggle('row-selected', checkbox.checked);
+                syncSelectAllState();
+            });
+        }
+
+        tr.addEventListener('click', function (e) {
+            if (!selectionMode) return;
+            if (e.target.closest('.view-btn')) return;
+            if (e.target.closest('.emp-checkbox')) return;
+            if (isLockedDispatch) return;
+
+            const rowCheckbox = tr.querySelector('.emp-checkbox');
+            if (!rowCheckbox || rowCheckbox.disabled) return;
+
+            rowCheckbox.checked = !rowCheckbox.checked;
+            tr.classList.toggle('row-selected', rowCheckbox.checked);
+            syncSelectAllState();
+        });
+
+        tr.style.cursor = selectionMode && !isLockedDispatch ? 'pointer' : 'default';
+
         tbody.appendChild(tr);
     });
+
+    updateSelectionUI();
+    syncSelectAllState();
     lucide.createIcons();
+}
+
+function toggleSelectionMode() {
+    selectionMode = !selectionMode;
+
+    if (!selectionMode) {
+        document.querySelectorAll('.emp-checkbox').forEach(cb => cb.checked = false);
+        document.querySelectorAll('#employeeTable tbody tr').forEach(tr => tr.classList.remove('row-selected'));
+
+        const selectAll = document.getElementById('selectAllEmployees');
+        if (selectAll) {
+            selectAll.checked = false;
+            selectAll.indeterminate = false;
+        }
+    }
+
+    fetchEmployees();
+}
+
+function updateSelectionUI() {
+    const header = document.getElementById('selectColumnHeader');
+    const toolbar = document.getElementById('selectionToolbar');
+    const dispatchBtn = document.getElementById('dispatchSelectedBtn');
+    const toggleText = document.getElementById('toggleSelectionModeText');
+    const selectAll = document.getElementById('selectAllEmployees');
+    const dispatchHeader = document.getElementById('dispatchStatusHeader');
+
+    if (header) header.style.display = selectionMode ? '' : 'none';
+    if (toolbar) toolbar.style.display = selectionMode ? 'block' : 'none';
+    if (dispatchBtn) dispatchBtn.style.display = selectionMode ? 'inline-flex' : 'none';
+    if (toggleText) toggleText.textContent = selectionMode ? 'Exit Selection' : 'Select Employees';
+    if (selectAll) {
+        selectAll.checked = false;
+        selectAll.indeterminate = false;
+    }
+    if (dispatchHeader) dispatchHeader.style.display = selectionMode ? '' : 'none';
+
+    document.querySelectorAll('.select-cell').forEach(td => {
+        td.style.display = selectionMode ? '' : 'none';
+    });
+
+    document.querySelectorAll('.dispatch-status-cell').forEach(td => {
+        td.style.display = selectionMode ? '' : 'none';
+    });
+}
+
+function syncSelectAllState() {
+    const all = Array.from(document.querySelectorAll('.emp-checkbox:not(:disabled)'));
+    const checked = all.filter(cb => cb.checked);
+
+    const selectAll = document.getElementById('selectAllEmployees');
+    if (selectAll) {
+        selectAll.checked = all.length > 0 && all.length === checked.length;
+        selectAll.indeterminate = checked.length > 0 && checked.length < all.length;
+    }
+}
+
+function getSelectedEmployeeIds() {
+    return Array.from(document.querySelectorAll('.emp-checkbox:checked'))
+        .map(cb => parseInt(cb.value, 10))
+        .filter(id => !isNaN(id) && id > 0);
+}
+
+async function dispatchSelectedEmployees() {
+    const employeeIds = getSelectedEmployeeIds();
+
+    if (!employeeIds.length) {
+        Swal.fire('No Selection', 'Please select at least one employee.', 'warning');
+        return;
+    }
+
+    const confirmResult = await Swal.fire({
+        title: 'Dispatch selected employees?',
+        text: `You selected ${employeeIds.length} employee(s).`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Dispatch',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#2ca078'
+    });
+
+    if (!confirmResult.isConfirmed) return;
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'dispatch_employees');
+        formData.append('employee_ids', JSON.stringify(employeeIds));
+
+        console.log('dispatch_employees payload:', {
+            action: 'dispatch_employees',
+            employee_ids: employeeIds
+        });
+
+        const response = await fetch('backend/be_employeemaster.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        console.log('dispatch_employees response:', result);
+
+        if (!result.success) {
+            Swal.fire('Error', result.message || 'Dispatch failed.', 'error');
+            return;
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Dispatch Completed',
+            text: `Inserted New: ${result.inserted_count || 0} | Updated to Pending: ${result.updated_count || 0} | Already Pending: ${result.already_pending_count || 0}`
+        }).then(() => {
+            selectionMode = false;
+            fetchEmployees();
+        });
+
+    } catch (error) {
+        console.error(error);
+        Swal.fire('Error', 'An error occurred while dispatching employees.', 'error');
+    }
 }
 
 async function viewProfile(id) {
@@ -68,20 +302,23 @@ async function viewProfile(id) {
         const response = await fetch(`backend/be_employeemaster.php?action=get_employee_details&id=${id}`);
         const result = await response.json();
 
-        if (result.success) {
-            renderResumeModal(result.data);
-            const modal = document.getElementById('employeeModal');
-            // Restore full-width for the view modal
-            const dlg = modal.querySelector('.modal-dialog');
-            if (dlg) dlg.classList.remove('ep-edit-dialog');
+        if (!result.success) {
+            Swal.fire('Error', result.message || 'Failed to load profile.', 'error');
+            return;
+        }
+
+        renderResumeModal(result.data);
+        const modal = document.getElementById('employeeModal');
+        const dlg = modal?.querySelector('.modal-dialog');
+        if (dlg) dlg.classList.remove('ep-edit-dialog');
+        if (modal) {
             modal.style.display = 'flex';
             modal.classList.add('show');
-        } else {
-            alert('Failed to load profile: ' + result.message);
         }
+
     } catch (error) {
-        console.error('Error fetching profile:', error);
-        alert('An error occurred while loading the profile.');
+        console.error(error);
+        Swal.fire('Error', 'An error occurred while loading the profile.', 'error');
     }
 }
 
@@ -89,10 +326,11 @@ function renderResumeModal(data) {
     const modalBody = document.getElementById('modalBody');
     const modalTitle = document.getElementById('modalTitle');
 
-    // Clear header title content if we want a cleaner look, or keep it
-    modalTitle.textContent = ""; // Clearing it because we'll have a close button and header inside
+    if (!modalBody || !modalTitle) return;
 
-    const initials = data.FirstName.charAt(0) + data.LastName.charAt(0);
+    modalTitle.textContent = '';
+
+    const initials = `${data.FirstName?.charAt(0) || ''}${data.LastName?.charAt(0) || ''}`;
     const statusClass = getStatusClass(data.EmploymentStatus);
     const statusColors = { active: '#059669', unverified: '#d97706', inactive: '#dc2626' };
     const statusColor = statusColors[statusClass] || '#6b7280';
@@ -101,136 +339,134 @@ function renderResumeModal(data) {
 
     modalBody.innerHTML = `
     <div class="ep-container">
-
-        <!-- Hero Banner -->
         <div class="ep-hero">
             <button class="ep-close" onclick="closeModal()" title="Close">&times;</button>
             <div class="ep-hero-content">
                 <div class="ep-avatar-wrap">
-                    <div class="ep-avatar">${initials.toUpperCase()}</div>
-                    <button class="ep-avatar-edit" onclick="document.getElementById('profileUpload').click()" title="Change photo">
-                        <i data-lucide="camera"></i>
-                    </button>
-                    <input type="file" id="profileUpload" style="display:none" accept="image/*">
+                    <div class="ep-avatar">${escapeHtml(initials.toUpperCase())}</div>
                 </div>
                 <div class="ep-hero-info">
-                    <h2 class="ep-name">${data.FirstName} ${data.MiddleName ? data.MiddleName + ' ' : ''}${data.LastName}</h2>
-                    <p class="ep-position">${data.PositionName || 'No Position'}</p>
+                    <h2 class="ep-name">${escapeHtml(data.FirstName || '')} ${escapeHtml(data.MiddleName ? data.MiddleName + ' ' : '')}${escapeHtml(data.LastName || '')}</h2>
+                    <p class="ep-position">${escapeHtml(data.PositionName || 'No Position')}</p>
                     <div class="ep-meta">
-                        <span class="ep-meta-chip"><i data-lucide="building-2"></i>${data.DepartmentName || 'No Department'}</span>
-                        <span class="ep-meta-chip"><i data-lucide="hash"></i>${data.EmployeeCode || data.EmployeeID}</span>
+                        <span class="ep-meta-chip"><i data-lucide="building-2"></i>${escapeHtml(data.DepartmentName || 'No Department')}</span>
+                        <span class="ep-meta-chip"><i data-lucide="hash"></i>${escapeHtml(data.EmployeeCode || data.EmployeeID || '—')}</span>
                         <span class="ep-status-badge" style="background:${statusColor}20;color:${statusColor};border:1px solid ${statusColor}40">
-                          <span class="ep-status-dot" style="background:${statusColor}"></span>${data.EmploymentStatus || 'â€”'}
+                          <span class="ep-status-dot" style="background:${statusColor}"></span>${escapeHtml(data.EmploymentStatus || '—')}
                         </span>
                     </div>
                 </div>
-                <button class="ep-edit-btn" onclick="editEmployee(${data.EmployeeID})">
+                <button class="ep-edit-btn" onclick="editEmployee(${parseInt(data.EmployeeID, 10)})">
                     <i data-lucide="pencil"></i> Edit Profile
                 </button>
             </div>
         </div>
 
-        <!-- Quick Stats Bar -->
         <div class="ep-stats-bar">
             <div class="ep-stat">
                 <i data-lucide="calendar"></i>
-                <div><span class="ep-stat-val">${data.HiringDate ? new Date(data.HiringDate).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }) : 'â€”'}</span><span class="ep-stat-lbl">Date Hired</span></div>
+                <div><span class="ep-stat-val">${data.HiringDate ? new Date(data.HiringDate).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}</span><span class="ep-stat-lbl">Date Hired</span></div>
             </div>
             <div class="ep-stat-divider"></div>
             <div class="ep-stat">
                 <i data-lucide="layers"></i>
-                <div><span class="ep-stat-val">${data.GradeLevel || 'â€”'}</span><span class="ep-stat-lbl">Salary Grade</span></div>
+                <div><span class="ep-stat-val">${escapeHtml(data.GradeLevel || '—')}</span><span class="ep-stat-lbl">Salary Grade</span></div>
             </div>
             <div class="ep-stat-divider"></div>
             <div class="ep-stat">
                 <i data-lucide="mail"></i>
-                <div><span class="ep-stat-val" style="font-size:12px">${data.WorkEmail || 'â€”'}</span><span class="ep-stat-lbl">Work Email</span></div>
+                <div><span class="ep-stat-val" style="font-size:12px">${escapeHtml(data.WorkEmail || '—')}</span><span class="ep-stat-lbl">Work Email</span></div>
             </div>
             <div class="ep-stat-divider"></div>
             <div class="ep-stat">
                 <i data-lucide="phone"></i>
-                <div><span class="ep-stat-val">${data.PhoneNumber || 'â€”'}</span><span class="ep-stat-lbl">Phone</span></div>
+                <div><span class="ep-stat-val">${escapeHtml(data.PhoneNumber || '—')}</span><span class="ep-stat-lbl">Phone</span></div>
             </div>
         </div>
 
-        <!-- Section Grid -->
         <div class="ep-body">
-
-            <!-- Personal Information -->
             <div class="ep-section">
                 <div class="ep-section-hdr ep-hdr-blue"><i data-lucide="user"></i> Personal Information</div>
                 <div class="ep-fields">
-                    <div class="ep-field"><label>Date of Birth</label><span>${data.DateOfBirth || 'â€”'}</span></div>
-                    <div class="ep-field"><label>Gender</label><span>${data.Gender || 'â€”'}</span></div>
-                    <div class="ep-field"><label>Personal Email</label><span>${data.PersonalEmail || 'â€”'}</span></div>
-                    <div class="ep-field full"><label>Permanent Address</label><span>${data.PermanentAddress || 'â€”'}</span></div>
+                    <div class="ep-field"><label>Date of Birth</label><span>${escapeHtml(data.DateOfBirth || '—')}</span></div>
+                    <div class="ep-field"><label>Gender</label><span>${escapeHtml(data.Gender || '—')}</span></div>
+                    <div class="ep-field"><label>Personal Email</label><span>${escapeHtml(data.PersonalEmail || '—')}</span></div>
+                    <div class="ep-field full"><label>Permanent Address</label><span>${escapeHtml(data.PermanentAddress || '—')}</span></div>
                 </div>
             </div>
 
-            <!-- Government Numbers -->
             <div class="ep-section">
                 <div class="ep-section-hdr ep-hdr-purple"><i data-lucide="landmark"></i> Government Numbers</div>
                 <div class="ep-fields">
-                    <div class="ep-field"><label>TIN</label><span>${data.TINNumber || 'â€”'}</span></div>
-                    <div class="ep-field"><label>SSS</label><span>${data.SSSNumber || 'â€”'}</span></div>
-                    <div class="ep-field"><label>PhilHealth</label><span>${data.PhilHealthNumber || 'â€”'}</span></div>
-                    <div class="ep-field"><label>Pag-IBIG</label><span>${data.PagIBIGNumber || 'â€”'}</span></div>
+                    <div class="ep-field"><label>TIN</label><span>${escapeHtml(data.TINNumber || '—')}</span></div>
+                    <div class="ep-field"><label>SSS</label><span>${escapeHtml(data.SSSNumber || '—')}</span></div>
+                    <div class="ep-field"><label>PhilHealth</label><span>${escapeHtml(data.PhilHealthNumber || '—')}</span></div>
+                    <div class="ep-field"><label>Pag-IBIG</label><span>${escapeHtml(data.PagIBIGNumber || '—')}</span></div>
                 </div>
             </div>
 
-            <!-- Bank & Compensation -->
             <div class="ep-section">
                 <div class="ep-section-hdr ep-hdr-green"><i data-lucide="credit-card"></i> Bank & Compensation</div>
                 <div class="ep-fields">
-                    <div class="ep-field"><label>Bank Name</label><span style="color:var(--brand-green);font-weight:600">BDO</span></div>
-                    <div class="ep-field"><label>Account Number</label><span>${data.BankAccountNumber || 'â€”'}</span></div>
-                    <div class="ep-field"><label>Account Type</label><span style="color:var(--brand-green);font-weight:600">Payroll</span></div>
-                    <div class="ep-field"><label>Base Salary</label><span>${(data.BaseSalary !== null && data.BaseSalary !== undefined) ? formatCurrency(data.BaseSalary) : 'â€”'}</span></div>
-                    <div class="ep-field full"><label>Salary Range</label><span>${data.MinSalary ? formatCurrency(data.MinSalary) + ' â€“ ' + formatCurrency(data.MaxSalary) : 'â€”'}</span></div>
+                    <div class="ep-field"><label>Bank Name</label><span style="color:var(--brand-green);font-weight:600">${escapeHtml(data.BankName || 'BDO')}</span></div>
+                    <div class="ep-field"><label>Account Number</label><span>${escapeHtml(data.BankAccountNumber || '—')}</span></div>
+                    <div class="ep-field"><label>Account Type</label><span style="color:var(--brand-green);font-weight:600">${escapeHtml(data.AccountType || 'Payroll')}</span></div>
+                    <div class="ep-field"><label>Base Salary</label><span>${(data.BaseSalary !== null && data.BaseSalary !== undefined && data.BaseSalary !== '') ? formatCurrency(data.BaseSalary) : '—'}</span></div>
+                    <div class="ep-field full"><label>Salary Range</label><span>${(data.MinSalary !== null && data.MinSalary !== undefined && data.MinSalary !== '') ? formatCurrency(data.MinSalary) + ' – ' + formatCurrency(data.MaxSalary) : '—'}</span></div>
                 </div>
             </div>
 
-            <!-- Emergency Contact -->
             <div class="ep-section">
                 <div class="ep-section-hdr ep-hdr-red"><i data-lucide="heart-pulse"></i> Emergency Contact</div>
                 <div class="ep-fields">
-                    <div class="ep-field"><label>Contact Name</label><span>${data.ContactName || 'â€”'}</span></div>
-                    <div class="ep-field"><label>Relationship</label><span>${data.Relationship || 'â€”'}</span></div>
-                    <div class="ep-field full"><label>Phone</label><span>${data.EmergencyPhone || 'â€”'}</span></div>
+                    <div class="ep-field"><label>Contact Name</label><span>${escapeHtml(data.ContactName || '—')}</span></div>
+                    <div class="ep-field"><label>Relationship</label><span>${escapeHtml(data.Relationship || '—')}</span></div>
+                    <div class="ep-field full"><label>Phone</label><span>${escapeHtml(data.EmergencyPhone || '—')}</span></div>
                 </div>
             </div>
-
         </div>
     </div>
     `;
+
     lucide.createIcons();
 }
 
 function getStatusClass(status) {
-    if (!status) return 'inactive'; // Default
-    switch (status.toLowerCase()) {
+    if (!status) return 'inactive';
+    switch (String(status).toLowerCase()) {
         case 'regular': return 'active';
         case 'probationary': return 'unverified';
-        case 'resigned': return 'inactive';
-        case 'terminated': return 'inactive';
-        default: return 'active';
+        case 'resigned':
+        case 'terminated':
+        case 'inactive':
+        case 'rejected':
+            return 'inactive';
+        default:
+            return 'active';
     }
 }
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(amount);
+    return new Intl.NumberFormat('en-PH', {
+        style: 'currency',
+        currency: 'PHP'
+    }).format(Number(amount) || 0);
 }
 
-// Store current employee data for edit reference if needed
-let currentEmployeeData = null;
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
 
 async function editEmployee(id) {
     try {
-        // Switch modal to compact edit width
         const dlg = document.querySelector('#employeeModal .modal-dialog');
         if (dlg) dlg.classList.add('ep-edit-dialog');
 
-        // Reuse get_employee_details to fetch fresh data
         const response = await fetch(`backend/be_employeemaster.php?action=get_employee_details&id=${id}`);
         const result = await response.json();
 
@@ -238,151 +474,133 @@ async function editEmployee(id) {
             currentEmployeeData = result.data;
             renderEditForm(result.data);
         } else {
-            alert('Failed to load employee data for editing.');
+            Swal.fire('Error', 'Failed to load employee data for editing.', 'error');
         }
     } catch (error) {
-        console.error('Error fetching data for edit:', error);
-        alert('An error occurred.');
+        console.error(error);
+        Swal.fire('Error', 'An error occurred.', 'error');
     }
 }
 
 function renderEditForm(data) {
     const modalBody = document.getElementById('modalBody');
-    const initials = data.FirstName.charAt(0) + data.LastName.charAt(0);
+    if (!modalBody) return;
+
+    const initials = `${data.FirstName?.charAt(0) || ''}${data.LastName?.charAt(0) || ''}`.toUpperCase();
     const statusClass = getStatusClass(data.EmploymentStatus);
     const statusColors = { active: '#059669', unverified: '#d97706', inactive: '#dc2626' };
     const statusColor = statusColors[statusClass] || '#6b7280';
 
     modalBody.style.padding = '0';
-
     modalBody.innerHTML = `
     <div class="ep-container ep-edit">
-
-        <!-- Hero Banner â€” edit variant -->
         <div class="ep-hero">
             <button class="ep-close" onclick="closeModal()" title="Close">&times;</button>
             <div class="ep-hero-content">
                 <div class="ep-avatar-wrap">
-                    <div class="ep-avatar">${initials.toUpperCase()}</div>
+                    <div class="ep-avatar">${escapeHtml(initials)}</div>
                 </div>
                 <div class="ep-hero-info">
                     <h2 class="ep-name">Edit Profile</h2>
-                    <p class="ep-position">${data.FirstName} ${data.LastName}</p>
+                    <p class="ep-position">${escapeHtml(data.FirstName || '')} ${escapeHtml(data.LastName || '')}</p>
                     <div class="ep-meta">
-                        <span class="ep-meta-chip"><i data-lucide="building-2"></i>${data.DepartmentName || 'No Department'}</span>
-                        <span class="ep-meta-chip"><i data-lucide="hash"></i>${data.EmployeeCode || data.EmployeeID}</span>
+                        <span class="ep-meta-chip"><i data-lucide="building-2"></i>${escapeHtml(data.DepartmentName || 'No Department')}</span>
+                        <span class="ep-meta-chip"><i data-lucide="hash"></i>${escapeHtml(data.EmployeeCode || data.EmployeeID || '—')}</span>
                         <span class="ep-status-badge" style="background:${statusColor}20;color:${statusColor};border:1px solid ${statusColor}40">
-                          <span class="ep-status-dot" style="background:${statusColor}"></span>${data.EmploymentStatus || 'â€”'}
+                          <span class="ep-status-dot" style="background:${statusColor}"></span>${escapeHtml(data.EmploymentStatus || '—')}
                         </span>
                     </div>
                 </div>
-                <button class="ep-edit-btn" onclick="viewProfile(${data.EmployeeID})">
+                <button class="ep-edit-btn" onclick="viewProfile(${parseInt(data.EmployeeID, 10)})">
                     <i data-lucide="arrow-left"></i> Back to Profile
                 </button>
             </div>
         </div>
 
-        <!-- Edit Form Body -->
         <div class="ep-body">
             <form id="editEmployeeForm" onsubmit="submitEditForm(event)" style="display:contents">
-                <input type="hidden" name="EmployeeID"   value="${data.EmployeeID}">
-                <input type="hidden" name="EmploymentID" value="${data.EmploymentID || ''}">
-
-                <!-- Personal Information -->
+                <input type="hidden" name="EmployeeID" value="${escapeHtml(data.EmployeeID || '')}">
                 <div class="ep-section">
                     <div class="ep-section-hdr ep-hdr-blue"><i data-lucide="user"></i> Personal Information</div>
                     <div class="ep-fields">
-                        <div class="ep-field"><label>First Name</label><input type="text"  name="FirstName"        class="ep-input" value="${data.FirstName || ''}" required></div>
-                        <div class="ep-field"><label>Last Name</label> <input type="text"  name="LastName"         class="ep-input" value="${data.LastName || ''}" required></div>
-                        <div class="ep-field"><label>Middle Name</label><input type="text" name="MiddleName"       class="ep-input" value="${data.MiddleName || ''}"></div>
-                        <div class="ep-field"><label>Date of Birth</label><input type="date" name="DateOfBirth"   class="ep-input" value="${data.DateOfBirth || ''}"></div>
+                        <div class="ep-field"><label>First Name</label><input type="text" name="FirstName" class="ep-input" value="${escapeHtml(data.FirstName || '')}" required></div>
+                        <div class="ep-field"><label>Last Name</label><input type="text" name="LastName" class="ep-input" value="${escapeHtml(data.LastName || '')}" required></div>
+                        <div class="ep-field"><label>Middle Name</label><input type="text" name="MiddleName" class="ep-input" value="${escapeHtml(data.MiddleName || '')}"></div>
+                        <div class="ep-field"><label>Date of Birth</label><input type="date" name="DateOfBirth" class="ep-input" value="${escapeHtml(data.DateOfBirth || '')}"></div>
                         <div class="ep-field"><label>Gender</label>
                             <select name="Gender" class="ep-input">
-                                <option value="Male"   ${data.Gender === 'Male' ? 'selected' : ''}>Male</option>
+                                <option value="Male" ${data.Gender === 'Male' ? 'selected' : ''}>Male</option>
                                 <option value="Female" ${data.Gender === 'Female' ? 'selected' : ''}>Female</option>
                             </select>
                         </div>
-                        <div class="ep-field"><label>Personal Email</label><input type="email" name="PersonalEmail" class="ep-input" value="${data.PersonalEmail || ''}"></div>
-                        <div class="ep-field full"><label>Permanent Address</label><input type="text" name="PermanentAddress" class="ep-input" value="${data.PermanentAddress || ''}"></div>
+                        <div class="ep-field"><label>Personal Email</label><input type="email" name="PersonalEmail" class="ep-input" value="${escapeHtml(data.PersonalEmail || '')}"></div>
+                        <div class="ep-field full"><label>Permanent Address</label><input type="text" name="PermanentAddress" class="ep-input" value="${escapeHtml(data.PermanentAddress || '')}"></div>
                     </div>
                 </div>
 
-                <!-- Government Numbers -->
                 <div class="ep-section">
                     <div class="ep-section-hdr ep-hdr-purple"><i data-lucide="landmark"></i> Government Numbers</div>
                     <div class="ep-fields">
-                        <div class="ep-field"><label>TIN</label>      <input type="text" name="TINNumber"       class="ep-input" value="${data.TINNumber || ''}"></div>
-                        <div class="ep-field"><label>SSS</label>      <input type="text" name="SSSNumber"       class="ep-input" value="${data.SSSNumber || ''}"></div>
-                        <div class="ep-field"><label>PhilHealth</label><input type="text" name="PhilHealthNumber" class="ep-input" value="${data.PhilHealthNumber || ''}"></div>
-                        <div class="ep-field"><label>Pag-IBIG</label> <input type="text" name="PagIBIGNumber"   class="ep-input" value="${data.PagIBIGNumber || ''}"></div>
+                        <div class="ep-field"><label>TIN</label><input type="text" name="TINNumber" class="ep-input" value="${escapeHtml(data.TINNumber || '')}"></div>
+                        <div class="ep-field"><label>SSS</label><input type="text" name="SSSNumber" class="ep-input" value="${escapeHtml(data.SSSNumber || '')}"></div>
+                        <div class="ep-field"><label>PhilHealth</label><input type="text" name="PhilHealthNumber" class="ep-input" value="${escapeHtml(data.PhilHealthNumber || '')}"></div>
+                        <div class="ep-field"><label>Pag-IBIG</label><input type="text" name="PagIBIGNumber" class="ep-input" value="${escapeHtml(data.PagIBIGNumber || '')}"></div>
                     </div>
                 </div>
 
-                <!-- Employment Information -->
                 <div class="ep-section">
                     <div class="ep-section-hdr ep-hdr-indigo"><i data-lucide="briefcase"></i> Employment Information</div>
                     <div class="ep-fields">
                         <div class="ep-field">
                             <label>Employment Status</label>
                             <select name="EmploymentStatus" class="ep-input">
-                                <option value="Regular"      ${data.EmploymentStatus === 'Regular' ? 'selected' : ''}>Regular</option>
+                                <option value="Regular" ${data.EmploymentStatus === 'Regular' ? 'selected' : ''}>Regular</option>
                                 <option value="Probationary" ${data.EmploymentStatus === 'Probationary' ? 'selected' : ''}>Probationary</option>
-                                <option value="Resigned"     ${data.EmploymentStatus === 'Resigned' ? 'selected' : ''}>Resigned</option>
-                                <option value="Terminated"   ${data.EmploymentStatus === 'Terminated' ? 'selected' : ''}>Terminated</option>
+                                <option value="Resigned" ${data.EmploymentStatus === 'Resigned' ? 'selected' : ''}>Resigned</option>
+                                <option value="Terminated" ${data.EmploymentStatus === 'Terminated' ? 'selected' : ''}>Terminated</option>
                             </select>
                         </div>
-                        <div class="ep-field"><label>Date Hired</label>  <input type="date"  name="HiringDate" class="ep-input" value="${data.HiringDate || ''}"></div>
-                        <div class="ep-field"><label>Work Email</label>  <input type="email" name="WorkEmail"  class="ep-input" value="${data.WorkEmail || ''}"></div>
-                        <div class="ep-field"><label>Phone (Work)</label><input type="text"  name="PhoneNumber" class="ep-input" value="${data.PhoneNumber || ''}"></div>
+                        <div class="ep-field"><label>Date Hired</label><input type="date" name="HiringDate" class="ep-input" value="${escapeHtml(data.HiringDate || '')}"></div>
+                        <div class="ep-field"><label>Work Email</label><input type="email" name="WorkEmail" class="ep-input" value="${escapeHtml(data.WorkEmail || '')}"></div>
+                        <div class="ep-field"><label>Phone (Work)</label><input type="text" name="PhoneNumber" class="ep-input" value="${escapeHtml(data.PhoneNumber || '')}"></div>
                     </div>
                 </div>
 
-                <!-- Bank & Compensation -->
                 <div class="ep-section">
                     <div class="ep-section-hdr ep-hdr-green"><i data-lucide="credit-card"></i> Bank & Compensation</div>
                     <div class="ep-fields">
-                        <div class="ep-field"><label>Bank Name</label>      <input type="text" name="BankName"      class="ep-input" value="BDO" readonly style="background:var(--background-alt);font-weight:600;color:var(--brand-green)"></div>
-                        <div class="ep-field"><label>Account Number</label> <input type="text" name="BankAccountNumber" class="ep-input" value="${data.BankAccountNumber || ''}"></div>
-                        <div class="ep-field"><label>Account Type</label>
-                            <input type="text" name="AccountType" class="ep-input" value="Payroll" readonly style="background:var(--background-alt);font-weight:600;color:var(--brand-green)">
-                        </div>
-                        <div class="ep-field"><label>Base Salary</label>    <input type="number" name="BaseSalary" class="ep-input" value="${data.BaseSalary || 0}"></div>
+                        <div class="ep-field"><label>Bank Name</label><input type="text" name="BankName" class="ep-input" value="BDO" readonly></div>
+                        <div class="ep-field"><label>Account Number</label><input type="text" name="BankAccountNumber" class="ep-input" value="${escapeHtml(data.BankAccountNumber || '')}"></div>
+                        <div class="ep-field"><label>Account Type</label><input type="text" name="AccountType" class="ep-input" value="Payroll" readonly></div>
+                        <div class="ep-field"><label>Base Salary</label><input type="number" step="0.01" name="BaseSalary" class="ep-input" value="${escapeHtml(data.BaseSalary || 0)}"></div>
                     </div>
                 </div>
 
-                <!-- Emergency Contact -->
                 <div class="ep-section">
                     <div class="ep-section-hdr ep-hdr-red"><i data-lucide="heart-pulse"></i> Emergency Contact</div>
                     <div class="ep-fields">
-                        <div class="ep-field"><label>Contact Name</label>  <input type="text" name="ContactName"    class="ep-input" value="${data.ContactName || ''}"></div>
-                        <div class="ep-field"><label>Relationship</label>  <input type="text" name="Relationship"   class="ep-input" value="${data.Relationship || ''}"></div>
-                        <div class="ep-field full"><label>Phone</label>    <input type="text" name="EmergencyPhone" class="ep-input" value="${data.EmergencyPhone || ''}"></div>
+                        <div class="ep-field"><label>Contact Name</label><input type="text" name="ContactName" class="ep-input" value="${escapeHtml(data.ContactName || '')}"></div>
+                        <div class="ep-field"><label>Relationship</label><input type="text" name="Relationship" class="ep-input" value="${escapeHtml(data.Relationship || '')}"></div>
+                        <div class="ep-field full"><label>Phone</label><input type="text" name="EmergencyPhone" class="ep-input" value="${escapeHtml(data.EmergencyPhone || '')}"></div>
                     </div>
                 </div>
-
             </form>
         </div>
 
-        <!-- Sticky Save Bar -->
         <div class="ep-save-bar">
-            <span class="ep-save-hint"><i data-lucide="info"></i> All changes are saved immediately to the employee record.</span>
             <button type="submit" form="editEmployeeForm" class="ep-save-btn">
                 <i data-lucide="save"></i> Save Changes
             </button>
         </div>
-
     </div>
     `;
     lucide.createIcons();
 }
 
-
 async function submitEditForm(event) {
     event.preventDefault();
     const form = event.target;
     const formData = new FormData(form);
-
-    // Append action
     formData.append('action', 'update_employee');
 
     try {
@@ -394,36 +612,15 @@ async function submitEditForm(event) {
         const result = await response.json();
 
         if (result.success) {
-            closeModal(); // Hide modal first
-            Swal.fire({
-                title: 'Success!',
-                text: 'Employee updated successfully!',
-                icon: 'success',
-                confirmButtonColor: '#2ca078'
-            }).then(() => {
-                fetchEmployees(); // Refresh table
-            });
+            closeModal();
+            Swal.fire('Success', 'Employee updated successfully!', 'success').then(() => fetchEmployees());
         } else {
-            Swal.fire({
-                title: 'Error!',
-                text: result.message || 'Error updating employee',
-                icon: 'error',
-                confirmButtonColor: '#d33'
-            });
+            Swal.fire('Error', result.message || 'Error updating employee', 'error');
         }
     } catch (error) {
-        console.error('Error updating employee:', error);
-        Swal.fire({
-            title: 'Error!',
-            text: 'An error occurred while saving.',
-            icon: 'error',
-            confirmButtonColor: '#d33'
-        });
+        console.error(error);
+        Swal.fire('Error', 'An error occurred while saving.', 'error');
     }
-}
-
-function openAddEmployeeModal() {
-    alert('Add Employee Modal - To Be Implemented');
 }
 
 function closeModal() {
@@ -434,107 +631,70 @@ function closeModal() {
     }
 }
 
-// Sidebar Active Link Logic (Merged)
 (function () {
-  const path = window.location.pathname;
-  const page = path.split('/').pop() || 'dashboard.php';
-  const current = page.split('?')[0];
+    const path = window.location.pathname;
+    const page = path.split('/').pop() || 'dashboard.php';
+    const current = page.split('?')[0];
 
-  document.querySelectorAll('.sidebar .nav-item, .sidebar .submenu-item').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.sidebar .nav-item-group').forEach(group => group.classList.remove('active'));
+    document.querySelectorAll('.sidebar .nav-item, .sidebar .submenu-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.sidebar .nav-item-group').forEach(group => group.classList.remove('active'));
 
-  const submenuMatch = document.querySelector(`.sidebar a.submenu-item[href$="${current}"]`);
-  if (submenuMatch) {
-    submenuMatch.classList.add('active');
-    const parentGroup = submenuMatch.closest('.nav-item-group');
-    if (parentGroup) {
-      parentGroup.classList.add('active');
-      const submenu = parentGroup.querySelector('.submenu');
-      if (submenu) submenu.style.maxHeight = '500px';
-      const btn = parentGroup.querySelector('.nav-item.has-submenu');
-      if (btn) btn.classList.add('active');
+    const submenuMatch = document.querySelector(`.sidebar a.submenu-item[href$="${current}"]`);
+    if (submenuMatch) {
+        submenuMatch.classList.add('active');
+        const parentGroup = submenuMatch.closest('.nav-item-group');
+        if (parentGroup) {
+            parentGroup.classList.add('active');
+            const submenu = parentGroup.querySelector('.submenu');
+            if (submenu) submenu.style.maxHeight = '500px';
+            const btn = parentGroup.querySelector('.nav-item.has-submenu');
+            if (btn) btn.classList.add('active');
+        }
+        return;
     }
-    return;
-  }
 
-  const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
-  if (navMatch) navMatch.classList.add('active');
+    const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
+    if (navMatch) navMatch.classList.add('active');
 })();
 
-// User Menu Dropdown Logic (Merged)
 document.addEventListener('DOMContentLoaded', () => {
     const nameEl = document.querySelector('.sidebar-footer .user-name');
     const roleEl = document.querySelector('.sidebar-footer .user-role');
     const umdName = document.getElementById('umdName');
     const umdRole = document.getElementById('umdRole');
     const umdAvatar = document.getElementById('umdAvatar');
+
     if (nameEl && umdName) {
         const name = nameEl.textContent.trim();
         umdName.textContent = name;
         if (umdAvatar) umdAvatar.textContent = name.charAt(0).toUpperCase();
     }
+
     if (roleEl && umdRole) umdRole.textContent = roleEl.textContent.trim();
 
     const btn = document.getElementById('userMenuBtn');
     const dd = document.getElementById('userMenuDropdown');
+
     if (btn && dd) {
         btn.addEventListener('click', e => {
             e.stopPropagation();
             dd.classList.toggle('umd-open');
         });
+
         document.addEventListener('click', e => {
-            if (!dd.contains(e.target) && e.target !== btn) {
-                dd.classList.remove('umd-open');
-            }
+            if (!dd.contains(e.target) && e.target !== btn) dd.classList.remove('umd-open');
         });
+
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') dd.classList.remove('umd-open');
         });
     }
-
-    const signOutLinks = document.querySelectorAll('.umd-sign-out');
-    signOutLinks.forEach(link => {
-        link.addEventListener('click', async e => {
-            e.preventDefault();
-            const dest = link.getAttribute('href');
-            const result = await Swal.fire({
-                title: 'Sign Out?',
-                text: 'You are about to sign out of your account.',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: '<i class="swal-icon-logout"></i> Yes, Sign Out',
-                cancelButtonText: 'Stay',
-                reverseButtons: true,
-                customClass: {
-                    popup: 'swal-signout-popup',
-                    title: 'swal-signout-title',
-                }
-            });
-            if (result.isConfirmed) {
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Signed Out',
-                    text: 'You have been signed out successfully.',
-                    timer: 1500,
-                    showConfirmButton: false,
-                });
-                window.location.href = dest;
-            }
-        });
-    });
 });
 
-
-
-
-
-// Real-time Clock Functionality
 function initClock() {
     const clockEl = document.getElementById('realTimeClock');
     if (!clockEl) return;
-    
+
     const updateClock = () => {
         const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
         const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -547,19 +707,12 @@ function initClock() {
         const minutes = now.getMinutes().toString().padStart(2, '0');
         const seconds = now.getSeconds().toString().padStart(2, '0');
         const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; 
+        hours = hours % 12 || 12;
         const formattedHours = hours.toString().padStart(2, '0');
-        
+
         clockEl.textContent = `${dayName}, ${monthName} ${date}, ${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
     };
-    
+
     setInterval(updateClock, 1000);
     updateClock();
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initClock);
-} else {
-    initClock();
 }
