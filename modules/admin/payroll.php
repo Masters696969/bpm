@@ -1,0 +1,379 @@
+<?php
+session_start();
+if (!isset($_SESSION['username'])) {
+    header("Location: ../../login.php");
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/admin_payroll.css?v=1.3">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="icon" type="image/png" href="../../img/logo.png">
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <div class="logo-wrapper">
+          <img src="../../img/logo.png" alt="Logo" class="logo">
+        </div>
+        <div class="logo-text">
+          <h2 class="app-name">Microfinance</h2>
+          <span class="app-tagline">32005</span>
+        </div>
+      </div>
+      <button class="sidebar-toggle" id="sidebarToggle">
+        <i data-lucide="panel-left-close"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-title">MAIN MENU</span>
+        
+        <a href="dashboard.php" class="nav-item">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <div class="nav-item-group active">
+          <button class="nav-item has-submenu" data-module="payroll">
+            <div class="nav-item-content">
+              <i data-lucide="banknote"></i>
+              <span>Payroll Management</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-payroll">
+            <a href="comperules.php" class="submenu-item">
+              <i data-lucide="boxes"></i>
+              <span>Compensation Rules</span>
+            </a>
+            <a href="payroll.php" class="submenu-item active">
+              <i data-lucide="play-circle"></i>
+              <span>Payroll Processing</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="history"></i>
+              <span>Payroll History</span>
+            </a>
+            <a href="#" class="submenu-item">
+              <i data-lucide="file-check"></i>
+              <span>Approvals</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item-group">
+          <button class="nav-item has-submenu" data-module="hr">
+            <div class="nav-item-content">
+              <i data-lucide="users"></i>
+              <span>Core Human Capital</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-hr">
+            <a href="../corehumancapital/employeemaster.php" class="submenu-item">
+              <i data-lucide="file-user"></i>
+              <span>Employee Master</span>
+            </a>
+            <a href="../corehumancapital/bankform.php" class="submenu-item">
+              <i data-lucide="landmark"></i>
+              <span>Bank Forms</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-item-group">
+          <button class="nav-item has-submenu" data-module="compensation">
+            <div class="nav-item-content">
+              <i data-lucide="pie-chart"></i>
+              <span>Compensation</span>
+            </div>
+            <i data-lucide="chevron-down" class="submenu-icon"></i>
+          </button>
+          <div class="submenu" id="submenu-compensation">
+            <a href="../compensation/dashboard.php" class="submenu-item">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Comp Dashboard</span>
+            </a>
+            <a href="../compensation/cycle.php" class="submenu-item">
+              <i data-lucide="refresh-cw"></i>
+              <span>Comp Cycles</span>
+            </a>
+          </div>
+        </div>
+
+        <a href="#" class="nav-item">
+          <i data-lucide="users-round"></i>
+          <span>Clients</span>
+        </a>
+
+        <a href="#" class="nav-item">
+          <i data-lucide="file-bar-chart"></i>
+          <span>Reports</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-section-title">SETTINGS</span>
+        
+        <a href="#" class="nav-item">
+          <i data-lucide="settings"></i>
+          <span>Configuration</span>
+        </a>
+
+        <a href="#" class="nav-item">
+          <i data-lucide="shield"></i>
+          <span>Security</span>
+        </a>
+        
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar">
+          <img src="../../img/profile.png" alt="User">
+        </div>
+        <div class="user-info">
+          <span class="user-name"><?php echo htmlspecialchars($_SESSION['username'] ?? 'Admin'); ?></span>
+          <span class="user-role"><?php echo htmlspecialchars($_SESSION['user_role'] ?? 'Administrator'); ?></span>
+        </div>
+        <button class="user-menu-btn" id="userMenuBtn">
+          <i data-lucide="more-vertical"></i>
+        </button>
+        <div class="user-menu-dropdown" id="userMenuDropdown">
+          <div class="umd-header">
+            <div class="umd-avatar" id="umdAvatar"></div>
+            <div class="umd-info">
+              <span class="umd-signed">Signed in as</span>
+              <span class="umd-name" id="umdName"></span>
+              <span class="umd-role" id="umdRole"></span>
+            </div>
+          </div>
+          <div class="umd-divider"></div>
+          <a href="profile.php" class="umd-item"><i data-lucide="user-round"></i><span>Profile</span></a>
+          <div class="umd-divider"></div>
+          <a href="../../login.php" class="umd-item umd-item-danger umd-sign-out"><i data-lucide="log-out"></i><span>Sign Out</span></a>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="page-header">
+      <div class="header-left">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+          <i data-lucide="menu"></i>
+        </button>
+        <div class="header-title">
+          <h1>Payroll Processing</h1>
+          <p>Initialize and manage semi-monthly payroll cycles.</p>
+        </div>
+      </div>
+      <div class="header-right">
+                        <div class="header-clock">
+          <span id="realTimeClock"></span>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <i data-lucide="sun" class="sun-icon"></i>
+          <i data-lucide="moon" class="moon-icon"></i>
+        </button>
+        <button class="icon-btn">
+          <i data-lucide="bell"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="content-wrapper">
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card-premium">
+          <div class="stat-icon-wrapper" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
+            <i data-lucide="credit-card"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Total Payroll</span>
+            <h3 class="stat-value" id="statTotalPayroll">&#8369;0.00</h3>
+          </div>
+        </div>
+
+        <div class="stat-card-premium">
+          <div class="stat-icon-wrapper" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+            <i data-lucide="users"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Employees</span>
+            <h3 class="stat-value" id="statEmployees">0 Paid</h3>
+          </div>
+        </div>
+
+        <div class="stat-card-premium">
+          <div class="stat-icon-wrapper" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow);">
+            <i data-lucide="clock"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Next Run</span>
+            <h3 class="stat-value" id="statNextRun">--</h3>
+          </div>
+        </div>
+
+        <div class="stat-card-premium">
+          <div class="stat-icon-wrapper" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+            <i data-lucide="alert-circle"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Pending</span>
+            <h3 class="stat-value" id="statPending">0 Batches</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div class="premium-tabs">
+          <button class="tab-btn active" data-tab="batches">
+            <i data-lucide="layer-group" style="width: 18px;"></i>
+            Payroll Batches
+          </button>
+          <button class="tab-btn" data-tab="employees">
+            <i data-lucide="user-check" style="width: 18px;"></i>
+            Employee Payroll
+          </button>
+          <button class="tab-btn" data-tab="settings">
+            <i data-lucide="settings-2" style="width: 18px;"></i>
+            Statutory Settings
+          </button>
+        </div>
+
+        <button class="btn-premium btn-primary-premium" id="runPayrollBtn">
+          <i data-lucide="play-circle"></i>
+          Initialize New Batch
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-panel active" id="batches">
+        <div class="payroll-table-container">
+          <table class="payroll-table">
+            <thead>
+              <tr>
+                <th>Batch ID</th>
+                <th>Period</th>
+                <th>Type</th>
+                <th>Total Distributed</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="payrollBatchesBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="employees">
+        <div class="payroll-table-container">
+          <table class="payroll-table">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Basic Pay</th>
+                <th>Allowances</th>
+                <th>OT Pay</th>
+                <th>SSS Regular</th>
+                <th>SSS WISP</th>
+                <th>PhilHealth</th>
+                <th>Pag-IBIG</th>
+                <th>Late/UT</th>
+                <th>W.Tax</th>
+                <th>Deductions</th>
+                <th>Net Pay</th>
+                <th>Status</th>
+                <th>Payslip</th>
+              </tr>
+            </thead>
+            <tbody id="payrollEmployeesBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="settings">
+        <!-- Statutory Settings Master Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+           <div class="content-card" style="padding: 24px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 20px; transition: var(--transition);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                 <div class="stat-icon-wrapper" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green); width: 48px; height: 48px;">
+                    <i data-lucide="landmark"></i>
+                 </div>
+                 <span class="badge-premium badge-success" style="font-size: 10px;">Updated</span>
+              </div>
+              <h4 style="margin-bottom: 8px;">SSS Contributions</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; min-height: 40px;">Manage MSC capping, ER/EE split rates, and WISP+ voluntary plans.</p>
+              <div style="display: flex; gap: 8px;">
+                 <button class="btn-premium" style="background: var(--surface-hover); border: 1px solid var(--border-color); flex: 1; font-size: 12px;">Rates</button>
+                 <button class="btn-premium" style="background: var(--brand-green); color: white; flex: 1; font-size: 12px;">Table</button>
+              </div>
+           </div>
+
+           <div class="content-card" style="padding: 24px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                 <div class="stat-icon-wrapper" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; width: 48px; height: 48px;">
+                    <i data-lucide="heart-pulse"></i>
+                 </div>
+                 <span class="badge-premium badge-success" style="font-size: 10px;">Fixed</span>
+              </div>
+              <h4 style="margin-bottom: 8px;">PhilHealth (NHIP)</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; min-height: 40px;">Standard 5% premium rate configuration with &#8369;10k-&#8369;100k salary floor/ceiling.</p>
+              <button class="btn-premium" style="background: var(--surface-hover); border: 1px solid var(--border-color); width: 100%; font-size: 12px;">Configure Premiums</button>
+           </div>
+
+           <div class="content-card" style="padding: 24px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                 <div class="stat-icon-wrapper" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow); width: 48px; height: 48px;">
+                    <i data-lucide="home"></i>
+                 </div>
+              </div>
+              <h4 style="margin-bottom: 8px;">Pag-IBIG (HDMF)</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; min-height: 40px;">2% EE/ER contribution rates with &#8369;100.00 capping for mandatory savings.</p>
+              <button class="btn-premium" style="background: var(--surface-hover); border: 1px solid var(--border-color); width: 100%; font-size: 12px;">Manage Savings</button>
+           </div>
+
+           <div class="content-card" style="padding: 24px; background: var(--surface); border: 1px solid var(--border-color); border-radius: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                 <div class="stat-icon-wrapper" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; width: 48px; height: 48px;">
+                    <i data-lucide="file-key"></i>
+                 </div>
+                 <span class="badge-premium badge-warning" style="font-size: 10px;">Review</span>
+              </div>
+              <h4 style="margin-bottom: 8px;">Withholding Tax</h4>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; min-height: 40px;">BIR TRAIN Law 2026 tax table integration for automated net pay calculation.</p>
+              <button class="btn-premium" style="background: var(--surface-hover); border: 1px solid var(--border-color); width: 100%; font-size: 12px;">Tax Schedule</button>
+           </div>
+        </div>
+      </div>
+  </main>
+  <script src="../../js/admin_payroll.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+

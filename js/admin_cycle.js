@@ -89,6 +89,82 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // 5.1 Request Finance Budget logic
+    const btnRequestBudget = document.getElementById("btnRequestBudget");
+    if (btnRequestBudget) {
+        btnRequestBudget.addEventListener("click", () => {
+            const amount = parseFloat(document.getElementById("budgetAllocation").value) || 0;
+            if (amount <= 0) {
+                Swal.fire('Error', 'Please enter a valid budget amount.', 'error');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Request Budget from Finance?',
+                text: `You are requesting \u20B1${amount.toLocaleString()} for this compensation cycle.`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3b82f6',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, Send Request',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    btnRequestBudget.disabled = true;
+                    btnRequestBudget.innerHTML = '<i data-lucide="loader" class="animate-spin" style="width:14px; height:14px;"></i><span>Sending...</span>';
+                    if (window.lucide) window.lucide.createIcons();
+
+                    const formData = new URLSearchParams();
+                    formData.append('amount', amount);
+                    formData.append('period_id', 1); // HR Period ID 1
+
+                    fetch('backend/be_request_budget.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Sent!', data.message || 'Request sent to Finance server.', 'success');
+                            
+                            // Update UI immediately without reload if possible
+                            const badge = document.getElementById("budgetBadge");
+                            if (badge) {
+                                badge.innerText = "PENDING";
+                                badge.className = "status-badge status-badge-warning";
+                            }
+                            btnRequestBudget.disabled = true;
+                            btnRequestBudget.innerHTML = 'Request Finance';
+                            
+                            // Update requested amount text
+                            const reqText = document.getElementById("requestedAmountText");
+                            if (reqText) {
+                                reqText.innerText = amount.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                            } else {
+                                // If the text div didn't exist, we might need a reload or a smarter UI update
+                                setTimeout(() => location.reload(), 2000);
+                            }
+                        } else {
+                            Swal.fire('Request Failed', data.message || 'Error communicating with Finance server.', 'error');
+                            btnRequestBudget.disabled = false;
+                            btnRequestBudget.innerHTML = 'Request Finance';
+                        }
+                        if (window.lucide) window.lucide.createIcons();
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        Swal.fire('System Error', 'Could not reach the HR backend.', 'error');
+                        btnRequestBudget.disabled = false;
+                        btnRequestBudget.innerHTML = 'Request Finance';
+                        if (window.lucide) window.lucide.createIcons();
+                    });
+                }
+            });
+        });
+    }
+
+
 
     function saveSimulationDraft(isAuto = false) {
         const saveBtn = document.getElementById("saveDraftBtn");
