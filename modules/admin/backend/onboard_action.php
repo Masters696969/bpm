@@ -1,7 +1,12 @@
 <?php
 header('Content-Type: application/json');
-require_once '../../../config/config.php';
+require_once __DIR__ . '/../../../config/config.php';
 session_start();
+
+if (!isset($_SESSION['username'])) {
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit();
+}
 
 // Helper to get next ID for frontend display
 if (isset($_GET['get_next_id'])) {
@@ -134,7 +139,7 @@ try {
     // Weighted Total Score (Formula from applicationmgt.php)
     // Resume(20%) + Interview(40% scaled 0-5 -> 0-40) + Exam(40% scaled 0-15 -> 0-40)
     $totalScore = ($resumeScore * 0.20) + ($interviewScore * 8) + ($examScore * 2.6667);
-    
+
     $performanceData = [
         'ResumeScore' => $resumeScore,
         'InterviewScore' => $interviewScore,
@@ -142,6 +147,44 @@ try {
         'TotalScore' => round($totalScore, 2),
         'Decision' => $evaluation['Decision'] ?? 'Approved'
     ];
+
+    // 8. Insert into useraccounts (Insert 4: Automatic Account Activation with Patterned Password)
+    $username = strtolower($applicant['FirstName'] . '.' . $applicant['LastName']);
+    
+    // Generate Password Pattern: [PositionName]@12345
+    $pClean = preg_replace('/[^A-Za-z0-9]/', '', ucwords(strtolower($rawPosName)));
+    $plainPassword = $pClean . "@12345";
+    $hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
+
+    $accountStmt = $conn->prepare("INSERT INTO useraccounts (EmployeeID, Username, Email, PasswordHash, IsVerified, AccountStatus) VALUES (?, ?, ?, ?, 1, 'Active')");
+    $accountStmt->bind_param("isss", 
+        $newEmployeeId, 
+        $username, 
+        $applicant['Email'], 
+        $hashedPassword
+    );
+    $accountStmt->execute();
+    $newAccountId = $conn->insert_id;
+
+    // 9. Assign Default Role (Insert 5: Role Assignment)
+    // We'll try to find a matching role or default to 'HR Staff' or similar if it's an admin test,
+    // but typically we should map it based on position. For now, we'll assign 'Department Officer' (ID 17) 
+    // or a role that matches the position name if found.
+    $roleId = 17; // Default: Department Officer
+    
+    // Check if there's a role matching the position name
+    $roleMatchStmt = $conn->prepare("SELECT RoleID FROM roles WHERE RoleName LIKE ? LIMIT 1");
+    $searchTerm = "%$rawPosName%";
+    $roleMatchStmt->bind_param("s", $searchTerm);
+    $roleMatchStmt->execute();
+    $roleMatch = $roleMatchStmt->get_result()->fetch_assoc();
+    if ($roleMatch) {
+        $roleId = $roleMatch['RoleID'];
+    }
+
+    $roleStmt = $conn->prepare("INSERT INTO useraccountroles (AccountID, RoleID) VALUES (?, ?)");
+    $roleStmt->bind_param("ii", $newAccountId, $roleId);
+    $roleStmt->execute();
 
     // 10. Update Applicant Status to 'Hired'
     $statusStmt = $conn->prepare("UPDATE applicants SET Status = 'Accepted', ApprovalStatus = 'Hired' WHERE ApplicantID = ?");
@@ -154,7 +197,9 @@ try {
         $applicant['FirstName'] . ' ' . $applicant['LastName'],
         $rawPosName,
         $hiringDate,
-        $performanceData
+        $username,
+        $plainPassword,
+        $evaluation
     );
 
     $conn->commit();
