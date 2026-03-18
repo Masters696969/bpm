@@ -1100,3 +1100,66 @@ body {
     width: 18px;
     height: 18px;
 }
+
+/* Stats Grid Update */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+/* Finance Sync Card & Status Tags */
+.finance-sync-card {
+    background: linear-gradient(135deg, var(--surface), var(--surface-hover)) !important;
+    border: 1px dashed var(--brand-green) !important;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(44, 160, 120, 0.05) !important;
+}
+
+.finance-sync-card::before {
+    content: 'FINANCE SYNC';
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 8px;
+    font-weight: 800;
+    padding: 2px 8px;
+    background: var(--brand-green);
+    color: white;
+    border-bottom-left-radius: 10px;
+    letter-spacing: 0.5px;
+}
+
+.sync-status-tag {
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(107, 114, 128, 0.1);
+    color: var(--text-secondary);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sync-status-tag.sync-pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--brand-yellow);
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+.sync-status-tag.sync-success {
+    background: rgba(44, 160, 120, 0.1);
+    color: var(--brand-green);
+    border-color: rgba(44, 160, 120, 0.2);
+}
+
+.sync-status-tag.sync-error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+}

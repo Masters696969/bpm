@@ -94,7 +94,13 @@ if ($action === 'create_batch') {
         respond(false, ['error' => 'Invalid period type'], 400);
     }
 
-    $batchCode = sprintf('PR-%04d-%03d', $year, random_int(1, 999));
+    // Find next available serial for this year to avoid duplicates
+    $resSerial = $conn->query("SELECT MAX(CAST(SUBSTRING_INDEX(batch_code, '-', -1) AS UNSIGNED)) as last_serial FROM payroll_batches WHERE batch_code LIKE 'PR-$year-%'");
+    $nextSerial = 1;
+    if ($resSerial && ($rowSerial = $resSerial->fetch_assoc())) {
+        $nextSerial = (int)$rowSerial['last_serial'] + 1;
+    }
+    $batchCode = sprintf('PR-%04d-%03d', $year, $nextSerial);
 
     $conn->begin_transaction();
     try {
@@ -187,11 +193,34 @@ if ($action === 'create_batch') {
             $salaryGradeId = (int)$row['SalaryGradeID'];
             $salaryType = $row['SalaryType'] ?? 'Monthly';
 
-            // Fetch timesheet data
+            // Determine matching timesheet periods for this batch date range
+            $matchingPeriodIds = [];
+            $pSql = "SELECT PeriodID FROM timesheet_period WHERE (StartDate BETWEEN '$periodStart' AND '$periodEnd') OR (EndDate BETWEEN '$periodStart' AND '$periodEnd') OR ('$periodStart' BETWEEN StartDate AND EndDate)";
+            $pRes = $conn->query($pSql);
+            if ($pRes) {
+                while ($pRow = $pRes->fetch_assoc()) {
+                    $matchingPeriodIds[] = (int)$pRow['PeriodID'];
+                }
+            }
+
+            // Fetch timesheet data for the specific employee and matching periods
             $ts = null;
-            $tsRes = $conn->query('SELECT TotalPayableHours, RegularHours, OvertimeHours, LateMinutes, UndertimeMinutes FROM timesheet_employee_summary WHERE EmployeeID = ' . (int)$employeeId . ' ORDER BY UpdatedAt DESC LIMIT 1');
-            if ($tsRes) {
-                $ts = $tsRes->fetch_assoc();
+            if (!empty($matchingPeriodIds)) {
+                $ids = implode(',', $matchingPeriodIds);
+                $tsRes = $conn->query("SELECT SUM(TotalPayableHours) as TotalPayableHours, SUM(RegularHours) as RegularHours, SUM(OvertimeHours) as OvertimeHours, SUM(LateMinutes) as LateMinutes, SUM(UndertimeMinutes) as UndertimeMinutes FROM timesheet_employee_summary WHERE EmployeeID = $employeeId AND PeriodID IN ($ids)");
+                if ($tsRes) {
+                    $ts = $tsRes->fetch_assoc();
+                    // If no rows were found, SUM returns NULL; check if any relevant value exists
+                    if ($ts['RegularHours'] === null) $ts = null;
+                }
+            }
+
+            // Fallback: if no matching period found, try the absolutely latest one (previous behavior)
+            if (!$ts) {
+                $tsRes = $conn->query('SELECT TotalPayableHours, RegularHours, OvertimeHours, LateMinutes, UndertimeMinutes FROM timesheet_employee_summary WHERE EmployeeID = ' . (int)$employeeId . ' ORDER BY UpdatedAt DESC LIMIT 1');
+                if ($tsRes) {
+                    $ts = $tsRes->fetch_assoc();
+                }
             }
 
             $regularHours = $ts ? (float)$ts['RegularHours'] : 0.0;
@@ -552,7 +581,7 @@ if ($action === 'list_employees') {
                    COALESCE(ot.amount, 0) AS overtime_pay,
                    COALESCE(lu.amount, 0) AS late_undertime,
                    NULL AS expected_monthly_net,
-                   b.pay_type,
+                   b.pay_type, b.budget_status, b.budget_requested_amount, b.budget_approved_amount, b.budget_finance_ref,
                    e.FirstName, e.LastName, e.EmployeeCode
             FROM payroll_batch_items i
             INNER JOIN employee e ON e.EmployeeID = i.employee_id
@@ -580,7 +609,15 @@ if ($action === 'list_employees') {
     while ($r = $res->fetch_assoc()) {
         $rows[] = $r;
     }
-    respond(true, ['employees' => $rows]);
+    respond(true, [
+        'employees' => $rows,
+        'batch_budget' => !empty($rows) ? [
+            'status' => $rows[0]['budget_status'],
+            'requested' => $rows[0]['budget_requested_amount'],
+            'approved' => $rows[0]['budget_approved_amount'],
+            'ref' => $rows[0]['budget_finance_ref']
+        ] : null
+    ]);
 }
 
 if ($action === 'finalize_batch') {
@@ -665,6 +702,268 @@ if ($action === 'approve_batch') {
     }
 }
 
+if ($action === 'disburse_batch') {
+    $batchId = (int)($_POST['batch_id'] ?? 0);
+    if ($batchId <= 0) {
+        respond(false, ['error' => 'batch_id required'], 400);
+    }
+
+    // 1. Check if budget is approved
+    $check = $conn->prepare("SELECT budget_status, status FROM payroll_batches WHERE id=?");
+    $check->bind_param('i', $batchId);
+    $check->execute();
+    $batch = $check->get_result()->fetch_assoc();
+    $check->close();
+
+    if (!$batch) {
+        respond(false, ['error' => 'Batch not found'], 404);
+    }
+
+    if ($batch['budget_status'] !== 'Approved' && $batch['budget_status'] !== 'Final') {
+        respond(false, ['error' => 'Cannot disburse. Budget must be approved by Finance first.'], 400);
+    }
+
+    // 2. Perform Disbursement
+    $conn->begin_transaction();
+    try {
+        $stmt = $conn->prepare("UPDATE payroll_batches SET status='Disbursed', budget_status='Completed' WHERE id=?");
+        $stmt->bind_param('i', $batchId);
+        if (!$stmt->execute()) {
+            throw new Exception($stmt->error);
+        }
+        $stmt->close();
+
+        // 3. Update all items in this batch to 'Disbursed'
+        $stmt = $conn->prepare("UPDATE payroll_batch_items SET status='Disbursed' WHERE batch_id=?");
+        $stmt->bind_param('i', $batchId);
+        if (!$stmt->execute()) {
+            throw new Exception($stmt->error);
+        }
+        $stmt->close();
+
+        // 4. Generate Accounts Payable Vouchers for Statutory Obligations
+        $batchInfo = $conn->query("SELECT batch_code FROM payroll_batches WHERE id=$batchId")->fetch_assoc();
+        $batchCode = $batchInfo['batch_code'] ?? "Batch #$batchId";
+
+        // Aggregate statutory components
+        $sqlAgg = "SELECT 
+                    SUM(basic_pay + allowances_total) as gross_total,
+                    SUM(sss_regular_ee + sss_regular_er + sss_wisp_ee + sss_wisp_er) as sss_total,
+                    SUM(philhealth_ee + philhealth_er) as philhealth_total,
+                    SUM(pagibig_ee + pagibig_er) as pagibig_total,
+                    SUM(withholding_tax) as tax_total,
+                    SUM(net_pay) as net_total
+                   FROM payroll_batch_items 
+                   WHERE batch_id = $batchId";
+        
+        $aggRes = $conn->query($sqlAgg);
+        $totals = $aggRes->fetch_assoc();
+        
+        $grossTotal = (float)($totals['gross_total'] ?? 0);
+        $netTotal = (float)($totals['net_total'] ?? 0);
+        
+        // Prepare Journal Entry data
+        $journalNo = 'JV-PAY-' . date('Ymd') . '-' . substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 4);
+        $journalData = [
+            'journal_number' => $journalNo,
+            'journal_date' => date('Y-m-d'),
+            'reference_number' => $batchCode,
+            'description' => "Payroll Disbursement for Batch $batchCode",
+            'journal_type' => 'Payroll',
+            'source_type' => 'disbursement',
+            'total_debits' => $grossTotal,
+            'total_credits' => $grossTotal, // Balanced
+            'status' => 'Posted'
+        ];
+        
+        // 1. Fetch individual employee components for detailed AP sync
+        $sqlDetails = "SELECT 
+                           e.FirstName, e.LastName,
+                           i.sss_regular_ee, i.sss_regular_er, i.sss_wisp_ee, i.sss_wisp_er,
+                           i.philhealth_ee, i.philhealth_er,
+                           i.pagibig_ee, i.pagibig_er,
+                           i.withholding_tax, i.net_pay
+                       FROM payroll_batch_items i
+                       JOIN employee e ON e.EmployeeID = i.employee_id
+                       WHERE i.batch_id = $batchId";
+        
+        $detailsRes = $conn->query($sqlDetails);
+        if (!$detailsRes) {
+            throw new Exception("Details fetch failed: " . $conn->error);
+        }
+
+        $payables = [];
+        while ($row = $detailsRes->fetch_assoc()) {
+            $fullName = $row['LastName'] . ', ' . $row['FirstName'];
+            
+            // SSS
+            $sss = (float)$row['sss_regular_ee'] + (float)$row['sss_regular_er'] + (float)$row['sss_wisp_ee'] + (float)$row['sss_wisp_er'];
+            if ($sss > 0) {
+                $payables[] = [
+                    'employee_name' => $fullName,
+                    'payee_name' => 'Social Security System',
+                    'category' => 'SSS',
+                    'description' => "SSS Contribution for $batchCode",
+                    'amount' => $sss
+                ];
+            }
+
+            // PhilHealth
+            $ph = (float)$row['philhealth_ee'] + (float)$row['philhealth_er'];
+            if ($ph > 0) {
+                $payables[] = [
+                    'employee_name' => $fullName,
+                    'payee_name' => 'PhilHealth',
+                    'category' => 'PhilHealth',
+                    'description' => "PhilHealth Contribution for $batchCode",
+                    'amount' => $ph
+                ];
+            }
+
+            // Pag-IBIG
+            $pi = (float)$row['pagibig_ee'] + (float)$row['pagibig_er'];
+            if ($pi > 0) {
+                $payables[] = [
+                    'employee_name' => $fullName,
+                    'payee_name' => 'Pag-IBIG Fund',
+                    'category' => 'PagIBIG',
+                    'description' => "Pag-IBIG Contribution for $batchCode",
+                    'amount' => $pi
+                ];
+            }
+
+            // Tax
+            $tax = (float)$row['withholding_tax'];
+            if ($tax > 0) {
+                $payables[] = [
+                    'employee_name' => $fullName,
+                    'payee_name' => 'Bureau of Internal Revenue',
+                    'category' => 'BIR',
+                    'description' => "Withholding Tax for $batchCode",
+                    'amount' => $tax
+                ];
+            }
+
+            // Net Pay (Optional, usually batch total is enough but user asked for detailed)
+            // For now, let's keep net pay as individual entries too if requested
+            $net = (float)$row['net_pay'];
+            if ($net > 0) {
+                $payables[] = [
+                    'employee_name' => $fullName,
+                    'payee_name' => 'Employee Disbursement',
+                    'category' => 'Other',
+                    'description' => "Net Payroll for $batchCode",
+                    'amount' => $net
+                ];
+            }
+        }
+
+        // 1. SYNC ACCOUNTS PAYABLE (Detailed Employee Deductions)
+        $apUrl = 'http://10.112.107.207/microfinancee/modules/finance/receive_accounts_payable.php';
+        $apPayload = [
+            'batch_id' => $batchId,
+            'payables' => $payables
+        ];
+        
+        $chAP = curl_init($apUrl);
+        curl_setopt_array($chAP, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_POSTFIELDS => json_encode($apPayload),
+            CURLOPT_TIMEOUT => 20
+        ]);
+        $apResponse = curl_exec($chAP);
+        $apError = curl_error($chAP);
+        curl_close($chAP);
+
+        // 2. SYNC GENERAL LEDGER (Payroll Cost Summary)
+        $glUrl = 'http://10.112.107.207/microfinancee/modules/ledger/receive_hr_summarycost.php';
+        $glPayload = [
+            'batch_id' => $batchId,
+            'total_amount' => $journalData['total_debits']
+        ];
+
+        $chGL = curl_init($glUrl);
+        curl_setopt_array($chGL, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_POSTFIELDS => json_encode($glPayload),
+            CURLOPT_TIMEOUT => 10
+        ]);
+        $glResponse = curl_exec($chGL);
+        $glError = curl_error($chGL);
+        curl_close($chGL);
+
+        $apSuccess = false;
+        if ($apResponse) {
+            $apData = json_decode($apResponse, true);
+            if (isset($apData['success']) && $apData['success']) {
+                $apSuccess = true;
+            } else {
+                error_log("AP Sync Rejection: " . $apResponse);
+            }
+        } else {
+            error_log("AP Sync cURL Error: " . $apError);
+        }
+
+        $glSuccess = false;
+        if ($glResponse) {
+            $glData = json_decode($glResponse, true);
+            if (isset($glData['success']) && $glData['success']) {
+                $glSuccess = true;
+            } else {
+                error_log("GL Sync Rejection: " . $glResponse);
+            }
+        } else {
+            error_log("GL Sync cURL Error: " . $glError);
+        }
+
+        // Local Persistence: Accounts Payable
+        $apInsert = $conn->prepare("INSERT INTO accounts_payable (batch_id, employee_name, payee_name, category, description, amount, status) VALUES (?, ?, ?, ?, ?, ?, 'Pending')");
+        foreach ($payables as $ap) {
+            $apInsert->bind_param('issssd', $batchId, $ap['employee_name'], $ap['payee_name'], $ap['category'], $ap['description'], $ap['amount']);
+            $apInsert->execute();
+        }
+        $apInsert->close();
+
+        // Local Persistence: Journal Entry
+        $jeInsert = $conn->prepare("INSERT INTO journal_entries (journal_number, journal_date, reference_number, description, journal_type, source_type, source_id, total_debits, total_credits, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $jeInsert->bind_param('ssssssiddd', 
+            $journalData['journal_number'],
+            $journalData['journal_date'],
+            $journalData['reference_number'],
+            $journalData['description'],
+            $journalData['journal_type'],
+            $journalData['source_type'],
+            $batchId,
+            $journalData['total_debits'],
+            $journalData['total_credits'],
+            $journalData['status']
+        );
+        $jeInsert->execute();
+        $jeInsert->close();
+
+        $conn->commit();
+        
+        $msg = 'Payroll disbursed successfully!';
+        if ($apSuccess && $glSuccess) {
+            $msg .= ' Both AP and GL entries synced to Finance.';
+        } else {
+            $errors = [];
+            if (!$apSuccess) $errors[] = "AP: " . ($apError ?: ($apResponse ?: "Remote rejection"));
+            if (!$glSuccess) $errors[] = "GL: " . ($glError ?: ($glResponse ?: "Remote rejection"));
+            $msg .= ' Note: Finance sync partial/failed: ' . implode('; ', $errors) . '. Recorded locally.';
+        }
+        respond(true, ['message' => $msg, 'item_count' => count($payables)]);
+
+    } catch (Exception $e) {
+        $conn->rollback();
+        respond(false, ['error' => $e->getMessage()], 500);
+    }
+}
+
 if ($action === 'reject_batch') {
     $batchId = (int)($_POST['batch_id'] ?? 0);
     if ($batchId <= 0) {
@@ -727,7 +1026,7 @@ if ($action === 'employee_payslips') {
     $debug['all_batch_statuses'] = $batchStatuses;
     
     // Check if there are any approved batches first
-    $approvedCheck = $conn->query("SELECT COUNT(*) as cnt FROM payroll_batches WHERE status IN ('Approved', 'Finance Approved', 'Disbursed')");
+    $approvedCheck = $conn->query("SELECT COUNT(*) as cnt FROM payroll_batches WHERE status IN ('Approved', 'Disbursed')");
     $approvedCount = $approvedCheck ? (int)$approvedCheck->fetch_assoc()['cnt'] : 0;
     $debug['approved_batches'] = $approvedCount;
     
@@ -755,7 +1054,7 @@ if ($action === 'employee_payslips') {
                 WHERE c.component_type='Deduction' AND c.component_name='Late/Undertime'
                 GROUP BY c.item_id
             ) lu ON lu.item_id = i.id
-            WHERE i.employee_id = $employeeId AND b.status IN ('Approved', 'Finance Approved', 'Disbursed')
+            WHERE i.employee_id = $employeeId AND b.status IN ('Approved', 'Disbursed')
             ORDER BY b.period_start DESC";
     
     $res = $conn->query($sql);

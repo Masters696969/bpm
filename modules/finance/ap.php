@@ -203,6 +203,7 @@ if (!isset($_SESSION['username'])) {
             <thead>
               <tr>
                 <th>Batch Code</th>
+                <th>Employee</th>
                 <th>Category</th>
                 <th>Payee Name</th>
                 <th>Amount</th>
@@ -229,6 +230,7 @@ if (!isset($_SESSION['username'])) {
             <thead>
               <tr>
                 <th>Batch Code</th>
+                <th>Employee</th>
                 <th>Category</th>
                 <th>Payee Name</th>
                 <th>Amount</th>

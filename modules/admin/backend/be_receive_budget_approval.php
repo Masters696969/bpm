@@ -5,8 +5,9 @@ require_once '../../../config/config.php';
 
 // Simple log function for debugging callbacks
 function cb_log($msg) {
+    $logFile = 'c:/xamppp/htdocs/microfinance-backup/modules/admin/backend/budget_callback.log';
     $log = "[" . date('Y-m-d H:i:s') . "] " . $msg . "\n";
-    file_put_contents('budget_callback.log', $log, FILE_APPEND);
+    file_put_contents($logFile, $log, FILE_APPEND);
 }
 
 try {
@@ -36,23 +37,71 @@ try {
     $approvedAmount = (float)($data['approved_amount'] ?? 0);
     $status = trim((string)($data['status'] ?? 'Approved'));
     $financeRef = trim((string)($data['finance_ref'] ?? ''));
-
-    cb_log("RECEIVED APPROVAL: Period=$periodId, Amount=$approvedAmount, Ref=$financeRef");
-
-    // 3. Update HR Database
-    $stmt = $conn->prepare("UPDATE compensation_period SET budget_status = ?, budget_approved_amount = ?, budget_finance_ref = ?, budget_approved_at = NOW() WHERE period_id = ?");
-    $stmt->bind_param("sdsi", $status, $approvedAmount, $financeRef, $periodId);
     
-    if ($stmt->execute()) {
-        cb_log("SUCCESS: HR Database updated for Period $periodId");
-        echo json_encode(['success' => true, 'message' => 'HR Laptop updated successfully.']);
-    } else {
-        cb_log("ERROR: DB Update failed: " . $conn->error);
-        echo json_encode(['success' => false, 'message' => 'Database update failed.']);
+    // Normalize status for Payroll (Finance uses "Done" but HR uses "Approved" to trigger disbursement)
+    if ($periodId > 1000000 && (strtolower($status) === 'done' || strtolower($status) === 'completed')) {
+        $status = 'Approved'; 
     }
-    $stmt->close();
+
+    $isFinal = ($status === 'Final' || $status === 'Closed' || $status === 'Approved' || ($data['is_final'] ?? false));
+
+    cb_log("RECEIVED APPROVAL: Status=$status, IsFinal=" . ($isFinal ? 'YES' : 'NO') . " | Period=$periodId, Amount=$approvedAmount, Ref=$financeRef");
+
+    // 3. Update HR Database (Status and Amount)
+    if ($periodId > 1000000) {
+        $batchId = $periodId - 1000000;
+        cb_log("TARGETING PAYROLL BATCH: $batchId");
+        
+        $stmt = $conn->prepare("UPDATE payroll_batches SET 
+                                    budget_status = ?, 
+                                    budget_approved_amount = ?, 
+                                    budget_finance_ref = ?, 
+                                    budget_approved_at = NOW()
+                                WHERE id = ?");
+        $stmt->bind_param("sdsi", $status, $approvedAmount, $financeRef, $batchId);
+        $stmt->execute();
+        $stmt->close();
+    } else {
+        cb_log("TARGETING COMPENSATION PERIOD: $periodId");
+        
+        $stmt = $conn->prepare("UPDATE compensation_period SET budget_status = ?, budget_approved_amount = ?, budget_finance_ref = ?, budget_approved_at = NOW() WHERE period_id = ?");
+        $stmt->bind_param("sdsi", $status, $approvedAmount, $financeRef, $periodId);
+        $stmt->execute();
+        $stmt->close();
+
+        // 4. If FINAL, trigger salary updates (Only for Compensation Periods)
+        if ($isFinal) {
+            cb_log("TRIGGERING FINALIZATION: Applying salary changes for Period $periodId...");
+            
+            // Find the latest approved proposal for this period
+            $propStmt = $conn->prepare("SELECT ProposalID, SalaryScaleData FROM simulation_proposals WHERE PeriodID = ? ORDER BY CreatedAt DESC LIMIT 1");
+            $propStmt->bind_param("i", $periodId);
+            $propStmt->execute();
+            $propStmt->bind_result($proposalId, $salaryScaleJson);
+            
+            if ($propStmt->fetch()) {
+                $propStmt->close();
+                
+                // Execute the same logic as be_finalize_cycle without a new request
+                require_once 'be_finalize_cycle_logic.php';
+                $finalResult = applyFinalSalaryChanges($conn, $proposalId, $periodId, $salaryScaleJson);
+                
+                if ($finalResult['success']) {
+                    cb_log("FINALIZATION SUCCESS: Salaries and grades updated.");
+                } else {
+                    cb_log("FINALIZATION ERROR: " . $finalResult['message']);
+                }
+            } else {
+                $propStmt->close();
+                cb_log("FINALIZATION ERROR: No approved simulation proposal found for Period $periodId.");
+            }
+        }
+    }
+
+    echo json_encode(['ok' => true, 'message' => 'HR Laptop updated successfully.']);
+
 
 } catch (Exception $e) {
     cb_log("SYSTEM ERROR: " . $e->getMessage());
-    echo json_encode(['success' => false, 'message' => 'System error: ' . $e->getMessage()]);
+    echo json_encode(['ok' => false, 'message' => 'System error: ' . $e->getMessage()]);
 }

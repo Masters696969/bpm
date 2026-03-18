@@ -60,8 +60,18 @@ $pi_data = ($pi_query) ? $pi_query->fetch_assoc() : [];
 $bir_query = $conn->query("SELECT * FROM bir_tax_settings WHERE period_id = $period_id");
 $bir_data = ($bir_query) ? $bir_query->fetch_assoc() : [];
 
-// Fetch Saved Drafts
-$drafts_query = $conn->query("SELECT DraftID, CycleName, DateStarted, LastSaved, BudgetUsedPct, Status FROM simulation_drafts ORDER BY LastSaved DESC");
+// Pagination for Drafts
+$draft_limit = 5;
+$draft_page = isset($_GET['draft_page']) ? (int)$_GET['draft_page'] : 1;
+if ($draft_page < 1) $draft_page = 1;
+$draft_offset = ($draft_page - 1) * $draft_limit;
+
+$total_drafts_query = $conn->query("SELECT COUNT(*) as total FROM simulation_drafts");
+$total_drafts = ($total_drafts_query) ? $total_drafts_query->fetch_assoc()['total'] : 0;
+$total_draft_pages = ceil($total_drafts / $draft_limit);
+
+// Fetch Saved Drafts with Pagination
+$drafts_query = $conn->query("SELECT DraftID, CycleName, DateStarted, LastSaved, BudgetUsedPct, Status FROM simulation_drafts ORDER BY LastSaved DESC LIMIT $draft_limit OFFSET $draft_offset");
 $saved_drafts = [];
 if ($drafts_query) {
     while ($row = $drafts_query->fetch_assoc()) {
@@ -658,45 +668,119 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
                       <input type="text" value="<?php echo htmlspecialchars($period_data['period_name'] ?? 'FY2025 Annual Merit Review'); ?>" placeholder="Enter cycle name...">
                     </div>
                     <div class="form-group" style="grid-column: span 2;">
-                      <div class="d-flex justify-content-between align-items-center mb-1">
-                        <label class="mb-0">Total Budget Allocation</label>
-                        <div id="budgetStatusContainer">
-                          <?php 
-                          $budget_status = $period_data['budget_status'] ?? 'Open';
-                          $badge_type = 'status-badge-secondary';
-                          if ($budget_status == 'Pending') $badge_type = 'status-badge-warning';
-                          if ($budget_status == 'Approved') $badge_type = 'status-badge-success';
-                          ?>
-                          <span class="status-badge <?php echo $badge_type; ?>" id="budgetBadge" style="font-size: 10px; padding: 2px 8px; border-radius: 4px;"><?php echo strtoupper($budget_status); ?></span>
+                      <?php 
+                        $budget_status = $period_data['budget_status'] ?? 'Open';
+                        $badge_class = 'bg-secondary';
+                        if ($budget_status == 'Pending') $badge_class = 'bg-warning text-dark';
+                        if ($budget_status == 'Approved') $badge_class = 'bg-success text-white';
+                      ?>
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="mb-0 text-dark fw-bold" style="font-size: 13px; letter-spacing: -0.2px;">Budget Allocation & Control</label>
+                        <div class="d-flex align-items-center gap-2">
+                          <?php if ($budget_status == 'Approved'): ?>
+                            <div class="d-flex align-items-center" id="unlockBudgetBtn" style="font-size: 10px; cursor: pointer; color: var(--brand-blue); font-weight: 600;">
+                              <i data-lucide="edit-3" style="width: 12px; height: 12px; margin-right: 4px;"></i>
+                              <span>Edit Amount</span>
+                            </div>
+                          <?php endif; ?>
                         </div>
                       </div>
-                      <div class="input-with-symbol" style="position: relative;">
-                        <span>&#8369;</span>
+                      
+                      <div class="input-group" style="box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        <span class="input-group-text bg-white text-muted border-end-0" style="font-size: 14px; padding-left: 15px;">&#8369;</span>
                         <input type="number" id="budgetAllocation" 
-                               value="<?php echo (float)($period_data['budget_approved_amount'] > 0 ? $period_data['budget_approved_amount'] : 5000000); ?>"
+                               class="form-control border-start-0 ps-1 py-1 fw-medium"
+                               value="<?php 
+                                 if (($period_data['budget_approved_amount'] ?? 0) > 0) echo (float)$period_data['budget_approved_amount'];
+                                 elseif (($period_data['budget_requested_amount'] ?? 0) > 0) echo (float)$period_data['budget_requested_amount'];
+                                 else echo 5000000;
+                               ?>"
                                <?php echo ($budget_status == 'Approved') ? 'readonly' : ''; ?>
-                               style="padding-right: 140px;">
-                        <button id="btnRequestBudget" 
-                                style="position: absolute; right: 4px; top: 4px; bottom: 4px; border-radius: 4px; border: none; background: var(--primary); color: white; padding: 0 12px; font-size: 12px; font-weight: 500; cursor: pointer;"
+                               style="font-size: 15px; color: var(--text-primary); height: 40px;">
+                        
+                        <button class="btn btn-primary px-3 fw-bold" id="btnRequestBudget" 
+                                style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;"
                                 <?php echo ($budget_status == 'Approved') ? 'disabled' : ''; ?>>
                           Request Finance
                         </button>
                       </div>
-                      <?php if (!empty($period_data['budget_requested_amount']) && $period_data['budget_requested_amount'] > 0): ?>
-                      <div class="mt-1" style="font-size: 11px; color: var(--text-secondary);">
-                        Last Requested: &#8369;<span id="requestedAmountText"><?php echo number_format($period_data['budget_requested_amount'], 2); ?></span>
+
+                      <input type="hidden" id="approvedBudgetAmount" value="<?php echo (float)($period_data['budget_approved_amount'] ?? 0); ?>">
+
+                      <!-- Tooltip/Info was here -->
+                    </div>
+                    
+                    <div class="form-group">
+                      <label class="fw-bold text-dark mb-1" style="font-size: 13px;">Cycle Start Date</label>
+                      <input type="date" id="cycleStartDate" class="form-control py-2" value="<?php echo htmlspecialchars($period_data['start_date'] ?? date('Y-m-d')); ?>">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="fw-bold text-dark mb-1" style="font-size: 13px;">Effective Date</label>
+                      <input type="date" id="effectiveDate" class="form-control py-2" value="<?php echo htmlspecialchars($period_data['effective_date'] ?? '2026-03-01'); ?>">
+                    </div>
+                  </div> <!-- form-grid -->
+
+                  <div class="finance-sync-section" style="margin-top: 24px;">
+                      <div class="finance-sync-card">
+                        <div class="sync-header">
+                            <div class="sync-title-group">
+                                <div class="sync-icon-box">
+                                    <i data-lucide="refresh-cw" class="<?php echo ($budget_status == 'Pending') ? 'animate-spin' : ''; ?>" style="width: 18px; height: 18px;"></i>
+                                </div>
+                                <div class="titles">
+                                    <h4>Finance Sync Status</h4>
+                                    <p>Real-time budget tracking</p>
+                                </div>
+                            </div>
+                            <div id="budgetStatusContainer">
+                                <span class="badge <?php echo $badge_class; ?> rounded-pill px-3 py-1" id="budgetBadge" style="font-size: 10px; font-weight: 800; letter-spacing: 0.05em; border: 1px solid rgba(255,255,255,0.1);">
+                                    <?php echo strtoupper($budget_status); ?>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="budget-metrics">
+                            <div class="metric-item">
+                                <label>Requested Amount</label>
+                                <div class="value">&#8369;<?php echo number_format($period_data['budget_requested_amount'] ?? 0, 2); ?></div>
+                            </div>
+                            <div class="metric-item">
+                                <label>Approved Budget</label>
+                                <div class="value <?php echo ($budget_status == 'Approved') ? 'approved' : ''; ?>">
+                                    <?php 
+                                        $disp_approved = (float)($period_data['budget_approved_amount'] ?? 0);
+                                        if ($budget_status == 'Approved' && $disp_approved <= 0) {
+                                            $disp_approved = (float)($period_data['budget_requested_amount'] ?? 0);
+                                        }
+                                        echo ($budget_status == 'Approved' || $budget_status == 'Pending') ? '&#8369;' . number_format($disp_approved, 2) : '--'; 
+                                    ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <?php if ($budget_status == 'Approved'): ?>
+                        <div class="sync-footer">
+                            <div class="footer-info">
+                                <i data-lucide="fingerprint" style="width: 14px; height: 14px; color: #60a5fa;"></i>
+                                <span>ID: <span style="color: #fff; font-weight: 600;"><?php echo htmlspecialchars($period_data['budget_finance_ref'] ?? 'N/A'); ?></span></span>
+                            </div>
+                            <div class="footer-info">
+                                <i data-lucide="calendar" style="width: 14px; height: 14px; color: #60a5fa;"></i>
+                                <span><?php echo $period_data['budget_approved_at'] ? date('M d, Y', strtotime($period_data['budget_approved_at'])) : 'Recent'; ?></span>
+                            </div>
+                        </div>
+                        <?php else: ?>
+                        <div class="sync-footer" style="justify-content: center; border-top: none; padding-top: 0;">
+                            <div class="footer-info" style="font-style: italic; opacity: 0.8;">
+                                <div class="spinner-grow spinner-grow-sm text-warning me-2" role="status" style="width: 6px; height: 6px;"></div>
+                                Awaiting Finance review...
+                            </div>
+                        </div>
+                        <?php endif; ?>
                       </div>
-                      <?php endif; ?>
-                    </div>
-                    <div class="form-group">
-                      <label>Cycle Start Date</label>
-                      <input type="date" id="cycleStartDate" value="<?php echo htmlspecialchars($period_data['start_date'] ?? date('Y-m-d')); ?>">
-                    </div>
-                    <div class="form-group">
-                      <label>Effective Date</label>
-                      <input type="date" id="effectiveDate" value="<?php echo htmlspecialchars($period_data['effective_date'] ?? '2026-03-01'); ?>">
-                    </div>
-                  </div>
+                  </div> <!-- finance-sync-section -->
+                </div> <!-- p-card-body -->
                   <div class="action-buttons" style="margin-top: 24px;">
                     <button class="btn btn-primary" id="startCycleBtn" 
                             style="width: 100%; max-width: 300px; justify-content: center; <?php echo ($budget_status != 'Approved') ? 'opacity: 0.6; cursor: not-allowed;' : ''; ?>"
@@ -705,9 +789,9 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
                       <i data-lucide="arrow-right"></i>
                     </button>
                   </div>
-                </div>
-              </div>
-              <div class="planning-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                </div> <!-- planning-card main -->
+                
+                <div class="planning-stats" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                 <div class="mini-stat-card">
                   <span class="ms-label">Eligible Headcount</span>
                   <span class="ms-value"><?php echo number_format($target_employees); ?></span>
@@ -720,12 +804,12 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
                   <span class="ms-label">Baseline Payroll</span>
                   <span class="ms-value">&#8369;<?php echo number_format($baseline_payroll, 2); ?></span>
                 </div>
-                <div class="mini-stat-card">
-                  <span class="ms-label">Statutory Version</span>
-                  <span class="ms-value" style="font-size: 14px;">2026 SSS/PH Tables</span>
-                </div>
-              </div>
-            </div>
+                  <div class="mini-stat-card">
+                    <span class="ms-label">Statutory Version</span>
+                    <span class="ms-value" style="font-size: 14px;">2026 SSS/PH Tables</span>
+                  </div>
+                </div> <!-- planning-stats -->
+            </div> <!-- planning-grid -->
 
             <!-- Drafts Section at Bottom (Full Width) -->
             <div class="drafts-section" style="margin-top: 32px;">
@@ -786,6 +870,28 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
                   </tbody>
                 </table>
               </div>
+
+              <!-- Pagination UI -->
+              <?php if ($total_draft_pages > 1): ?>
+              <div class="premium-pagination" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <div class="pagination-info" style="font-size: 13px; color: var(--text-secondary);">
+                  Showing <?php echo $draft_offset + 1; ?> to <?php echo min($draft_offset + $draft_limit, $total_drafts); ?> of <?php echo $total_drafts; ?> drafts
+                </div>
+                <div class="pagination-controls" style="display: flex; gap: 8px;">
+                  <a href="?draft_page=<?php echo max(1, $draft_page - 1); ?>" class="btn btn-secondary btn-sm <?php echo ($draft_page <= 1) ? 'disabled' : ''; ?>" style="padding: 6px 12px;">
+                    <i data-lucide="chevron-left" style="width: 14px; height: 14px;"></i>
+                  </a>
+                  <?php for($i = 1; $i <= $total_draft_pages; $i++): ?>
+                    <a href="?draft_page=<?php echo $i; ?>" class="btn <?php echo ($i == $draft_page) ? 'btn-primary' : 'btn-secondary'; ?> btn-sm" style="padding: 6px 12px; min-width: 32px; justify-content: center;">
+                      <?php echo $i; ?>
+                    </a>
+                  <?php endfor; ?>
+                  <a href="?draft_page=<?php echo min($total_draft_pages, $draft_page + 1); ?>" class="btn btn-secondary btn-sm <?php echo ($draft_page >= $total_draft_pages) ? 'disabled' : ''; ?>" style="padding: 6px 12px;">
+                    <i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>
+                  </a>
+                </div>
+              </div>
+              <?php endif; ?>
             </div>
           </div>
 
