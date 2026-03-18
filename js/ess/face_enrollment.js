@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const MODEL_URL = "/Microfinance/models";
+    const MODEL_URL = "/Microfinance-backup/models";
 
     const video = document.getElementById("video");
     const captureCanvas = document.getElementById("captureCanvas");
