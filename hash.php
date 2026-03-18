@@ -1,1 +1,1 @@
-<?php echo password_hash('Hrmanager@123', PASSWORD_DEFAULT); ?>
+<?php echo password_hash('Logistics@123', PASSWORD_DEFAULT); ?>

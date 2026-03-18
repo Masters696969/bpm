@@ -512,13 +512,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             formData.append("face_status", "MATCH");
             formData.append("liveness_status", "NOT_CHECKED");
             formData.append("face_score", latestFaceScore !== null ? latestFaceScore : "");
-
-            // current browser/device time
             formData.append("client_time", new Date().toISOString());
-            formData.append(
-                "client_timezone",
-                Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Manila"
-            );
+            formData.append("client_timezone", Intl.DateTimeFormat().resolvedOptions().timeZone);
 
             const response = await fetch("includes/submit_attendance.php", {
                 method: "POST",
@@ -532,6 +527,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 if (result.timesheet_message) {
                     msg += ` ${result.timesheet_message}`;
+                }
+
+                if (result.summary_message) {
+                    msg += ` ${result.summary_message}`;
                 }
 
                 readyOverall.textContent = "Submitted";
