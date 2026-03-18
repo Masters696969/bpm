@@ -67,6 +67,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $posName = $_POST['position_name'] ?? '';
 
     if (!empty($posId)) {
+        // Block delete when there are applicants linked to job postings for this position.
+        // Deleting a position cascades to recruitment_requisitions -> job_postings, but applicants(PostID) prevents deleting job_postings.
+        $checkApplicantsSql = "
+            SELECT COUNT(*) AS ApplicantCount
+            FROM applicants a
+            JOIN job_postings jp ON a.PostID = jp.PostID
+            JOIN recruitment_requisitions rr ON jp.RequisitionID = rr.RequisitionID
+            WHERE rr.PositionID = ?
+        ";
+        $checkApplicantsStmt = $conn->prepare($checkApplicantsSql);
+        $checkApplicantsStmt->bind_param("i", $posId);
+        $checkApplicantsStmt->execute();
+        $appCountRow = $checkApplicantsStmt->get_result()->fetch_assoc();
+        $checkApplicantsStmt->close();
+
+        $appCount = (int)($appCountRow['ApplicantCount'] ?? 0);
+        if ($appCount > 0) {
+            $_SESSION['error_message'] = "Cannot delete this position because it has {$appCount} applicant(s) linked via job postings. Close/Archive the job posting(s) instead, or remove the linked applicants first.";
+            header("Location: positioncatalog.php");
+            exit();
+        }
+
         // First delete associated competencies to avoid foreign key constraint error
         $stmt_comp = $conn->prepare("DELETE FROM position_competencies WHERE position_id = ?");
         $stmt_comp->bind_param("i", $posId);

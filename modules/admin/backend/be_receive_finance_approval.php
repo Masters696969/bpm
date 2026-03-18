@@ -33,16 +33,41 @@ try {
     }
 
     // --- DATA EXTRACTION ---
-    $proposalId = (int)($data['hr_proposal_id'] ?? 0);
+    $proposalId = (int)($data['hr_proposal_id'] ?? $data['proposal_id'] ?? 0);
+    $periodId   = (int)($data['period_id'] ?? 0);
     $financeRef = trim((string)($data['finance_ref'] ?? ''));
-    $newStatus = trim((string)($data['status'] ?? 'Approved'));
-    $cycleNameFromFinance = trim((string)($data['cycle_name'] ?? '')); // Added cycle_name for fallback
+    $newStatus  = trim((string)($data['status'] ?? 'Approved'));
+    $approvedAmt = (float)($data['approved_amount'] ?? $data['total_budget'] ?? 0);
+    $cycleNameFromFinance = trim((string)($data['cycle_name'] ?? ''));
 
-    file_log("Processing: ID=$proposalId, Ref=$financeRef, Status=$newStatus, Cycle=$cycleNameFromFinance. Full data: " . json_encode($data));
+    file_log("Processing: ID=$proposalId, Period=$periodId, Ref=$financeRef, Status=$newStatus. Data: " . json_encode($data));
 
-    // 1. Try to find the proposal
+    // --- PAYROLL BATCH SYNC ---
+    // Detect if this is a payroll batch (ID range 1,000,000+)
+    $absId = abs($proposalId);
+    if ($absId >= 1000000 || strpos($financeRef, 'FALL-') === 0) {
+        $batchId = ($absId >= 1000000) ? ($absId - 1000000) : $periodId;
+        if ($batchId <= 0 && $proposalId > 0) $batchId = $proposalId; // Direct ID fallback
+
+        file_log("DETECTED PAYROLL SYNC: BatchID=$batchId");
+        
+        $stmt = $conn->prepare("UPDATE payroll_batches SET 
+                                    budget_status = ?, 
+                                    budget_approved_amount = ?, 
+                                    budget_finance_ref = ?, 
+                                    budget_approved_at = NOW()
+                                WHERE id = ? OR budget_finance_ref = ?");
+        $stmt->bind_param("sdsis", $newStatus, $approvedAmt, $financeRef, $batchId, $financeRef);
+        $stmt->execute();
+        $stmt->close();
+
+        echo json_encode(['success' => true, 'message' => 'Payroll budget status updated successfully.']);
+        exit;
+    }
+
+    // --- SIMULATION PROPOSAL MATCH ---
     $targetProposalId = 0;
-    $scaleDataJson = ''; // Initialize scaleDataJson here
+    $scaleDataJson = ''; 
 
     if ($proposalId > 0) {
         $check = $conn->prepare("SELECT ProposalID, CycleName, SalaryScaleData FROM simulation_proposals WHERE ProposalID = ?");
@@ -52,7 +77,6 @@ try {
         if ($row = $res->fetch_assoc()) {
             $targetProposalId = $row['ProposalID'];
             $scaleDataJson = $row['SalaryScaleData'];
-            file_log("Proposal found by ID: $targetProposalId");
         }
         $check->close();
     }

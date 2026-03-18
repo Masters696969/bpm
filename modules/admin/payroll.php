@@ -239,6 +239,24 @@ if (!isset($_SESSION['username'])) {
             <h3 class="stat-value" id="statPending">0 Batches</h3>
           </div>
         </div>
+
+        <div class="stat-card-premium finance-sync-card" id="payrollBudgetCard" style="grid-column: span 1; display: none;">
+          <div class="stat-info">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <span class="stat-label">Disbursement Budget</span>
+              <div id="payrollBudgetStatus" class="sync-status-tag">
+                <i data-lucide="refresh-cw" class="spin"></i> Syncing
+              </div>
+            </div>
+            <div style="display: flex; align-items: baseline; gap: 8px;">
+              <h3 class="stat-value" id="statDisbursementBudget">&#8369;0.00</h3>
+              <span id="payrollBudgetRef" style="font-size: 10px; opacity: 0.6;"></span>
+            </div>
+            <button class="btn-premium" id="requestPayrollBudgetBtn" style="width: 100%; margin-top: 12px; height: 32px; font-size: 12px; background: var(--brand-green); color: white; display: flex; align-items: center; justify-content: center; gap: 6px;">
+              <i data-lucide="send" style="width: 14px;"></i> Request Finance
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Control Header -->

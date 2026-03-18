@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const res = await fetch(url, options);
         const data = await res.json().catch(() => ({}));
         if (!res.ok || !data.ok) {
-            const msg = data.error || `Request failed (${res.status})`;
+            const msg = data.message || data.error || `Request failed (${res.status})`;
             throw new Error(msg);
         }
         return data;
@@ -154,6 +154,64 @@ document.addEventListener("DOMContentLoaded", () => {
         if (window.lucide) window.lucide.createIcons();
     };
 
+    let selectedBatchTotal = 0;
+
+    const updateBudgetCard = (budget) => {
+        const card = document.getElementById('payrollBudgetCard');
+        const statusEl = document.getElementById('payrollBudgetStatus');
+        const valueEl = document.getElementById('statDisbursementBudget');
+        const refEl = document.getElementById('payrollBudgetRef');
+        const btn = document.getElementById('requestPayrollBudgetBtn');
+
+        if (!card || !selectedBatchId) {
+            if (card) card.style.display = 'none';
+            return;
+        }
+
+        card.style.display = 'block';
+        
+        if (!budget || !budget.status) {
+            statusEl.className = 'sync-status-tag';
+            statusEl.innerHTML = '<i data-lucide="minus-circle" style="width:12px;"></i> UNSYNCED';
+            valueEl.textContent = peso(selectedBatchTotal);
+            refEl.textContent = '';
+            btn.innerHTML = '<i data-lucide="send" style="width:14px;"></i> Request Finance';
+            btn.disabled = false;
+        } else {
+            const s = budget.status.toLowerCase();
+            if (s === 'pending') {
+                statusEl.className = 'sync-status-tag sync-pending';
+                statusEl.innerHTML = '<i data-lucide="clock" class="spin" style="width:12px;"></i> PENDING FINANCE';
+                btn.innerHTML = '<i data-lucide="edit" style="width:14px;"></i> Update Request';
+                btn.disabled = false;
+            } else if (s === 'approved' || s === 'final' || s === 'done') {
+                statusEl.className = 'sync-status-tag sync-success';
+                statusEl.innerHTML = '<i data-lucide="check-circle" style="width:12px;"></i> APPROVED';
+                
+                // Change button to Disburse if not already disbursed
+                btn.innerHTML = '<i data-lucide="banknote" style="width:14px;"></i> Disburse Payroll';
+                btn.classList.add('btn-disburse-ready');
+                btn.disabled = false;
+                btn.style.background = 'var(--brand-green)';
+            } else if (s === 'completed') {
+                statusEl.className = 'sync-status-tag sync-success';
+                statusEl.innerHTML = '<i data-lucide="check-check" style="width:12px;"></i> DISBURSED';
+                btn.innerHTML = '<i data-lucide="lock" style="width:14px;"></i> Payout Completed';
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+            } else if (s === 'rejected' || s === 'denied') {
+                statusEl.className = 'sync-status-tag sync-error';
+                statusEl.innerHTML = '<i data-lucide="x-circle" style="width:12px;"></i> REJECTED';
+                btn.innerHTML = '<i data-lucide="rotate-ccw" style="width:14px;"></i> Re-Request';
+                btn.disabled = false;
+            }
+            valueEl.textContent = peso(budget.approved > 0 ? budget.approved : budget.requested);
+            refEl.textContent = budget.ref || '';
+        }
+        
+        if (window.lucide) window.lucide.createIcons();
+    };
+
     const loadBatches = async () => {
         const data = await fetchJson(`${apiUrl}?action=list_batches`);
         renderBatches(data.batches);
@@ -162,7 +220,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const loadEmployees = async (batchId) => {
         const data = await fetchJson(`${apiUrl}?action=list_employees&batch_id=${encodeURIComponent(batchId)}`);
+        
+        // Calculate total distributed from employees if not already known
+        selectedBatchTotal = data.employees.reduce((acc, emp) => acc + Number(emp.net_pay), 0);
+        
         renderEmployees(data.employees);
+        updateBudgetCard(data.batch_budget);
         return data.employees;
     };
 
@@ -328,6 +391,95 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     });
+
+    // 3.5 Payroll Budget Request & Disbursement Logic
+    const requestBtn = document.getElementById("requestPayrollBudgetBtn");
+    if (requestBtn && window.Swal) {
+        requestBtn.addEventListener("click", async () => {
+            if (!selectedBatchId) return;
+
+            // BRANCH: If budget is already Approved, perform DISBURSEMENT
+            if (requestBtn.classList.contains('btn-disburse-ready')) {
+                const confirm = await Swal.fire({
+                    title: 'Disburse Payroll?',
+                    text: `Are you ready to finalize the payout of ${peso(selectedBatchTotal)} for this batch?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2ca078',
+                    confirmButtonText: 'Yes, Disburse Now',
+                    background: document.body.classList.contains('dark-mode') ? '#1a1a1a' : '#fff',
+                    color: document.body.classList.contains('dark-mode') ? '#f9fafb' : '#111827'
+                });
+
+                if (confirm.isConfirmed) {
+                    Swal.fire({ title: 'Disbursing...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    try {
+                        await fetchJson('backend/be_payroll.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({ action: 'disburse_batch', batch_id: selectedBatchId }).toString()
+                        });
+                        Swal.fire({ icon: 'success', title: 'Payaout Success', text: 'Batch has been marked as Disbursed.', timer: 2000 });
+                        await loadBatches();
+                        await loadEmployees(selectedBatchId);
+                    } catch (err) {
+                        Swal.fire({ title: 'Failed', text: err.message, icon: 'error' });
+                    }
+                }
+                return;
+            }
+
+            // BRANCH: Initial Budget Request
+            const { value: amount } = await Swal.fire({
+                title: 'Request Payroll Budget',
+                text: 'Enter the total budget amount needed for this disbursement.',
+                input: 'number',
+                inputValue: selectedBatchTotal,
+                inputAttributes: { step: '0.01' },
+                showCancelButton: true,
+                confirmButtonColor: '#2ca078',
+                confirmButtonText: 'Send Request',
+                background: document.body.classList.contains('dark-mode') ? '#1a1a1a' : '#fff',
+                color: document.body.classList.contains('dark-mode') ? '#f9fafb' : '#111827'
+            });
+
+            if (amount) {
+                Swal.fire({
+                    title: 'Sending Request...',
+                    text: 'Connecting to Finance Laptop...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading(),
+                    background: document.body.classList.contains('dark-mode') ? '#1a1a1a' : '#fff',
+                    color: document.body.classList.contains('dark-mode') ? '#f9fafb' : '#111827'
+                });
+
+                try {
+                    const res = await fetchJson('backend/be_request_payroll_budget.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ batch_id: selectedBatchId, amount: amount }).toString()
+                    });
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Request Sent',
+                        text: res.message,
+                        confirmButtonColor: '#2ca078'
+                    });
+
+                    // Refresh budget card
+                    await loadEmployees(selectedBatchId);
+                } catch (err) {
+                    Swal.fire({
+                        title: 'Sync Failed',
+                        text: err.message,
+                        icon: 'error',
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
+            }
+        });
+    }
 
     // 4. Sidebar Toggle Logic (Core to all dashboards)
     const body = document.body;

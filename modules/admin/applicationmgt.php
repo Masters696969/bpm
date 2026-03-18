@@ -57,8 +57,8 @@ $selectionQuery = "SELECT a.*, j.Title as JobTitle, e.AverageRating,
 FROM interview_evaluations e
 JOIN applicants a ON e.ApplicantID = a.ApplicantID
 JOIN job_postings j ON a.PostID = j.PostID
-ORDER BY TotalScore DESC
-LIMIT 10";
+WHERE a.ExamStatus = 'Completed'
+ORDER BY TotalScore DESC";
 $selectionList = $conn->query($selectionQuery);
 if (!$selectionList) {
     error_log("Selection Query Error: " . $conn->error);

@@ -128,22 +128,24 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (data.success) {
                             Swal.fire('Sent!', data.message || 'Request sent to Finance server.', 'success');
                             
-                            // Update UI immediately without reload if possible
+                            // Update UI immediately
                             const badge = document.getElementById("budgetBadge");
                             if (badge) {
                                 badge.innerText = "PENDING";
-                                badge.className = "status-badge status-badge-warning";
+                                badge.className = "badge bg-warning text-dark rounded-pill px-3 py-1";
                             }
-                            btnRequestBudget.disabled = true;
+                            
+                            btnRequestBudget.disabled = false;
                             btnRequestBudget.innerHTML = 'Request Finance';
                             
-                            // Update requested amount text
-                            const reqText = document.getElementById("requestedAmountText");
-                            if (reqText) {
-                                reqText.innerText = amount.toLocaleString(undefined, { minimumFractionDigits: 2 });
-                            } else {
-                                // If the text div didn't exist, we might need a reload or a smarter UI update
-                                setTimeout(() => location.reload(), 2000);
+                            const reqCol = document.querySelector(".budget-metrics .metric-item:first-child .value");
+                            if (reqCol) {
+                                reqCol.innerText = `\u20B1${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+                            }
+                            
+                            const statusMsg = document.querySelector(".sync-footer .footer-info");
+                            if (statusMsg) {
+                                statusMsg.innerHTML = '<div class="spinner-grow spinner-grow-sm text-warning me-2" role="status" style="width: 6px; height: 6px;"></div>Awaiting Finance review...';
                             }
                         } else {
                             Swal.fire('Request Failed', data.message || 'Error communicating with Finance server.', 'error');
@@ -164,6 +166,30 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // 5.2 Unlock Approved Budget for re-request
+    const unlockBudgetBtn = document.getElementById("unlockBudgetBtn");
+    if (unlockBudgetBtn) {
+        unlockBudgetBtn.addEventListener("click", () => {
+            const budgetInput = document.getElementById("budgetAllocation");
+            const requestBtn = document.getElementById("btnRequestBudget");
+            
+            if (budgetInput && requestBtn) {
+                budgetInput.readOnly = false;
+                budgetInput.disabled = false;
+                requestBtn.disabled = false;
+                requestBtn.innerHTML = 'Update Request';
+                
+                // Visual feedback
+                budgetInput.style.border = "1px solid var(--brand-blue)";
+                budgetInput.focus();
+                
+                // Hide the unlock button after click
+                unlockBudgetBtn.style.display = "none";
+                
+                if (window.lucide) window.lucide.createIcons();
+            }
+        });
+    }
 
 
     function saveSimulationDraft(isAuto = false) {
@@ -361,7 +387,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function calculateDeductions() {
         let totalImpact = 0;
-        const totalBudget = parseFloat(document.getElementById("budgetAllocation")?.value) || 5000000;
+        
+        // Phase 2: Use the Finance-Approved budget if available
+        const approvedBudget = parseFloat(document.getElementById("approvedBudgetAmount")?.value) || 0;
+        const totalBudget = approvedBudget > 0 ? approvedBudget : (parseFloat(document.getElementById("budgetAllocation")?.value) || 5000000);
         
         let visibleCount = 0;
         const simRows = document.querySelectorAll(".simulation-table tbody tr.sim-row");

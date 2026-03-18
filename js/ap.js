@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     const lucide = window.lucide;
     const body = document.body;
     const themeToggle = document.getElementById("themeToggle");
@@ -65,23 +65,24 @@
                 }
             } else {
                 console.error("Error fetching AP:", result.error);
-                targetBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444;">Error: ${result.error}</td></tr>`;
+                targetBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">Error: ${result.error}</td></tr>`;
             }
         } catch (error) {
             console.error("Fetch error:", error);
-            targetBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444;">Failed to load data.</td></tr>`;
+            targetBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">Failed to load data.</td></tr>`;
         }
     };
 
     const renderAP = (data, container, status) => {
         if (data.length === 0) {
-            container.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-tertiary);">No ${status.toLowerCase()} vouchers found.</td></tr>`;
+            container.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-tertiary);">No ${status.toLowerCase()} vouchers found.</td></tr>`;
             return;
         }
 
         container.innerHTML = data.map(item => `
             <tr>
                 <td style="font-weight: 600; color: var(--brand-green);">${item.batch_code}</td>
+                <td style="font-weight: 500;">${item.employee_name || '---'}</td>
                 <td>
                     <div style="display: flex; flex-direction: column;">
                         <span style="font-weight: 600;">${item.category}</span>

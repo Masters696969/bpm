@@ -5,7 +5,7 @@ ob_start();
 header('Content-Type: application/json');
 
 session_start();
-$response = ['success' => false, 'message' => ''];
+$response = ['ok' => false, 'message' => ''];
 
 try {
     require_once '../../../config/config.php';
@@ -54,11 +54,21 @@ try {
                 }
                 $itemStmt->close();
 
-                // 3.5 Update Draft Status
-                $updateDraft = $conn->prepare("UPDATE simulation_drafts SET Status = 'Sent to Finance' WHERE CycleName = ?");
-                $updateDraft->bind_param("s", $cycleName);
+                // 3.5 Update Draft Status (with actual budget stats)
+                $budgetUsedPct = ($totalBudget > 0) ? (($totalImpact * 12) / $totalBudget) * 100 : 0;
+                $updateDraft = $conn->prepare("UPDATE simulation_drafts SET Status = 'Sent to Finance', BudgetUsedPct = ?, TotalCost = ?, TotalBudget = ? WHERE CycleName = ?");
+                $updateDraft->bind_param("ddds", $budgetUsedPct, $totalImpact, $totalBudget, $cycleName);
                 $updateDraft->execute();
                 $updateDraft->close();
+
+                // 3.6 Fetch Finance Budget Reference for linking
+                $financeRef = '';
+                $refStmt = $conn->prepare("SELECT budget_finance_ref FROM compensation_period WHERE period_id = ?");
+                $refStmt->bind_param("i", $periodId);
+                $refStmt->execute();
+                $refStmt->bind_result($financeRef);
+                $refStmt->fetch();
+                $refStmt->close();
 
                 // 4. Remote Sync to Finance Laptop
                 $deptCodeParam = isset($_POST['dept_code']) ? trim($_POST['dept_code']) : 'HR COMPENSATION';
@@ -67,13 +77,14 @@ try {
                     'cycle_name' => $cycleName,
                     'period_id' => $periodId,
                     'dept_code' => 'HR COMPENSATION',
-                    'entity_name' => 'HR COMPENSATION', // Used for allocation_entity_name on Finance
+                    'entity_name' => 'HR COMPENSATION', 
                     'allocation_type' => 'DEPARTMENT',
                     'total_budget' => $totalBudget,
                     'total_impact' => $totalImpact,
                     'remaining_budget' => $remainingBudget,
                     'proposed_by_id' => $userId,
                     'proposal_id' => $proposalId, 
+                    'finance_ref' => $financeRef, // Tracking Reference
                     'fiscal_year' => date('Y'),   
                     'salary_scale_data' => json_decode($salaryScaleData, true),
                     'items' => $employeeData
@@ -81,10 +92,10 @@ try {
 
                 $syncResult = sendHRProposalToBudget($payload);
 
-                $response['success'] = true;
-                $response['sync_status'] = $syncResult['success'];
+                $response['ok'] = true;
+                $response['sync_status'] = $syncResult['success'] ?? $syncResult['ok'] ?? false;
                 
-                if ($syncResult['success']) {
+                if ($response['sync_status']) {
                     $response['message'] = "Proposal saved locally. Finance Laptop sync successful!";
                 } else {
                     $response['message'] = "Proposal saved locally. Finance Sync Error: " . $syncResult['message'];
@@ -129,7 +140,7 @@ function sendHRProposalToBudget(array $payload): array
 
     if ($response === false || $curlError) {
         return [
-            'success' => false,
+            'ok' => false,
             'message' => 'Connection to Finance Laptop failed: ' . $curlError
         ];
     }
@@ -137,7 +148,7 @@ function sendHRProposalToBudget(array $payload): array
     $decoded = json_decode($response, true);
     if (!is_array($decoded)) {
         return [
-            'success' => false,
+            'ok' => false,
             'message' => 'Invalid response from Finance server (HTTP ' . $httpCode . '). Raw output: ' . substr(strip_tags($response), 0, 200),
             'raw' => $response
         ];
