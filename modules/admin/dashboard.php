@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['username'])) {
   header("Location: ../../login.php");
@@ -212,7 +212,7 @@ if ($r->num_rows > 0) {
               <i data-lucide="chevron-down" class="submenu-icon"></i>
             </button>
             <div class="submenu" id="submenu-training">
-              <a href="training.php" class="submenu-item <?php echo($page === 'training') ? 'active' : ''; ?>">
+              <a href="trainingmgt.php" class="submenu-item <?php echo($page === 'training') ? 'active' : ''; ?>">
                 <i data-lucide="briefcase-business"></i>
                 <span>Training Management</span>
               </a>

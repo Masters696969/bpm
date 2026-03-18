@@ -135,6 +135,10 @@ $isClaimsOpen = in_array($current_page, ['claims_apply.php', 'claims_history.php
                 <i data-lucide="ticket-check"></i>
                 <span>View Payslip</span>
             </a>
+             <a href="learningmgt.php" class="nav-item">
+              <i data-lucide="book-open"></i>
+              <span>Learning Management</span>
+            </a>
         </div>
 
         <div class="nav-section">
