@@ -4,9 +4,21 @@
 header('Content-Type: application/json');
 
 // ── DB connection (PDO) ──────────────────────────────────────────────────────
-require_once '../../config/database.php';
-$database = new Database();
-$db = $database->getConnection();
+require_once '../../config/config.php';
+try {
+    $db = new PDO(
+        "mysql:host={$servername};dbname={$dbname};charset=utf8mb4",
+        $username,
+        $password,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]
+    );
+} catch (PDOException $e) {
+    echo json_encode(['success' => false, 'message' => 'Connection error: ' . $e->getMessage()]);
+    exit();
+}
 
 // ── Parse incoming JSON ────────────────────────────────────────────────────────
 $data = json_decode(file_get_contents('php://input'), true);
