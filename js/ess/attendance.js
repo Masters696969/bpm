@@ -513,6 +513,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             formData.append("liveness_status", "NOT_CHECKED");
             formData.append("face_score", latestFaceScore !== null ? latestFaceScore : "");
 
+            // current browser/device time
+            formData.append("client_time", new Date().toISOString());
+            formData.append(
+                "client_timezone",
+                Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Manila"
+            );
+
             const response = await fetch("includes/submit_attendance.php", {
                 method: "POST",
                 body: formData
