@@ -103,11 +103,20 @@ document.addEventListener('DOMContentLoaded', () => {
         requestEditForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(requestEditForm);
+            const dataObj = {};
+            formData.forEach((value, key) => {
+                if (value.trim() !== '') {
+                    dataObj[key] = value.trim();
+                }
+            });
 
             try {
                 const response = await fetch('employee_action.php?action=request_update', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataObj)
                 });
                 const result = await response.json();
 

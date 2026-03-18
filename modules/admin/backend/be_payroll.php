@@ -17,82 +17,126 @@ if (!isset($_SESSION['username'])) {
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
 if ($action === 'save_timesheet') {
-    $employeeId = (int)($_POST['EmployeeID'] ?? 0);
-    $periodId = (int)($_POST['PeriodID'] ?? 0);
-    $departmentId = (int)($_POST['DepartmentID'] ?? 0);
-    $positionId = (int)($_POST['PositionID'] ?? 0);
-    $regularHours = (float)($_POST['RegularHours'] ?? 0);
-    $overtimeHours = (float)($_POST['OvertimeHours'] ?? 0);
-    $lateMinutes = (int)($_POST['LateMinutes'] ?? 0);
-    $undertimeMinutes = (int)($_POST['UndertimeMinutes'] ?? 0);
-    $totalPayableHours = (float)($_POST['TotalPayableHours'] ?? 0);
-    $notes = trim((string)($_POST['Notes'] ?? ''));
+    $employeeId           = (int)($_POST['EmployeeID']             ?? 0);
+    $periodId             = (int)($_POST['PeriodID']               ?? 0);
+    $departmentId         = (int)($_POST['DepartmentID']           ?? 0);
+    $positionId           = (int)($_POST['PositionID']             ?? 0);
+    $isEligible           = (int)($_POST['IsEligibleForHolidayPay'] ?? 1);
+    $regularHours         = (float)($_POST['RegularHours']         ?? 0);
+    $overtimeHours        = (float)($_POST['OvertimeHours']        ?? 0);
+    $nightDiffHours       = (float)($_POST['NightDiffHours']       ?? 0);
+    $regHolidayHours      = (float)($_POST['RegHolidayHours']      ?? 0);
+    $specHolidayHours     = (float)($_POST['SpecHolidayHours']     ?? 0);
+    $unworkedHolidayHours = (float)($_POST['UnworkedHolidayHours'] ?? 0);
+    $holidayOtHours       = (float)($_POST['HolidayOvertimeHours'] ?? 0);
+    $lateMinutes          = (int)($_POST['LateMinutes']            ?? 0);
+    $undertimeMinutes     = (int)($_POST['UndertimeMinutes']       ?? 0);
+    $absencesHours        = (float)($_POST['AbsencesHours']        ?? 0);
+    $paidLeaveHours       = (float)($_POST['PaidLeaveHours']       ?? 0);
+    $unpaidLeaveHours     = (float)($_POST['UnpaidLeaveHours']     ?? 0);
+    $notes                = trim((string)($_POST['Notes']          ?? ''));
+
+    // Auto-compute TotalPayableHours
+    $totalPayableHours = max(0.0, round(
+        $regularHours + $overtimeHours + $nightDiffHours
+        + $regHolidayHours + $specHolidayHours + $unworkedHolidayHours + $holidayOtHours
+        + $paidLeaveHours - $absencesHours - $unpaidLeaveHours, 2
+    ));
 
     if ($employeeId <= 0 || $periodId <= 0) {
         respond(false, ['error' => 'EmployeeID and PeriodID are required'], 400);
     }
 
-    // Auto-fill dept/position when available
+    // Auto-fill dept/position from employment record
     $empInfo = $conn->query('SELECT DepartmentID, PositionID FROM employmentinformation WHERE EmployeeID=' . (int)$employeeId . ' ORDER BY EmploymentID DESC LIMIT 1');
     if ($empInfo && ($ei = $empInfo->fetch_assoc())) {
         if ($departmentId <= 0) $departmentId = (int)$ei['DepartmentID'];
-        if ($positionId <= 0) $positionId = (int)$ei['PositionID'];
+        if ($positionId   <= 0) $positionId   = (int)$ei['PositionID'];
     }
     if ($departmentId <= 0 || $positionId <= 0) {
-        respond(false, ['error' => 'DepartmentID and PositionID are required'], 400);
+        respond(false, ['error' => 'Could not determine Department/Position for this employee.'], 400);
     }
 
-    // SummaryID: table in dump uses NOT NULL without auto-increment; ensure a unique value
-    $nextId = 1;
-    $idRes = $conn->query('SELECT COALESCE(MAX(SummaryID),0)+1 AS next_id FROM timesheet_employee_summary');
-    if ($idRes && ($idRow = $idRes->fetch_assoc())) {
-        $nextId = (int)$idRow['next_id'];
+    // Upsert: update if employee+period record exists, insert if not
+    $existRes = $conn->query("SELECT SummaryID FROM timesheet_employee_summary WHERE EmployeeID=$employeeId AND PeriodID=$periodId LIMIT 1");
+    if ($existRes && $existRes->num_rows > 0) {
+        $sid = (int)$existRes->fetch_assoc()['SummaryID'];
+        $stmt = $conn->prepare('UPDATE timesheet_employee_summary SET
+            DepartmentID=?, PositionID=?, IsEligibleForHolidayPay=?,
+            RegularHours=?, OvertimeHours=?, NightDiffHours=?,
+            RegHolidayHours=?, SpecHolidayHours=?, UnworkedHolidayHours=?,
+            HolidayOvertimeHours=?, LateMinutes=?, UndertimeMinutes=?,
+            AbsencesHours=?, PaidLeaveHours=?, UnpaidLeaveHours=?,
+            TotalPayableHours=?, Notes=?, UpdatedAt=NOW()
+            WHERE SummaryID=?');
+        $stmt->bind_param('iiiddddddiidddddsi',
+            $departmentId, $positionId, $isEligible,
+            $regularHours, $overtimeHours, $nightDiffHours,
+            $regHolidayHours, $specHolidayHours, $unworkedHolidayHours,
+            $holidayOtHours, $lateMinutes, $undertimeMinutes,
+            $absencesHours, $paidLeaveHours, $unpaidLeaveHours,
+            $totalPayableHours, $notes, $sid
+        );
+    } else {
+        $nextId = 1;
+        $idRes = $conn->query('SELECT COALESCE(MAX(SummaryID),0)+1 AS nid FROM timesheet_employee_summary');
+        if ($idRes && ($idRow = $idRes->fetch_assoc())) $nextId = (int)$idRow['nid'];
+        $stmt = $conn->prepare('INSERT INTO timesheet_employee_summary
+            (SummaryID,PeriodID,EmployeeID,DepartmentID,PositionID,IsEligibleForHolidayPay,
+             RegularHours,OvertimeHours,NightDiffHours,RegHolidayHours,SpecHolidayHours,
+             UnworkedHolidayHours,HolidayOvertimeHours,LateMinutes,UndertimeMinutes,
+             AbsencesHours,PaidLeaveHours,UnpaidLeaveHours,TotalPayableHours,Notes)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+        $stmt->bind_param('iiiiiiiddddddiidddds',
+            $nextId,$periodId,$employeeId,$departmentId,$positionId,$isEligible,
+            $regularHours,$overtimeHours,$nightDiffHours,$regHolidayHours,$specHolidayHours,
+            $unworkedHolidayHours,$holidayOtHours,$lateMinutes,$undertimeMinutes,
+            $absencesHours,$paidLeaveHours,$unpaidLeaveHours,$totalPayableHours,$notes
+        );
     }
 
-    $stmt = $conn->prepare('INSERT INTO timesheet_employee_summary (SummaryID, PeriodID, EmployeeID, DepartmentID, PositionID, IsEligibleForHolidayPay, RegularHours, OvertimeHours, NightDiffHours, RegHolidayHours, SpecHolidayHours, UnworkedHolidayHours, HolidayOvertimeHours, LateMinutes, UndertimeMinutes, AbsencesHours, PaidLeaveHours, UnpaidLeaveHours, TotalPayableHours, Notes) VALUES (?, ?, ?, ?, ?, 1, ?, ?, 0, 0, 0, 0, 0, ?, ?, 0, 0, 0, ?, ?)');
-    $stmt->bind_param(
-        'iiiiiiddiids',
-        $nextId,
-        $periodId,
-        $employeeId,
-        $departmentId,
-        $positionId,
-        $regularHours,
-        $overtimeHours,
-        $lateMinutes,
-        $undertimeMinutes,
-        $totalPayableHours,
-        $notes
-    );
     if (!$stmt->execute()) {
         respond(false, ['error' => $stmt->error], 500);
     }
     $stmt->close();
-    respond(true);
+    respond(true, ['message' => 'Timesheet saved successfully.']);
 }
 
 if ($action === 'create_batch') {
-    $periodType = $_POST['period_type'] ?? '';
+    $periodId   = isset($_POST['period_id']) ? (int)$_POST['period_id'] : 0;
+    $periodType = $_POST['period_type'] ?? ''; // legacy fallback
 
-    $now = new DateTime('now');
-    $year = (int)$now->format('Y');
+    $now   = new DateTime('now');
+    $year  = (int)$now->format('Y');
     $month = (int)$now->format('m');
 
-    if ($periodType === '1st_half') {
-        $start = new DateTime(sprintf('%04d-%02d-01', $year, $month));
-        $end = new DateTime(sprintf('%04d-%02d-15', $year, $month));
+    if ($periodId > 0) {
+        // ── New flow: resolve dates directly from timesheet_period ──────────
+        $pRow = $conn->query("SELECT StartDate, EndDate FROM timesheet_period WHERE PeriodID = $periodId AND IsArchived = 0 AND Status IN ('APPROVED','FINALIZED') LIMIT 1")->fetch_assoc();
+        if (!$pRow) {
+            respond(false, ['error' => 'Selected timesheet period not found or not eligible.'], 400);
+        }
+        $start   = new DateTime($pRow['StartDate']);
+        $end     = new DateTime($pRow['EndDate']);
+        $days    = (int)$start->diff($end)->days;
+        // Determine pay type from period length
+        $payType = ($days <= 16) ? 'Semi-Monthly' : 'Monthly';
+    } elseif ($periodType === '1st_half') {
+        $start   = new DateTime(sprintf('%04d-%02d-01', $year, $month));
+        $end     = new DateTime(sprintf('%04d-%02d-15', $year, $month));
         $payType = 'Semi-Monthly';
     } elseif ($periodType === '2nd_half') {
-        $start = new DateTime(sprintf('%04d-%02d-16', $year, $month));
-        $end = (new DateTime(sprintf('%04d-%02d-01', $year, $month)))->modify('last day of this month');
+        $start   = new DateTime(sprintf('%04d-%02d-16', $year, $month));
+        $end     = (new DateTime(sprintf('%04d-%02d-01', $year, $month)))->modify('last day of this month');
         $payType = 'Semi-Monthly';
     } elseif ($periodType === 'monthly') {
-        $start = new DateTime(sprintf('%04d-%02d-01', $year, $month));
-        $end = (new DateTime(sprintf('%04d-%02d-01', $year, $month)))->modify('last day of this month');
+        $start   = new DateTime(sprintf('%04d-%02d-01', $year, $month));
+        $end     = (new DateTime(sprintf('%04d-%02d-01', $year, $month)))->modify('last day of this month');
         $payType = 'Monthly';
     } else {
-        respond(false, ['error' => 'Invalid period type'], 400);
+        respond(false, ['error' => 'Invalid period type or period_id.'], 400);
     }
+
 
     // Find next available serial for this year to avoid duplicates
     $resSerial = $conn->query("SELECT MAX(CAST(SUBSTRING_INDEX(batch_code, '-', -1) AS UNSIGNED)) as last_serial FROM payroll_batches WHERE batch_code LIKE 'PR-$year-%'");
@@ -207,7 +251,22 @@ if ($action === 'create_batch') {
             $ts = null;
             if (!empty($matchingPeriodIds)) {
                 $ids = implode(',', $matchingPeriodIds);
-                $tsRes = $conn->query("SELECT SUM(TotalPayableHours) as TotalPayableHours, SUM(RegularHours) as RegularHours, SUM(OvertimeHours) as OvertimeHours, SUM(LateMinutes) as LateMinutes, SUM(UndertimeMinutes) as UndertimeMinutes FROM timesheet_employee_summary WHERE EmployeeID = $employeeId AND PeriodID IN ($ids)");
+                $tsRes = $conn->query("SELECT
+                    SUM(TotalPayableHours)      as TotalPayableHours,
+                    SUM(RegularHours)            as RegularHours,
+                    SUM(OvertimeHours)           as OvertimeHours,
+                    SUM(NightDiffHours)          as NightDiffHours,
+                    SUM(RegHolidayHours)         as RegHolidayHours,
+                    SUM(SpecHolidayHours)        as SpecHolidayHours,
+                    SUM(UnworkedHolidayHours)    as UnworkedHolidayHours,
+                    SUM(HolidayOvertimeHours)    as HolidayOvertimeHours,
+                    SUM(LateMinutes)             as LateMinutes,
+                    SUM(UndertimeMinutes)        as UndertimeMinutes,
+                    SUM(AbsencesHours)           as AbsencesHours,
+                    SUM(PaidLeaveHours)          as PaidLeaveHours,
+                    SUM(UnpaidLeaveHours)        as UnpaidLeaveHours
+                    FROM timesheet_employee_summary
+                    WHERE EmployeeID = $employeeId AND PeriodID IN ($ids)");
                 if ($tsRes) {
                     $ts = $tsRes->fetch_assoc();
                     // If no rows were found, SUM returns NULL; check if any relevant value exists
@@ -217,16 +276,29 @@ if ($action === 'create_batch') {
 
             // Fallback: if no matching period found, try the absolutely latest one (previous behavior)
             if (!$ts) {
-                $tsRes = $conn->query('SELECT TotalPayableHours, RegularHours, OvertimeHours, LateMinutes, UndertimeMinutes FROM timesheet_employee_summary WHERE EmployeeID = ' . (int)$employeeId . ' ORDER BY UpdatedAt DESC LIMIT 1');
+                $tsRes = $conn->query('SELECT TotalPayableHours, RegularHours, OvertimeHours,
+                    NightDiffHours, RegHolidayHours, SpecHolidayHours, UnworkedHolidayHours,
+                    HolidayOvertimeHours, LateMinutes, UndertimeMinutes, AbsencesHours,
+                    PaidLeaveHours, UnpaidLeaveHours
+                    FROM timesheet_employee_summary
+                    WHERE EmployeeID = ' . (int)$employeeId . ' ORDER BY UpdatedAt DESC LIMIT 1');
                 if ($tsRes) {
                     $ts = $tsRes->fetch_assoc();
                 }
             }
 
-            $regularHours = $ts ? (float)$ts['RegularHours'] : 0.0;
-            $overtimeHours = $ts ? (float)$ts['OvertimeHours'] : 0.0;
-            $lateMinutes = $ts ? (int)$ts['LateMinutes'] : 0;
-            $undertimeMinutes = $ts ? (int)$ts['UndertimeMinutes'] : 0;
+            $regularHours         = $ts ? (float)$ts['RegularHours']          : 0.0;
+            $overtimeHours        = $ts ? (float)$ts['OvertimeHours']         : 0.0;
+            $nightDiffHours       = $ts ? (float)$ts['NightDiffHours']        : 0.0;
+            $regHolidayHours      = $ts ? (float)$ts['RegHolidayHours']       : 0.0;
+            $specHolidayHours     = $ts ? (float)$ts['SpecHolidayHours']      : 0.0;
+            $unworkedHolidayHours = $ts ? (float)$ts['UnworkedHolidayHours']  : 0.0;
+            $holidayOtHours       = $ts ? (float)$ts['HolidayOvertimeHours']  : 0.0;
+            $lateMinutes          = $ts ? (int)$ts['LateMinutes']             : 0;
+            $undertimeMinutes     = $ts ? (int)$ts['UndertimeMinutes']        : 0;
+            $absencesHours        = $ts ? (float)$ts['AbsencesHours']         : 0.0;
+            $paidLeaveHours       = $ts ? (float)$ts['PaidLeaveHours']        : 0.0;
+            $unpaidLeaveHours     = $ts ? (float)$ts['UnpaidLeaveHours']      : 0.0;
 
             // Calculate Basic Pay based on SalaryType
             $basicPay = 0.0;
@@ -245,19 +317,44 @@ if ($action === 'create_batch') {
                 $basicPay = $payType === 'Semi-Monthly' ? round($baseSalary / 2, 2) : round($baseSalary, 2);
             }
 
-            // Timesheet adjustments (OT pay + late/undertime deductions)
+            // Timesheet adjustments (OT pay + late/undertime deductions + all additional pays)
             $standardHoursMonthly = 160.0;
             $hourlyRate = $standardHoursMonthly > 0 ? round($baseSalary / $standardHoursMonthly, 6) : 0.0;
 
-            // Simple default rules
-            $overtimeMultiplier = 1.25;
-            $lateDeduction = round((($lateMinutes + $undertimeMinutes) / 60.0) * $hourlyRate, 2);
-            $overtimePay = round($overtimeHours * $hourlyRate * $overtimeMultiplier, 2);
+            // Philippine Labor Code multipliers
+            $overtimeMultiplier        = 1.25;  // Regular day OT: 125%
+            $nightDiffRate             = 0.10;  // Night differential premium: +10%
+            $regHolidayRate            = 2.00;  // Regular holiday: 200%
+            $specHolidayRate           = 1.30;  // Special holiday: 130%
+            $unworkedHolidayRate       = 1.00;  // Unworked regular holiday: 100% of daily rate
+            $holidayOtMultiplier       = 2.60;  // OT on regular holiday: 260%
+
+            // Compute all additional pays (monthly)
+            $lateDeduction        = round((($lateMinutes + $undertimeMinutes) / 60.0) * $hourlyRate, 2);
+            $overtimePay          = round($overtimeHours        * $hourlyRate * $overtimeMultiplier, 2);
+            $nightDiffPay         = round($nightDiffHours       * $hourlyRate * $nightDiffRate, 2);
+            $regHolidayPay        = round($regHolidayHours      * $hourlyRate * $regHolidayRate, 2);
+            $specHolidayPay       = round($specHolidayHours     * $hourlyRate * $specHolidayRate, 2);
+            $unworkedHolidayPay   = round($unworkedHolidayHours * $hourlyRate * $unworkedHolidayRate, 2);
+            $holidayOtPay         = round($holidayOtHours       * $hourlyRate * $holidayOtMultiplier, 2);
+            $absenceDeduction     = round($absencesHours        * $hourlyRate, 2);
+            // Paid leave: employee is paid at regular rate, no deduction
+            $paidLeavePay         = round($paidLeaveHours       * $hourlyRate, 2);
+            // Unpaid leave: deducted at regular rate
+            $unpaidLeaveDeduction = round($unpaidLeaveHours     * $hourlyRate, 2);
 
             // Scale to selected payroll period (timesheet values assumed monthly)
             if ($payType === 'Semi-Monthly') {
-                $lateDeduction = round($lateDeduction / 2, 2);
-                $overtimePay = round($overtimePay / 2, 2);
+                $lateDeduction        = round($lateDeduction        / 2, 2);
+                $overtimePay          = round($overtimePay          / 2, 2);
+                $nightDiffPay         = round($nightDiffPay         / 2, 2);
+                $regHolidayPay        = round($regHolidayPay        / 2, 2);
+                $specHolidayPay       = round($specHolidayPay       / 2, 2);
+                $unworkedHolidayPay   = round($unworkedHolidayPay   / 2, 2);
+                $holidayOtPay         = round($holidayOtPay         / 2, 2);
+                $absenceDeduction     = round($absenceDeduction     / 2, 2);
+                $paidLeavePay         = round($paidLeavePay         / 2, 2);
+                $unpaidLeaveDeduction = round($unpaidLeaveDeduction / 2, 2);
             }
 
             $allowancesTotal = 0.0;
@@ -314,9 +411,15 @@ if ($action === 'create_batch') {
             // NOTE: Tax base should subtract Late/UT before computing tax (prevents over-taxation).
             $withholdingTax = 0.0;
 
-            $taxableBase = ($basicPay + $allowancesTotal + $overtimePay)
+            // Total additional earnings from timesheet
+            $timesheetEarnings = $overtimePay + $nightDiffPay + $regHolidayPay
+                + $specHolidayPay + $unworkedHolidayPay + $holidayOtPay + $paidLeavePay;
+            // Total additional deductions from timesheet
+            $timesheetDeductions = $lateDeduction + $absenceDeduction + $unpaidLeaveDeduction;
+
+            $taxableBase = ($basicPay + $allowancesTotal + $timesheetEarnings)
                 - ($sssRegularEe + $sssWispEe + $philEe + $pagEe)
-                - $lateDeduction;
+                - $timesheetDeductions;
             $taxableBase = round(max(0.0, $taxableBase), 2);
 
             // Optional: pull simulation W.Tax if table exists and has value
@@ -370,12 +473,12 @@ if ($action === 'create_batch') {
                 $sssWispEe +
                 $philEe +
                 $pagEe +
-                $lateDeduction +
+                $timesheetDeductions +
                 $withholdingTax,
                 2
             );
 
-            $netPay = round(($basicPay + $allowancesTotal + $overtimePay) - $deductionsTotal, 2);
+            $netPay = round(($basicPay + $allowancesTotal + $timesheetEarnings) - $deductionsTotal, 2);
 
             $status = 'Computed';
             $itemStmt->bind_param(
@@ -416,12 +519,23 @@ if ($action === 'create_batch') {
                 }
             }
 
-            if ($overtimePay > 0) {
-                $otType = 'Allowance';
-                $otName = 'Overtime Pay';
-                $componentStmt->bind_param('issd', $itemId, $otType, $otName, $overtimePay);
-                if (!$componentStmt->execute()) {
-                    throw new Exception($componentStmt->error);
+            // --- All timesheet-sourced earnings as components ---
+            $tsEarningComponents = [
+                'Overtime Pay'             => $overtimePay,
+                'Night Differential Pay'   => $nightDiffPay,
+                'Regular Holiday Pay'      => $regHolidayPay,
+                'Special Holiday Pay'      => $specHolidayPay,
+                'Unworked Holiday Pay'     => $unworkedHolidayPay,
+                'Holiday Overtime Pay'     => $holidayOtPay,
+                'Paid Leave Pay'           => $paidLeavePay,
+            ];
+            foreach ($tsEarningComponents as $compLabel => $compAmt) {
+                if ($compAmt > 0) {
+                    $cType = 'Allowance';
+                    $componentStmt->bind_param('issd', $itemId, $cType, $compLabel, $compAmt);
+                    if (!$componentStmt->execute()) {
+                        throw new Exception($componentStmt->error);
+                    }
                 }
             }
 
@@ -480,11 +594,18 @@ if ($action === 'create_batch') {
                 }
             }
 
-            if ($lateDeduction > 0) {
-                $n4 = 'Late/Undertime';
-                $componentStmt->bind_param('issd', $itemId, $dType, $n4, $lateDeduction);
-                if (!$componentStmt->execute()) {
-                    throw new Exception($componentStmt->error);
+            // --- All timesheet-sourced deductions as components ---
+            $tsDeductionComponents = [
+                'Late/Undertime'     => $lateDeduction,
+                'Absences'           => $absenceDeduction,
+                'Unpaid Leave'       => $unpaidLeaveDeduction,
+            ];
+            foreach ($tsDeductionComponents as $dLabel => $dAmt) {
+                if ($dAmt > 0) {
+                    $componentStmt->bind_param('issd', $itemId, $dType, $dLabel, $dAmt);
+                    if (!$componentStmt->execute()) {
+                        throw new Exception($componentStmt->error);
+                    }
                 }
             }
 
@@ -501,8 +622,16 @@ if ($action === 'create_batch') {
         $itemStmt->close();
         $componentStmt->close();
 
+        // ── Mark the source timesheet period as consumed so it no longer
+        //    appears in the "Initialize Payroll" dropdown (list_periods only
+        //    shows APPROVED/FINALIZED — PAYROLL_PROCESSED is excluded).
+        if ($periodId > 0) {
+            $conn->query("UPDATE timesheet_period SET Status = 'PAYROLL_PROCESSED' WHERE PeriodID = $periodId");
+        }
+
         $conn->commit();
         respond(true, ['batch_id' => $batchId, 'batch_code' => $batchCode]);
+
 
     } catch (Throwable $e) {
         $conn->rollback();
@@ -510,7 +639,30 @@ if ($action === 'create_batch') {
     }
 }
 
+if ($action === 'list_periods') {
+    // Return timesheet periods that have summary data and are eligible for payroll
+    $res = $conn->query("
+        SELECT tp.PeriodID, tp.StartDate, tp.EndDate, tp.Status,
+               d.DepartmentName,
+               COUNT(tes.SummaryID) as EmpCount
+        FROM timesheet_period tp
+        INNER JOIN timesheet_employee_summary tes ON tes.PeriodID = tp.PeriodID
+        LEFT JOIN department d ON d.DepartmentID = tp.DepartmentID
+        WHERE tp.IsArchived = 0
+          AND tp.Status IN ('APPROVED', 'FINALIZED')
+        GROUP BY tp.PeriodID
+        ORDER BY tp.StartDate DESC
+    ");
+    if (!$res) {
+        respond(false, ['error' => $conn->error], 500);
+    }
+    $rows = [];
+    while ($r = $res->fetch_assoc()) $rows[] = $r;
+    respond(true, ['periods' => $rows]);
+}
+
 if ($action === 'list_batches') {
+
     $res = $conn->query('SELECT b.id, b.batch_code, b.period_start, b.period_end, b.pay_type, b.status, COALESCE(SUM(i.net_pay),0) AS total_distributed FROM payroll_batches b LEFT JOIN payroll_batch_items i ON i.batch_id = b.id GROUP BY b.id ORDER BY b.id DESC');
     if (!$res) {
         respond(false, ['error' => $conn->error], 500);

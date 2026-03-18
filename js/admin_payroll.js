@@ -29,15 +29,29 @@ document.addEventListener("DOMContentLoaded", () => {
         return data;
     };
 
+    let totalPayrollAmount = 0;
+    let isPayrollVisible = false;
+
+    const renderTotalPayroll = () => {
+        const elTotal = document.getElementById('statTotalPayroll');
+        if (!elTotal) return;
+        if (isPayrollVisible) {
+            elTotal.textContent = peso(totalPayrollAmount);
+        } else {
+            elTotal.innerHTML = '&#8369;**,***.**';
+        }
+    };
+
     const loadStats = async () => {
         try {
             const data = await fetchJson(`${apiUrl}?action=stats`);
-            const elTotal = document.getElementById('statTotalPayroll');
             const elEmp = document.getElementById('statEmployees');
             const elNext = document.getElementById('statNextRun');
             const elPend = document.getElementById('statPending');
 
-            if (elTotal) elTotal.textContent = peso(data.total_payroll || 0);
+            totalPayrollAmount = Number(data.total_payroll || 0);
+            renderTotalPayroll();
+
             if (elEmp) elEmp.textContent = `${data.employees || 0} Paid`;
             if (elNext) elNext.textContent = data.next_run || '--';
             if (elPend) elPend.textContent = `${data.pending || 0} Batches`;
@@ -45,6 +59,21 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error('Failed to load stats:', e);
         }
     };
+
+    // Toggle logic for Total Payroll
+    const togglePayrollBtn = document.getElementById('togglePayrollBtn');
+    if (togglePayrollBtn) {
+        togglePayrollBtn.addEventListener('click', () => {
+            isPayrollVisible = !isPayrollVisible;
+            renderTotalPayroll();
+            
+            // Swap icon
+            togglePayrollBtn.innerHTML = isPayrollVisible 
+                ? '<i data-lucide="eye" style="width:16px; height:16px; color:var(--brand-green);"></i>'
+                : '<i data-lucide="eye-off" style="width:16px; height:16px;"></i>';
+            if (window.lucide) window.lucide.createIcons();
+        });
+    }
 
     const statusBadge = (status) => {
         const s = String(status || '').toLowerCase();
@@ -261,28 +290,70 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 3. New Payroll Run Modal
+    // 3. New Payroll Run Modal — Dynamically loads periods from timesheet_period
     const runPayrollBtn = document.getElementById("runPayrollBtn");
     if (runPayrollBtn && window.Swal) {
-        runPayrollBtn.addEventListener("click", () => {
+        runPayrollBtn.addEventListener("click", async () => {
+            // First, load available periods from the API
+            let periods = [];
+            try {
+                const periodsData = await fetchJson(`${apiUrl}?action=list_periods`);
+                periods = periodsData.periods || [];
+            } catch (e) {
+                Swal.fire({
+                    title: 'Could Not Load Periods',
+                    text: 'Unable to fetch timesheet periods. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#ef4444'
+                });
+                return;
+            }
+
+            if (periods.length === 0) {
+                Swal.fire({
+                    title: 'No Timesheet Periods Available',
+                    html: `<p style="color:var(--bs-body-color,#374151);font-size:14px;line-height:1.7;">
+                        There are no APPROVED or FINALIZED timesheet periods with employee data.<br><br>
+                        Please go to <strong>Timesheet Data</strong> to review periods and ensure they are approved before running payroll.
+                    </p>`,
+                    icon: 'warning',
+                    confirmButtonColor: '#2ca078',
+                    confirmButtonText: 'Go to Timesheet Data',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancel'
+                }).then(r => {
+                    if (r.isConfirmed) window.location.href = 'timesheetdata.php';
+                });
+                return;
+            }
+
+            // Build inputOptions from real periods
+            const inputOptions = {};
+            periods.forEach(p => {
+                const from = new Date(p.StartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const to   = new Date(p.EndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const dept = p.DepartmentName ? ` — ${p.DepartmentName}` : '';
+                const emps = `${p.EmpCount} emp${p.EmpCount != 1 ? 's' : ''}`;
+                inputOptions[p.PeriodID] = `${from} – ${to}${dept} (${emps}) [${p.Status}]`;
+            });
+
             Swal.fire({
                 title: 'Initialize Payroll Processing',
-                text: "Select the payroll period for the new run.",
+                text: 'Select the timesheet period for this payroll run.',
                 input: 'select',
-                inputOptions: {
-                    '1st_half': 'March 1 - March 15 (Semi-Monthly)',
-                    '2nd_half': 'March 16 - March 31 (Semi-Monthly)',
-                    'monthly': 'March Full Month'
-                },
+                inputOptions,
                 inputPlaceholder: 'Select a period',
                 showCancelButton: true,
                 confirmButtonColor: '#2ca078',
                 confirmButtonText: 'Initialize Processing',
                 background: document.body.classList.contains('dark-mode') ? '#1a1a1a' : '#fff',
-                color: document.body.classList.contains('dark-mode') ? '#f9fafb' : '#111827'
+                color: document.body.classList.contains('dark-mode') ? '#f9fafb' : '#111827',
+                inputValidator: (value) => {
+                    if (!value) return 'Please select a period.';
+                }
             }).then((result) => {
                 if (!result.isConfirmed) return;
-                const periodType = result.value;
+                const periodId = result.value; // this is the PeriodID from timesheet_period
 
                 Swal.fire({
                     title: 'Processing...',
@@ -296,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 fetchJson(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ action: 'create_batch', period_type: periodType }).toString()
+                    body: new URLSearchParams({ action: 'create_batch', period_id: periodId }).toString()
                 }).then(async (data) => {
                     await loadBatches();
                     selectedBatchId = data.batch_id;
@@ -308,7 +379,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         title: 'Batch Created!',
                         text: `Payroll batch ${data.batch_code} created.`,
                         showConfirmButton: false,
-                        timer: 2000,
+                        timer: 2500,
                         timerProgressBar: true
                     });
 
@@ -325,6 +396,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
+
 
     // Batch table actions
     document.addEventListener('click', async (e) => {

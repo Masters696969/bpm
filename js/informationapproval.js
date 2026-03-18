@@ -138,8 +138,8 @@ async function fetchEndorsedRequests() {
                 tableBody.innerHTML = `<tr><td colspan="5">
                     <div class="empty-state">
                         <i data-lucide="inbox"></i>
-                        <p>No endorsed requests found</p>
-                        <span>Requests will appear here after Supervisor endorsement.</span>
+                        <p>No requests found</p>
+                        <span>Pending or endorsed requests will appear here.</span>
                     </div></td></tr>`;
                 lucide.createIcons();
                 return;
@@ -147,9 +147,17 @@ async function fetchEndorsedRequests() {
 
             tableBody.innerHTML = requests.map(req => {
                 const initials = (req.FirstName[0] + req.LastName[0]).toUpperCase();
-                const date = new Date(req.SupervisorDate).toLocaleDateString('en-PH', {
+                const dateVal = req.SupervisorDate || req.RequestDate;
+                const date = new Date(dateVal).toLocaleDateString('en-PH', {
                     year: 'numeric', month: 'short', day: 'numeric'
                 });
+
+                let statusHtml = '';
+                if (req.Status === 'Endorsed') {
+                    statusHtml = `<span class="badge badge-success">Endorsed</span><div style="font-size:10px; color:var(--text-tertiary);">By: ${req.SupFirstName} ${req.SupLastName}</div>`;
+                } else {
+                    statusHtml = `<span class="badge badge-warning">Pending</span><div style="font-size:10px; color:var(--text-tertiary);">Direct Request</div>`;
+                }
 
                 return `
                 <tr class="req-row">
@@ -171,8 +179,7 @@ async function fetchEndorsedRequests() {
                     <td style="color: var(--text-secondary); font-size:13px;">${date}</td>
                     <td>
                         <div>
-                            <span class="badge badge-success">Endorsed</span>
-                            <div style="font-size:10px; color:var(--text-tertiary);">By: ${req.SupFirstName} ${req.SupLastName}</div>
+                            ${statusHtml}
                         </div>
                     </td>
                     <td>

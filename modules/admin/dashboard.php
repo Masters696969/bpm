@@ -1,8 +1,60 @@
-﻿<?php
+<?php
 session_start();
 if (!isset($_SESSION['username'])) {
   header("Location: ../../login.php");
   exit();
+}
+require_once '../../config/config.php';
+
+// ── Live HR Analytics Queries ────────────────────────────────────────────────
+// 1. Total employees
+$r = $conn->query("SELECT COUNT(*) as c FROM employee");
+$total_employees = (int)$r->fetch_assoc()['c'];
+
+// 2. Employment status breakdown
+$r = $conn->query("SELECT EmploymentStatus, COUNT(*) as c FROM employmentinformation GROUP BY EmploymentStatus");
+$emp_status = [];
+while ($row = $r->fetch_assoc()) $emp_status[] = $row;
+
+// 3. Gender breakdown
+$r = $conn->query("SELECT COALESCE(Gender,'Unknown') as Gender, COUNT(*) as c FROM employee GROUP BY Gender");
+$gender_data = [];
+while ($row = $r->fetch_assoc()) $gender_data[] = $row;
+
+// 4. Department headcount
+$r = $conn->query("SELECT d.DepartmentName, COUNT(ei.EmployeeID) as headcount FROM department d LEFT JOIN employmentinformation ei ON d.DepartmentID=ei.DepartmentID GROUP BY d.DepartmentID ORDER BY headcount DESC LIMIT 6");
+$dept_data = [];
+while ($row = $r->fetch_assoc()) $dept_data[] = $row;
+
+// 5. Applicant pipeline
+$r = $conn->query("SELECT COUNT(*) as c FROM applicants WHERE Status NOT IN ('Rejected','Withdrawn')");
+$pending_applicants = (int)$r->fetch_assoc()['c'];
+
+$r = $conn->query("SELECT COUNT(*) as c FROM applicants WHERE Status='Accepted' AND ApprovalStatus='Approved'");
+$to_onboard = (int)$r->fetch_assoc()['c'];
+
+$r = $conn->query("SELECT COUNT(*) as c FROM applicants WHERE ApprovalStatus='Hired'");
+$total_hired = (int)$r->fetch_assoc()['c'];
+
+$r = $conn->query("SELECT COUNT(*) as c FROM applicants WHERE Status='Rejected' OR Status='Withdrawn'");
+$rejected_apps = (int)$r->fetch_assoc()['c'];
+
+// 6. Recent hires
+$r = $conn->query("SELECT e.FirstName, e.LastName, e.EmployeeCode, p.PositionName, d.DepartmentName, ei.HiringDate, ei.EmploymentStatus FROM employee e LEFT JOIN employmentinformation ei ON e.EmployeeID=ei.EmployeeID LEFT JOIN positions p ON ei.PositionID=p.PositionID LEFT JOIN department d ON ei.DepartmentID=d.DepartmentID ORDER BY e.EmployeeID DESC LIMIT 6");
+$recent_hires = [];
+while ($row = $r->fetch_assoc()) $recent_hires[] = $row;
+
+// 7. Authorized vs actual headcount
+$r = $conn->query("SELECT SUM(AuthorizedHeadcount) as auth FROM positions");
+$authorized_headcount = (int)($r->fetch_assoc()['auth'] ?? 0);
+$headcount_gap = max(0, $authorized_headcount - $total_employees);
+
+// 8. Pending leave requests
+$r = $conn->query("SHOW TABLES LIKE 'leave_requests'");
+$pending_leave = 0;
+if ($r->num_rows > 0) {
+    $r = $conn->query("SELECT COUNT(*) as c FROM leave_requests WHERE Status='Pending'");
+    $pending_leave = (int)$r->fetch_assoc()['c'];
 }
 ?>
 <!DOCTYPE html>
@@ -10,10 +62,11 @@ if (!isset($_SESSION['username'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
+  <title>HR Analytics Dashboard</title>
   <link rel="stylesheet" href="../../css/admindashboard.css?v=1.2">
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
 </head>
 <body>
@@ -352,6 +405,10 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-payroll">
+            <a href="timesheetdata.php" class="submenu-item <?php echo($page === 'timesheetdata') ? 'active' : ''; ?>">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Timesheet Data</span>
+            </a>
             <a href="comperules.php" class="submenu-item">
               <i data-lucide="boxes"></i>
               <span>Compensation Rules</span>
@@ -455,6 +512,9 @@ if (!isset($_SESSION['username'])) {
           <i data-lucide="sun" class="sun-icon"></i>
           <i data-lucide="moon" class="moon-icon"></i>
         </button>
+        <button class="icon-btn" onclick="window.print()" title="Print Dashboard">
+          <i data-lucide="printer"></i>
+        </button>
         <button class="icon-btn">
           <i data-lucide="bell"></i>
         </button>
@@ -462,297 +522,306 @@ if (!isset($_SESSION['username'])) {
     </header>
 
     <div class="content-wrapper">
-      <!-- Stats Grid -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
-            <i data-lucide="users"></i>
-          </div>
+
+      <?php
+        // KPI color helpers
+        $statusColors = ['Probationary'=>'#f59e0b','Regular'=>'#2ca078','Contractual'=>'#3b82f6'];
+        $total_probationary = 0; $total_regular = 0; $total_contractual = 0;
+        foreach($emp_status as $s) {
+          if($s['EmploymentStatus']==='Probationary') $total_probationary=(int)$s['c'];
+          if($s['EmploymentStatus']==='Regular')  $total_regular=(int)$s['c'];
+          if($s['EmploymentStatus']==='Contractual') $total_contractual=(int)$s['c'];
+        }
+      ?>
+
+      <!-- ── KPI Cards ── -->
+      <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;margin-bottom:28px;">
+
+        <div class="stat-card" style="position:relative;overflow:hidden;">
+          <div class="stat-icon" style="background:rgba(44,160,120,.12);color:#2ca078;"><i data-lucide="users"></i></div>
           <div class="stat-content">
-            <span class="stat-label">Total Clients</span>
-            <h3 class="stat-value">2,847</h3>
-            <div class="stat-trend positive">
-              <i data-lucide="trending-up"></i>
-              <span>+12.5% from last month</span>
-            </div>
+            <span class="stat-label">Total Employees</span>
+            <h3 class="stat-value" style="font-size:2rem;"><?= $total_employees ?></h3>
+            <div class="stat-trend positive"><i data-lucide="trending-up"></i><span>Active workforce</span></div>
           </div>
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow);">
-            <i data-lucide="banknote"></i>
-          </div>
+          <div class="stat-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i data-lucide="contact-round"></i></div>
           <div class="stat-content">
-            <span class="stat-label">Active Loans</span>
-            <h3 class="stat-value">1,234</h3>
-            <div class="stat-trend positive">
-              <i data-lucide="trending-up"></i>
-              <span>+8.3% from last month</span>
-            </div>
+            <span class="stat-label">Pending Applicants</span>
+            <h3 class="stat-value" style="font-size:2rem;"><?= $pending_applicants ?></h3>
+            <div class="stat-trend" style="color:var(--text-secondary);"><i data-lucide="clock"></i><span>In pipeline</span></div>
           </div>
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-            <i data-lucide="alert-circle"></i>
-          </div>
+          <div class="stat-icon" style="background:rgba(59,130,246,.12);color:#3b82f6;"><i data-lucide="user-plus"></i></div>
           <div class="stat-content">
-            <span class="stat-label">Overdue Payments</span>
-            <h3 class="stat-value">89</h3>
-            <div class="stat-trend negative">
-              <i data-lucide="trending-down"></i>
-              <span>-3.2% from last month</span>
-            </div>
+            <span class="stat-label">Ready to Onboard</span>
+            <h3 class="stat-value" style="font-size:2rem;"><?= $to_onboard ?></h3>
+            <?php if($to_onboard>0): ?>
+            <div class="stat-trend positive"><i data-lucide="alert-circle"></i><a href="newhiredonboard.php" style="color:#2ca078;text-decoration:none;">Finalize now →</a></div>
+            <?php else: ?>
+            <div class="stat-trend" style="color:var(--text-secondary);"><i data-lucide="check"></i><span>None pending</span></div>
+            <?php endif; ?>
           </div>
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-            <i data-lucide="wallet"></i>
-          </div>
+          <div class="stat-icon" style="background:rgba(139,92,246,.12);color:#8b5cf6;"><i data-lucide="briefcase"></i></div>
           <div class="stat-content">
-            <span class="stat-label">Total Portfolio</span>
-            <h3 class="stat-value">$4.2M</h3>
-            <div class="stat-trend positive">
-              <i data-lucide="trending-up"></i>
-              <span>+15.7% from last month</span>
+            <span class="stat-label">Headcount Gap</span>
+            <h3 class="stat-value" style="font-size:2rem;"><?= $headcount_gap ?></h3>
+            <div class="stat-trend" style="color:var(--text-secondary);"><i data-lucide="target"></i><span><?= $total_employees ?> / <?= $authorized_headcount ?> authorized</span></div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(239,68,68,.12);color:#ef4444;"><i data-lucide="tickets-plane"></i></div>
+          <div class="stat-content">
+            <span class="stat-label">Leave Requests</span>
+            <h3 class="stat-value" style="font-size:2rem;"><?= $pending_leave ?></h3>
+            <div class="stat-trend <?= $pending_leave>0?'negative':'' ?>"><i data-lucide="<?= $pending_leave>0?'alert-circle':'check-circle' ?>"></i><span><?= $pending_leave>0?'Awaiting approval':'All cleared' ?></span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Charts Row ── -->
+      <div class="content-grid" style="grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:24px;">
+
+        <!-- Department Headcount (Bar) -->
+        <div class="content-card" style="grid-column:span 2;">
+          <div class="card-header">
+            <div><h3 class="card-title">Department Headcount</h3><p class="card-subtitle">Employee distribution across departments</p></div>
+          </div>
+          <div class="card-body" style="padding:16px;">
+            <canvas id="deptChart" height="120"></canvas>
+          </div>
+        </div>
+
+        <!-- Employment Status (Doughnut) -->
+        <div class="content-card">
+          <div class="card-header">
+            <div><h3 class="card-title">Employment Type</h3><p class="card-subtitle">Status distribution</p></div>
+          </div>
+          <div class="card-body" style="padding:16px;display:flex;align-items:center;justify-content:center;">
+            <canvas id="statusChart" width="200" height="200"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Second Row ── -->
+      <div class="bottom-grid" style="grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+
+        <!-- Gender Breakdown (Doughnut) -->
+        <div class="content-card">
+          <div class="card-header">
+            <div><h3 class="card-title">Gender Diversity</h3><p class="card-subtitle">Workforce composition</p></div>
+          </div>
+          <div class="card-body" style="padding:16px;display:flex;flex-direction:column;align-items:center;">
+            <canvas id="genderChart" width="180" height="180"></canvas>
+            <div style="display:flex;gap:20px;margin-top:14px;flex-wrap:wrap;justify-content:center;">
+              <?php
+                $gColors=['Male'=>'#3b82f6','Female'=>'#ec4899','Unknown'=>'#9ca3af'];
+                foreach($gender_data as $g):
+                  $col = $gColors[$g['Gender']] ?? '#9ca3af';
+              ?>
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;">
+                <span style="width:10px;height:10px;border-radius:50%;background:<?=$col?>;display:inline-block;"></span>
+                <span><?=htmlspecialchars($g['Gender'])?> — <strong><?=$g['c']?></strong></span>
+              </div>
+              <?php endforeach; ?>
             </div>
           </div>
+        </div>
+
+        <!-- Applicant Pipeline -->
+        <div class="content-card">
+          <div class="card-header">
+            <div><h3 class="card-title">Recruitment Pipeline</h3><p class="card-subtitle">Applicant stages overview</p></div>
+            <a href="applicationmgt.php" class="btn-text">Manage →</a>
+          </div>
+          <div class="card-body" style="padding:20px;">
+            <?php
+              $pipelineStages = [
+                ['label'=>'New / Pending','count'=>0,'color'=>'#f59e0b','icon'=>'file-text'],
+                ['label'=>'In Interview','count'=>0,'color'=>'#3b82f6','icon'=>'mic'],
+                ['label'=>'Hired','count'=>$total_hired,'color'=>'#2ca078','icon'=>'user-check'],
+                ['label'=>'Ready to Onboard','count'=>$to_onboard,'color'=>'#8b5cf6','icon'=>'user-plus'],
+                ['label'=>'Rejected','count'=>$rejected_apps,'color'=>'#ef4444','icon'=>'x-circle'],
+              ];
+              // count new and interview from pipeline data
+              foreach($pipelineStages as &$ps) {
+                if($ps['label']==='New / Pending') { $ps['count'] = array_sum(array_column(array_filter($pipelineStages, fn($p)=>false), 'count')); }
+              }
+              $totalApplicantsAll = $pending_applicants + $total_hired + $rejected_apps;
+            ?>
+            <?php
+              $stagesDisplay = [
+                ['label'=>'Pending Review','count'=>$pending_applicants,'color'=>'#f59e0b','icon'=>'file-text'],
+                ['label'=>'Hired (All Time)','count'=>$total_hired,'color'=>'#2ca078','icon'=>'user-check'],
+                ['label'=>'Ready to Onboard','count'=>$to_onboard,'color'=>'#8b5cf6','icon'=>'user-plus'],
+                ['label'=>'Rejected / Withdrawn','count'=>$rejected_apps,'color'=>'#ef4444','icon'=>'x-circle'],
+              ];
+              $totalAll = $pending_applicants + $total_hired + $rejected_apps;
+            ?>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <?php foreach($stagesDisplay as $s): ?>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:36px;height:36px;border-radius:8px;background:<?=$s['color']?>22;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <i data-lucide="<?=$s['icon']?>" style="width:16px;color:<?=$s['color']?>;"></i>
+                </div>
+                <div style="flex:1;">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                    <span style="font-size:12px;color:var(--text-secondary);"><?=htmlspecialchars($s['label'])?></span>
+                    <span style="font-size:12px;font-weight:700;color:var(--text-primary);"><?=$s['count']?></span>
+                  </div>
+                  <div style="height:5px;background:var(--border-color);border-radius:3px;">
+                    <?php $pct = $totalAll>0?round($s['count']/$totalAll*100):0; ?>
+                    <div style="height:5px;background:<?=$s['color']?>;border-radius:3px;width:<?=$pct?>%;"></div>
+                  </div>
+                </div>
+              </div>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Recent Hires Table ── -->
+      <div class="content-card" style="margin-bottom:24px;">
+        <div class="card-header">
+          <div><h3 class="card-title">Recent Hires</h3><p class="card-subtitle">Latest employees added to the system</p></div>
+          <a href="employeemaster.php" class="btn-text">View All →</a>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border-color);">
+                <th style="padding:12px 20px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);font-weight:600;">Employee</th>
+                <th style="padding:12px 20px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);font-weight:600;">Department</th>
+                <th style="padding:12px 20px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);font-weight:600;">Position</th>
+                <th style="padding:12px 20px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);font-weight:600;">Hired Date</th>
+                <th style="padding:12px 20px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);font-weight:600;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach($recent_hires as $hire):
+                $initials = strtoupper(substr($hire['FirstName'],0,1).substr($hire['LastName'],0,1));
+                $avatarColors = ['#2ca078','#3b82f6','#f59e0b','#8b5cf6','#ef4444','#ec4899'];
+                $avatarColor = $avatarColors[crc32($hire['EmployeeCode'])%count($avatarColors)];
+                $statusColor = $hire['EmploymentStatus']==='Regular' ? '#2ca078' : ($hire['EmploymentStatus']==='Contractual'?'#3b82f6':'#f59e0b');
+              ?>
+              <tr style="border-bottom:1px solid var(--border-color);transition:background .15s;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background=''">
+                <td style="padding:14px 20px;">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:34px;height:34px;border-radius:8px;background:<?=$avatarColor?>;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;"><?=$initials?></div>
+                    <div>
+                      <div style="font-weight:600;color:var(--text-primary);"><?=htmlspecialchars($hire['FirstName'].' '.$hire['LastName'])?></div>
+                      <div style="font-size:11px;color:var(--text-tertiary);"><?=htmlspecialchars($hire['EmployeeCode'])?></div>
+                    </div>
+                  </div>
+                </td>
+                <td style="padding:14px 20px;color:var(--text-secondary);"><?=htmlspecialchars($hire['DepartmentName']??'—')?></td>
+                <td style="padding:14px 20px;color:var(--text-secondary);"><?=htmlspecialchars($hire['PositionName']??'—')?></td>
+                <td style="padding:14px 20px;color:var(--text-secondary);"><?=htmlspecialchars(date('M d, Y',strtotime($hire['HiringDate']??'now')))?></td>
+                <td style="padding:14px 20px;">
+                  <span style="background:<?=$statusColor?>22;color:<?=$statusColor?>;border:1px solid <?=$statusColor?>44;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;"><?=htmlspecialchars($hire['EmploymentStatus']??'—')?></span>
+                </td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- Content Grid -->
-      <div class="content-grid">
-        <!-- Recent Applications -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Recent Loan Applications</h3>
-              <p class="card-subtitle">Latest applications requiring review</p>
-            </div>
-            <button class="btn-text">View All</button>
-          </div>
-          <div class="card-body">
-            <div class="data-table">
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #2ca078;">JD</div>
-                    <div>
-                      <span class="client-name">John Doe</span>
-                      <span class="client-detail">Personal Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$15,000</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status pending">Pending</span>
-                </div>
-              </div>
-
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #ffc107;">SM</div>
-                    <div>
-                      <span class="client-name">Sarah Miller</span>
-                      <span class="client-detail">Business Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$25,000</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status approved">Approved</span>
-                </div>
-              </div>
-
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #3b82f6;">RJ</div>
-                    <div>
-                      <span class="client-name">Robert Johnson</span>
-                      <span class="client-detail">Agricultural Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$8,500</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status review">Under Review</span>
-                </div>
-              </div>
-
-              <div class="table-row">
-                <div class="table-cell">
-                  <div class="client-info">
-                    <div class="client-avatar" style="background: #ef4444;">LW</div>
-                    <div>
-                      <span class="client-name">Lisa Williams</span>
-                      <span class="client-detail">Education Loan</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="table-cell">
-                  <span class="amount">$12,000</span>
-                </div>
-                <div class="table-cell">
-                  <span class="badge-status pending">Pending</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Quick Actions</h3>
-              <p class="card-subtitle">Common tasks and shortcuts</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="quick-actions">
-              <button class="action-btn">
-                <i data-lucide="user-plus"></i>
-                <span>Add New Client</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="file-plus"></i>
-                <span>New Loan Application</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="receipt"></i>
-                <span>Record Payment</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="file-text"></i>
-                <span>Generate Report</span>
-              </button>
-              <button class="action-btn">
-                <span>Schedule Meeting</span>
-              </button>
-              <button class="action-btn">
-                <i data-lucide="send"></i>
-                <span>Send Notification</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Grid -->
-      <div class="bottom-grid">
-        <!-- Upcoming Payments -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Upcoming Payments</h3>
-              <p class="card-subtitle">Payments due in the next 7 days</p>
-            </div>
-            <button class="btn-text">View Calendar</button>
-          </div>
-          <div class="card-body">
-            <div class="payment-list">
-              <div class="payment-item">
-                <div class="payment-date">
-                  <span class="date-day">15</span>
-                  <span class="date-month">Dec</span>
-                </div>
-                <div class="payment-details">
-                  <span class="payment-client">Michael Chen</span>
-                  <span class="payment-type">Monthly Installment</span>
-                </div>
-                <div class="payment-amount">$850</div>
-              </div>
-
-              <div class="payment-item">
-                <div class="payment-date">
-                  <span class="date-day">16</span>
-                  <span class="date-month">Dec</span>
-                </div>
-                <div class="payment-details">
-                  <span class="payment-client">Emma Davis</span>
-                  <span class="payment-type">Loan Payment</span>
-                </div>
-                <div class="payment-amount">$1,200</div>
-              </div>
-
-              <div class="payment-item">
-                <div class="payment-date">
-                  <span class="date-day">18</span>
-                  <span class="date-month">Dec</span>
-                </div>
-                <div class="payment-details">
-                  <span class="payment-client">James Wilson</span>
-                  <span class="payment-type">Interest Payment</span>
-                </div>
-                <div class="payment-amount">$450</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Activity Feed -->
-        <div class="content-card">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Recent Activity</h3>
-              <p class="card-subtitle">Latest system activities</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="activity-list">
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(44, 160, 120, 0.1); color: var(--brand-green);">
-                  <i data-lucide="check-circle"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>Loan Approved</strong> for Sarah Miller</p>
-                  <span class="activity-time">2 minutes ago</span>
-                </div>
-              </div>
-
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(255, 193, 7, 0.1); color: var(--brand-yellow);">
-                  <i data-lucide="dollar-sign"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>Payment Received</strong> from John Doe ($850)</p>
-                  <span class="activity-time">15 minutes ago</span>
-                </div>
-              </div>
-
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
-                  <i data-lucide="user-plus"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>New Client</strong> registered: Lisa Williams</p>
-                  <span class="activity-time">1 hour ago</span>
-                </div>
-              </div>
-
-              <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-                  <i data-lucide="alert-triangle"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-text"><strong>Payment Overdue</strong> for Michael Chen</p>
-                  <span class="activity-time">3 hours ago</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
+
+    <!-- ── Chart.js Initialization ── -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const isDark = document.body.classList.contains('dark-mode');
+      const gridColor = 'rgba(128,128,128,0.12)';
+      const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() || '#6b7280';
+
+      // Department Bar Chart
+      const deptCtx = document.getElementById('deptChart');
+      if (deptCtx) {
+        new Chart(deptCtx, {
+          type: 'bar',
+          data: {
+            labels: <?= json_encode(array_column($dept_data,'DepartmentName')) ?>,
+            datasets: [{
+              label: 'Employees',
+              data: <?= json_encode(array_map(fn($d)=>(int)$d['headcount'], $dept_data)) ?>,
+              backgroundColor: ['#2ca078cc','#3b82f6cc','#f59e0bcc','#8b5cf6cc','#ef4444cc','#ec4899cc'],
+              borderRadius: 8,
+              borderSkipped: false,
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, grid: { color: gridColor }, ticks: { precision: 0 } },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+      }
+
+      // Employment Status Doughnut
+      const statusCtx = document.getElementById('statusChart');
+      if (statusCtx) {
+        new Chart(statusCtx, {
+          type: 'doughnut',
+          data: {
+            labels: <?= json_encode(array_column($emp_status,'EmploymentStatus')) ?>,
+            datasets: [{
+              data: <?= json_encode(array_map(fn($s)=>(int)$s['c'], $emp_status)) ?>,
+              backgroundColor: ['#f59e0bcc', '#2ca078cc', '#3b82f6cc'],
+              borderWidth: 0,
+              hoverOffset: 6
+            }]
+          },
+          options: {
+            responsive: false,
+            cutout: '68%',
+            plugins: {
+              legend: { position: 'bottom', labels: { padding: 12, font: { size: 11 } } }
+            }
+          }
+        });
+      }
+
+      // Gender Doughnut
+      const genderCtx = document.getElementById('genderChart');
+      if (genderCtx) {
+        const gColors = <?= json_encode(array_map(fn($g)=> $g['Gender']==='Male'?'#3b82f6cc':($g['Gender']==='Female'?'#ec4899cc':'#9ca3afcc'), $gender_data)) ?>;
+        new Chart(genderCtx, {
+          type: 'doughnut',
+          data: {
+            labels: <?= json_encode(array_column($gender_data,'Gender')) ?>,
+            datasets: [{
+              data: <?= json_encode(array_map(fn($g)=>(int)$g['c'], $gender_data)) ?>,
+              backgroundColor: gColors,
+              borderWidth: 0,
+              hoverOffset: 6
+            }]
+          },
+          options: {
+            responsive: false,
+            cutout: '65%',
+            plugins: { legend: { display: false } }
+          }
+        });
+      }
+    });
+    </script>
   </main>
   <script src="../../js/admindashboard.js"></script>
   <script>

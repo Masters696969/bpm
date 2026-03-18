@@ -491,7 +491,7 @@ $module = 'corehumancapital';
                             <tr>
                                 <th>Employee</th>
                                 <th>Request Type</th>
-                                <th>Endorsed Date</th>
+                                <th>Request Date</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
