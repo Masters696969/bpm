@@ -2,9 +2,6 @@ let selectionMode = false;
 let currentEmployeeData = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize theme and sidebar
-    initializeThemeAndSidebar();
-    
     fetchEmployees();
     lucide.createIcons();
     bindTopButtons();
@@ -39,7 +36,7 @@ function bindTopButtons() {
 
 async function fetchEmployees() {
     try {
-        const url = 'backend/be_employeemaster.php?action=fetch_employees';
+        const url = 'backend/be_employeemasters.php?action=fetch_employees';
         console.log('Fetching employees from:', url);
 
         const response = await fetch(url, {
@@ -272,7 +269,7 @@ async function dispatchSelectedEmployees() {
             employee_ids: employeeIds
         });
 
-        const response = await fetch('backend/be_employeemaster.php', {
+        const response = await fetch('backend/be_employeemasters.php', {
             method: 'POST',
             body: formData
         });
@@ -302,7 +299,7 @@ async function dispatchSelectedEmployees() {
 
 async function viewProfile(id) {
     try {
-        const response = await fetch(`backend/be_employeemaster.php?action=get_employee_details&id=${id}`);
+        const response = await fetch(`backend/be_employeemasters.php?action=get_employee_details&id=${id}`);
         const result = await response.json();
 
         if (!result.success) {
@@ -470,7 +467,7 @@ async function editEmployee(id) {
         const dlg = document.querySelector('#employeeModal .modal-dialog');
         if (dlg) dlg.classList.add('ep-edit-dialog');
 
-        const response = await fetch(`backend/be_employeemaster.php?action=get_employee_details&id=${id}`);
+        const response = await fetch(`backend/be_employeemasters.php?action=get_employee_details&id=${id}`);
         const result = await response.json();
 
         if (result.success) {
@@ -607,7 +604,7 @@ async function submitEditForm(event) {
     formData.append('action', 'update_employee');
 
     try {
-        const response = await fetch('backend/be_employeemaster.php', {
+        const response = await fetch('backend/be_employeemasters.php', {
             method: 'POST',
             body: formData
         });

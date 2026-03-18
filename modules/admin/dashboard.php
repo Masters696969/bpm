@@ -1,8 +1,8 @@
 ﻿<?php
 session_start();
 if (!isset($_SESSION['username'])) {
-    header("Location: ../../login.php");
-    exit();
+  header("Location: ../../login.php");
+  exit();
 }
 ?>
 <!DOCTYPE html>
@@ -53,7 +53,7 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-recruitment">
-           <a href="recruitment.php" class="nav-item <?php echo ($page === 'recruitment') ? 'active' : ''; ?>">
+           <a href="recruitment.php" class="nav-item <?php echo($page === 'recruitment') ? 'active' : ''; ?>">
               <i data-lucide="layers-plus"></i>
               <span>Recruitment</span>
             </a>
@@ -67,7 +67,7 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-applicationmgt">
-            <a href="applicationmgt.php" class="nav-item <?php echo ($page === 'applicationmgt') ? 'active' : ''; ?>">
+            <a href="applicationmgt.php" class="nav-item <?php echo($page === 'applicationmgt') ? 'active' : ''; ?>">
               <i data-lucide="contact-round"></i>
               <span>Applicant Management</span>
             </a>
@@ -81,7 +81,7 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-newhiredonboard">
-            <a href="newhiredonboard.php" class="nav-item <?php echo ($page === 'newhiredonboard') ? 'active' : ''; ?>">
+            <a href="newhiredonboard.php" class="nav-item <?php echo($page === 'newhiredonboard') ? 'active' : ''; ?>">
               <i data-lucide="user-plus"></i>
               <span>New Hired Onboard</span>
             </a>
@@ -115,7 +115,7 @@ if (!isset($_SESSION['username'])) {
               <span>Audit Logs</span>
             </a>
           </div>
-           <div class="nav-item-group <?php echo ($module === 'competency') ? 'active' : ''; ?>">
+           <div class="nav-item-group <?php echo($module === 'competency') ? 'active' : ''; ?>">
             <button class="nav-item has-submenu" data-module="competency">
               <div class="nav-item-content">
                 <i data-lucide="pickaxe"></i>
@@ -124,33 +124,33 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="chevron-down" class="submenu-icon"></i>
             </button>
             <div class="submenu" id="submenu-competency">
-              <a href="competencylibrary.php" class="submenu-item <?php echo ($page === 'competency') ? 'active' : ''; ?>">
+              <a href="competencylibrary.php" class="submenu-item <?php echo($page === 'competency') ? 'active' : ''; ?>">
                 <i data-lucide="book-text"></i>
                 <span>Competency Library</span>
               </a>
-              <a href="competencycategory.php" class="submenu-item <?php echo ($page === 'competencycategory') ? 'active' : ''; ?>">
+              <a href="competencycategory.php" class="submenu-item <?php echo($page === 'competencycategory') ? 'active' : ''; ?>">
                 <i data-lucide="chart-bar-stacked"></i>
                 <span>Competency Category</span>
               </a>
-               <a href="competencylevel.php" class="submenu-item <?php echo ($page === 'competencylevel') ? 'active' : ''; ?>">
+               <a href="competencylevel.php" class="submenu-item <?php echo($page === 'competencylevel') ? 'active' : ''; ?>">
                 <i data-lucide="circle-gauge"></i>
                 <span>Competency Level</span>
               </a>
-              <a href="competencyposition.php" class="submenu-item <?php echo ($page === 'competencyposition') ? 'active' : ''; ?>">
+              <a href="competencyposition.php" class="submenu-item <?php echo($page === 'competencyposition') ? 'active' : ''; ?>">
                 <i data-lucide="briefcase"></i>
                 <span>Competency Position</span>
               </a>
-              <a href="competencyemployee.php" class="submenu-item <?php echo ($page === 'competencyemployee') ? 'active' : ''; ?>">
+              <a href="competencyemployee.php" class="submenu-item <?php echo($page === 'competencyemployee') ? 'active' : ''; ?>">
                 <i data-lucide="square-user"></i>
                 <span>Competency Employee</span>
               </a>
-                <a href="bankquestion.php" class="submenu-item <?php echo ($page === 'bankquestion') ? 'active' : ''; ?>">
+                <a href="bankquestion.php" class="submenu-item <?php echo($page === 'bankquestion') ? 'active' : ''; ?>">
                 <i data-lucide="book-open-check"></i>
                 <span>Bank Question</span>
               </a>
             </div>
         </div>
-         <div class="nav-item-group <?php echo ($module === 'training') ? 'active' : ''; ?>">
+         <div class="nav-item-group <?php echo($module === 'training') ? 'active' : ''; ?>">
             <button class="nav-item has-submenu" data-module="training">
               <div class="nav-item-content">
                 <i data-lucide="briefcase-business"></i>
@@ -159,13 +159,13 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="chevron-down" class="submenu-icon"></i>
             </button>
             <div class="submenu" id="submenu-training">
-              <a href="training.php" class="submenu-item <?php echo ($page === 'training') ? 'active' : ''; ?>">
+              <a href="training.php" class="submenu-item <?php echo($page === 'training') ? 'active' : ''; ?>">
                 <i data-lucide="briefcase-business"></i>
                 <span>Training Management</span>
               </a>
             </div>
         </div>
-         <div class="nav-item-group <?php echo ($module === 'succession') ? 'active' : ''; ?>">
+         <div class="nav-item-group <?php echo($module === 'succession') ? 'active' : ''; ?>">
             <button class="nav-item has-submenu" data-module="succession">
               <div class="nav-item-content">
                 <i data-lucide="notebook-pen"></i>
@@ -174,13 +174,13 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="chevron-down" class="submenu-icon"></i>
             </button>
             <div class="submenu" id="submenu-succession">
-              <a href="succession.php" class="submenu-item <?php echo ($page === 'succession') ? 'active' : ''; ?>">
+              <a href="succession.php" class="submenu-item <?php echo($page === 'succession') ? 'active' : ''; ?>">
                 <i data-lucide="notebook-pen"></i>
                 <span>Succession Planning</span>
               </a>
             </div>
         </div>
-         <div class="nav-item-group <?php echo ($module === 'learning') ? 'active' : ''; ?>">
+         <div class="nav-item-group <?php echo($module === 'learning') ? 'active' : ''; ?>">
             <button class="nav-item has-submenu" data-module="learning">
               <div class="nav-item-content">
                 <i data-lucide="notebook-text"></i>
@@ -189,7 +189,7 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="chevron-down" class="submenu-icon"></i>
             </button>
             <div class="submenu" id="submenu-learning">
-              <a href="learning.php" class="submenu-item <?php echo ($page === 'learning') ? 'active' : ''; ?>">
+              <a href="learning.php" class="submenu-item <?php echo($page === 'learning') ? 'active' : ''; ?>">
                 <i data-lucide="notebook-text"></i>
                 <span>Learning Management</span>
               </a>
@@ -197,7 +197,7 @@ if (!isset($_SESSION['username'])) {
         </div>
           <div class="nav-section">   
             <span class="nav-section-title">HUMAN RESOURCES III</span>
-          <div class="nav-item-group <?php echo ($module === 'shift') ? 'active' : ''; ?>">
+          <div class="nav-item-group <?php echo($module === 'shift') ? 'active' : ''; ?>">
             <button class="nav-item has-submenu" data-module="shift">
               <div class="nav-item-content">
                 <i data-lucide="calendar-check"></i>
@@ -206,12 +206,12 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="chevron-down" class="submenu-icon"></i>
             </button>
             <div class="submenu" id="submenu-shift">
-              <a href="#" class="submenu-item <?php echo ($page === 'shift') ? 'active' : ''; ?>">
+              <a href="admin_roster.php" class="submenu-item <?php echo($page === 'shift') ? 'active' : ''; ?>">
                 <i data-lucide="send-to-back"></i>
                 <span>Shift & Scheduling</span>
               </a>
             </div>
-            <div class="nav-item-group <?php echo ($module === 'claims') ? 'active' : ''; ?>">
+            <div class="nav-item-group <?php echo($module === 'claims') ? 'active' : ''; ?>">
             <button class="nav-item has-submenu" data-module="claims">
               <div class="nav-item-content">
                 <i data-lucide="receipt-text"></i>
@@ -220,12 +220,12 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="chevron-down" class="submenu-icon"></i>
             </button>
             <div class="submenu" id="submenu-claims">
-              <a href="claims.php" class="submenu-item <?php echo ($page === 'claims') ? 'active' : ''; ?>">
+              <a href="claims.php" class="submenu-item <?php echo($page === 'claims') ? 'active' : ''; ?>">
                 <i data-lucide="receipt-text"></i>
                 <span>Claims & Reimbursements</span>
               </a>
             </div>
-            <div class="nav-item-group <?php echo ($module === 'time') ? 'active' : ''; ?>">
+            <div class="nav-item-group <?php echo($module === 'time') ? 'active' : ''; ?>">
             <button class="nav-item has-submenu" data-module="time">
               <div class="nav-item-content">
                 <i data-lucide="clock"></i>
@@ -234,12 +234,12 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="chevron-down" class="submenu-icon"></i>
             </button>
             <div class="submenu" id="submenu-time">
-              <a href="time.php" class="submenu-item <?php echo ($page === 'time') ? 'active' : ''; ?>">
+              <a href="time.php" class="submenu-item <?php echo($page === 'time') ? 'active' : ''; ?>">
                 <i data-lucide="clock"></i>
                 <span>Time & Attendance</span>
               </a>
             </div>
-            <div class="nav-item-group <?php echo ($module === 'timesheet') ? 'active' : ''; ?>">
+            <div class="nav-item-group <?php echo($module === 'timesheet') ? 'active' : ''; ?>">
             <button class="nav-item has-submenu" data-module="timesheet">
               <div class="nav-item-content">
                 <i data-lucide="calendar-days"></i>
@@ -248,12 +248,12 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="chevron-down" class="submenu-icon"></i>
             </button>
             <div class="submenu" id="submenu-timesheet">
-              <a href="timesheet.php" class="submenu-item <?php echo ($page === 'timesheet') ? 'active' : ''; ?>">
+              <a href="timesheet.php" class="submenu-item <?php echo($page === 'timesheet') ? 'active' : ''; ?>">
                 <i data-lucide="calendar-days"></i>
                 <span>Timesheet</span>
               </a>
             </div>
-             <div class="nav-item-group <?php echo ($module === 'leave') ? 'active' : ''; ?>">
+             <div class="nav-item-group <?php echo($module === 'leave') ? 'active' : ''; ?>">
             <button class="nav-item has-submenu" data-module="leave">
               <div class="nav-item-content">
                 <i data-lucide="tickets-plane"></i>
@@ -262,14 +262,14 @@ if (!isset($_SESSION['username'])) {
               <i data-lucide="chevron-down" class="submenu-icon"></i>
             </button>
             <div class="submenu" id="submenu-leave">
-              <a href="leave.php" class="submenu-item <?php echo ($page === 'leave') ? 'active' : ''; ?>">
+              <a href="leave.php" class="submenu-item <?php echo($page === 'leave') ? 'active' : ''; ?>">
                 <i data-lucide="tickets-plane"></i>
                 <span>Leave Management</span>
               </a>
             </div>
        <div class="nav-section">
         <span class="nav-section-title">HUMAN RESOURCES IV</span>
-          <div class="nav-item-group <?php echo ($module === 'corehumancapital') ? 'active' : ''; ?>">
+          <div class="nav-item-group <?php echo($module === 'corehumancapital') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="corehumancapital">
             <div class="nav-item-content">
               <i data-lucide="book-user"></i>
@@ -278,37 +278,37 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-corehumancapital">
-            <a href="dispatch.php" class="submenu-item <?php echo ($page === 'dispatch') ? 'active' : ''; ?>">
+            <a href="dispatch.php" class="submenu-item <?php echo($page === 'dispatch') ? 'active' : ''; ?>">
               <i data-lucide="send"></i>
               <span>Master Data Dispatch</span>
             </a>
-             <a href="orgprofile.php" class="submenu-item <?php echo ($page === 'orgprofile') ? 'active' : ''; ?>">
+             <a href="orgprofile.php" class="submenu-item <?php echo($page === 'orgprofile') ? 'active' : ''; ?>">
               <i data-lucide="building-2"></i>
               <span>Organization Profile</span>
             </a>
-            <a href="positioncatalog.php" class="submenu-item <?php echo ($page === 'positioncatalog') ? 'active' : ''; ?>">
+            <a href="positioncatalog.php" class="submenu-item <?php echo($page === 'positioncatalog') ? 'active' : ''; ?>">
               <i data-lucide="user-star"></i>
               <span>Position Catalog</span>
             </a>
-            <a href="employeemaster.php" class="submenu-item <?php echo ($page === 'employeemaster') ? 'active' : ''; ?>">
+            <a href="employeemaster.php" class="submenu-item <?php echo($page === 'employeemaster') ? 'active' : ''; ?>">
               <i data-lucide="file-user"></i>
               <span>Employee Master Files</span>
             </a>
-            <a href="informationapproval.php" class="submenu-item <?php echo ($page === 'informationapproval') ? 'active' : ''; ?>">
+            <a href="informationapproval.php" class="submenu-item <?php echo($page === 'informationapproval') ? 'active' : ''; ?>">
               <i data-lucide="file-check"></i>
               <span>Information Approval</span>
             </a>
-            <a href="bankform.php" class="submenu-item <?php echo ($page === 'bankform') ? 'active' : ''; ?>">
+            <a href="bankform.php" class="submenu-item <?php echo($page === 'bankform') ? 'active' : ''; ?>">
               <i data-lucide="file-text"></i>
               <span>Bank Form Management</span>
             </a>
-            <a href="auditlogs.php" class="submenu-item <?php echo ($page === 'auditlogs') ? 'active' : ''; ?>">
+            <a href="auditlogs.php" class="submenu-item <?php echo($page === 'auditlogs') ? 'active' : ''; ?>">
               <i data-lucide="book-user"></i>
               <span>Audit Logs</span>
             </a>
           </div>
         </div>
-          <div class="nav-item-group <?php echo ($module === 'planning') ? 'active' : ''; ?>">
+          <div class="nav-item-group <?php echo($module === 'planning') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="planning">
             <div class="nav-item-content">
               <i data-lucide="circle-pile"></i>
@@ -317,27 +317,27 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-planning">
-           <a href="comintake.php" class="submenu-item <?php echo ($page === 'intake') ? 'active' : ''; ?>">
+           <a href="comintake.php" class="submenu-item <?php echo($page === 'intake') ? 'active' : ''; ?>">
               <i data-lucide="layout-dashboard"></i>
               <span>Master Data Intake</span>
             </a>
-            <a href="salary.php" class="submenu-item <?php echo ($page === 'salarymgt') ? 'active' : ''; ?>">
+            <a href="salary.php" class="submenu-item <?php echo($page === 'salarymgt') ? 'active' : ''; ?>">
               <i data-lucide="banknote"></i>
               <span>Salary & Scales Management</span>
             </a>
-            <a href="statutory.php" class="submenu-item <?php echo ($page === 'statutory') ? 'active' : ''; ?>">
+            <a href="statutory.php" class="submenu-item <?php echo($page === 'statutory') ? 'active' : ''; ?>">
               <i data-lucide="scale"></i>
               <span>Statutory Contributions</span>
             </a>
-            <a href="matrix.php" class="submenu-item <?php echo ($page === 'matrix') ? 'active' : ''; ?>">
+            <a href="matrix.php" class="submenu-item <?php echo($page === 'matrix') ? 'active' : ''; ?>">
               <i data-lucide="percent"></i>
               <span>Merit Matrix Structure</span>
             </a>
-            <a href="allowance.php" class="submenu-item <?php echo ($page === 'allowance') ? 'active' : ''; ?>">
+            <a href="allowance.php" class="submenu-item <?php echo($page === 'allowance') ? 'active' : ''; ?>">
               <i data-lucide="gift"></i>
               <span>Allowance Structure</span>
             </a>
-            <a href="cycle.php" class="submenu-item <?php echo ($page === 'cycle') ? 'active' : ''; ?>">
+            <a href="cycle.php" class="submenu-item <?php echo($page === 'cycle') ? 'active' : ''; ?>">
               <i data-lucide="notebook-pen"></i>
               <span>Compensation Structure Management</span>
             </a>
@@ -374,7 +374,7 @@ if (!isset($_SESSION['username'])) {
         <div class="nav-section">
         <span class="nav-section-title">FINANCE</span>
         
-        <div class="nav-item-group <?php echo ($module === 'budget') ? 'active' : ''; ?>">
+        <div class="nav-item-group <?php echo($module === 'budget') ? 'active' : ''; ?>">
           <button class="nav-item has-submenu" data-module="budget">
             <div class="nav-item-content">
               <i data-lucide="hand-coins"></i>
@@ -383,7 +383,7 @@ if (!isset($_SESSION['username'])) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-budget">
-            <a href="positionrequest.php" class="submenu-item <?php echo ($page === 'positionrequest') ? 'active' : ''; ?>">
+            <a href="positionrequest.php" class="submenu-item <?php echo($page === 'positionrequest') ? 'active' : ''; ?>">
               <i data-lucide="badge-dollar-sign"></i>
               <span>Position Requests</span>
             </a>
