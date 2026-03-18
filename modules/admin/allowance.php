@@ -400,6 +400,10 @@ while ($row = $grade_allowances_query->fetch_assoc()) {
             <i data-lucide="chevron-down" class="submenu-icon"></i>
           </button>
           <div class="submenu" id="submenu-payroll">
+            <a href="timesheet.php" class="submenu-item">
+              <i data-lucide="calendar-check"></i>
+              <span>Timesheet Management</span>
+            </a>
             <a href="comperules.php" class="submenu-item">
               <i data-lucide="boxes"></i>
               <span>Compensation Rules</span>

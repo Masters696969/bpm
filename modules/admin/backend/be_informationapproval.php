@@ -34,8 +34,8 @@ try {
                 LEFT JOIN useraccounts ua ON r.SupervisorID = ua.AccountID
                 -- Then link the supervisor's employee record if we joined via AccountID
                 LEFT JOIN employee s_acct ON ua.EmployeeID = s_acct.EmployeeID
-                WHERE r.Status = 'Endorsed'
-                ORDER BY r.SupervisorDate DESC";
+                WHERE r.Status IN ('Pending', 'Endorsed')
+                ORDER BY r.RequestDate DESC";
         
         $result = $conn->query($sql);
         $requests = [];
@@ -62,7 +62,7 @@ try {
 
         try {
             // 1. Fetch Request Data
-            $stmt = $conn->prepare("SELECT EmployeeID, RequestData FROM employee_update_requests WHERE RequestID = ? AND Status = 'Endorsed'");
+            $stmt = $conn->prepare("SELECT EmployeeID, RequestData FROM employee_update_requests WHERE RequestID = ? AND Status IN ('Pending', 'Endorsed')");
             $stmt->bind_param("i", $requestId);
             $stmt->execute();
             $res = $stmt->get_result();
