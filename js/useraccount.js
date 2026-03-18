@@ -4,6 +4,8 @@
  * Last Updated: February 8, 2026
  */
 
+function initUserAccount() {
+
 // Fallback for SweetAlert2 when blocked by browser tracking prevention
 if (typeof window.Swal === 'undefined') {
     window.Swal = {
@@ -59,13 +61,28 @@ if (typeof window.lucide === 'undefined') {
         document.getElementById("accountId").value = "";
     };
 
-    // Add button click
+    const openAddModal = () => {
+        const modalTitle = document.getElementById('modalTitle');
+        const submitLabel = document.getElementById('submitBtnLabel');
+        if (modalTitle) modalTitle.textContent = 'Add New Account';
+        if (submitLabel) submitLabel.textContent = 'Create Account';
+        const pwd = document.getElementById("password");
+        const cpwd = document.getElementById("confirmPassword");
+        if (pwd) pwd.required = true;
+        if (cpwd) cpwd.required = true;
+        openModal(true);
+    };
+
+    // Add button click (single binding)
     if (addUserBtn) {
-        addUserBtn.addEventListener("click", openModal);
+        addUserBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            openAddModal();
+        });
     }
 
-    // Global fallback for inline onclick
-    window.openAddAccountModal = openModal;
+    // Global fallback for inline/backup handlers
+    window.openAddAccountModal = openAddModal;
 
     // Close buttons
     if (closeModalBtn) closeModalBtn.addEventListener("click", closeModal);
@@ -263,23 +280,6 @@ if (typeof window.lucide === 'undefined') {
             });
         }
     };
-
-    const openAddModal = () => {
-        document.getElementById("accountId").value = "";
-        const modalTitle = document.getElementById('modalTitle');
-        const submitLabel = document.getElementById('submitBtnLabel');
-        if (modalTitle) modalTitle.textContent = 'Add New Account';
-        if (submitLabel) submitLabel.textContent = 'Create Account';
-        document.getElementById("password").required = true;
-        document.getElementById("confirmPassword").required = true;
-        openModal(true);
-    };
-
-    if (addUserBtn) {
-        const newBtn = addUserBtn.cloneNode(true);
-        addUserBtn.parentNode.replaceChild(newBtn, addUserBtn);
-        newBtn.addEventListener("click", openAddModal);
-    }
 
     async function performDelete(id, username) {
         const confirmed = await Swal.fire({

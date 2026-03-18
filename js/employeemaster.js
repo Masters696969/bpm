@@ -2,9 +2,6 @@ let selectionMode = false;
 let currentEmployeeData = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize theme and sidebar
-    initializeThemeAndSidebar();
-    
     fetchEmployees();
     lucide.createIcons();
     bindTopButtons();

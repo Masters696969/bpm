@@ -24,21 +24,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
             // 2. Save/Update the simulation as 'Sent to Finance'
-            $check_stmt = $conn->prepare("SELECT DraftID FROM simulation_drafts WHERE CycleName = ?");
+            $check_stmt = $conn->prepare("SELECT DraftID, TotalBudget FROM simulation_drafts WHERE CycleName = ?");
             $check_stmt->bind_param("s", $cycleName);
             $check_stmt->execute();
             $result = $check_stmt->get_result();
 
+            $totalBudget = isset($_POST['total_budget']) ? (float)$_POST['total_budget'] : 5000000;
             $userId = $_SESSION['user_id'] ?? 0;
+            
             if ($result->num_rows > 0) {
                 $row = $result->fetch_assoc();
                 $draftId = $row['DraftID'];
-                $update_stmt = $conn->prepare("UPDATE simulation_drafts SET EmployeeData = ?, SalaryScaleData = ?, TotalCost = ?, Status = 'Sent to Finance', ProposedBy = ?, LastSaved = NOW() WHERE DraftID = ?");
-                $update_stmt->bind_param("ssdii", $employeeDataStr, $salaryScaleDataStr, $totalCost, $userId, $draftId);
+                $dbTotalBudget = (float)($row['TotalBudget'] > 0 ? $row['TotalBudget'] : $totalBudget);
+                $budgetUsedPct = ($dbTotalBudget > 0) ? (($totalCost * 12) / $dbTotalBudget) * 100 : 0;
+                
+                $update_stmt = $conn->prepare("UPDATE simulation_drafts SET EmployeeData = ?, SalaryScaleData = ?, TotalCost = ?, TotalBudget = ?, BudgetUsedPct = ?, Status = 'Sent to Finance', ProposedBy = ?, LastSaved = NOW() WHERE DraftID = ?");
+                $update_stmt->bind_param("ssdddii", $employeeDataStr, $salaryScaleDataStr, $totalCost, $dbTotalBudget, $budgetUsedPct, $userId, $draftId);
                 $update_stmt->execute();
             } else {
-                $insert_stmt = $conn->prepare("INSERT INTO simulation_drafts (CycleName, period_id, TotalCost, EmployeeData, SalaryScaleData, Status, ProposedBy) VALUES (?, 1, ?, ?, ?, 'Sent to Finance', ?)");
-                $insert_stmt->bind_param("sdssi", $cycleName, $totalCost, $employeeDataStr, $salaryScaleDataStr, $userId);
+                $budgetUsedPct = ($totalBudget > 0) ? (($totalCost * 12) / $totalBudget) * 100 : 0;
+                $insert_stmt = $conn->prepare("INSERT INTO simulation_drafts (CycleName, period_id, TotalCost, TotalBudget, BudgetUsedPct, EmployeeData, SalaryScaleData, Status, ProposedBy) VALUES (?, 1, ?, ?, ?, ?, ?, 'Sent to Finance', ?)");
+                $insert_stmt->bind_param("sdddssi", $cycleName, $totalCost, $totalBudget, $budgetUsedPct, $employeeDataStr, $salaryScaleDataStr, $userId);
                 $insert_stmt->execute();
             }
 
@@ -48,14 +54,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $notifStmt->execute();
 
             $conn->commit();
-            $response['success'] = true;
+            $response['ok'] = true;
             $response['message'] = 'Proposal submitted to Finance successfully.';
         } catch (Exception $e) {
             $conn->rollback();
+            $response['ok'] = false;
             $response['message'] = 'Error: ' . $e->getMessage();
         }
     }
 } else {
+    $response['ok'] = false;
     $response['message'] = 'Invalid request method.';
 }
 
