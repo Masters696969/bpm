@@ -1,0 +1,16 @@
+[2026-03-19 01:18:10] Processing: ID=32, Period=0, Ref=FALL-20260319-6627, Status=Approved. Data: {"hr_proposal_id":32,"finance_ref":"FALL-20260319-6627","amount":590671.87,"approved_amount":590671.87,"status":"Approved"}
+[2026-03-19 01:18:10] DETECTED PAYROLL SYNC: BatchID=32
+[2026-03-19 01:18:27] Processing: ID=32, Period=0, Ref=FALL-20260319-6627, Status=Pending. Data: {"hr_proposal_id":32,"finance_ref":"FALL-20260319-6627","amount":590671.87,"approved_amount":590671.87,"status":"Pending"}
+[2026-03-19 01:18:27] DETECTED PAYROLL SYNC: BatchID=32
+[2026-03-19 01:18:33] Processing: ID=32, Period=0, Ref=FALL-20260319-6627, Status=Approved. Data: {"hr_proposal_id":32,"finance_ref":"FALL-20260319-6627","amount":590671.87,"approved_amount":590671.87,"status":"Approved"}
+[2026-03-19 01:18:33] DETECTED PAYROLL SYNC: BatchID=32
+[2026-03-19 01:19:36] Processing: ID=32, Period=0, Ref=FALL-20260319-6627, Status=Approved. Data: {"hr_proposal_id":32,"finance_ref":"FALL-20260319-6627","amount":590671.87,"approved_amount":590671.87,"status":"Approved"}
+[2026-03-19 01:19:36] DETECTED PAYROLL SYNC: BatchID=32
+[2026-03-19 02:14:15] Processing: ID=33, Period=0, Ref=FALL-20260319-4081, Status=Approved. Data: {"hr_proposal_id":33,"finance_ref":"FALL-20260319-4081","amount":1000006,"approved_amount":1000006,"status":"Approved"}
+[2026-03-19 02:14:15] DETECTED PAYROLL SYNC: BatchID=33
+[2026-03-19 04:05:27] Processing: ID=34, Period=0, Ref=FALL-20260319-7359, Status=Approved. Data: {"hr_proposal_id":34,"finance_ref":"FALL-20260319-7359","amount":738644.31,"approved_amount":738644.31,"status":"Approved"}
+[2026-03-19 04:05:27] DETECTED PAYROLL SYNC: BatchID=34
+[2026-03-19 04:46:42] Processing: ID=35, Period=0, Ref=FALL-20260319-5490, Status=Approved. Data: {"hr_proposal_id":35,"finance_ref":"FALL-20260319-5490","amount":746015.6,"approved_amount":746015.6,"status":"Approved"}
+[2026-03-19 04:46:42] DETECTED PAYROLL SYNC: BatchID=35
+[2026-03-19 04:51:08] Processing: ID=36, Period=0, Ref=FALL-20260319-4156, Status=Approved. Data: {"hr_proposal_id":36,"finance_ref":"FALL-20260319-4156","amount":2000000,"approved_amount":2000000,"status":"Approved"}
+[2026-03-19 04:51:08] DETECTED PAYROLL SYNC: BatchID=36

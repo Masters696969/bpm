@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['username'])) {
   header("Location: ../../login.php");
   exit();
 }
-require_once '../../../config/config.php';
+require_once '../../config/config.php';
 
 // â”€â”€ Timesheet Data Queries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 $periodsRes = $conn->query("
