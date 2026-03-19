@@ -10,7 +10,7 @@ if (!$employeeID) { header("Location: ../../login.php"); exit; }
 
 // 1. Fetch Active Cutoff Periods for the Employee's Department
 $qPeriods = "SELECT PeriodID, StartDate, EndDate FROM timesheet_period 
-             WHERE DepartmentID = ? AND Status != 'FINALIZED' 
+             WHERE DepartmentID = ? AND Status = 'FINALIZED' 
              ORDER BY StartDate DESC LIMIT 5";
 $stmtP = $conn->prepare($qPeriods);
 $stmtP->bind_param("i", $deptID);

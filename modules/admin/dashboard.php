@@ -273,7 +273,7 @@ if ($r->num_rows > 0) {
               <i data-lucide="chevron-down" class="submenu-icon"></i>
             </button>
             <div class="submenu" id="submenu-claims">
-              <a href="claims.php" class="submenu-item <?php echo($page === 'claims') ? 'active' : ''; ?>">
+              <a href="admin_claims_review.php" class="submenu-item <?php echo($page === 'claims') ? 'active' : ''; ?>">
                 <i data-lucide="receipt-text"></i>
                 <span>Claims & Reimbursements</span>
               </a>
@@ -315,7 +315,7 @@ if ($r->num_rows > 0) {
               <i data-lucide="chevron-down" class="submenu-icon"></i>
             </button>
             <div class="submenu" id="submenu-leave">
-              <a href="leave.php" class="submenu-item <?php echo($page === 'leave') ? 'active' : ''; ?>">
+              <a href="admin_leave.php" class="submenu-item <?php echo($page === 'leave') ? 'active' : ''; ?>">
                 <i data-lucide="tickets-plane"></i>
                 <span>Leave Management</span>
               </a>

@@ -225,25 +225,9 @@ $module = $module ?? '';
                     <i data-lucide="chevron-down" class="submenu-icon"></i>
                 </button>
                 <div class="submenu" id="submenu-claims">
-                    <a href="claims.php" class="submenu-item <?php echo($page === 'claims') ? 'active' : ''; ?>">
+                    <a href="admin_claims_review.php" class="submenu-item <?php echo($page === 'claims') ? 'active' : ''; ?>">
                         <i data-lucide="receipt-text"></i>
                         <span>Claims & Reimbursements</span>
-                    </a>
-                </div>
-            </div>
-
-            <div class="nav-item-group <?php echo($module === 'time') ? 'active' : ''; ?>">
-                <button class="nav-item has-submenu" data-module="time" type="button">
-                    <div class="nav-item-content">
-                        <i data-lucide="clock"></i>
-                        <span>Time & Attendance</span>
-                    </div>
-                    <i data-lucide="chevron-down" class="submenu-icon"></i>
-                </button>
-                <div class="submenu" id="submenu-time">
-                    <a href="time.php" class="submenu-item <?php echo($page === 'time') ? 'active' : ''; ?>">
-                        <i data-lucide="clock"></i>
-                        <span>Time & Attendance</span>
                     </a>
                 </div>
             </div>
@@ -257,7 +241,7 @@ $module = $module ?? '';
                     <i data-lucide="chevron-down" class="submenu-icon"></i>
                 </button>
                 <div class="submenu" id="submenu-timesheet">
-                    <a href="timesheet.php" class="submenu-item <?php echo($page === 'timesheet') ? 'active' : ''; ?>">
+                    <a href="admin_timesheet.php" class="submenu-item <?php echo($page === 'timesheet') ? 'active' : ''; ?>">
                         <i data-lucide="calendar-days"></i>
                         <span>Timesheet</span>
                     </a>
@@ -273,7 +257,7 @@ $module = $module ?? '';
                     <i data-lucide="chevron-down" class="submenu-icon"></i>
                 </button>
                 <div class="submenu" id="submenu-leave">
-                    <a href="leave.php" class="submenu-item <?php echo($page === 'leave') ? 'active' : ''; ?>">
+                    <a href="admin_leave.php" class="submenu-item <?php echo($page === 'leave') ? 'active' : ''; ?>">
                         <i data-lucide="tickets-plane"></i>
                         <span>Leave Management</span>
                     </a>
