@@ -1,4 +1,10 @@
+// Global variables for payroll functionality
+let selectedBatchId = null;
+
 document.addEventListener("DOMContentLoaded", () => {
+    // 0. PRIORITY: Initialize Icons immediately
+    if (window.lucide) window.lucide.createIcons();
+    
     // 1. Tab Switching Logic
     const tabButtons = document.querySelectorAll(".tab-btn");
     const tabPanels = document.querySelectorAll(".tab-panel");
@@ -6,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const apiUrl = 'payroll_action.php';
     const batchesBody = document.getElementById('payrollBatchesBody');
     const employeesBody = document.getElementById('payrollEmployeesBody');
-    let selectedBatchId = null;
 
     const peso = (n) => {
         const num = Number(n || 0);
@@ -37,7 +42,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const elNext = document.getElementById('statNextRun');
             const elPend = document.getElementById('statPending');
 
-            if (elTotal) elTotal.textContent = peso(data.total_payroll || 0);
+            const totalValue = peso(data.total_payroll || 0);
+            
+            if (elTotal) {
+                // Store the actual value in a data attribute for the eye toggle
+                elTotal.setAttribute('data-actual-value', totalValue);
+                elTotal.textContent = '₱***,***,***.**'; // Keep it hidden by default
+            }
             if (elEmp) elEmp.textContent = `${data.employees || 0} Paid`;
             if (elNext) elNext.textContent = data.next_run || '--';
             if (elPend) elPend.textContent = `${data.pending || 0} Batches`;
@@ -80,6 +91,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const canFinalize = String(b.status).toLowerCase() === 'processing' || b.status === '' || b.status === null;
 
+            // Use the numeric id for API calls, but display batch_code
+            const batchId = b.id; // This is the numeric ID the backend expects
+
             tr.innerHTML = `
                 <td><strong>${b.batch_code}</strong></td>
                 <td>${period}</td>
@@ -87,8 +101,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${total}</td>
                 <td>${statusBadge(b.status)}</td>
                 <td>
-                    <button class="btn-premium btn-view-batch" data-batch-id="${b.id}" style="background: var(--surface-hover); padding: 6px 12px; border: 1px solid var(--border-color);">View</button>
-                    ${canFinalize ? `<button class="btn-premium btn-finalize-batch" data-batch-id="${b.id}" style="background: var(--brand-green); color: white; padding: 6px 12px; margin-left: 8px;">Finalize</button>` : ''}
+                    <button class="btn-premium btn-view-batch" data-batch-id="${batchId}" style="background: var(--surface-hover); padding: 6px 12px; border: 1px solid var(--border-color);">View</button>
+                    ${canFinalize ? `<button class="btn-premium btn-finalize-batch" data-batch-id="${batchId}" style="background: var(--brand-green); color: white; padding: 6px 12px; margin-left: 8px;">Finalize</button>` : ''}
                 </td>
             `;
             batchesBody.appendChild(tr);
@@ -101,12 +115,18 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!employeesBody) return;
         employeesBody.innerHTML = '';
 
+        console.log('renderEmployees called with:', rows);
+        console.log('rows length:', rows ? rows.length : 'null/undefined');
+
         if (!rows || rows.length === 0) {
-            employeesBody.innerHTML = `<tr><td colspan="7" style="padding:16px 24px; color: var(--text-secondary);">Select a batch to view employee payroll.</td></tr>`;
+            employeesBody.innerHTML = `<tr><td colspan="14" style="padding:16px 24px; color: var(--text-secondary);">No employee data found for this batch.</td></tr>`;
             return;
         }
 
-        rows.forEach(r => {
+        console.log('Starting to render', rows.length, 'employees');
+        rows.forEach((r, index) => {
+            console.log('Rendering employee', index, ':', r);
+            
             const name = `${r.FirstName} ${r.LastName}`;
             const initials = `${(r.FirstName || ' ')[0]}${(r.LastName || ' ')[0]}`.toUpperCase();
             const code = r.EmployeeCode || `EMP-${r.employee_id}`;
@@ -151,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
             employeesBody.appendChild(tr);
         });
 
+        console.log('Finished rendering employees');
         if (window.lucide) window.lucide.createIcons();
     };
 
@@ -161,10 +182,20 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const loadEmployees = async (batchId) => {
+        console.log('loadEmployees called with batchId:', batchId);
+        console.log('employeesBody element:', employeesBody);
+        
         const data = await fetchJson(`${apiUrl}?action=list_employees&batch_id=${encodeURIComponent(batchId)}`);
+        console.log('API response:', data);
+        console.log('data.employees:', data.employees);
+        console.log('data.employees length:', data.employees ? data.employees.length : 'null/undefined');
+        
         renderEmployees(data.employees);
         return data.employees;
     };
+
+    // Make loadEmployees globally accessible
+    window.loadEmployees = loadEmployees;
 
     tabButtons.forEach(btn => {
         btn.addEventListener("click", () => {
@@ -277,16 +308,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const viewBtn = e.target.closest('.btn-view-batch');
         if (viewBtn) {
             const id = viewBtn.getAttribute('data-batch-id');
-            selectedBatchId = id;
-            try {
-                await loadEmployees(id);
-                const employeesTab = document.querySelector('.tab-btn[data-tab="employees"]');
-                if (employeesTab) employeesTab.click();
-            } catch (err) {
-                if (window.Swal) {
-                    Swal.fire({ title: 'Failed', text: err.message, icon: 'error', confirmButtonColor: '#ef4444' });
-                }
-            }
+            console.log('View button clicked! ID from attribute:', id, 'Type:', typeof id);
+            console.log('View button element:', viewBtn);
+            // Open password modal instead of directly loading
+            openPayrollModal(id);
             return;
         }
 
@@ -508,3 +533,203 @@ if (document.readyState === 'loading') {
 } else {
     initClock();
 }
+
+// ===================================================
+// Eye Toggle for Total Payroll
+// ===================================================
+const initPayrollEyeToggle = () => {
+    const eyeToggle = document.getElementById('payrollEyeToggle');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const totalPayrollElement = document.getElementById('statTotalPayroll');
+    
+    if (!eyeToggle || !eyeIcon || !totalPayrollElement) return;
+    
+    let isVisible = false;
+    
+    // Initially show asterisks
+    totalPayrollElement.textContent = '₱***,***,***.**';
+    
+    eyeToggle.addEventListener('click', () => {
+        isVisible = !isVisible;
+        
+        if (isVisible) {
+            // Show actual value from data attribute
+            const actualValue = totalPayrollElement.getAttribute('data-actual-value') || '₱0.00';
+            totalPayrollElement.textContent = actualValue;
+            eyeIcon.setAttribute('data-lucide', 'eye-off');
+        } else {
+            // Show asterisks
+            totalPayrollElement.textContent = '₱***,***,***.**';
+            eyeIcon.setAttribute('data-lucide', 'eye');
+        }
+        
+        // Re-render the icon
+        lucide.createIcons();
+    });
+};
+
+// ===================================================
+// Password Modal for View Action
+// ===================================================
+const initPasswordModal = () => {
+    const modal = document.getElementById('passwordModal');
+    const closeModal = document.getElementById('closeModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const submitPassword = document.getElementById('submitPassword');
+    const passwordInput = document.getElementById('passwordInput');
+    const passwordError = document.getElementById('passwordError');
+    
+    let currentBatchId = null;
+    
+    // Function to open modal
+    const openModal = (batchId) => {
+        currentBatchId = batchId;
+        modal.style.display = 'flex';
+        passwordInput.value = '';
+        passwordError.style.display = 'none';
+        passwordInput.focus();
+    };
+    
+    // Function to close modal
+    const closeModalFunc = () => {
+        modal.style.display = 'none';
+        currentBatchId = null;
+        passwordInput.value = '';
+        passwordError.style.display = 'none';
+    };
+    
+    // Function to check password
+    const checkPassword = () => {
+        const password = passwordInput.value.trim();
+        console.log('Password check - entered:', password);
+        console.log('Password check - currentBatchId:', currentBatchId, 'Type:', typeof currentBatchId);
+        console.log('Password check - currentBatchId validation:', !currentBatchId, currentBatchId === 'undefined', currentBatchId === 'null', currentBatchId === '');
+        
+        if (password === '202606') {
+            // Correct password - proceed with view action
+            console.log('Password correct, proceeding...');
+            
+            // Validate currentBatchId BEFORE closing modal (which resets it)
+            if (!currentBatchId || currentBatchId === 'undefined' || currentBatchId === 'null' || currentBatchId === '') {
+                console.log('Batch ID validation failed in password check');
+                if (window.Swal) {
+                    Swal.fire({ 
+                        title: 'Error', 
+                        text: 'Invalid batch ID. Please try again.', 
+                        icon: 'error', 
+                        confirmButtonColor: '#ef4444' 
+                    });
+                }
+                return;
+            }
+            
+            console.log('Batch ID validation passed, calling viewPayrollDetails...');
+            viewPayrollDetails(currentBatchId);
+            
+            // Now close the modal after we've used the ID
+            closeModalFunc();
+        } else {
+            // Wrong password - show error
+            console.log('Password incorrect');
+            passwordError.style.display = 'block';
+            passwordInput.value = '';
+            passwordInput.focus();
+            
+            // Shake animation for error
+            passwordInput.style.animation = 'shake 0.5s';
+            setTimeout(() => {
+                passwordInput.style.animation = '';
+            }, 500);
+        }
+    };
+    
+    // Event listeners with null checks
+    if (closeModal) closeModal.addEventListener('click', closeModalFunc);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModalFunc);
+    if (submitPassword) submitPassword.addEventListener('click', checkPassword);
+    
+    // Enter key to submit
+    if (passwordInput) {
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+    }
+    
+    // Click outside to close
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModalFunc();
+            }
+        });
+    }
+    
+    // Make openModal globally accessible for view buttons
+    window.openPayrollModal = openModal;
+};
+
+// Function to view payroll details (to be implemented based on your existing view logic)
+const viewPayrollDetails = async (batchId) => {
+    console.log('viewPayrollDetails called with batchId:', batchId, 'Type:', typeof batchId);
+    
+    // Set the selected batch ID and load employees
+    selectedBatchId = batchId;
+    console.log('selectedBatchId set to:', selectedBatchId);
+    
+    try {
+        // Switch to employees tab
+        const employeesTab = document.querySelector('.tab-btn[data-tab="employees"]');
+        console.log('employeesTab element:', employeesTab);
+        if (employeesTab) {
+            console.log('Switching to employees tab...');
+            employeesTab.click();
+        } else {
+            console.log('employeesTab not found!');
+        }
+        
+        // Load the employee data
+        console.log('About to call loadEmployees with batchId:', batchId);
+        await loadEmployees(batchId);
+        console.log('loadEmployees completed');
+        
+        // Show success message
+        if (window.Swal) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Access Granted',
+                text: `Payroll details loaded for batch ${batchId}`,
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+    } catch (err) {
+        console.error('Error in viewPayrollDetails:', err);
+        if (window.Swal) {
+            Swal.fire({ 
+                title: 'Failed', 
+                text: err.message, 
+                icon: 'error', 
+                confirmButtonColor: '#ef4444' 
+            });
+        }
+    }
+};
+
+// Add shake animation for password error
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+`;
+document.head.appendChild(style);
+
+// Initialize both features
+document.addEventListener('DOMContentLoaded', () => {
+    initPayrollEyeToggle();
+    initPasswordModal();
+});

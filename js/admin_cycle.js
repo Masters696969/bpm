@@ -13,31 +13,96 @@ window.togglePromoteInline = function(el) {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+    console.log('Admin Cycle DOM Loaded');
+    // 0. PRIORITY: Initialize Icons immediately
+    if (window.lucide) window.lucide.createIcons();
+    
     const lucide = window.lucide;
     const body = document.body;
     const themeToggle = document.getElementById("themeToggle");
     const sidebarToggle = document.getElementById("sidebarToggle");
     const sidebar = document.getElementById("sidebar");
     const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    
+    // Security Modal Initialization
+    const initSecurityModal = () => {
+        console.log('Initializing Security Modal...');
+        const modal = document.getElementById('securityModal');
+        const closeModal = document.getElementById('closeSecurityModal');
+        const cancelBtn = document.getElementById('cancelSecurityBtn');
+        const submitBtn = document.getElementById('submitSecurityCode');
+        const codeInput = document.getElementById('securityCodeInput');
+        const errorMsg = document.getElementById('securityError');
+        
+        let onAuthorizedCallback = null;
+        
+        const openModal = (callback) => {
+            if (!modal || !codeInput || !errorMsg) return;
+            onAuthorizedCallback = callback;
+            modal.style.display = 'block';
+            codeInput.value = '';
+            errorMsg.style.display = 'none';
+            codeInput.focus();
+        };
+        
+        const closeModalFunc = () => {
+            if (!modal || !codeInput || !errorMsg) return;
+            modal.style.display = 'none';
+            codeInput.value = '';
+            errorMsg.style.display = 'none';
+        };
+        
+        const verifyCode = () => {
+            if (!codeInput || !errorMsg) return;
+            const code = codeInput.value.trim();
+            if (code === '202606') {
+                closeModalFunc();
+                if (onAuthorizedCallback) onAuthorizedCallback();
+            } else {
+                errorMsg.style.display = 'flex';
+                codeInput.value = '';
+                codeInput.focus();
+            }
+        };
+        
+        if (closeModal) closeModal.addEventListener('click', closeModalFunc);
+        if (cancelBtn) cancelBtn.addEventListener('click', closeModalFunc);
+        if (submitBtn) submitBtn.addEventListener('click', verifyCode);
+        if (codeInput) {
+            codeInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') verifyCode();
+            });
+        }
+        
+        window.openSecurityModal = openModal;
+    };
+    
+    initSecurityModal();
 
     // 1. Theme Logic
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") body.classList.add("dark-mode");
 
-    themeToggle.addEventListener("click", () => {
-        body.classList.toggle("dark-mode");
-        localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
-    });
+    if (themeToggle) {
+        themeToggle.addEventListener("click", () => {
+            body.classList.toggle("dark-mode");
+            localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
+        });
+    }
 
     // 2. Sidebar & Mobile Logic
-    sidebarToggle.addEventListener("click", () => {
-        sidebar.classList.toggle("collapsed");
-        localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
-    });
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener("click", () => {
+            sidebar.classList.toggle("collapsed");
+            localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+        });
+    }
 
-    if (localStorage.getItem("sidebarCollapsed") === "true") sidebar.classList.add("collapsed");
+    if (sidebar && localStorage.getItem("sidebarCollapsed") === "true") sidebar.classList.add("collapsed");
 
-    mobileMenuBtn.addEventListener("click", () => sidebar.classList.toggle("mobile-open"));
+    if (mobileMenuBtn && sidebar) {
+        mobileMenuBtn.addEventListener("click", () => sidebar.classList.toggle("mobile-open"));
+    }
 
     // 3. Submenu Logic
     document.querySelectorAll(".nav-item.has-submenu").forEach((item) => {
@@ -91,37 +156,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 5.1 Request Finance Budget logic
     const btnRequestBudget = document.getElementById("btnRequestBudget");
+    console.log('Targeting btnRequestBudget:', btnRequestBudget);
+    
     if (btnRequestBudget) {
         btnRequestBudget.addEventListener("click", () => {
-            const amount = parseFloat(document.getElementById("budgetAllocation").value) || 0;
+            console.log('btnRequestBudget clicked!');
+            const amountInput = document.getElementById("budgetAllocation");
+            const amount = parseFloat(amountInput ? amountInput.value : 0) || 0;
+            console.log('Budget Amount:', amount);
+            
             if (amount <= 0) {
                 Swal.fire('Error', 'Please enter a valid budget amount.', 'error');
                 return;
             }
 
-            Swal.fire({
-                title: 'Request Budget from Finance?',
-                text: `You are requesting \u20B1${amount.toLocaleString()} for this compensation cycle.`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3b82f6',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Yes, Send Request',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
+            if (typeof window.openSecurityModal === 'function') {
+                window.openSecurityModal(() => {
+                Swal.fire({
+                    title: 'Request Budget from Finance?',
+                    text: `You are requesting \u20B1${amount.toLocaleString()} for this compensation cycle.`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3b82f6',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, Send Request',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
                     btnRequestBudget.disabled = true;
                     btnRequestBudget.innerHTML = '<i data-lucide="loader" class="animate-spin" style="width:14px; height:14px;"></i><span>Sending...</span>';
                     if (window.lucide) window.lucide.createIcons();
 
-                    const formData = new URLSearchParams();
-                    formData.append('amount', amount);
-                    formData.append('period_id', 1); // HR Period ID 1
-
                     fetch('backend/be_request_budget.php', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: formData
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            amount: amount,
+                            period_id: 1
+                        })
                     })
                     .then(res => res.json())
                     .then(data => {
@@ -161,10 +233,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         btnRequestBudget.innerHTML = 'Request Finance';
                         if (window.lucide) window.lucide.createIcons();
                     });
-                }
+                    }
+                });
             });
-        });
-    }
+        }
+    });
+}
 
     // 5.2 Unlock Approved Budget for re-request
     const unlockBudgetBtn = document.getElementById("unlockBudgetBtn");
@@ -1181,12 +1255,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initial calculation (only run if a draft is being loaded or if specifically needed)
     // calculateDeductions(); 
-    if (window.lucide) window.lucide.createIcons();
-
 });
 
 // Sidebar Active Link Logic (Merged)
-(function () {
+document.addEventListener('DOMContentLoaded', () => {
     const path = window.location.pathname;
     const page = path.split('/').pop() || 'dashboard.php';
     const current = page.split('?')[0];
@@ -1210,7 +1282,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const navMatch = document.querySelector(`.sidebar a.nav-item[href$="${current}"]`);
     if (navMatch) navMatch.classList.add('active');
-})();
+});
 
 // User Menu Dropdown Logic (Merged)
 document.addEventListener('DOMContentLoaded', () => {

@@ -207,7 +207,12 @@ if (!isset($_SESSION['username'])) {
           </div>
           <div class="stat-info">
             <span class="stat-label">Total Payroll</span>
-            <h3 class="stat-value" id="statTotalPayroll">&#8369;0.00</h3>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3 class="stat-value" id="statTotalPayroll" style="margin: 0;">&#8369;0.00</h3>
+              <button class="eye-toggle" id="payrollEyeToggle" style="background: none; border: none; cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                <i data-lucide="eye" id="eyeIcon" style="width: 18px; height: 18px; color: var(--text-secondary);"></i>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -365,7 +370,56 @@ if (!isset($_SESSION['username'])) {
         </div>
       </div>
   </main>
-  <script src="../../js/payroll.js"></script>
+  
+  <!-- Password Modal for View Action -->
+  <div class="modal-overlay" id="passwordModal" style="display: none;">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 style="margin: 0; color: var(--text-primary); font-size: 18px; font-weight: 600;">
+          <i data-lucide="lock" style="width: 20px; height: 20px; margin-right: 8px; color: var(--brand-green);"></i>
+          Authorization Required
+        </h3>
+        <button class="modal-close" id="closeModal" style="background: none; border: none; cursor: pointer; padding: 4px; border-radius: 4px;">
+          <i data-lucide="x" style="width: 20px; height: 20px; color: var(--text-secondary);"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body" style="padding: 24px;">
+        <p style="margin: 0 0 20px 0; color: var(--text-secondary); font-size: 14px;">
+          Please enter the authorization code to access the complete payroll data.
+        </p>
+        
+        <div class="form-group">
+          <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; color: var(--text-primary);">
+            Authorization Code
+          </label>
+          <input type="password" id="passwordInput" placeholder="Enter authorization code" 
+                 style="width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background: var(--surface); color: var(--text-primary); transition: var(--transition);"
+                 onfocus="this.style.borderColor='var(--brand-green)'" 
+                 onblur="this.style.borderColor='var(--border-color)'">
+        </div>
+        
+        <div id="passwordError" style="display: none; margin-top: 12px; padding: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 6px; color: #ef4444; font-size: 13px;">
+          <i data-lucide="alert-circle" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+          Invalid authorization code. Please try again.
+        </div>
+      </div>
+      
+      <div class="modal-footer" style="padding: 20px 24px; border-top: 1px solid var(--border-color); display: flex; gap: 12px; justify-content: flex-end;">
+        <button class="btn-premium" id="cancelBtn" 
+                style="background: var(--surface-hover); border: 1px solid var(--border-color); color: var(--text-primary);">
+          Cancel
+        </button>
+        <button class="btn-premium btn-primary-premium" id="submitPassword" 
+                style="background: var(--brand-green); color: white;">
+          <i data-lucide="unlock" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+          Access Data
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../../js/payroll.js?v=1.6"></script>
   <script>
     lucide.createIcons();
   </script>

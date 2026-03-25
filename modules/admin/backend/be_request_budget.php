@@ -10,8 +10,11 @@ try {
         throw new Exception('Invalid request method.');
     }
 
-    $amount = isset($_POST['amount']) ? (float)$_POST['amount'] : 0;
-    $periodId = isset($_POST['period_id']) ? (int)$_POST['period_id'] : 1;
+    $json = file_get_contents('php://input');
+    $data = json_decode($json, true);
+
+    $amount = isset($data['amount']) ? (float)$data['amount'] : 0;
+    $periodId = isset($data['period_id']) ? (int)$data['period_id'] : 1;
 
     if ($amount <= 0) {
         throw new Exception('Invalid budget amount.');
@@ -75,14 +78,14 @@ try {
         error_log($rawLog);
         $msg = 'Finance server returned invalid response (HTTP ' . $httpCode . ')';
         if ($res) {
-            $snippet = substr(track_strip_tags($res), 0, 150);
+            $snippet = substr(strip_tags($res), 0, 150);
             $msg .= '. Content: ' . $snippet;
         }
         throw new Exception($msg);
     }
 
     if ($decoded['success']) {
-        $response['ok'] = true;
+        $response['success'] = true;
         $response['message'] = 'Budget request sent successfully! Finance will now review it.';
         
         // Save the Finance Tracking Reference
@@ -98,9 +101,8 @@ try {
     }
 
 } catch (Exception $e) {
-    $response['ok'] = false;
+    $response['success'] = false;
     $response['message'] = $e->getMessage();
 }
 
-$response['ok'] = $response['ok'] ?? false;
 echo json_encode($response);
