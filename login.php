@@ -72,6 +72,26 @@
                         </div>
                     </div>
 
+                    <div class="input-group">
+                        <label for="captcha" class="input-label">Security Question</label>
+                        <div class="captcha-container">
+                            <div class="captcha-question" id="captchaQuestion">
+                                What is <span id="mathProblem">7 + 3</span>?
+                            </div>
+                            <div class="input-wrapper">
+                                <i data-lucide="shield" class="input-icon"></i>
+                                <input 
+                                    type="text" 
+                                    id="captcha" 
+                                    name="captcha" 
+                                    class="input-field" 
+                                    placeholder="Enter answer" 
+                                    required
+                                >
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn btn-primary">
                         <span>Sign in</span>
                         <i data-lucide="arrow-right" class="btn-icon"></i>
@@ -115,5 +135,35 @@
     </div>
 
     <script src="js/login.js?v=<?php echo time(); ?>"></script>
+    <script>
+        // Generate random math captcha
+        function generateCaptcha() {
+            const num1 = Math.floor(Math.random() * 90) + 10; // 2-digit numbers (10-99)
+            const num2 = Math.floor(Math.random() * 90) + 10; // 2-digit numbers (10-99)
+            const operators = ['+', '-', '×'];
+            const operator = operators[Math.floor(Math.random() * operators.length)];
+            
+            let answer;
+            switch(operator) {
+                case '+':
+                    answer = num1 + num2;
+                    break;
+                case '-':
+                    answer = num1 - num2;
+                    break;
+                case '×':
+                    answer = num1 * num2;
+                    break;
+            }
+            
+            document.getElementById('mathProblem').textContent = `${num1} ${operator} ${num2}`;
+            document.getElementById('captchaQuestion').setAttribute('data-answer', answer);
+        }
+
+        // Initialize captcha on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateCaptcha();
+        });
+    </script>
 </body>
 </html>

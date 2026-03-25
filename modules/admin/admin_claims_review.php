@@ -298,5 +298,6 @@ $deptName = $_SESSION['department_name'] ?? 'Admin';
 </div>
 
 <script src="../../js/admin_claims.js?v=<?php echo time(); ?>"></script>
+<script src="../../js/session_timeout.js"></script>
 </body>
 </html>

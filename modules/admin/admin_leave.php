@@ -328,5 +328,6 @@ if (file_exists($themePath))
 </div>
 
 <script src="../../js/admin_leave.js?v=<?php echo time(); ?>"></script>
+<script src="../../js/session_timeout.js"></script>
 </body>
 </html>

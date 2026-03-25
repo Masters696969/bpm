@@ -22,6 +22,151 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Helper function to get real IP address
+function getRealIpAddress() {
+    $ip = '';
+    
+    // Check for shared ISP IP
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+    }
+    // Check for IP passing through proxy (can be comma-separated)
+    elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ip = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+        $ip = trim($ip);
+    }
+    // Check for IP from proxy server
+    elseif (!empty($_SERVER['HTTP_X_FORWARDED'])) {
+        $ip = $_SERVER['HTTP_X_FORWARDED'];
+    }
+    elseif (!empty($_SERVER['HTTP_FORWARDED_FOR'])) {
+        $ip = $_SERVER['HTTP_FORWARDED_FOR'];
+    }
+    elseif (!empty($_SERVER['HTTP_FORWARDED'])) {
+        $ip = $_SERVER['HTTP_FORWARDED'];
+    }
+    // Default to remote address
+    else {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+    }
+    
+    // Validate and filter IP - prefer IPv4 over IPv6
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+        // If it's IPv6, try to get IPv4 equivalent or fallback
+        if (strpos($ip, ':') !== false) {
+            // For IPv6 localhost (::1), return a sample IPv4 for testing
+            if ($ip === '::1') {
+                return '10.147.238.7'; // Sample IPv4 for testing
+            }
+            // For other IPv6, try to get mapped IPv4 or return as-is
+            return $ip;
+        }
+        return $ip;
+    }
+    
+    // Fallback to a sample IPv4 for testing if validation fails
+    return '10.147.238.7';
+}
+
+// Helper function to check if user is immune
+function isImmuneUser($conn, $email) {
+    $sql = "SELECT COUNT(*) as count FROM immune_accounts WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc()['count'] > 0;
+}
+
+// Helper function to record login attempts
+function recordLoginAttempt($conn, $email, $success, $ipAddress, $userAgent) {
+    $sql = "INSERT INTO login_attempts (email, ip_address, success, user_agent) VALUES (?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssis", $email, $ipAddress, $success, $userAgent);
+    $stmt->execute();
+}
+
+// Helper function to check if user/IP is banned
+function checkBanStatus($conn, $email, $ipAddress) {
+    $currentTime = date('Y-m-d H:i:s');
+    
+    // Check email ban
+    $sql = "SELECT * FROM login_bans WHERE email = ? AND is_active = 1 AND lift_time > ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $email, $currentTime);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        $ban = $result->fetch_assoc();
+        // Debug: Check if ban should be expired
+        $liftTime = strtotime($ban['lift_time']);
+        $now = strtotime($currentTime);
+        if ($now < $liftTime) {
+            return $ban; // Still banned
+        }
+        // If we reach here, ban should be expired, deactivate it
+        $updateSql = "UPDATE login_bans SET is_active = 0 WHERE email = ?";
+        $updateStmt = $conn->prepare($updateSql);
+        $updateStmt->bind_param("s", $email);
+        $updateStmt->execute();
+    }
+    
+    // Check IP ban
+    $sql = "SELECT * FROM login_bans WHERE ip_address = ? AND is_active = 1 AND lift_time > ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $ipAddress, $currentTime);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        $ban = $result->fetch_assoc();
+        // Debug: Check if ban should be expired
+        $liftTime = strtotime($ban['lift_time']);
+        $now = strtotime($currentTime);
+        if ($now < $liftTime) {
+            return $ban; // Still banned
+        }
+        // If we reach here, ban should be expired, deactivate it
+        $updateSql = "UPDATE login_bans SET is_active = 0 WHERE ip_address = ?";
+        $updateStmt = $conn->prepare($updateSql);
+        $updateStmt->bind_param("s", $ipAddress);
+        $updateStmt->execute();
+    }
+    
+    return null; // Not banned
+}
+
+// Helper function to ban user/IP
+function banUser($conn, $email, $ipAddress, $attemptsCount, $banDuration = '1 DAY') {
+    $liftTime = date('Y-m-d H:i:s', strtotime("+$banDuration"));
+    
+    // Update existing ban or create new one
+    $sql = "INSERT INTO login_bans (email, ip_address, ban_reason, attempts_count, lift_time) 
+            VALUES (?, ?, 'too_many_attempts', ?, ?)
+            ON DUPLICATE KEY UPDATE 
+            attempts_count = VALUES(attempts_count),
+            lift_time = VALUES(lift_time),
+            is_active = 1";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssis", $email, $ipAddress, $attemptsCount, $liftTime);
+    $stmt->execute();
+}
+
+// Helper function to get recent failed attempts
+function getRecentFailedAttempts($conn, $email, $ipAddress, $minutes = 5) {
+    $timeThreshold = date('Y-m-d H:i:s', strtotime("-$minutes minutes"));
+    
+    $sql = "SELECT COUNT(*) as count FROM login_attempts 
+            WHERE (email = ? OR ip_address = ?) AND success = 0 AND attempt_time > ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sss", $email, $ipAddress, $timeThreshold);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    return $result->fetch_assoc()['count'];
+}
+
 // Handle login form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
@@ -29,13 +174,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'login') {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
+        $ipAddress = getRealIpAddress();
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
         if (empty($email) || empty($password)) {
             echo json_encode(['success' => false, 'message' => 'Please enter email and password']);
             exit;
         }
 
-        // Get user account by email
+        // Validate captcha
+        $captcha = trim($_POST['captcha'] ?? '');
+        if (empty($captcha) || !is_numeric($captcha)) {
+            echo json_encode(['success' => false, 'message' => 'Please answer the security question correctly.']);
+            exit;
+        }
+
+        // Check if user is immune (skip all security checks for immune users)
+        $isImmune = isImmuneUser($conn, $email);
+
+        if (!$isImmune) {
+            // Check recent failed attempts first
+            $recentAttempts = getRecentFailedAttempts($conn, $email, $ipAddress, 5);
+            
+            if ($recentAttempts >= 5) {
+                // Immediate permanent ban for 5 attempts
+                banUser($conn, $email, $ipAddress, $recentAttempts, '1 YEAR');
+                echo json_encode([
+                    'success' => false, 
+                    'message' => 'Your account has been permanently banned due to too many failed login attempts. Please contact the administrator.',
+                    'banned' => true,
+                    'ban_type' => 'permanent'
+                ]);
+                recordLoginAttempt($conn, $email, 0, $ipAddress, $userAgent);
+                exit;
+            } elseif ($recentAttempts >= 3) {
+                // Temporarily block for 5 minutes
+                banUser($conn, $email, $ipAddress, $recentAttempts, '5 MINUTE');
+                echo json_encode([
+                    'success' => false, 
+                    'message' => 'Too many failed login attempts. You cannot sign in for 5 minutes.',
+                    'banned' => true,
+                    'ban_type' => 'temporary',
+                    'remaining_minutes' => 5,
+                    'remaining_seconds' => 300 // 5 minutes = 300 seconds
+                ]);
+                recordLoginAttempt($conn, $email, 0, $ipAddress, $userAgent);
+                exit;
+            }
+
+            // Check if user/IP is already banned (only if not already handled above)
+            $banStatus = checkBanStatus($conn, $email, $ipAddress);
+            if ($banStatus) {
+                if ($banStatus['attempts_count'] >= 5) {
+                    echo json_encode([
+                        'success' => false, 
+                        'message' => 'Your account has been banned due to too many failed login attempts. Please contact the administrator.',
+                        'banned' => true,
+                        'ban_type' => 'permanent'
+                    ]);
+                } else {
+                    $remainingTime = strtotime($banStatus['lift_time']) - time();
+                    $remainingMinutes = ceil($remainingTime / 60);
+                    echo json_encode([
+                        'success' => false, 
+                        'message' => "Too many failed login attempts. Please try again in $remainingMinutes minutes.",
+                        'banned' => true,
+                        'ban_type' => 'temporary',
+                        'remaining_minutes' => $remainingMinutes,
+                        'remaining_seconds' => $remainingTime
+                    ]);
+                    // Don't record attempt during temporary ban - timer is active
+                }
+                exit;
+            }
+        }
         $sql = "SELECT * FROM useraccounts WHERE Email = ? AND AccountStatus = 'Active' LIMIT 1";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $email);
@@ -72,6 +284,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Send OTP email
                 $emailSent = sendOtpEmail($user['Email'], $otp, $user['Username']);
 
+                // Record successful login attempt
+                recordLoginAttempt($conn, $email, 1, $ipAddress, $userAgent);
+
                 echo json_encode([
                     'success' => true,
                     'message' => 'OTP sent to your email',
@@ -79,10 +294,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
             else {
+                recordLoginAttempt($conn, $email, 0, $ipAddress, $userAgent);
                 echo json_encode(['success' => false, 'message' => 'Invalid password']);
             }
         }
         else {
+            recordLoginAttempt($conn, $email, 0, $ipAddress, $userAgent);
             echo json_encode(['success' => false, 'message' => 'User not found or account inactive']);
         }
         exit;

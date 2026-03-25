@@ -8,6 +8,115 @@
 
     // 1. Theme Logic
     const savedTheme = localStorage.getItem("theme");
+    
+    // Tab switching function
+    window.showTab = function(tabId) {
+        // Hide all tab contents
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        // Remove active class from all tab buttons
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Show selected tab
+        document.getElementById(tabId).classList.add('active');
+        
+        // Add active class to clicked button
+        event.target.classList.add('active');
+        
+        // Reinitialize Lucide icons
+        lucide.createIcons();
+    }
+    
+    // Security Management Functions
+    window.showAddImmuneModal = function() {
+        document.getElementById('addImmuneModal').style.display = 'block';
+    }
+
+    window.hideAddImmuneModal = function() {
+        document.getElementById('addImmuneModal').style.display = 'none';
+    }
+
+    window.removeImmune = function(email) {
+        Swal.fire({
+            title: 'Remove Immune Account',
+            text: `Are you sure you want to remove immune status for ${email}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e53e3e',
+            cancelButtonColor: '#718096',
+            confirmButtonText: 'Remove',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.innerHTML = `
+                    <input type="hidden" name="action" value="remove_immune">
+                    <input type="hidden" name="email" value="${email}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    window.unbanUser = function(email) {
+        Swal.fire({
+            title: 'Unban User',
+            text: `Are you sure you want to unban ${email}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ed8936',
+            cancelButtonColor: '#718096',
+            confirmButtonText: 'Unban',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.innerHTML = `
+                    <input type="hidden" name="action" value="unban_user">
+                    <input type="hidden" name="email" value="${email}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    window.clearAttempts = function(email) {
+        Swal.fire({
+            title: 'Clear Login Attempts',
+            text: `Are you sure you want to clear all login attempts for ${email}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ed8936',
+            cancelButtonColor: '#718096',
+            confirmButtonText: 'Clear',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.innerHTML = `
+                    <input type="hidden" name="action" value="clear_attempts">
+                    <input type="hidden" name="email" value="${email}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('addImmuneModal');
+        if (event.target === modal) {
+            hideAddImmuneModal();
+        }
+    }
     if (savedTheme === "dark") body.classList.add("dark-mode");
 
     themeToggle.addEventListener("click", () => {
