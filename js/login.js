@@ -176,8 +176,8 @@ function startOtpTimer() {
         clearInterval(otpTimerInterval);
     }
 
-    let timeLeft = 3600; // 1 hour = 3600 seconds
-    otpTimer.textContent = `(60:00)`;
+    let timeLeft = 300; // 5 minutes = 300 seconds
+    otpTimer.textContent = `(05:00)`;
     resendOtp.style.display = 'none';
 
     otpTimerInterval = setInterval(() => {
@@ -195,29 +195,40 @@ function startOtpTimer() {
 }
 
 // Handle Login
-async function handleLogin(e) {
-    e.preventDefault();
-
-    // Prevent double submission
-    if (isSubmitting) {
+async function handleLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const captcha = document.getElementById('captcha').value.trim();
+    const expectedAnswer = document.getElementById('captchaQuestion').getAttribute('data-answer');
+    
+    console.log('Login attempt:', { email, captcha, expectedAnswer }); // Debug log
+    
+    // Validate captcha
+    if (captcha !== expectedAnswer) {
+        await Swal.fire({
+            icon: "error",
+            title: "Security Question Incorrect",
+            text: "Please answer the security question correctly.",
+            confirmButtonColor: "#2ca078"
+        });
+        generateCaptcha(); // Regenerate captcha on wrong answer
+        document.getElementById('captcha').value = '';
         return;
     }
-    isSubmitting = true;
-
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value;
-
+    
     if (!email || !password) {
-        isSubmitting = false;
-        Swal.fire({
+        await Swal.fire({
             icon: "error",
-            title: "Missing Fields",
-            text: "Please enter email/username and password",
+            title: "Missing Information",
+            text: "Please enter both email and password.",
             confirmButtonColor: "#2ca078"
         });
         return;
     }
 
+    // Show loading
     Swal.fire({
         title: "Signing in...",
         text: "Please wait",
@@ -227,56 +238,131 @@ async function handleLogin(e) {
     });
 
     try {
-        const formData = new FormData();
-        formData.append("action", "login");
-        formData.append("email", email);
-        formData.append("password", password);
+        // Use URLSearchParams instead of FormData for better compatibility
+        const params = new URLSearchParams();
+        params.append('action', 'login');
+        params.append('email', email);
+        params.append('password', password);
+        params.append('captcha', captcha);
+        params.append('login_portal', document.getElementById('loginPortal').value);
 
-        // Append portal type
-        const portal = document.getElementById('loginPortal')?.value || 'workforce';
-        formData.append("login_portal", portal);
+        console.log('Sending request to login_action.php'); // Debug log
+        console.log('Request data:', params.toString()); // Debug log
 
-        const response = await fetch("login_action.php", {
-            method: "POST",
-            body: formData
+        const response = await fetch('login_action.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params.toString()
         });
 
+        console.log('Response status:', response.status); // Debug log
+        console.log('Response headers:', response.headers); // Debug log
+        
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
+        console.log('Response result:', result); // Debug log
 
-        if (result.success && result.requires_otp) {
-            isSubmitting = false;
-            Swal.close();
-            showOtpPopup();
-        } else if (result.success) {
-            isSubmitting = false;
-            await Swal.fire({
-                icon: "success",
-                title: "Login successful!",
-                text: "Redirecting...",
-                timer: 1000,
-                showConfirmButton: false
-            });
-            window.location.href = result.redirect;
+        if (result.success) {
+            if (result.requires_otp) {
+                // Close any open SweetAlert first
+                Swal.close();
+                // Small delay to ensure SweetAlert is fully closed
+                setTimeout(() => {
+                    showOtpPopup();
+                }, 100);
+            } else {
+                // Redirect based on portal preference
+                const portal = document.getElementById('loginPortal').value;
+                if (portal === 'workforce') {
+                    window.location.href = 'modules/admin/dashboard.php';
+                } else {
+                    window.location.href = 'modules/employee/dashboard.php';
+                }
+            }
         } else {
-            isSubmitting = false;
-            await Swal.fire({
-                icon: "error",
-                title: "Login failed",
-                text: result.message || "Invalid credentials",
-                confirmButtonColor: "#2ca078"
-            });
+            if (result.banned) {
+                if (result.ban_type === 'permanent') {
+                    await Swal.fire({
+                        icon: "error",
+                        title: "Account Banned",
+                        text: result.message || "Your account has been banned. Please contact the administrator.",
+                        confirmButtonColor: "#2ca078",
+                        showConfirmButton: true,
+                        confirmButtonText: "OK"
+                    });
+                } else if (result.ban_type === 'temporary') {
+                    let remainingSeconds = (result.remaining_seconds || (result.remaining_minutes || 5) * 60);
+                    
+                    // Create countdown timer function
+                    function updateCountdown() {
+                        const minutes = Math.floor(remainingSeconds / 60);
+                        const seconds = remainingSeconds % 60;
+                        const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                        
+                        return Swal.fire({
+                            icon: "warning",
+                            title: "Login Temporarily Blocked",
+                            html: `
+                                <div style="text-align: center;">
+                                    <p>Too many failed login attempts. Please try again in:</p>
+                                    <div id="countdown-timer" style="font-size: 2rem; font-weight: bold; color: #e53e3e; margin: 20px 0;">
+                                        ${timeString}
+                                    </div>
+                                    <p style="font-size: 0.9rem; color: #718096;">
+                                        You can close this window and try again after the timer expires.
+                                    </p>
+                                </div>
+                            `,
+                            confirmButtonColor: "#2ca078",
+                            showConfirmButton: true,
+                            confirmButtonText: "OK",
+                            didOpen: () => {
+                                const timerElement = document.getElementById('countdown-timer');
+                                const timerInterval = setInterval(() => {
+                                    remainingSeconds--;
+                                    
+                                    if (remainingSeconds <= 0) {
+                                        clearInterval(timerInterval);
+                                        timerElement.textContent = "0:00";
+                                        setTimeout(() => {
+                                            Swal.close();
+                                        }, 1000);
+                                    } else {
+                                        const mins = Math.floor(remainingSeconds / 60);
+                                        const secs = remainingSeconds % 60;
+                                        timerElement.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                                    }
+                                }, 1000);
+                            }
+                        });
+                    }
+                    
+                    updateCountdown();
+                }
+            } else {
+                // Regular login failed
+                await Swal.fire({
+                    icon: "error",
+                    title: "Login failed",
+                    text: result.message || "Invalid credentials",
+                    confirmButtonColor: "#2ca078"
+                });
+            }
+            // Regenerate captcha on failed login
+            generateCaptcha();
+            document.getElementById('captcha').value = '';
         }
     } catch (error) {
-        isSubmitting = false;
-        console.error("Login error:", error);
+        console.error('Login error:', error);
         await Swal.fire({
             icon: "error",
-            title: "Error",
-            text: error.message || "Something went wrong. Please try again.",
+            title: "Network Error",
+            text: "Unable to connect to the server. Please try again.\n\nError: " + error.message,
             confirmButtonColor: "#2ca078"
         });
     }
@@ -330,7 +416,7 @@ async function handleOtpVerification(e) {
 
         console.log("Submitting OTP:", otpCode, "Length:", otpCode.length);
 
-        const response = await fetch("login_action.php", {
+        const response = await fetch('login_action.php', {
             method: "POST",
             body: formData
         });
@@ -383,7 +469,7 @@ async function handleResendOtp(e) {
         const formData = new FormData();
         formData.append("action", "resend_otp");
 
-        const response = await fetch("login_action.php", {
+        const response = await fetch('login_action.php', {
             method: "POST",
             body: formData
         });
@@ -440,12 +526,6 @@ async function handleResendOtp(e) {
 // Initialize everything when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
     window.lucide.createIcons();
-
-    // Login form
-    const loginForm = document.querySelector('form[onsubmit="handleLogin(event)"]');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
-    }
 
     // OTP form
     const otpForm = document.getElementById('otpForm');

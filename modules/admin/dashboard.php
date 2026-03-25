@@ -454,7 +454,7 @@ if ($r->num_rows > 0) {
           <span>Configuration</span>
         </a>
 
-        <a href="#" class="nav-item">
+        <a href="security.php" class="nav-item">
           <i data-lucide="shield"></i>
           <span>Security</span>
         </a>
@@ -824,6 +824,7 @@ if ($r->num_rows > 0) {
     </script>
   </main>
   <script src="../../js/admindashboard.js"></script>
+  <script src="../../js/session_timeout.js"></script>
   <script>
     lucide.createIcons();
   </script>
