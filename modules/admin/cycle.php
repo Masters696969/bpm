@@ -174,6 +174,7 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" href="../../img/logo.png">
+  <script src="../../js/admin_cycle.js?v=3.9"></script>
 </head>
 <body>
 
@@ -1178,25 +1179,76 @@ while ($d = ($dept_query) ? $dept_query->fetch_assoc() : null) {
 
   <script>
     // Expose Compensation Configuration to JS for Simulation
-    window.compConfig = {
-        meritMatrix: <?php echo json_encode($merit_matrix); ?>,
-        salaryGrades: <?php echo json_encode($salary_grades); ?>,
-        sssTable: <?php 
-            $sss_table_q = $conn->query("SELECT min_salary, max_salary, ee_regular, er_regular, ee_wisp, er_wisp FROM sss_table ORDER BY min_salary ASC");
-            $sss_table_data = [];
-            if ($sss_table_q) { while($r = $sss_table_q->fetch_assoc()) $sss_table_data[] = $r; }
-            echo json_encode($sss_table_data);
-        ?>,
-        sss: <?php echo json_encode($sss_data); ?>,
-        philhealth: <?php echo json_encode($ph_data); ?>,
-        pagibig: <?php echo json_encode($pi_data); ?>,
-        tax: <?php echo json_encode($bir_data); ?>
-    };
+    try {
+        window.compConfig = {
+            meritMatrix: <?php echo json_encode($merit_matrix); ?>,
+            salaryGrades: <?php echo json_encode($salary_grades); ?>,
+            sssTable: <?php 
+                $sss_table_q = $conn->query("SELECT min_salary, max_salary, ee_regular, er_regular, ee_wisp, er_wisp FROM sss_table ORDER BY min_salary ASC");
+                $sss_table_data = [];
+                if ($sss_table_q) { while($r = $sss_table_q->fetch_assoc()) $sss_table_data[] = $r; }
+                echo json_encode($sss_table_data);
+            ?>,
+            sss: <?php echo json_encode($sss_data); ?>,
+            philhealth: <?php echo json_encode($ph_data); ?>,
+            pagibig: <?php echo json_encode($pi_data); ?>,
+            tax: <?php echo json_encode($bir_data); ?>
+        };
+        console.log('CompConfig loaded successfully:', window.compConfig);
+    } catch (error) {
+        console.error('Error loading compConfig:', error);
+        // Set default values to prevent JavaScript errors
+        window.compConfig = {
+            meritMatrix: {},
+            salaryGrades: [],
+            sssTable: [],
+            sss: {},
+            philhealth: {},
+            pagibig: {},
+            tax: {}
+        };
+    }
   </script>
-  <script src="../../js/admin_cycle.js?v=3.5" defer></script>
-  <script>
-    lucide.createIcons();
-  </script>
+  <script src="../../js/admin_cycle.js?v=4.0" defer></script>
+  <!-- Security Modal for Budget Request -->
+  <div class="modal-overlay" id="securityModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; backdrop-filter: blur(4px);">
+    <div class="modal-container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 400px; background: var(--surface-color, white); border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden;">
+      <div class="modal-header" style="padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; color: var(--text-primary); font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="shield-check" style="width: 18px; height: 18px; color: var(--brand-blue);"></i>
+          Authorization Required
+        </h3>
+        <button id="closeSecurityModal" style="background: none; border: none; cursor: pointer; padding: 4px; color: var(--text-secondary);">&times;</button>
+      </div>
+      
+      <div class="modal-body" style="padding: 20px;">
+        <p style="margin: 0 0 16px 0; color: var(--text-secondary); font-size: 13px;">
+          Please enter the authorization code to proceed with the budget request to Finance.
+        </p>
+        
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="display: block; margin-bottom: 6px; font-size: 12px; font-weight: 500; color: var(--text-primary);">
+            Authorization Code
+          </label>
+          <input type="text" id="securityCodeInput" placeholder="Enter code" 
+                 style="width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; background: var(--surface); color: var(--text-primary); text-align: center; letter-spacing: 2px; font-weight: bold;">
+        </div>
+        
+        <div id="securityError" style="display: none; margin-top: 12px; padding: 8px 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 4px; color: #ef4444; font-size: 12px; display: flex; align-items: center; gap: 6px;">
+          <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i>
+          Invalid code. Please try again.
+        </div>
+      </div>
+      
+      <div class="modal-footer" style="padding: 12px 16px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; justify-content: flex-end; background: #f8fafc;">
+        <button class="btn btn-secondary" id="cancelSecurityBtn" style="font-size: 12px; padding: 6px 12px;">Cancel</button>
+        <button class="btn btn-primary" id="submitSecurityCode" style="font-size: 12px; padding: 6px 12px;">
+          Authorize Request
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Proposal Tracking Modal -->
   <div id="trackingModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; backdrop-filter: blur(4px);">
     <div class="modal-content-premium" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 900px; max-height: 90vh; background: var(--surface-color, white); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column;">

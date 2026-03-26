@@ -1,10 +1,6 @@
 <?php
 require_once 'config/config.php';
 
-// Prevent HTML errors in JSON output
-ini_set('display_errors', 0);
-error_reporting(E_ALL);
-
 header('Content-Type: application/json; charset=utf-8');
 
 // Start secure session
@@ -162,7 +158,7 @@ function getRecentFailedAttempts($conn, $email, $ipAddress, $minutes = 5) {
     $timeThreshold = date('Y-m-d H:i:s', strtotime("-$minutes minutes"));
     
     $sql = "SELECT COUNT(*) as count FROM login_attempts 
-            WHERE email = ? AND success = 0 AND attempt_time >= ?";
+            WHERE email = ? AND success = 0 AND created_at >= ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $email, $timeThreshold);
     $stmt->execute();
@@ -172,6 +168,35 @@ function getRecentFailedAttempts($conn, $email, $ipAddress, $minutes = 5) {
 }
 
 // sendOtpEmail function is already defined in config.php
+    $subject = "Your OTP Code - BPM System";
+    $message = "
+    <html>
+    <head>
+        <title>OTP Verification</title>
+    </head>
+    <body style='font-family: Arial, sans-serif;'>
+        <div style='max-width: 600px; margin: 0 auto; padding: 20px;'>
+            <h2 style='color: #2ca078;'>BPM System - OTP Verification</h2>
+            <p>Hello " . htmlspecialchars($username) . ",</p>
+            <p>Your One-Time Password (OTP) is:</p>
+            <div style='background: #f0f9ff; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px;'>
+                <h1 style='color: #2ca078; font-size: 32px; margin: 0;'>$otp</h1>
+            </div>
+            <p>This OTP will expire in 10 minutes.</p>
+            <p>If you didn't request this OTP, please ignore this email.</p>
+            <hr style='margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;'>
+            <p style='color: #6b7280; font-size: 12px;'>This is an automated message from BPM System. Please do not reply to this email.</p>
+        </div>
+    </body>
+    </html>
+    ";
+    
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    $headers .= "From: noreply@bpm.com" . "\r\n";
+    
+    return mail($email, $subject, $message, $headers);
+}
 
 // Handle login form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -399,10 +424,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     }
 
-                    // Redirect based on role and portal preference
-                    $roleKey = strtolower(trim($primaryRole));
-                    $portalInfo = $_SESSION['login_portal'] ?? 'workforce';
-
                     // Debug: Log roleKey comparison
                     error_log("DEBUG: roleKey='$roleKey' vs 'payroll processor'");
 
@@ -490,8 +511,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
                     $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'] ?? '';
 
-                    // Cleanup portal session
-                    unset($_SESSION['login_portal']);
+                    // Clear pending login
+                    unset($_SESSION['pending_login']);
+
+                    // Redirect based on role and portal preference
+                    $roleKey = strtolower(trim($primaryRole));
+                    $portalInfo = $_SESSION['login_portal'] ?? 'workforce';
 
                     if ($portalInfo === 'ess') {
                         $redirectUrl = 'modules/ess/dashboard.php';

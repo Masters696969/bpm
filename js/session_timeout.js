@@ -299,8 +299,8 @@ class SessionTimeoutManager {
                 Swal.showLoading();
             }
         }).then(() => {
-            // Redirect to login
-            window.location.href = 'login.php';
+            // Redirect to login with full URL
+            window.location.href = 'http://localhost/bpm/login.php';
         });
         
         // Call server-side logout

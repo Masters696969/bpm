@@ -182,6 +182,7 @@ if (!isset($_SESSION['username'])) {
     </div>
   </main>
   <script src="../../js/compensationdashboard.js"></script>
+  <script src="../../js/session_timeout.js"></script>
   <script>
     lucide.createIcons();
   </script>
