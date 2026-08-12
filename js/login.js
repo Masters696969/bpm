@@ -200,23 +200,6 @@ async function handleLogin(event) {
     
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
-    const captcha = document.getElementById('captcha').value.trim();
-    const expectedAnswer = document.getElementById('captchaQuestion').getAttribute('data-answer');
-    
-    console.log('Login attempt:', { email, captcha, expectedAnswer }); // Debug log
-    
-    // Validate captcha
-    if (captcha !== expectedAnswer) {
-        await Swal.fire({
-            icon: "error",
-            title: "Security Question Incorrect",
-            text: "Please answer the security question correctly.",
-            confirmButtonColor: "#2ca078"
-        });
-        generateCaptcha(); // Regenerate captcha on wrong answer
-        document.getElementById('captcha').value = '';
-        return;
-    }
     
     if (!email || !password) {
         await Swal.fire({
@@ -243,7 +226,6 @@ async function handleLogin(event) {
         params.append('action', 'login');
         params.append('email', email);
         params.append('password', password);
-        params.append('captcha', captcha);
         params.append('login_portal', document.getElementById('loginPortal').value);
 
         console.log('Sending request to login_action.php'); // Debug log
@@ -353,9 +335,6 @@ async function handleLogin(event) {
                     confirmButtonColor: "#2ca078"
                 });
             }
-            // Regenerate captcha on failed login
-            generateCaptcha();
-            document.getElementById('captcha').value = '';
         }
     } catch (error) {
         console.error('Login error:', error);

@@ -76,16 +76,24 @@ function getRealIpAddress() {
 function isImmuneUser($conn, $email) {
     $sql = "SELECT COUNT(*) as count FROM immune_accounts WHERE email = ?";
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log("DB prepare failed in isImmuneUser: " . $conn->error . " SQL: " . $sql);
+        return false;
+    }
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
-    return $result->fetch_assoc()['count'] > 0;
+    return $result ? ($result->fetch_assoc()['count'] > 0) : false;
 }
 
 // Helper function to record login attempts
 function recordLoginAttempt($conn, $email, $success, $ipAddress, $userAgent) {
     $sql = "INSERT INTO login_attempts (email, ip_address, success, user_agent) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log("DB prepare failed in recordLoginAttempt: " . $conn->error . " SQL: " . $sql);
+        return;
+    }
     $stmt->bind_param("ssis", $email, $ipAddress, $success, $userAgent);
     $stmt->execute();
 }
@@ -97,11 +105,15 @@ function checkBanStatus($conn, $email, $ipAddress) {
     // Check email ban
     $sql = "SELECT * FROM login_bans WHERE email = ? AND is_active = 1 AND lift_time > ?";
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log("DB prepare failed in checkBanStatus (email ban): " . $conn->error . " SQL: " . $sql);
+        return null;
+    }
     $stmt->bind_param("ss", $email, $currentTime);
     $stmt->execute();
     $result = $stmt->get_result();
     
-    if ($result->num_rows > 0) {
+    if ($result && $result->num_rows > 0) {
         $ban = $result->fetch_assoc();
         // Debug: Check if ban should be expired
         $liftTime = strtotime($ban['lift_time']);
@@ -112,18 +124,24 @@ function checkBanStatus($conn, $email, $ipAddress) {
         // If we reach here, ban should be expired, deactivate it
         $updateSql = "UPDATE login_bans SET is_active = 0 WHERE email = ?";
         $updateStmt = $conn->prepare($updateSql);
-        $updateStmt->bind_param("s", $email);
-        $updateStmt->execute();
+        if ($updateStmt) {
+            $updateStmt->bind_param("s", $email);
+            $updateStmt->execute();
+        }
     }
     
     // Check IP ban
     $sql = "SELECT * FROM login_bans WHERE ip_address = ? AND is_active = 1 AND lift_time > ?";
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log("DB prepare failed in checkBanStatus (IP ban): " . $conn->error . " SQL: " . $sql);
+        return null;
+    }
     $stmt->bind_param("ss", $ipAddress, $currentTime);
     $stmt->execute();
     $result = $stmt->get_result();
     
-    if ($result->num_rows > 0) {
+    if ($result && $result->num_rows > 0) {
         $ban = $result->fetch_assoc();
         // Debug: Check if ban should be expired
         $liftTime = strtotime($ban['lift_time']);
@@ -134,8 +152,10 @@ function checkBanStatus($conn, $email, $ipAddress) {
         // If we reach here, ban should be expired, deactivate it
         $updateSql = "UPDATE login_bans SET is_active = 0 WHERE ip_address = ?";
         $updateStmt = $conn->prepare($updateSql);
-        $updateStmt->bind_param("s", $ipAddress);
-        $updateStmt->execute();
+        if ($updateStmt) {
+            $updateStmt->bind_param("s", $ipAddress);
+            $updateStmt->execute();
+        }
     }
     
     return null; // Not banned
@@ -153,6 +173,10 @@ function banUser($conn, $email, $ipAddress, $attemptsCount, $banDuration = '1 DA
             lift_time = VALUES(lift_time),
             is_active = 1";
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log("DB prepare failed in banUser: " . $conn->error . " SQL: " . $sql);
+        return;
+    }
     $stmt->bind_param("ssis", $email, $ipAddress, $attemptsCount, $liftTime);
     $stmt->execute();
 }
@@ -164,11 +188,15 @@ function getRecentFailedAttempts($conn, $email, $ipAddress, $minutes = 5) {
     $sql = "SELECT COUNT(*) as count FROM login_attempts 
             WHERE email = ? AND success = 0 AND attempt_time >= ?";
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log("DB prepare failed in getRecentFailedAttempts: " . $conn->error . " SQL: " . $sql);
+        return 0;
+    }
     $stmt->bind_param("ss", $email, $timeThreshold);
     $stmt->execute();
     $result = $stmt->get_result();
     
-    return $result->fetch_assoc()['count'];
+    return $result ? (int)$result->fetch_assoc()['count'] : 0;
 }
 
 // sendOtpEmail function is already defined in config.php
@@ -185,13 +213,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (empty($email) || empty($password)) {
             echo json_encode(['success' => false, 'message' => 'Please enter email and password']);
-            exit;
-        }
-
-        // Validate captcha
-        $captcha = trim($_POST['captcha'] ?? '');
-        if (empty($captcha) || !is_numeric($captcha)) {
-            echo json_encode(['success' => false, 'message' => 'Please answer the security question correctly.']);
             exit;
         }
 
